@@ -22,13 +22,18 @@
   "homepage": "https://github.com/DFE-Digital/login.dfe.support#readme",
   "dependencies": {
     "body-parser": "^1.18.1",
+    "cookie-parser": "^1.4.3",
+    "csurf": "^1.9.0",
     "ejs": "^2.5.7",
     "express": "^4.15.4",
     "express-ejs-layouts": "^2.3.1",
+    "express-session": "^1.15.6",
     "helmet": "^3.9.0",
     "lodash": "^4.17.4",
     "login.dfe.sanitization": "git+https://github.com/DFE-Digital/login.dfe.sanitization.git#v1.0",
     "morgan": "^1.9.0",
+    "openid-client": "^1.19.0",
+    "passport": "^0.4.0",
     "winston": "^2.4.0",
     "winston-redis": "^1.0.0"
   },
