@@ -1,12 +1,5 @@
-# DfE Express Boilerplate application
+# DfE Support Console
+[![Build Status](https://travis-ci.org/DFE-Digital/login.dfe.support.svg?branch=master)](https://travis-ci.org/DFE-Digital/login.dfe.support)
+[![tested with jest](https://img.shields.io/badge/tested_with-jest-99424f.svg)](https://github.com/facebook/jest)
 
-This is a starting point for node applications, it included the basics needed to setup a Web application or API. 
-
-### Default setting for:
-
-- ESLint
-- Testing (Jest)
-- Project structure
-- Express Layout
-- Express Middleware
-
+Console for support staff to response to users requests for help
