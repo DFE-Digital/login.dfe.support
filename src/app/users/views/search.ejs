@@ -1,0 +1,22 @@
+<table>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Organisation</th>
+        <th>Last Login</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    <%for (let i = 0; i < locals.users.length; i++) {%>
+    <tr>
+        <td><%=users[i].name%></td>
+        <td><%=users[i].email%></td>
+        <td><%=users[i].organisation.name%></td>
+        <td><%=locals.moment(locals.users[i].lastLogin).fromNow()%></td>
+        <td><%=users[i].status.description%></td>
+    </tr>
+    <%}%>
+    </tbody>
+</table>
