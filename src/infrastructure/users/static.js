@@ -16,7 +16,7 @@ const users = [
     organisation: {
       name: 'Force Recon'
     },
-    lastLogin: new Date(2018, 0, 11, 12, 15, 00),
+    lastLogin: new Date(2018, 0, 11, 12, 15, 0),
     status: {
       description: 'Active'
     }
