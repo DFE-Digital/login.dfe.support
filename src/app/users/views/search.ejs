@@ -1,3 +1,11 @@
+<div style="margin:20px 0;">
+    <form method="post">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+        <input name="criteria" id="criteria" placeholder="name, email or organisation" value="<%= criteria %>"
+               style="width:500px;"/>
+        <button type="submit">Search</button>
+    </form>
+</div>
 <table>
     <thead>
     <tr>
@@ -9,14 +17,20 @@
     </tr>
     </thead>
     <tbody>
-    <%for (let i = 0; i < locals.users.length; i++) {%>
+    <% if(locals.users.length === 0 && locals.criteria) { %>
     <tr>
-        <td><%=users[i].name%></td>
-        <td><%=users[i].email%></td>
-        <td><%=users[i].organisation.name%></td>
-        <td><%=locals.moment(locals.users[i].lastLogin).fromNow()%></td>
-        <td><%=users[i].status.description%></td>
+        <td colspan="5">No Users found</td>
     </tr>
-    <%}%>
+    <% } %>
+
+    <% for (let i = 0; i < locals.users.length; i++) { %>
+    <tr>
+        <td><%= users[i].name %></td>
+        <td><%= users[i].email %></td>
+        <td><%= users[i].organisation.name %></td>
+        <td><%= locals.moment(locals.users[i].lastLogin).fromNow() %></td>
+        <td><%= users[i].status.description %></td>
+    </tr>
+    <% } %>
     </tbody>
 </table>
