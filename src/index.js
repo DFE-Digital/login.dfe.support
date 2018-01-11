@@ -13,6 +13,7 @@ const config = require('./infrastructure/config');
 const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
 const oidc = require('./infrastructure/oidc');
+const moment = require('moment');
 const registerRoutes = require('./routes');
 
 const init = async () => {
@@ -30,6 +31,13 @@ const init = async () => {
       action: 'deny',
     },
   }));
+
+  Object.assign(app.locals, {
+    moment,
+    app: {
+      title: 'Login.Dfe',
+    },
+  });
 
   if (config.hostingEnvironment.env !== 'dev') {
     app.set('trust proxy', 1);
