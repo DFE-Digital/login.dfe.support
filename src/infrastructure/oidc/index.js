@@ -3,6 +3,7 @@ const config = require('../config');
 const passport = require('passport');
 const { Strategy, Issuer } = require('openid-client');
 const logger = require('../logger');
+const { getUserSupportClaims } = require('./../supportClaims');
 
 const getPassportStrategy = async () => {
   const issuer = await Issuer.discover(config.identifyingParty.url);
@@ -17,7 +18,10 @@ const getPassportStrategy = async () => {
 
   return new Strategy({
     client,
-    params: { redirect_uri: `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/auth/cb`, scope: 'openid profile email' },
+    params: {
+      redirect_uri: `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/auth/cb`,
+      scope: 'openid profile email'
+    },
   }, (tokenset, authUserInfo, done) => {
     client.userinfo(tokenset.access_token)
       .then((userInfo) => {
@@ -48,7 +52,7 @@ const init = async (app) => {
 
   app.get('/auth', passport.authenticate('oidc'));
   app.get('/auth/cb', (req, res, next) => {
-    passport.authenticate('oidc', (err, user) => {
+    passport.authenticate('oidc', async (err, user) => {
       let redirectUrl = '/';
 
       if (err) {
@@ -58,6 +62,12 @@ const init = async (app) => {
       if (!user) {
         return res.redirect('/');
       }
+
+      const supportClaims = await getUserSupportClaims(user.sub);
+      if (!supportClaims || !supportClaims.isSupportUser) {
+        return res.redirect('/not-authorised');
+      }
+      Object.assign(user, supportClaims);
 
       if (req.session.redirectUrl) {
         redirectUrl = req.session.redirectUrl;
