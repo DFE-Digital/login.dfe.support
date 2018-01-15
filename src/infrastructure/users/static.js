@@ -38,6 +38,21 @@ const search = async (criteria) => {
   }));
 };
 
+const createIndex = async () => {
+  return Promise.resolve('new');
+};
+
+const updateIndex = async (users, index) => {
+  return Promise.resolve(null);
+};
+
+const updateActiveIndex = async (index) => {
+  return Promise.resolve(null);
+};
+
 module.exports = {
   search,
+  createIndex,
+  updateIndex,
+  updateActiveIndex,
 };
