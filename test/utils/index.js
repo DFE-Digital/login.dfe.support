@@ -12,6 +12,12 @@ const configMockFactory = () => {
     cache: {
       type: 'static',
     },
+    directories: {
+      type: 'static',
+    },
+    organisations: {
+      type: 'static',
+    },
   };
 };
 
