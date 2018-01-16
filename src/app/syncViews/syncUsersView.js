@@ -41,9 +41,11 @@ const syncUsersView = async () => {
   let hasMorePages = true;
   let pageNumber = 1;
   while (hasMorePages) {
+    logger.info(`Syncing page ${pageNumber} of users`);
     const pageOfUsers = await directories.getPageOfUsers(pageNumber);
     if (pageOfUsers.users) {
       const mappedUsers = await Promise.all(pageOfUsers.users.map(async (user) => {
+        logger.info(`Building user ${user.email} (id:${user.sub}) for syncing`);
         return await buildUser(user);
       }));
       await users.updateIndex(mappedUsers, newIndexName);
@@ -53,6 +55,7 @@ const syncUsersView = async () => {
   }
 
   await users.updateActiveIndex(newIndexName);
+  logger.info(`Pointed user index to ${newIndexName}`);
 
   logger.info('Finished syncing users view');
 };
