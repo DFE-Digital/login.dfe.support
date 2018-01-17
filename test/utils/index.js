@@ -18,6 +18,9 @@ const configMockFactory = (customConfig) => {
     organisations: {
       type: 'static',
     },
+    audit: {
+      type: 'static',
+    },
   }, customConfig);
 };
 
