@@ -7,8 +7,8 @@ const loggerMockFactory = () => {
   };
 };
 
-const configMockFactory = () => {
-  return {
+const configMockFactory = (customConfig) => {
+  return Object.assign({
     cache: {
       type: 'static',
     },
@@ -18,7 +18,7 @@ const configMockFactory = () => {
     organisations: {
       type: 'static',
     },
-  };
+  }, customConfig);
 };
 
 module.exports = {
