@@ -3,15 +3,13 @@ jest.mock('redis', () => {
     createClient: jest.fn(),
   };
 });
-jest.mock('./../../../src/infrastructure/config', () => {
-  return {
-    cache: {
-      params: {
-        connectionString: 'redis://localhost',
-      },
+jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
+  cache: {
+    params: {
+      connectionString: 'redis://localhost',
     },
-  };
-});
+  },
+}));
 
 const scanPage1 = [20, ['testindex-user-key-1']];
 const scanPage2 = [0, ['testindex-user-key-2']];
