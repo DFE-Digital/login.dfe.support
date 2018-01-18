@@ -27,8 +27,16 @@
     <tr>
         <td><%= users[i].name %></td>
         <td><%= users[i].email %></td>
+        <%if(users[i].organisation) {%>
         <td><%= users[i].organisation.name %></td>
+        <%}else {%>
+        <td>Unknown</td>
+        <%}%>
+        <%if(locals.users[i].lastLogin) {%>
         <td><%= locals.moment(locals.users[i].lastLogin).fromNow() %></td>
+        <%}else {%>
+        <td>Never</td>
+        <%}%>
         <td><%= users[i].status.description %></td>
     </tr>
     <% } %>
