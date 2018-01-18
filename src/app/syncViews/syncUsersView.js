@@ -22,6 +22,7 @@ const buildUser = async (user, correlationId) => {
   }
 
   return {
+    id: user.sub,
     name: `${user.given_name} ${user.family_name}`,
     email: user.email,
     organisation: orgServiceMapping && orgServiceMapping.length > 0 ? orgServiceMapping[0].organisation : null,
