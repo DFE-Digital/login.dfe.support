@@ -231,6 +231,7 @@ describe('When syncing users materialised view', function () {
     expect(users.updateIndex.mock.calls).toHaveLength(1);
     expect(users.updateIndex.mock.calls[0][0]).toHaveLength(2);
     expect(users.updateIndex.mock.calls[0][0][0]).toEqual({
+      id: 'user1',
       name: 'User One',
       email: 'user.one@unit.test',
       organisation: {
@@ -243,6 +244,7 @@ describe('When syncing users materialised view', function () {
       },
     });
     expect(users.updateIndex.mock.calls[0][0][1]).toEqual({
+      id: 'user2',
       name: 'User Two',
       email: 'user.two@unit.test',
       organisation: {
