@@ -17,7 +17,7 @@ const getPage = async (criteria, pointer, indexName) => {
   const nextPagePointer = result[0];
   const users = await Promise.all(result[1].map(async (key) => {
     const user = JSON.parse(await getAsync(key));
-    user.lastLogin = new Date(user.lastLogin);
+    user.lastLogin = user.lastLogin ? new Date(user.lastLogin) : null;
     return user;
   }));
 
