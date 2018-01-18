@@ -3,10 +3,11 @@ const users = require('./../../infrastructure/users');
 const directories = require('./../../infrastructure/directories');
 const organisations = require('./../../infrastructure/organisations');
 const audit = require('./../../infrastructure/audit');
+const uuid = require('uuid/v4');
 
-const buildUser = async (user) => {
+const buildUser = async (user, correlationId) => {
   // Update with orgs
-  const orgServiceMapping = await organisations.getUserOrganisations(user.sub);
+  const orgServiceMapping = await organisations.getUserOrganisations(user.sub, correlationId);
 
   // Update with last login
   let successfulLoginAudit = null;
@@ -32,7 +33,9 @@ const buildUser = async (user) => {
 };
 
 const syncUsersView = async () => {
-  logger.info('Starting to sync users view');
+  const correlationId = uuid();
+
+  logger.info(`Starting to sync users view (correlation id: ${correlationId})`);
 
   // Create new index
   const newIndexName = await users.createIndex();
@@ -42,11 +45,11 @@ const syncUsersView = async () => {
   let pageNumber = 1;
   while (hasMorePages) {
     logger.info(`Syncing page ${pageNumber} of users`);
-    const pageOfUsers = await directories.getPageOfUsers(pageNumber);
+    const pageOfUsers = await directories.getPageOfUsers(pageNumber, correlationId);
     if (pageOfUsers.users) {
       const mappedUsers = await Promise.all(pageOfUsers.users.map(async (user) => {
         logger.info(`Building user ${user.email} (id:${user.sub}) for syncing`);
-        return await buildUser(user);
+        return await buildUser(user, correlationId);
       }));
       await users.updateIndex(mappedUsers, newIndexName);
     }

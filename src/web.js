@@ -14,6 +14,7 @@ const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
 const oidc = require('./infrastructure/oidc');
 const moment = require('moment');
+const setCorrelationId = require('express-mw-correlation-id');
 const registerRoutes = require('./routes');
 
 const init = async () => {
@@ -31,6 +32,7 @@ const init = async () => {
       action: 'deny',
     },
   }));
+  app.use(setCorrelationId(true));
 
   Object.assign(app.locals, {
     moment,

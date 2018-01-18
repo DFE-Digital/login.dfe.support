@@ -1,4 +1,4 @@
-const getPageOfUsers = async (pageNumber) => {
+const getPageOfUsers = async (pageNumber, correlationId) => {
   return Promise.resolve({
     users: [
       {
