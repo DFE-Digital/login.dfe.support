@@ -1,18 +1,20 @@
 const getUserOrganisations = async (userId) => {
   return Promise.resolve([
     {
-      "userService": {
-        "id": "b7526206-7760-4024-b869-97004350cb8b",
-        "userId": "77d6b281-9f8d-4649-84b8-87fc42eee71d",
-        "status": 0
-      },
+      "id": "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+      "name": "Some service",
+      "description": "Some service that does some stuff",
+      "status": 1,
+      "userId": "7a1b077a-d7d4-4b60-83e8-1a1b49849510",
+      "requestDate": "2018-01-18T10:46:59.385Z",
+      "approvers": [],
       "organisation": {
         "id": "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-        "name": "Test Org"
+        "name": "Big School"
       },
-      "service": {
-        "id": "77d6b281-9f8d-4649-84b8-87fc42eee71d",
-        "name": "Test Service"
+      "role": {
+        "id": 0,
+        "name": "End user"
       }
     }
   ]);
