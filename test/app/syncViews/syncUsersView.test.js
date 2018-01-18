@@ -4,11 +4,13 @@ jest.mock('./../../../src/infrastructure/users');
 jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/audit');
+jest.mock('uuid/v4');
 
 const users = require('./../../../src/infrastructure/users');
 const directories = require('./../../../src/infrastructure/directories');
 const organisations = require('./../../../src/infrastructure/organisations');
 const audit = require('./../../../src/infrastructure/audit');
+const uuid = require('uuid/v4');
 const syncUsersView = require('./../../../src/app/syncViews/syncUsersView');
 
 const user1 = {
@@ -71,6 +73,10 @@ describe('When syncing users materialised view', function () {
         timestamp: '2017-10-24T12:35:51.633Z',
       }],
       numberOfPages: 1,
+    });
+
+    uuid.mockImplementation(() => {
+      return 'new-uuid';
     });
   });
 
@@ -256,5 +262,18 @@ describe('When syncing users materialised view', function () {
 
     expect(users.updateActiveIndex.mock.calls).toHaveLength(1);
     expect(users.updateActiveIndex.mock.calls[0][0]).toBe('test-index');
+  });
+
+  it('then it should pass correlationId to directories', async () => {
+    await syncUsersView();
+
+    expect(directories.getPageOfUsers.mock.calls[0][1]).toBe('new-uuid');
+  });
+
+  it('then it should pass correlationId to organisations', async () => {
+    await syncUsersView();
+
+    expect(organisations.getUserOrganisations.mock.calls[0][1]).toBe('new-uuid');
+    expect(organisations.getUserOrganisations.mock.calls[1][1]).toBe('new-uuid');
   });
 });
