@@ -1,7 +1,7 @@
 const redis = require('redis');
 const { promisify } = require('util');
 const config = require('./../config');
-const { concat } = require('lodash');
+const { concat, chunk } = require('lodash');
 const uuid = require('uuid/v4');
 
 const client = redis.createClient({
@@ -27,7 +27,7 @@ const getPage = async (criteria, pointer, indexName) => {
   };
 };
 
-const search = async (criteria) => {
+const search = async (criteria, pageNumber) => {
   const indexName = await getAsync('CurrentIndex');
   if (!indexName) {
     return [];
@@ -41,7 +41,12 @@ const search = async (criteria) => {
     nextPagePointer = page.nextPagePointer;
   } while (nextPagePointer > 0);
 
-  return results;
+  const pages = chunk(results, 25);
+
+  return {
+    users: pageNumber <= pages.length ? pages[pageNumber - 1] : [],
+    numberOfPages: pages.length,
+  };
 };
 
 const createIndex = async () => {

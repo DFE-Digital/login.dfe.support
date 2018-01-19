@@ -10,18 +10,21 @@ const client = redis.createClient({
 const getAsync = promisify(client.get).bind(client);
 const setAsync = promisify(client.set).bind(client);
 
+const pageSize = 25;
+
 const getAzureSearchUri = (indexName, indexResource = '') => {
   return `https://${config.cache.params.serviceName}.search.windows.net/indexes/${indexName}${indexResource}?api-version=2016-09-01`
 };
 
 
-const search = async (criteria) => {
-   const currentIndexName = await getAsync('CurrentIndex_Users');
+const search = async (criteria, pageNumber) => {
+  const currentIndexName = await getAsync('CurrentIndex_Users');
 
   try {
+    const skip = (pageNumber - 1) * pageSize;
     const response = await rp({
       method: 'GET',
-      uri: `${getAzureSearchUri(currentIndexName, '/docs')}&search=${criteria}&$count=true`,
+      uri: `${getAzureSearchUri(currentIndexName, '/docs')}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}`,
       headers: {
         'content-type': 'application/json',
         'api-key': config.cache.params.apiKey,
@@ -29,20 +32,29 @@ const search = async (criteria) => {
       json: true,
     });
 
-    return response.value.map((user) => {
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        organisation: user.organisationName ? {
-          name: user.organisationName
-        } : null,
-        lastLogin: user.lastLogin ? new Date(user.lastLogin) : null,
-        status: {
-          description: user.statusDescription
+    let numberOfPages = 1;
+    const totalNumberOfResults = parseInt(response['@odata.count']);
+    if (!isNaN(totalNumberOfResults)) {
+      numberOfPages = Math.ceil(totalNumberOfResults / pageSize);
+    }
+
+    return {
+      users: response.value.map((user) => {
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          organisation: user.organisationName ? {
+            name: user.organisationName
+          } : null,
+          lastLogin: user.lastLogin ? new Date(user.lastLogin) : null,
+          status: {
+            description: user.statusDescription
+          }
         }
-      }
-    });
+      }),
+      numberOfPages,
+    };
   } catch (e) {
     throw e;
   }

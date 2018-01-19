@@ -1,13 +1,14 @@
-const users = require('./../../infrastructure/users');
+const { search } = require('./utils');
 
 const action = async (req, res) => {
-  const criteria = req.body.criteria;
-  const results = criteria ? await users.search(criteria) : [];
+  const result = await search(req);
 
   res.render('users/views/search', {
-    criteria,
     csrfToken: req.csrfToken(),
-    users: results ? results : [],
+    criteria: result.criteria,
+    page: result.page,
+    numberOfPages: result.numberOfPages,
+    users: result.users,
   });
 };
 
