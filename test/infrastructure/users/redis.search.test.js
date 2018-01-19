@@ -87,14 +87,14 @@ describe('when searching for users', () => {
   });
 
   it('then it should look up the current index', async () => {
-    await search('test');
+    await search('test', 1);
 
     expect(get.mock.calls.length).toBeGreaterThanOrEqual(1);
     expect(get.mock.calls[0][0]).toBe('CurrentIndex');
   });
 
   it('then it should scan using a wildcard of the specified criteria', async () => {
-    await search('TEST');
+    await search('TEST', 1);
 
     expect(scan.mock.calls).toHaveLength(2);
     expect(scan.mock.calls[0][2]).toBe('testindex-*test*');
@@ -102,7 +102,7 @@ describe('when searching for users', () => {
   });
 
   it('then it should scan keys until no more match criteria', async () => {
-    await search('test');
+    await search('test', 1);
 
     expect(scan.mock.calls).toHaveLength(2);
     expect(scan.mock.calls[0][0]).toBe(0);
@@ -110,7 +110,7 @@ describe('when searching for users', () => {
   });
 
   it('then it should get each user returned from scan', async () => {
-    await search('test');
+    await search('test', 1);
 
     expect(get.mock.calls).toHaveLength(3);
     expect(get.mock.calls[1][0]).toBe('testindex-user-key-1');
@@ -118,10 +118,10 @@ describe('when searching for users', () => {
   });
 
   it('then it should return all users from scan with last login translated to a date', async () => {
-    const actual = await search('test');
+    const actual = await search('test', 1);
 
-    expect(actual).toHaveLength(2);
-    expect(actual[0]).toMatchObject({
+    expect(actual.users).toHaveLength(2);
+    expect(actual.users[0]).toMatchObject({
       name: 'Timmy Tester',
       email: 'timmy@tester.test',
       organisation: {
@@ -132,7 +132,7 @@ describe('when searching for users', () => {
         description: 'Active'
       },
     });
-    expect(actual[1]).toMatchObject({
+    expect(actual.users[1]).toMatchObject({
       name: 'Brenda Breaker',
       email: 'brenda@breakage.test',
       organisation: {

@@ -30,7 +30,7 @@ describe('when searching for a user in azure search', () => {
     rp.mockImplementation(() => {
       return {
         '@odata.context': 'https://sbsa-search.search.windows.net/indexes(\'users-7170516e-5671-4ea7-8e52-adfc901c73c3\')/$metadata#docs',
-        '@odata.count': 3,
+        '@odata.count': 49,
         'value': [
           {
             '@search.score': 0.4066307,
@@ -63,24 +63,24 @@ describe('when searching for a user in azure search', () => {
   });
 
   it('then it should lookup current index', async () => {
-    await search('test');
+    await search('test', 1);
 
     expect(get.mock.calls).toHaveLength(1);
     expect(get.mock.calls[0][0]).toBe('CurrentIndex_Users');
   });
 
-  it('then it should search the current index for the criteria', async () => {
-    await search('test');
+  it('then it should search the current index for the criteria and page, with a page size of 25', async () => {
+    await search('test', 1);
 
     expect(rp.mock.calls).toHaveLength(1);
     expect(rp.mock.calls[0][0]).toMatchObject({
       method: 'GET',
-      uri: 'https://test-search.search.windows.net/indexes/test-index/docs?api-version=2016-09-01&search=test&$count=true',
+      uri: 'https://test-search.search.windows.net/indexes/test-index/docs?api-version=2016-09-01&search=test&$count=true&$skip=0&$top=25',
     });
   });
 
   it('then it should include the api key from config', async () => {
-    await search('test');
+    await search('test', 1);
 
     expect(rp.mock.calls).toHaveLength(1);
     expect(rp.mock.calls[0][0]).toMatchObject({
@@ -91,12 +91,13 @@ describe('when searching for a user in azure search', () => {
   });
 
   it('then it should map results to response', async () => {
-    const actual = await search('test');
+    const actual = await search('test', 1);
 
     expect(actual).not.toBeNull();
-    expect(actual).toBeInstanceOf(Array);
-    expect(actual).toHaveLength(1);
-    expect(actual[0]).toMatchObject({
+    expect(actual.numberOfPages).toBe(2);
+    expect(actual.users).not.toBeNull();
+    expect(actual.users).toHaveLength(1);
+    expect(actual.users[0]).toMatchObject({
       id: '34080a9c-fd79-45a6-a092-4756264d5c85',
       name: 'User One',
       email: 'user.one@unit.test',

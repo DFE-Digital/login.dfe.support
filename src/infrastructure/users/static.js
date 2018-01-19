@@ -23,19 +23,22 @@ const users = [
   },
 ];
 
-const search = async (criteria) => {
+const search = async (criteria, pageNumber) => {
   const results = users.filter(u => u.name.toLowerCase().indexOf(criteria.toLowerCase()) > -1
     || u.email.toLowerCase().indexOf(criteria.toLowerCase()) > -1
     || u.organisation.name.toLowerCase().indexOf(criteria.toLowerCase()) > -1);
-  return Promise.resolve(results.sort((x, y) => {
-    if (x < y) {
-      return -1;
-    }
-    if (x > y) {
-      return 1;
-    }
-    return 0;
-  }));
+  return Promise.resolve({
+    users: results.sort((x, y) => {
+      if (x < y) {
+        return -1;
+      }
+      if (x > y) {
+        return 1;
+      }
+      return 0;
+    }),
+    numberOfPages: 1,
+  });
 };
 
 const createIndex = async () => {

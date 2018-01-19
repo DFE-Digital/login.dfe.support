@@ -10,17 +10,17 @@ jest.mock('./../../../src/app/users/utils', () => {
 });
 
 const utils = require('./../../../src/app/users/utils');
-const post = require('./../../../src/app/users/postSearch');
+const get = require('./../../../src/app/users/getSearch');
 
-describe('When processing a post to search for users', () => {
+describe('When processing a get to search for users', () => {
   let req;
   let res;
   let usersSearchResult;
 
   beforeEach(() => {
     req = {
-      method: 'POST',
-      body: {
+      method: 'GET',
+      query: {
         criteria: 'test',
       },
       csrfToken: () => {
@@ -56,13 +56,13 @@ describe('When processing a post to search for users', () => {
   });
 
   test('then it should render the search view', async () => {
-    await post(req, res);
+    await get(req, res);
 
     expect(res.render.mock.calls[0][0]).toBe('users/views/search');
   });
 
   test('then it should include csrf token', async () => {
-    await post(req, res);
+    await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: 'token',
@@ -70,7 +70,7 @@ describe('When processing a post to search for users', () => {
   });
 
   test('then it should include criteria', async () => {
-    await post(req, res);
+    await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       criteria: 'test',
@@ -78,7 +78,7 @@ describe('When processing a post to search for users', () => {
   });
 
   test('then it should include page details', async () => {
-    await post(req, res);
+    await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       page: 1,
@@ -87,7 +87,7 @@ describe('When processing a post to search for users', () => {
   });
 
   test('then it should include users', async () => {
-    await post(req, res);
+    await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       users: usersSearchResult,

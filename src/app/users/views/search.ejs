@@ -27,18 +27,43 @@
     <tr>
         <td><%= users[i].name %></td>
         <td><%= users[i].email %></td>
-        <%if(users[i].organisation) {%>
+        <% if(users[i].organisation) { %>
         <td><%= users[i].organisation.name %></td>
-        <%}else {%>
+        <% }else { %>
         <td>Unknown</td>
-        <%}%>
-        <%if(locals.users[i].lastLogin) {%>
+        <% } %>
+        <% if(locals.users[i].lastLogin) { %>
         <td><%= locals.moment(locals.users[i].lastLogin).fromNow() %></td>
-        <%}else {%>
+        <% }else { %>
         <td>Never</td>
-        <%}%>
+        <% } %>
         <td><%= users[i].status.description %></td>
     </tr>
     <% } %>
     </tbody>
 </table>
+
+<% if(locals.numberOfPages > 1) { %>
+<div class="pagination">
+    <div class="page-first"><a href="?criteria=<%= criteria %>&page=1">&lt;&lt;</a></div>
+    <% for(let p = 1; p <= locals.numberOfPages; p++) { %>
+    <% if(p === locals.page) { %>
+    <div class="page-numbered page-current"><%= p %></div>
+    <% } else { %>
+    <div class="page-numbered"><a href="?criteria=<%= criteria %>&page=<%= p %>"><%= p %></a></div>
+    <% } %>
+    <% } %>
+    <div class="page-last"><a href="?criteria=<%= criteria %>&page=<%= numberOfPages %>">&gt;&gt;</a></div>
+</div>
+<% } %>
+
+
+<style>
+    .pagination {
+        margin-top:10px;
+    }
+    .pagination div {
+        display: inline-block;
+        padding: 7px;
+    }
+</style>

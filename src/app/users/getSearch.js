@@ -1,8 +1,14 @@
-const action = (req, res) => {
+const { search } = require('./utils');
+
+const action = async (req, res) => {
+  const result = await search(req);
+
   res.render('users/views/search', {
-    criteria: '',
     csrfToken: req.csrfToken(),
-    users: []
+    criteria: result.criteria,
+    page: result.page,
+    numberOfPages: result.numberOfPages,
+    users: result.users,
   });
 };
 
