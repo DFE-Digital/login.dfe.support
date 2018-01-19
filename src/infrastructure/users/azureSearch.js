@@ -24,7 +24,7 @@ const search = async (criteria, pageNumber) => {
     const skip = (pageNumber - 1) * pageSize;
     const response = await rp({
       method: 'GET',
-      uri: `${getAzureSearchUri(currentIndexName, '/docs')}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}`,
+      uri: `${getAzureSearchUri(currentIndexName, '/docs')}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=name`,
       headers: {
         'content-type': 'application/json',
         'api-key': config.cache.params.apiKey,

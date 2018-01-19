@@ -69,13 +69,13 @@ describe('when searching for a user in azure search', () => {
     expect(get.mock.calls[0][0]).toBe('CurrentIndex_Users');
   });
 
-  it('then it should search the current index for the criteria and page, with a page size of 25', async () => {
+  it('then it should search the current index for the criteria and page, with a page size of 25 and ordered by name if no order specified', async () => {
     await search('test', 1);
 
     expect(rp.mock.calls).toHaveLength(1);
     expect(rp.mock.calls[0][0]).toMatchObject({
       method: 'GET',
-      uri: 'https://test-search.search.windows.net/indexes/test-index/docs?api-version=2016-09-01&search=test&$count=true&$skip=0&$top=25',
+      uri: 'https://test-search.search.windows.net/indexes/test-index/docs?api-version=2016-09-01&search=test&$count=true&$skip=0&$top=25&$orderby=name',
     });
   });
 

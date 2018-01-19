@@ -42,9 +42,21 @@ const search = async (criteria, pageNumber) => {
   } while (nextPagePointer > 0);
 
   const pages = chunk(results, 25);
+  let users = [];
+  if (pageNumber <= pages.length) {
+    users = pages[pageNumber - 1].sort((x, y) => {
+      if (x.name < y.name) {
+        return -1;
+      }
+      if (x.name > y.name) {
+        return 1;
+      }
+      return 0;
+    });
+  }
 
   return {
-    users: pageNumber <= pages.length ? pages[pageNumber - 1] : [],
+    users,
     numberOfPages: pages.length,
   };
 };
