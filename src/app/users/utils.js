@@ -14,7 +14,10 @@ const search = async (req) => {
     page = 1;
   }
 
-  const results = await users.search(criteria + '*', page);
+  let sortBy = paramsSource.sort ? paramsSource.sort.toLowerCase() : 'name';
+  let sortAsc = (paramsSource.sortdir ? paramsSource.sortdir : 'asc').toLowerCase() === 'asc';
+
+  const results = await users.search(criteria + '*', page, sortBy, sortAsc);
   logger.audit(`${req.user.email} (id: ${req.user.sub}) searched for users in support using criteria "${criteria}"`, {
     type: 'support',
     subType: 'user-search',
@@ -23,6 +26,8 @@ const search = async (req) => {
     criteria: criteria,
     pageNumber: page,
     numberOfPages: results.numberOfPages,
+    sortedBy: sortBy,
+    sortDirection: sortAsc ? 'asc' : 'desc',
   });
 
   return {
@@ -30,6 +35,24 @@ const search = async (req) => {
     page,
     numberOfPages: results.numberOfPages,
     users: results.users,
+    sort: {
+      name: {
+        nextDirection: sortBy === 'name' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'name',
+      },
+      email: {
+        nextDirection: sortBy === 'email' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'email',
+      },
+      organisation: {
+        nextDirection: sortBy === 'organisation' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'organisation',
+      },
+      lastLogin: {
+        nextDirection: sortBy === 'lastlogin' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'lastlogin',
+      },
+    }
   };
 };
 
