@@ -3,13 +3,18 @@ const logger = require('./../../infrastructure/logger');
 
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
-  const criteria = paramsSource.criteria;
+
+  let criteria = paramsSource.criteria;
+  if (!criteria) {
+    criteria = '';
+  }
+
   let page = paramsSource.page ? parseInt(paramsSource.page) : 1;
   if (isNaN(page)) {
     page = 1;
   }
 
-  const results = criteria ? await users.search(criteria, page) : { users: [], numberOfPages: 0 };
+  const results = await users.search(criteria + '*', page);
   logger.audit(`${req.user.email} (id: ${req.user.sub}) searched for users in support using criteria "${criteria}"`, {
     type: 'support',
     subType: 'user-search',
