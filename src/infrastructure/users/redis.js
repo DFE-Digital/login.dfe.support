@@ -11,6 +11,34 @@ const getAsync = promisify(client.get).bind(client);
 const setAsync = promisify(client.set).bind(client);
 const scanAsync = promisify(client.scan).bind(client);
 
+const getSorter = (sortBy, sortAsc) => {
+  const valueExtractor = (obj) => {
+    switch (sortBy) {
+      case 'email':
+        return obj.email;
+      case 'organisation':
+        return obj.organisation.name;
+      case 'lastlogin':
+        return obj.lastLogin;
+      default:
+        return obj.name;
+    }
+  };
+
+  return (x, y) => {
+    const valueX = valueExtractor(x);
+    const valueY = valueExtractor(y);
+
+    if (valueX < valueY) {
+      return sortAsc ? -1 : 1;
+    }
+    if (valueX > valueY) {
+      return sortAsc ? 1 : -1;
+    }
+    return 0;
+  };
+};
+
 const getPage = async (criteria, pointer, indexName) => {
   const result = await scanAsync(pointer, 'MATCH', `${indexName}-*${criteria.toLowerCase()}*`);
 
@@ -27,7 +55,7 @@ const getPage = async (criteria, pointer, indexName) => {
   };
 };
 
-const search = async (criteria, pageNumber) => {
+const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => {
   const indexName = await getAsync('CurrentIndex');
   if (!indexName) {
     return [];
@@ -44,15 +72,7 @@ const search = async (criteria, pageNumber) => {
   const pages = chunk(results, 25);
   let users = [];
   if (pageNumber <= pages.length) {
-    users = pages[pageNumber - 1].sort((x, y) => {
-      if (x.name < y.name) {
-        return -1;
-      }
-      if (x.name > y.name) {
-        return 1;
-      }
-      return 0;
-    });
+    users = pages[pageNumber - 1].sort(getSorter(sortBy, sortAsc));
   }
 
   return {

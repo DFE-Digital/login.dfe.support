@@ -144,4 +144,32 @@ describe('when searching for users in redis', () => {
       },
     });
   });
+
+  it('then it should return all users from scan with last login translated to a date, ordered by specified field', async () => {
+    const actual = await search('test', 1, 'email', false);
+
+    expect(actual.users).toHaveLength(2);
+    expect(actual.users[0]).toMatchObject({
+      name: 'Timmy Tester',
+      email: 'timmy@tester.test',
+      organisation: {
+        name: 'Testco'
+      },
+      lastLogin: new Date(2018, 0, 11, 11, 30, 57),
+      status: {
+        description: 'Active'
+      },
+    });
+    expect(actual.users[1]).toMatchObject({
+      name: 'Brenda Breaker',
+      email: 'brenda@breakage.test',
+      organisation: {
+        name: 'Break Inc'
+      },
+      lastLogin: new Date(2018, 0, 11, 12, 15, 0),
+      status: {
+        description: 'Active'
+      },
+    });
+  });
 });

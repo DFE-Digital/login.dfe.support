@@ -17,14 +17,30 @@ const getAzureSearchUri = (indexName, indexResource = '') => {
 };
 
 
-const search = async (criteria, pageNumber) => {
+const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => {
   const currentIndexName = await getAsync('CurrentIndex_Users');
 
   try {
     const skip = (pageNumber - 1) * pageSize;
+    let orderBy;
+    switch (sortBy) {
+      case 'email':
+        orderBy = sortAsc ? 'email' : 'email desc';
+        break;
+      case 'organisation':
+        orderBy = sortAsc ? 'organisationName' : 'organisationName desc';
+        break;
+      case 'lastlogin':
+        orderBy = sortAsc ? 'lastLogin desc' : 'lastLogin';
+        break;
+      default:
+        orderBy = sortAsc ? 'name' : 'name desc';
+        break;
+    }
+
     const response = await rp({
       method: 'GET',
-      uri: `${getAzureSearchUri(currentIndexName, '/docs')}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=name`,
+      uri: `${getAzureSearchUri(currentIndexName, '/docs')}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`,
       headers: {
         'content-type': 'application/json',
         'api-key': config.cache.params.apiKey,

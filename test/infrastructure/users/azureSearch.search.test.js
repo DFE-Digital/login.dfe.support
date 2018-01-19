@@ -79,6 +79,16 @@ describe('when searching for a user in azure search', () => {
     });
   });
 
+  it('then it should search the current index for the criteria and page, with a page size of 25 and ordered by specified field if possible', async () => {
+    await search('test', 1, 'email', false);
+
+    expect(rp.mock.calls).toHaveLength(1);
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      method: 'GET',
+      uri: 'https://test-search.search.windows.net/indexes/test-index/docs?api-version=2016-09-01&search=test&$count=true&$skip=0&$top=25&$orderby=email desc',
+    });
+  });
+
   it('then it should include the api key from config', async () => {
     await search('test', 1);
 
