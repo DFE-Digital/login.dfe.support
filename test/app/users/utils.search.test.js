@@ -3,7 +3,9 @@ jest.mock('./../../../src/infrastructure/users', () => {
     search: jest.fn().mockReturnValue([]),
   };
 });
+jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
 
+const logger = require('./../../../src/infrastructure/logger');
 const {search} = require('./../../../src/app/users/utils');
 
 describe('When processing a user search request', () => {
@@ -29,6 +31,8 @@ describe('When processing a user search request', () => {
       users: usersSearchResult,
       numberOfPages: 3,
     });
+
+    logger.audit.mockReset();
   });
 
   describe('and the request is a POST', () => {
@@ -39,6 +43,10 @@ describe('When processing a user search request', () => {
         method: 'POST',
         body: {
           criteria: 'test',
+        },
+        user: {
+          sub: 'user1',
+          email: 'user.one@unit.test',
         },
       };
     });
@@ -85,6 +93,22 @@ describe('When processing a user search request', () => {
         numberOfPages: 3,
       });
     });
+
+    test('then it should audit that a search has occured', async () => {
+      await search(req);
+
+      expect(logger.audit.mock.calls).toHaveLength(1);
+      expect(logger.audit.mock.calls[0][0]).toBe('user.one@unit.test (id: user1) searched for users in support using criteria "test"');
+      expect(logger.audit.mock.calls[0][1]).toMatchObject({
+        type: 'support',
+        subType: 'user-search',
+        userId: 'user1',
+        userEmail: 'user.one@unit.test',
+        criteria: 'test',
+        pageNumber: 1,
+        numberOfPages: 3,
+      });
+    });
   });
 
   describe('and the request is a GET', () => {
@@ -95,6 +119,10 @@ describe('When processing a user search request', () => {
         method: 'GET',
         query: {
           criteria: 'test',
+        },
+        user: {
+          sub: 'user1',
+          email: 'user.one@unit.test',
         },
       };
     });
@@ -149,6 +177,22 @@ describe('When processing a user search request', () => {
       const actual = await search(req);
 
       expect(actual).toMatchObject({
+        numberOfPages: 3,
+      });
+    });
+
+    test('then it should audit that a search has occured', async () => {
+      await search(req);
+
+      expect(logger.audit.mock.calls).toHaveLength(1);
+      expect(logger.audit.mock.calls[0][0]).toBe('user.one@unit.test (id: user1) searched for users in support using criteria "test"');
+      expect(logger.audit.mock.calls[0][1]).toMatchObject({
+        type: 'support',
+        subType: 'user-search',
+        userId: 'user1',
+        userEmail: 'user.one@unit.test',
+        criteria: 'test',
+        pageNumber: 1,
         numberOfPages: 3,
       });
     });
