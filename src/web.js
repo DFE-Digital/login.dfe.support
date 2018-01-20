@@ -1,3 +1,5 @@
+const logger = require('./infrastructure/logger');
+const appInsights = require('applicationinsights');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -5,7 +7,6 @@ const session = require('express-session');
 const expressLayouts = require('express-ejs-layouts');
 const csurf = require('csurf');
 const morgan = require('morgan');
-const logger = require('./infrastructure/logger');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
@@ -16,6 +17,10 @@ const oidc = require('./infrastructure/oidc');
 const moment = require('moment');
 const setCorrelationId = require('express-mw-correlation-id');
 const registerRoutes = require('./routes');
+
+if (config.hostingEnvironment.applicationInsights) {
+  appInsights.setup(config.hostingEnvironment.applicationInsights).start();
+}
 
 const init = async () => {
   const csrf = csurf({
