@@ -3,6 +3,7 @@ const { promisify } = require('util');
 const rp = require('request-promise');
 const config = require('./../config');
 const uuid = require('uuid/v4');
+const logger = require('./../logger');
 
 const client = redis.createClient({
   url: config.cache.params.indexPointerConnectionString,
@@ -13,7 +14,11 @@ const setAsync = promisify(client.set).bind(client);
 const pageSize = 25;
 
 const getAzureSearchUri = (indexName, indexResource = '') => {
-  return `https://${config.cache.params.serviceName}.search.windows.net/indexes/${indexName}${indexResource}?api-version=2016-09-01`
+  let indexUriSegments = '';
+  if (indexName) {
+    indexUriSegments = `/${indexName}${indexResource}`;
+  }
+  return `https://${config.cache.params.serviceName}.search.windows.net/indexes${indexUriSegments}?api-version=2016-09-01`
 };
 
 
@@ -139,7 +144,36 @@ const updateActiveIndex = async (index) => {
 };
 
 const deleteUnusedIndexes = async () => {
-  return Promise.resolve(null);
+  const currentIndexName = await getAsync('CurrentIndex_Users');
+
+  // Delete any indexes already marked as unused
+  const unusedJson = await getAsync('UnusedIndexes_Users');
+  const unusedIndexes = unusedJson ? JSON.parse(unusedJson) : [];
+  for (let i = 0; i < unusedIndexes.length; i++) {
+    if (unusedIndexes[i] !== currentIndexName) {
+      await rp({
+        method: 'DELETE',
+        uri: getAzureSearchUri(unusedIndexes[i]),
+        headers: {
+          'api-key': config.cache.params.apiKey,
+        },
+        json: true,
+      });
+      logger.info(`Deleted index ${unusedIndexes[i]}`);
+    }
+  }
+
+  // Find any remaining indexes that appear to be unused
+  const indexesResponse = await rp({
+    method: 'GET',
+    uri: getAzureSearchUri(),
+    headers: {
+      'api-key': config.cache.params.apiKey,
+    },
+    json: true,
+  });
+  const indexesAppearingUnused = indexesResponse.value.map(x => x.name).filter(x => x !== currentIndexName);
+  await setAsync('UnusedIndexes_Users', JSON.stringify(indexesAppearingUnused));
 };
 
 module.exports = {
