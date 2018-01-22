@@ -68,6 +68,20 @@
             <% } %>
         </div>
     </div>
+    <div class="main-nav">
+        <nav>
+            <ul>
+                <li><a href="/my-profile">My Profile</a></li>
+                <li><a href="/reports">Reports</a></li>
+                <li><a href="/tokens">Tokens</a></li>
+                <%if(locals.area==='users') {%>
+                <li class="current">Users</li>
+                <%} else {%>
+                <li><a href="/users">Users</a></li>
+                <%}%>
+            </ul>
+        </nav>
+    </div>
 
 
     <main id="content" tabindex="-1">
@@ -92,6 +106,35 @@
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script src="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/javascript/app.min.js"></script>
+
+<style>
+    .main-nav {
+        border-bottom: solid 1px black;
+    }
+    .main-nav nav {
+        width:960px;
+        margin:0 auto;
+    }
+    .main-nav nav ul {
+        list-style: none;
+    }
+    .main-nav nav ul li {
+        display: inline-block;
+        margin-right: 20px;
+        padding-top: 5px;
+        padding-bottom: 1px;
+    }
+    .main-nav nav ul li a {
+        text-decoration: none;
+    }
+    .main-nav nav ul li.current {
+        font-weight: bold;
+        border-bottom: solid 4px #005ea5;
+    }
+    .main-nav nav ul li.current a {
+        color: black
+    }
+</style>
 
 </body>
 </html>

@@ -15,6 +15,7 @@ describe('when creating a new index', () => {
   let get;
   let set;
   let scan;
+  let del;
   let updateActiveIndex;
 
   beforeAll(() => {
@@ -24,12 +25,15 @@ describe('when creating a new index', () => {
 
     scan = jest.fn();
 
+    del = jest.fn();
+
     const redis = require('redis');
     redis.createClient = jest.fn().mockImplementation(() => {
       return {
         get,
         set,
         scan,
+        del,
       };
     });
 

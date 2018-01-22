@@ -9,10 +9,10 @@
 <table>
     <thead>
     <tr>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Organisation</th>
-        <th>Last Login</th>
+        <th><a href="?criteria=<%=criteria%>&page=<%=page%>&sort=name&sortdir=<%=sort.name.nextDirection%>">Name</a></th>
+        <th><a href="?criteria=<%=criteria%>&page=<%=page%>&sort=email&sortdir=<%=sort.email.nextDirection%>">Email</a></th>
+        <th><a href="?criteria=<%=criteria%>&page=<%=page%>&sort=organisation&sortdir=<%=sort.organisation.nextDirection%>">Organisation</a></th>
+        <th><a href="?criteria=<%=criteria%>&page=<%=page%>&sort=lastlogin&sortdir=<%=sort.lastLogin.nextDirection%>">Last Login</a></th>
         <th>Status</th>
     </tr>
     </thead>
@@ -65,5 +65,24 @@
     .pagination div {
         display: inline-block;
         padding: 7px;
+    }
+
+    i.sort {
+        border: solid black;
+        border-width: 0 3px 3px 0;
+        display: inline-block;
+        padding: 3px;
+
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+    }
+    i.sort-asc {
+        transform: rotate(-135deg);
+        -webkit-transform: rotate(-135deg);
+    }
+
+    i.sort-desc {
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
     }
 </style>

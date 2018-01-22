@@ -36,10 +36,11 @@ const user2 = JSON.stringify({
   },
 });
 
-describe('when searching for users', () => {
+describe('when searching for users in redis', () => {
   let get;
   let set;
   let scan;
+  let del;
   let search;
 
   beforeAll(() => {
@@ -49,12 +50,15 @@ describe('when searching for users', () => {
 
     scan = jest.fn();
 
+    del = jest.fn();
+
     const redis = require('redis');
     redis.createClient = jest.fn().mockImplementation(() => {
       return {
         get,
         set,
         scan,
+        del,
       };
     });
 
@@ -117,8 +121,36 @@ describe('when searching for users', () => {
     expect(get.mock.calls[2][0]).toBe('testindex-user-key-2');
   });
 
-  it('then it should return all users from scan with last login translated to a date', async () => {
+  it('then it should return all users from scan with last login translated to a date, ordered by name if no order specified', async () => {
     const actual = await search('test', 1);
+
+    expect(actual.users).toHaveLength(2);
+    expect(actual.users[0]).toMatchObject({
+      name: 'Brenda Breaker',
+      email: 'brenda@breakage.test',
+      organisation: {
+        name: 'Break Inc'
+      },
+      lastLogin: new Date(2018, 0, 11, 12, 15, 0),
+      status: {
+        description: 'Active'
+      },
+    });
+    expect(actual.users[1]).toMatchObject({
+      name: 'Timmy Tester',
+      email: 'timmy@tester.test',
+      organisation: {
+        name: 'Testco'
+      },
+      lastLogin: new Date(2018, 0, 11, 11, 30, 57),
+      status: {
+        description: 'Active'
+      },
+    });
+  });
+
+  it('then it should return all users from scan with last login translated to a date, ordered by specified field', async () => {
+    const actual = await search('test', 1, 'email', false);
 
     expect(actual.users).toHaveLength(2);
     expect(actual.users[0]).toMatchObject({

@@ -57,16 +57,15 @@ describe('When processing a user search request', () => {
       expect(actual).toMatchObject({
         users: usersSearchResult
       });
+      expect(users.search.mock.calls[0][0]).toBe('test*');
     });
 
-    test('then it should include a blank users array if no criteria provided', async () => {
+    test('then it should default search criteria to all if not supplied', async () => {
       req.body.criteria = '';
 
-      const actual = await search(req);
+      await search(req);
 
-      expect(actual).toMatchObject({
-        users: [],
-      });
+      expect(users.search.mock.calls[0][0]).toBe('*');
     });
 
     test('then it should include posted criteria', async () => {
@@ -109,6 +108,15 @@ describe('When processing a user search request', () => {
         numberOfPages: 3,
       });
     });
+
+    test('then it should default to sort by name if not specified', async () => {
+      const actual = await search(req);
+
+      expect(actual.sort.name.nextDirection).toBe('desc');
+      expect(actual.sort.name.applied).toBe(true);
+      expect(users.search.mock.calls[0][2]).toBe('name');
+      expect(users.search.mock.calls[0][3]).toBe(true);
+    });
   });
 
   describe('and the request is a GET', () => {
@@ -127,22 +135,21 @@ describe('When processing a user search request', () => {
       };
     });
 
-    test('then it should include the users from the adapter if criteria is supplied', async () => {
+    test('then it should include the users from the adapter using supplier criteria', async () => {
       const actual = await search(req);
 
       expect(actual).toMatchObject({
         users: usersSearchResult
       });
+      expect(users.search.mock.calls[0][0]).toBe('test*');
     });
 
-    test('then it should include a blank users array if no criteria provided', async () => {
-      req.query.criteria = '';
+    test('then it should default search criteria to all if not supplied', async () => {
+      req.query.criteria = undefined;
 
-      const actual = await search(req);
+      await search(req);
 
-      expect(actual).toMatchObject({
-        users: [],
-      });
+      expect(users.search.mock.calls[0][0]).toBe('*');
     });
 
     test('then it should include posted criteria', async () => {
@@ -195,6 +202,27 @@ describe('When processing a user search request', () => {
         pageNumber: 1,
         numberOfPages: 3,
       });
+    });
+
+    test('then it should default to sort by name if not specified', async () => {
+      const actual = await search(req);
+
+      expect(actual.sort.name.nextDirection).toBe('desc');
+      expect(actual.sort.name.applied).toBe(true);
+      expect(users.search.mock.calls[0][2]).toBe('name');
+      expect(users.search.mock.calls[0][3]).toBe(true);
+    });
+
+    test('then it should use sort order specified', async () => {
+      req.query.sort = 'email';
+      req.query.sortdir = 'desc';
+
+      const actual = await search(req);
+
+      expect(actual.sort.email.nextDirection).toBe('asc');
+      expect(actual.sort.email.applied).toBe(true);
+      expect(users.search.mock.calls[0][2]).toBe('email');
+      expect(users.search.mock.calls[0][3]).toBe(false);
     });
   });
 });
