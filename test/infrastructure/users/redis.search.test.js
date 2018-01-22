@@ -40,6 +40,7 @@ describe('when searching for users in redis', () => {
   let get;
   let set;
   let scan;
+  let del;
   let search;
 
   beforeAll(() => {
@@ -49,12 +50,15 @@ describe('when searching for users in redis', () => {
 
     scan = jest.fn();
 
+    del = jest.fn();
+
     const redis = require('redis');
     redis.createClient = jest.fn().mockImplementation(() => {
       return {
         get,
         set,
         scan,
+        del,
       };
     });
 

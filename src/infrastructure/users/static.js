@@ -53,9 +53,14 @@ const updateActiveIndex = async (index) => {
   return Promise.resolve(null);
 };
 
+const deleteUnusedIndexes = async () => {
+  return Promise.resolve(null);
+};
+
 module.exports = {
   search,
   createIndex,
   updateIndex,
   updateActiveIndex,
+  deleteUnusedIndexes,
 };
