@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/DFE-Digital/login.dfe.support#readme",
   "dependencies": {
+    "applicationinsights": "^1.0.1",
     "body-parser": "^1.18.1",
     "cookie-parser": "^1.4.3",
     "csurf": "^1.9.0",

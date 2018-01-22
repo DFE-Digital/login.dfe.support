@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const { isLoggedIn } = require('../../infrastructure/utils');
+const { isLoggedIn, setCurrentArea } = require('../../infrastructure/utils');
 const logger = require('../../infrastructure/logger');
 
 const getSearch = require('./getSearch');
@@ -13,6 +13,7 @@ const users = (csrf) => {
   logger.info('Mounting user routes');
 
   router.use(isLoggedIn);
+  router.use(setCurrentArea('users'));
 
   router.get('/', csrf, getSearch);
   router.post('/', csrf, postSearch);
