@@ -27,7 +27,7 @@ const redisData = [
   { key: 'ad21261b-ab85-4271-a6fd-c094fb7d5c29-user.three@unit.test', value: '{}' },
 ];
 
-describe('when searching for users in redis', () => {
+describe('When deleting unused indexes from Redis', () => {
   let get;
   let set;
   let scan;
@@ -117,5 +117,5 @@ describe('when searching for users in redis', () => {
       '4771d85e-f3ef-4e71-82ca-30f0663b10c9',
       'ad21261b-ab85-4271-a6fd-c094fb7d5c29',
     ]));
-  })
+  });
 });
