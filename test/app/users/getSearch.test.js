@@ -26,6 +26,9 @@ describe('When processing a get to search for users', () => {
       csrfToken: () => {
         return 'token';
       },
+      accepts: () => {
+        return ['text/html'];
+      },
     };
 
     res = {
