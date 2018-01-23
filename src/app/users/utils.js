@@ -1,5 +1,8 @@
 const users = require('./../../infrastructure/users');
 const logger = require('./../../infrastructure/logger');
+const { getUser } = require('./../../infrastructure/directories');
+const { getUserLoginAuditsSince } = require('./../../infrastructure/audit');
+const moment = require('moment');
 
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
@@ -56,6 +59,39 @@ const search = async (req) => {
   };
 };
 
+const getUserDetails = async (req) => {
+  const uid = req.params.uid;
+  const user = await getUser(uid);
+  const logins = (await getUserLoginAuditsSince(uid, moment().subtract(1, 'years').toDate())).map(x => {
+    x.timestamp = new Date(x.timestamp);
+    return x;
+  });
+  const successfulLogins = logins.filter(x => x.success).sort((x, y) => {
+    const xTime = x.timestamp.getTime();
+    const yTime = y.timestamp.getTime();
+    if (xTime > yTime) {
+      return -1;
+    }
+    if (xTime < yTime) {
+      return 1;
+    }
+    return 0;
+  });
+
+  return {
+    name: `${user.given_name} ${user.family_name}`,
+    email: user.email,
+    lastLogin: successfulLogins ? successfulLogins[0].timestamp : null,
+    status: {
+      description: 'Active',
+    },
+    loginsInPast12Months: {
+      successful: successfulLogins ? successfulLogins.length : 0,
+    },
+  };
+};
+
 module.exports = {
   search,
+  getUserDetails,
 };
