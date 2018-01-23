@@ -2,6 +2,7 @@ const redis = require('redis');
 const { promisify } = require('util');
 const config = require('./../config');
 const { chunk } = require('lodash');
+const moment = require('moment');
 
 const client = redis.createClient({
   url: config.audit.params.connectionString,
@@ -53,6 +54,28 @@ const getUserAudit = async (userId, pageNumber) => {
   };
 };
 
+const getUserLoginAuditsSince = async (userId, sinceDate) => {
+  const since = moment(sinceDate);
+  const loginAudits = [];
+
+  let pageNumber = 1;
+  let hasMorePages = true;
+  while (hasMorePages) {
+    const page = await getUserAudit(userId, pageNumber);
+    page.audits.forEach((audit) => {
+      if (audit.type === 'sign-in' && audit.userId === userId && moment(audit.timestamp).isAfter(since)) {
+        loginAudits.push(audit);
+      }
+    });
+
+    pageNumber++;
+    hasMorePages = pageNumber <= page.numberOfPages;
+  }
+
+  return loginAudits;
+};
+
 module.exports = {
   getUserAudit,
+  getUserLoginAuditsSince,
 };
