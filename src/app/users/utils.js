@@ -3,6 +3,7 @@ const logger = require('./../../infrastructure/logger');
 const { getUser } = require('./../../infrastructure/directories');
 const { getUserLoginAuditsSince } = require('./../../infrastructure/audit');
 const moment = require('moment');
+const { mapUserStatus } = require('./../../infrastructure/utils');
 
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
@@ -81,10 +82,8 @@ const getUserDetails = async (req) => {
   return {
     name: `${user.given_name} ${user.family_name}`,
     email: user.email,
-    lastLogin: successfulLogins ? successfulLogins[0].timestamp : null,
-    status: {
-      description: 'Active',
-    },
+    lastLogin: successfulLogins && successfulLogins.length > 0 ? successfulLogins[0].timestamp : null,
+    status: mapUserStatus(user.status),
     loginsInPast12Months: {
       successful: successfulLogins ? successfulLogins.length : 0,
     },
