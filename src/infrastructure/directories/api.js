@@ -30,7 +30,7 @@ const getUser = async (uid, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
-    const pageOfUsers = await rp({
+    const user = await rp({
       method: 'GET',
       uri: `${config.directories.service.url}/users/${uid}`,
       headers: {
@@ -40,7 +40,7 @@ const getUser = async (uid, correlationId) => {
       json: true,
     });
 
-    return pageOfUsers;
+    return user;
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
     if (status === 401) {
