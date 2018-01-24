@@ -80,6 +80,7 @@ const getUserDetails = async (req) => {
   });
 
   return {
+    id: uid,
     name: `${user.given_name} ${user.family_name}`,
     email: user.email,
     lastLogin: successfulLogins && successfulLogins.length > 0 ? successfulLogins[0].timestamp : null,
