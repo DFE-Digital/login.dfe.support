@@ -24,7 +24,7 @@ const getOrganisations = async (userId, correlationId) => {
       id: orgSvcMap.id,
       name: orgSvcMap.name,
       userType: orgSvcMap.role,
-      grantedAccessOn: orgSvcMap.requestDate,
+      grantedAccessOn: new Date(orgSvcMap.requestDate),
       lastLogin: null,
       approvers: orgSvcMap.approvers,
       token: null,
