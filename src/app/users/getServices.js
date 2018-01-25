@@ -2,6 +2,8 @@ const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
 const { getUserOrganisations } = require('./../../infrastructure/organisations');
 const { getUserDevices } = require('./../../infrastructure/directories');
+const { getClientIdForServiceId } = require('./../../infrastructure/serviceMapping');
+const { getUserLoginAuditsForService } = require('./../../infrastructure/audit');
 
 const getOrganisations = async (userId, correlationId) => {
   const orgServiceMapping = await getUserOrganisations(userId, correlationId);
@@ -33,8 +35,26 @@ const getOrganisations = async (userId, correlationId) => {
 
   return organisations;
 };
-const getLastLoginForService = async (userId, serviceId, correlationId) => {
-  return new Date();
+const getLastLoginForService = async (userId, serviceId) => {
+  const clientId = await getClientIdForServiceId(serviceId);
+  if (!clientId) {
+    return null;
+  }
+
+  let lastLogin = null;
+  let hasMorePages = true;
+  let pageNumber = 1;
+  while (hasMorePages && !lastLogin) {
+    const page = await getUserLoginAuditsForService(userId, clientId, pageNumber);
+    const successLogin = page.audits.find(x => x.success);
+    if (successLogin) {
+      lastLogin = new Date(successLogin.timestamp);
+    }
+
+    pageNumber++;
+    hasMorePages = pageNumber <= page.numberOfPages;
+  }
+  return lastLogin;
 };
 const getToken = async (userId, serviceId, correlationId) => {
   const tokens = await getUserDevices(userId, correlationId)
