@@ -4,6 +4,8 @@ const config = require('./../config');
 const { chunk } = require('lodash');
 const moment = require('moment');
 
+const pageSize = 25;
+
 const client = redis.createClient({
   url: config.audit.params.connectionString,
 });
@@ -25,7 +27,6 @@ const getPageOfAudits = async (pageNumber) => {
 };
 
 const getUserAudit = async (userId, pageNumber) => {
-  const pageSize = 25;
   const requiredRecords = (pageNumber + 1) * pageSize;
   const records = [];
 
@@ -75,7 +76,36 @@ const getUserLoginAuditsSince = async (userId, sinceDate) => {
   return loginAudits;
 };
 
+const getUserLoginAuditsForService = async (userId, clientId, pageNumber) => {
+  const requiredAudits = pageNumber * pageSize;
+  const loginAudits = [];
+
+  let p = 1;
+  let hasMorePages = true;
+  while (hasMorePages && loginAudits.length < requiredAudits) {
+    const pageOfAudits = await getUserAudit(userId, p);
+    pageOfAudits.audits.forEach((audit) => {
+      if (audit.type === 'sign-in' && audit.userId === userId && audit.clientId === clientId) {
+        loginAudits.push(audit);
+      }
+    });
+
+    p++;
+    hasMorePages = p <= pageOfAudits.numberOfPages;
+  }
+
+  const pages = chunk(loginAudits, pageSize);
+  const page = pageNumber < pages.length ? pages[pageNumber - 1] : [];
+  return {
+    audits: page,
+    numberOfPages: pages.length, // This will create a moving number of pages. Current use case will work, but may need re-thinking
+  };
+
+  return loginAudits;
+};
+
 module.exports = {
   getUserAudit,
   getUserLoginAuditsSince,
+  getUserLoginAuditsForService,
 };
