@@ -25,7 +25,18 @@ const getUser = async (uid, correlationId) => {
   };
 };
 
+const getUserDevices = async (uid, correlationId) => {
+  return [
+    {
+      "id": "6eebc499-e69e-4556-95e5-dc0300c12748",
+      "type": "digipass",
+      "serialNumber": "1234567890"
+    }
+  ];
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
+  getUserDevices,
 };
