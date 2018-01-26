@@ -1,88 +1,144 @@
-<div style="margin:20px 0;">
-    <form method="post">
-        <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-        <input name="criteria" id="criteria" placeholder="name, email or organisation" value="<%= criteria %>"
-               style="width:500px;"/>
-        <button type="submit">Search</button>
-    </form>
+<div class="row">
+    <div class="col-6">
+        <h1 class="heading-xlarge">Users</h1>
+    </div>
 </div>
-<table>
-    <thead>
-    <tr>
-        <th><a href="?criteria=<%=criteria%>&page=<%=page%>&sort=name&sortdir=<%=sort.name.nextDirection%>">Name</a></th>
-        <th><a href="?criteria=<%=criteria%>&page=<%=page%>&sort=email&sortdir=<%=sort.email.nextDirection%>">Email</a></th>
-        <th><a href="?criteria=<%=criteria%>&page=<%=page%>&sort=organisation&sortdir=<%=sort.organisation.nextDirection%>">Organisation</a></th>
-        <th><a href="?criteria=<%=criteria%>&page=<%=page%>&sort=lastlogin&sortdir=<%=sort.lastLogin.nextDirection%>">Last Login</a></th>
-        <th>Status</th>
-    </tr>
-    </thead>
-    <tbody>
-    <% if(locals.users.length === 0 && locals.criteria) { %>
-    <tr>
-        <td colspan="5">No Users found</td>
-    </tr>
-    <% } %>
 
-    <% for (let i = 0; i < locals.users.length; i++) { %>
-    <tr>
-        <td><%= users[i].name %></td>
-        <td><%= users[i].email %></td>
-        <% if(users[i].organisation) { %>
-        <td><%= users[i].organisation.name %></td>
-        <% }else { %>
-        <td>Unknown</td>
-        <% } %>
-        <% if(locals.users[i].lastLogin) { %>
-        <td><%= locals.moment(locals.users[i].lastLogin).fromNow() %></td>
-        <% }else { %>
-        <td>Never</td>
-        <% } %>
-        <td><%= users[i].status.description %></td>
-    </tr>
-    <% } %>
-    </tbody>
-</table>
+<%
+    const pages = locals.numberOfPages, page = locals.page
+    const usersOnPage = locals.users.length, usersAll = locals.totalNumberOfResults
+    const lowerEndUsers = page === pages ? usersAll - usersOnPage + 1 : usersOnPage * (page-1) + 1
+    const upperEndUsers = lowerEndUsers + usersOnPage - 1
+%>
 
-<% if(locals.numberOfPages > 1) { %>
-<div class="pagination">
-    <div class="page-first"><a href="?criteria=<%= criteria %>&page=1">&lt;&lt;</a></div>
-    <% for(let p = 1; p <= locals.numberOfPages; p++) { %>
-    <% if(p === locals.page) { %>
-    <div class="page-numbered page-current"><%= p %></div>
-    <% } else { %>
-    <div class="page-numbered"><a href="?criteria=<%= criteria %>&page=<%= p %>"><%= p %></a></div>
-    <% } %>
-    <% } %>
-    <div class="page-last"><a href="?criteria=<%= criteria %>&page=<%= numberOfPages %>">&gt;&gt;</a></div>
+<div class="row row-spacer">
+    <div class="col-6">
+        <form method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <div class="search-field">
+                <fieldset class="search-input">
+                    <label for="criteria" class="vh">Search by name, email or organisation</label>
+                    <input type="text" id="criteria" name="criteria" value="<%= criteria %>" class="form-control" placeholder="Search by name, email or organisation">
+                </fieldset>
+                <fieldset class="search-submit">
+                    <button type="submit" class="button">Search</button>
+                </fieldset>
+            </div>
+        </form>
+    </div>
+    <div class="col-6">
+
+    </div>
 </div>
-<% } %>
 
+<div class="row meta">
+    <div class="col-6">
+        <p>Showing <%= lowerEndUsers %> - <%= upperEndUsers %> of <b><%=locals.totalNumberOfResults%></b> users</p>
+    </div>
+    <div class="col-6">
+        <% if (locals.numberOfPages > 1) { %>
+        <ul class="pagination">
 
-<style>
-    .pagination {
-        margin-top:10px;
-    }
-    .pagination div {
-        display: inline-block;
-        padding: 7px;
-    }
+            <% if(locals.page > 1) { %>
+                <li><a href="?criteria=<%= criteria %>&page=<%= locals.page-1 %>">Previous</a></li>
+            <% } %>
 
-    i.sort {
-        border: solid black;
-        border-width: 0 3px 3px 0;
-        display: inline-block;
-        padding: 3px;
+            <% for (let p = 1; p <= locals.numberOfPages; p++) { %>
+                <% if(p === locals.page) { %>
+                    <li><span class="current"> <%= p %> </span></li>
+                <% } else { %>
+                    <li><a href="?criteria=<%= criteria %>&page=<%= p %>"><%= p %></a></li>
+                <% } %>
+            <% } %>
 
-        transform: rotate(45deg);
-        -webkit-transform: rotate(45deg);
-    }
-    i.sort-asc {
-        transform: rotate(-135deg);
-        -webkit-transform: rotate(-135deg);
-    }
+            <% if(locals.page !== locals.numberOfPages) { %>
+                <li><a href="?criteria=<%= criteria %>&page=<%= locals.page+1 %>">Next</a></li>
+            <% } %>
 
-    i.sort-desc {
-        transform: rotate(45deg);
-        -webkit-transform: rotate(45deg);
-    }
-</style>
+        </ul>
+        <% } %>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <table class="data">
+            <thead>
+                <tr class="sortable">
+                    <th scope="col" class="cwp-15">
+                        <a href="?criteria=<%=criteria%>&page=<%=page%>&sort=name&sortdir=<%=sort.name.nextDirection%>"
+                           class="<% if (sort.name.applied) { %>sorted dir-<%= (sort.name.nextDirection === 'desc') ? 'd' : 'a' %><% } %>"
+                        >Name</a></th>
+                    <th scope="col" class="cwp-35">
+                        <a href="?criteria=<%=criteria%>&page=<%=page%>&sort=email&sortdir=<%=sort.email.nextDirection%>"
+                           class="<% if (sort.email.applied) { %>sorted dir-<%= (sort.email.nextDirection === 'desc') ? 'd' : 'a' %><% } %>"
+                        >Email</a></th>
+                    <th scope="col" class="cwp-25">
+                        <a href="?criteria=<%=criteria%>&page=<%=page%>&sort=organisation&sortdir=<%=sort.organisation.nextDirection%>"
+                           class="<% if (sort.organisation.applied) { %>sorted dir-<%= (sort.organisation.nextDirection === 'desc') ? 'd' : 'a' %><% } %>"
+                        >Organisation</a></th>
+                    <th scope="col" class="cwp-15">
+                        <a href="?criteria=<%=criteria%>&page=<%=page%>&sort=lastlogin&sortdir=<%=sort.lastLogin.nextDirection%>"
+                           class="<% if (sort.lastLogin.applied) { %>sorted dir-<%= (sort.lastLogin.nextDirection === 'desc') ? 'd' : 'a' %><% } %>"
+                        >Last Login</a></th>
+                    <th scope="col" class="cwp-10">
+                        Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            <% if(locals.users.length === 0 && locals.criteria) { %>
+                <tr>
+                    <td colspan="5"><span class="empty-state">No users found</span></td>
+                </tr>
+            <% } %>
+            <% for (let i = 0; i < locals.users.length; i++) { %>
+                <tr>
+                    <td><%= users[i].name %></td>
+                    <td><span class="breakable"><%= users[i].email %></span></td>
+                    <td>
+                    <% if(users[i].organisation) { %>
+                        <%= users[i].organisation.name %>
+                    <% }else { %>
+                        Unknown
+                    <% } %>
+                    </td>
+                    <td>
+                    <% if(locals.users[i].lastLogin) { %>
+                        <%= locals.moment(locals.users[i].lastLogin).fromNow() %>
+                    <% } else { %>
+                        Never
+                    <% } %>
+                    </td>
+                    <td><%= users[i].status.description %></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row meta">
+    <div class="col-12">
+        <% if (locals.numberOfPages > 1) { %>
+        <ul class="pagination">
+
+            <% if(locals.page > 1) { %>
+            <li><a href="?criteria=<%= criteria %>&page=<%= locals.page-1 %>">Previous</a></li>
+            <% } %>
+
+            <% for (let p = 1; p <= locals.numberOfPages; p++) { %>
+            <% if(p === locals.page) { %>
+            <li><span class="current"> <%= p %> </span></li>
+            <% } else { %>
+            <li><a href="?criteria=<%= criteria %>&page=<%= p %>"><%= p %></a></li>
+            <% } %>
+            <% } %>
+
+            <% if(locals.page !== locals.numberOfPages) { %>
+            <li><a href="?criteria=<%= criteria %>&page=<%= locals.page+1 %>">Next</a></li>
+            <% } %>
+
+        </ul>
+        <% } %>
+    </div>
+</div>
