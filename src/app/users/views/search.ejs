@@ -93,7 +93,8 @@
             <% } %>
             <% for (let i = 0; i < locals.users.length; i++) { %>
                 <tr>
-                    <td><%= users[i].name %></td>
+                    <td><a href="/users/<%=users[i].id%>/"><%= users[i].name %></a></td>
+
                     <td><span class="breakable"><%= users[i].email %></span></td>
                     <td>
                     <% if(users[i].organisation) { %>
