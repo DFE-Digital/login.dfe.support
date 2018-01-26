@@ -4,6 +4,7 @@ const directories = require('./../../infrastructure/directories');
 const organisations = require('./../../infrastructure/organisations');
 const audit = require('./../../infrastructure/audit');
 const uuid = require('uuid/v4');
+const { mapUserStatus } = require('./../../infrastructure/utils');
 
 const buildUser = async (user, correlationId) => {
   // Update with orgs
@@ -27,10 +28,8 @@ const buildUser = async (user, correlationId) => {
     email: user.email,
     organisation: orgServiceMapping && orgServiceMapping.length > 0 ? orgServiceMapping[0].organisation : null,
     lastLogin: successfulLoginAudit ? new Date(successfulLoginAudit.timestamp).getTime() : null,
-    status: {
-      description: 'Active'
-    }
-  }
+    status: mapUserStatus(user.status),
+  };
 };
 
 const syncUsersView = async () => {

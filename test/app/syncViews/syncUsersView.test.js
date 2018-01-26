@@ -240,6 +240,7 @@ describe('When syncing users materialised view', function () {
       },
       lastLogin: 1508848551633,
       status: {
+        id: 1,
         description: 'Active',
       },
     });
@@ -253,6 +254,7 @@ describe('When syncing users materialised view', function () {
       },
       lastLogin: 1508848551633,
       status: {
+        id: 1,
         description: 'Active',
       },
     });
