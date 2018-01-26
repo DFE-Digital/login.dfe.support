@@ -1,3 +1,4 @@
+jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
 jest.mock('./../../../src/infrastructure/users', () => {
   return {
     search: jest.fn().mockReturnValue([]),

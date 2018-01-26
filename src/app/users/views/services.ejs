@@ -1,0 +1,38 @@
+<%- include('summaryPartial', {area: 'services', user: locals.user}); %>
+
+<%for(let o = 0; o < locals.organisations.length; o++) {%>
+<%const org = locals.organisations[o];%>
+<h3 class="heading-small"><%=org.name%></h3>
+<table>
+    <thead>
+    <tr>
+        <th>Service</th>
+        <th>User type</th>
+        <th>Activated</th>
+        <th>Last active</th>
+        <th>Approvers</th>
+        <th>Token</th>
+    </tr>
+    </thead>
+    <tbody>
+    <%for(let s = 0; s < org.services.length; s++) {%>
+    <%const service = org.services[s];%>
+    <tr>
+        <td><%=service.name%></td>
+        <td><%=service.userType.name%></td>
+        <td><%=locals.moment(service.grantedAccessOn).format('DD/MMM/YYYY')%></td>
+        <td><%=service.lastLogin ? locals.moment(service.lastLogin).format('DD/MMM/YYYY HH:mm:ss') : 'Never'%></td>
+        <td>
+            <%for(let a = 0; a < service.approvers.length; a++) {%>
+            <%if(a>0){%>,<%}%>
+            <%=service.approvers[a]%>
+            <%}%>
+        </td>
+        <td>
+            <%=service.token ? service.token.serialNumber : ''%>
+        </td>
+    </tr>
+    <%}%>
+    </tbody>
+</table>
+<%}%>
