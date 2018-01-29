@@ -42,7 +42,7 @@ const init = async () => {
   Object.assign(app.locals, {
     moment,
     app: {
-      title: 'Login.Dfe',
+      title: 'DfE Sign-in Support Console',
     },
   });
 

@@ -9,6 +9,7 @@ const action = async (req, res) => {
     criteria: result.criteria,
     page: result.page,
     numberOfPages: result.numberOfPages,
+    totalNumberOfResults: result.totalNumberOfResults,
     users: result.users,
     sort: result.sort,
   });

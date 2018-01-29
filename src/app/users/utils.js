@@ -38,6 +38,7 @@ const search = async (req) => {
     criteria,
     page,
     numberOfPages: results.numberOfPages,
+    totalNumberOfResults: results.totalNumberOfResults,
     users: results.users,
     sort: {
       name: {
