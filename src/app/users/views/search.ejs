@@ -7,8 +7,12 @@
 <%
     const pages = locals.numberOfPages, page = locals.page
     const usersOnPage = locals.users.length, usersAll = locals.totalNumberOfResults
-    const lowerEndUsers = page === pages ? usersAll - usersOnPage + 1 : usersOnPage * (page-1) + 1
+    let lowerEndUsers = page === pages ? usersAll - usersOnPage + 1 : usersOnPage * (page-1) + 1
     const upperEndUsers = lowerEndUsers + usersOnPage - 1
+
+    if (locals.totalNumberOfResults === 0) {
+        lowerEndUsers = 0;
+    }
 %>
 
 <div class="row row-spacer">
