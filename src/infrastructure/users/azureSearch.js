@@ -75,6 +75,7 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
         }
       }),
       numberOfPages,
+      totalNumberOfResults,
     };
   } catch (e) {
     throw e;
