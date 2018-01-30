@@ -27,11 +27,10 @@ const getPageOfAudits = async (pageNumber) => {
 };
 
 const getUserAudit = async (userId, pageNumber) => {
-  const requiredRecords = (pageNumber + 1) * pageSize;
   const records = [];
 
   let redisPageNumber = 1;
-  while (records.length < requiredRecords) {
+  while (true) {
     const redisPage = await getPageOfAudits(redisPageNumber);
     if (!redisPage || redisPage.length === 0) {
       break; // Run out of records in redis
@@ -48,10 +47,11 @@ const getUserAudit = async (userId, pageNumber) => {
   }
 
   const pages = chunk(records, pageSize);
-  const page = pageNumber < pages.length ? pages[pageNumber - 1] : [];
+  const page = pageNumber <= pages.length ? pages[pageNumber - 1] : [];
   return {
     audits: page,
-    numberOfPages: pages.length, // This will create a moving number of pages. Current use case will work, but may need re-thinking
+    numberOfPages: pages.length,
+    numberOfRecords: records.length,
   };
 };
 

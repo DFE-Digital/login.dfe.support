@@ -22,7 +22,12 @@ const describeAuditEvent = (type, subType) => {
 
 const getAudit = async (req, res) => {
   const user = await getUserDetails(req);
-  const pageOfAudits = await getUserAudit(user.id, 1);
+
+  const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
+  if (isNaN(pageNumber)) {
+    return res.status(400).send();
+  }
+  const pageOfAudits = await getUserAudit(user.id, pageNumber);
 
   const audits = await Promise.all(pageOfAudits.audits.map(async (audit) => {
     let service = null;
@@ -49,6 +54,8 @@ const getAudit = async (req, res) => {
     user,
     audits: audits,
     numberOfPages: pageOfAudits.numberOfPages,
+    page: pageNumber,
+    totalNumberOfResults: pageOfAudits.numberOfRecords,
   });
 };
 
