@@ -22,13 +22,17 @@ describe('when getting users audit details', () => {
       csrfToken: () => 'token',
       accepts: () => ['text/html'],
       query: {
-        page: 1,
+        page: 3,
       },
     };
 
     res = {
       render: jest.fn(),
+      status: jest.fn(),
+      send: jest.fn(),
     };
+    res.render.mockReturnValue(res);
+    res.status.mockReturnValue(res);
 
     getUserDetails.mockReset();
     getUserDetails.mockReturnValue({
@@ -74,6 +78,7 @@ describe('when getting users audit details', () => {
         },
       ],
       numberOfPages: 3,
+      numberOfRecords: 56,
     });
 
     getServiceIdForClientId.mockReset();
@@ -188,6 +193,22 @@ describe('when getting users audit details', () => {
     });
   });
 
+  it('then it should include page number in model', async () => {
+    await getAudit(req, res);
+
+    expect(sendResult.mock.calls[0][3]).toMatchObject({
+      page: 3,
+    });
+  });
+
+  it('then it should include total number of records in model', async () => {
+    await getAudit(req, res);
+
+    expect(sendResult.mock.calls[0][3]).toMatchObject({
+      totalNumberOfResults: 56,
+    });
+  });
+
   it('then it should get user details', async () => {
     await getAudit(req, res);
 
@@ -196,11 +217,31 @@ describe('when getting users audit details', () => {
   });
 
   it('then it should get page of audits using page 1 if page not specified', async () => {
+    req.query.page = undefined;
+
     await getAudit(req, res);
 
     expect(getUserAudit.mock.calls).toHaveLength(1);
     expect(getUserAudit.mock.calls[0][0]).toBe('user1');
     expect(getUserAudit.mock.calls[0][1]).toBe(1);
+  });
+
+  it('then it should get page of audits using page specified', async () => {
+    await getAudit(req, res);
+
+    expect(getUserAudit.mock.calls).toHaveLength(1);
+    expect(getUserAudit.mock.calls[0][0]).toBe('user1');
+    expect(getUserAudit.mock.calls[0][1]).toBe(3);
+  });
+
+  it('then it should return 400 if specified page is not numeric', async () => {
+    req.query.page = 'not-a-number';
+
+    await getAudit(req, res);
+
+    expect(res.status.mock.calls).toHaveLength(1);
+    expect(res.status.mock.calls[0][0]).toBe(400);
+    expect(res.send.mock.calls).toHaveLength(1);
   });
 
   it('then it should get service for each audit that has client', async () => {
