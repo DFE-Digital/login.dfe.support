@@ -32,6 +32,7 @@
     "express-session": "^1.15.6",
     "helmet": "^3.9.0",
     "lodash": "^4.17.4",
+    "login.dfe.healthcheck": "git+https://github.com/DFE-Digital/login.dfe.healthcheck.git#v1.1",
     "login.dfe.jwt-strategies": "^1.0.4",
     "login.dfe.sanitization": "git+https://github.com/DFE-Digital/login.dfe.sanitization.git#v1.0",
     "moment": "^2.20.1",
