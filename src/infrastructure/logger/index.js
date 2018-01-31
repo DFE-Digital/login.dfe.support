@@ -16,7 +16,12 @@ const loggerConfig = {
     debug: 5,
     silly: 6,
   },
-  colors: (config && config.loggerSettings && config.loggerSettings.colors) ? config.loggerSettings.colors : null,
+  colors: {
+    info: 'yellow',
+    ok: 'green',
+    error: 'red',
+    audit: 'magenta',
+  },
   transports: [],
 };
 
