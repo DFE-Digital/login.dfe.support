@@ -11,6 +11,7 @@ const getUserAudit = async (userId, pageNumber) => {
       timestamp: "2017-10-24T12:35:51.633Z"
     }],
     numberOfPages: 1,
+    numberOfRecords: 1,
   });
 };
 

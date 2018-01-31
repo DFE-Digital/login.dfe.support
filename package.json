@@ -56,7 +56,7 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "collectCoverage": false,
+    "collectCoverage": true,
     "clearMocks": true
   }
 }
