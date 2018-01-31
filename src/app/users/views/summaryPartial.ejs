@@ -1,75 +1,55 @@
-<header>
-    <h1 class="heading-xlarge"><%=user.name%></h1>
-    <div class="user-summary-email"><%=user.email%></div>
 
-    <div class="user-summary-detail">
-        <span class="label">Last login:</span>
-        <span><%=locals.user.lastLogin ? locals.moment(locals.user.lastLogin).format('DD/MMM/YYYY HH:mm:ss') : 'Never'%></span>
+<div class="row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            <%=user.name%>
+            <small><%=user.email%></small>
+        </h1>
+        <dl class="inline condensed">
+            <dt class="label">Last login:</dt>
+            <dd><%=locals.user.lastLogin ? locals.moment(locals.user.lastLogin).format('DD/MMM/YYYY HH:mm:ss') : 'Never'%></dd>
+            <dt class="label">Account status:</dt>
+            <dd><%=user.status.description%></dd>
+            <dt class="label">Successful logins in past 12 months:</dt>
+            <dd><%=user.loginsInPast12Months.successful%></dd>
+        </dl>
     </div>
-    <div class="user-summary-detail">
-        <span class="label">Account status:</span>
-        <span><%=user.status.description%></span>
+    <div class="col-4">
+        <aside>
+            <h2 class="heading-medium">Actions</h2>
+            <ul class="list">
+                <li><a href="#">Edit user's details</a> </li>
+            </ul>
+        </aside>
     </div>
-    <div class="user-summary-detail">
-        <span class="label">Successful logins in past 12 months:</span>
-        <span><%=user.loginsInPast12Months.successful%></span>
-    </div>
-</header>
+</div>
 
+<nav>
+    <ul class="tabs" role="tablist">
 
-<ul class="user-summary-tabs">
-    <%if(locals.area === 'services') {%>
-    <li class="tab tab-selected">Services</li>
-    <%} else {%>
-    <li class="tab"><a href="services">Services</a></li>
-    <%}%>
+        <%if(locals.area === 'services') {%>
+            <li class="active">Services</li>
+        <%} else {%>
+            <li><a href="services" role="tab">Services</a></li>
+        <%}%>
 
-    <%if(locals.area === 'organisations') {%>
-    <li class="tab tab-selected">Organisations</li>
-    <%} else {%>
-    <li class="tab"><a href="organisations">Organisations</a></li>
-    <%}%>
+        <%if(locals.area === 'organisations') {%>
+            <li class="active">Organisations</li>
+        <%} else {%>
+            <li><a href="organisations" role="tab">Organisations</a></li>
+        <%}%>
 
-    <%if(locals.area === 'changehistory') {%>
-    <li class="tab tab-selected">Change History</li>
-    <%} else {%>
-    <li class="tab"><a href="changehistory">Change History</a></li>
-    <%}%>
+        <%if(locals.area === 'changehistory') {%>
+            <li class="active">Change History</li>
+        <%} else {%>
+            <li><a href="changehistory" role="tab">Change History</a></li>
+        <%}%>
 
-    <%if(locals.area === 'audit') {%>
-    <li class="tab tab-selected">Audit</li>
-    <%} else {%>
-    <li class="tab"><a href="audit">Audit</a></li>
-    <%}%>
-</ul>
+        <%if(locals.area === 'audit') {%>
+            <li class="active">Audit</li>
+        <%} else {%>
+            <li><a href="audit" role="tab">Audit</a></li>
+        <%}%>
 
-
-<style>
-    .user-summary-email {
-        margin-top: -25px;
-        margin-bottom: 30px;
-    }
-
-    .user-summary-detail {
-        font-size: 16px;
-        color: #6F777B;
-    }
-    .user-summary-detail > .label {
-        font-weight: bold;
-    }
-
-    ul.user-summary-tabs {
-        list-style: none;
-        margin-top: 30px;
-    }
-    ul.user-summary-tabs > li.tab {
-        display: inline-block;
-        border-bottom: #6F777B solid 1px;
-        margin: 0;
-        padding: 10px 30px;
-    }
-    ul.user-summary-tabs > li.tab-selected {
-        border: #6F777B solid 1px;
-        border-bottom: none;
-    }
-</style>
+    </ul>
+</nav>
