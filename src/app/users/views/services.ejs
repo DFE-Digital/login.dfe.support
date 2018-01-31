@@ -1,18 +1,19 @@
 <%- include('summaryPartial', {area: 'services', user: locals.user}); %>
 
-<%for(let o = 0; o < locals.organisations.length; o++) {%>
-<%const org = locals.organisations[o];%>
-<h3 class="heading-small"><%=org.name%></h3>
-<table>
+<% for (let o = 0; o < locals.organisations.length; o++) { %>
+<% const org = locals.organisations[o];%>
+
+<h3 class="heading-small spacer-heading"><%=org.name%> <%=org.urn%></h3>
+<table class="data no-borders">
     <thead>
-    <tr>
-        <th>Service</th>
-        <th>User type</th>
-        <th>Activated</th>
-        <th>Last active</th>
-        <th>Approvers</th>
-        <th>Token</th>
-    </tr>
+        <tr>
+            <th scope="col" class="cwp-30">Service</th>
+            <th scope="col" class="cwp-10">User type</th>
+            <th scope="col" class="cwp-10">Activated</th>
+            <th scope="col" class="cwp-10">Last active</th>
+            <th scope="col" class="cwp-30">Approvers</th>
+            <th scope="col" class="cwp-10">Token</th>
+        </tr>
     </thead>
     <tbody>
     <%for(let s = 0; s < org.services.length; s++) {%>
@@ -25,7 +26,7 @@
         <td>
             <%for(let a = 0; a < service.approvers.length; a++) {%>
             <%if(a>0){%>,<%}%>
-            <%=service.approvers[a]%>
+                <%=service.approvers[a]%>
             <%}%>
         </td>
         <td>
