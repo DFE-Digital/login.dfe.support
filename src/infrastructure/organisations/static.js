@@ -19,7 +19,15 @@ const getUserOrganisations = async (userId) => {
     }
   ]);
 };
+const getServiceById = async (serviceId, correlationId) => {
+  return Promise.resolve({
+    "id": "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+    "name": "Some service",
+    "description": "Some service that does some stuff",
+  });
+};
 
 module.exports = {
   getUserOrganisations,
+  getServiceById,
 };

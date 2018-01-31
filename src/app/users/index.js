@@ -7,6 +7,7 @@ const logger = require('../../infrastructure/logger');
 const getSearch = require('./getSearch');
 const postSearch = require('./postSearch');
 const getServices = require('./getServices');
+const getAudit = require('./getAudit');
 
 const router = express.Router({ mergeParams: true });
 
@@ -23,6 +24,7 @@ const users = (csrf) => {
     res.redirect(`/users/${req.params.uid}/services`);
   });
   router.get('/:uid/services', csrf, getServices);
+  router.get('/:uid/audit', csrf, getAudit);
 
   return router;
 };
