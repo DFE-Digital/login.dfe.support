@@ -43,6 +43,25 @@ const createIndex = async (indexName, fields) => {
   }
 };
 
+const updateIndex = async (users, index) => {
+  try {
+    await rp({
+      method: 'POST',
+      uri: getAzureSearchUri(index, '/docs/index'),
+      headers: {
+        'content-type': 'application/json',
+        'api-key': config.cache.params.apiKey,
+      },
+      body: {
+        value: users
+      },
+      json: true,
+    });
+  } catch (e) {
+    throw e;
+  }
+};
+
 module.exports = {
   createIndex,
   updateIndex,

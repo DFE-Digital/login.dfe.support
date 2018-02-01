@@ -2,10 +2,8 @@
 
 const redis = require('redis');
 const { promisify } = require('util');
-const rp = require('request-promise');
 const config = require('./../config');
 const uuid = require('uuid/v4');
-const logger = require('./../logger');
 
 const client = redis.createClient({
   url: config.cache.params.indexPointerConnectionString,
@@ -28,6 +26,25 @@ const createIndex = async () => {
   ];
   return await azureSearch.createIndex(`userdevices-${uuid()}`, fields);
 
+};
+
+const updateIndex = async (userDevices, index) => {
+
+  const userDeviceMap = userDevices.map((userDevice) => {
+      return {
+        '@search.action': 'upload',
+        id: userDevice.id,
+        deviceId: userDevice.device.id,
+        deviceStatus: userDevice.device.status,
+        serialNumber: userDevice.device.serialNumber,
+        name: userDevice.name,
+        email: userDevice.email,
+        organisationName: userDevice.organisation ? userDevice.organisation.name : '',
+        lastLogin: userDevice.lastLogin,
+      };
+    });
+
+  return await azureSearch.updateIndex(userDeviceMap, index)
 };
 
 const updateActiveIndex = async (index) => {
