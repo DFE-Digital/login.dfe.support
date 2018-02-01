@@ -56,6 +56,11 @@ describe('When deleting unused indexes from Azure Search', () => {
               "@odata.etag": "\"0x8D561869625D56C\"",
               "name": "users-4771d85e-f3ef-4e71-82ca-30f0663b10c9",
               /*other properties omitted*/
+            },
+            {
+              "@odata.etag": "\"0x8D561869625D56C\"",
+              "name": "userDevices-24b1f0da-7f82-48b0-9106-720135f9b051",
+              /*other properties omitted*/
             }
           ]
         }
