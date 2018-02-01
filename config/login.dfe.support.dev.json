@@ -6,13 +6,7 @@
       "port": 6379,
       "auth": ""
     },
-    "logLevel": "debug",
-    "colors": {
-      "info": "yellow",
-      "ok": "green",
-      "error": "red",
-      "audit": "magenta"
-    }
+    "logLevel": "debug"
   },
   "hostingEnvironment": {
     "useDevViews": true,
