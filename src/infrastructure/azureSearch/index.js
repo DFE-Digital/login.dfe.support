@@ -1,17 +1,7 @@
 'use strict';
 
-const redis = require('redis');
-const { promisify } = require('util');
 const rp = require('request-promise');
 const config = require('./../config');
-const uuid = require('uuid/v4');
-const logger = require('./../logger');
-
-const client = redis.createClient({
-  url: config.cache.params.indexPointerConnectionString,
-});
-const getAsync = promisify(client.get).bind(client);
-const setAsync = promisify(client.set).bind(client);
 
 const getAzureSearchUri = (indexName, indexResource = '') => {
   let indexUriSegments = '';
@@ -20,7 +10,6 @@ const getAzureSearchUri = (indexName, indexResource = '') => {
   }
   return `https://${config.cache.params.serviceName}.search.windows.net/indexes${indexUriSegments}?api-version=2016-09-01`
 };
-
 
 const createIndex = async (indexName, fields) => {
   try {
@@ -62,8 +51,36 @@ const updateIndex = async (users, index) => {
   }
 };
 
+const deleteUnusedIndexes = async (unusedIndexes, currentIndexName) => {
+  for (let i = 0; i < unusedIndexes.length; i++) {
+    if (unusedIndexes[i] !== currentIndexName) {
+      await rp({
+        method: 'DELETE',
+        uri: getAzureSearchUri(unusedIndexes[i]),
+        headers: {
+          'api-key': config.cache.params.apiKey,
+        },
+        json: true,
+      });
+    }
+  }
+};
+
+const getIndexes = async () => {
+  return await rp({
+    method: 'GET',
+    uri: getAzureSearchUri(),
+    headers: {
+      'api-key': config.cache.params.apiKey,
+    },
+    json: true,
+  });
+}
+
 module.exports = {
   createIndex,
   updateIndex,
+  deleteUnusedIndexes,
+  getIndexes,
 };
 
