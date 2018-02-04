@@ -4,6 +4,7 @@ const redis = require('redis');
 const { promisify } = require('util');
 const config = require('./../config');
 const uuid = require('uuid/v4');
+const azureSearch = require('./../azureSearch');
 
 const client = redis.createClient({
   url: config.cache.params.indexPointerConnectionString,
@@ -12,7 +13,7 @@ const client = redis.createClient({
 const getAsync = promisify(client.get).bind(client);
 const setAsync = promisify(client.set).bind(client);
 
-const azureSearch = require('./../azureSearch');
+const pageSize = 25;
 
 const createIndex = async () => {
   const fields = [
@@ -66,10 +67,66 @@ const deleteUnusedIndexes = async () => {
   await setAsync('UnusedIndexes_UserDevices', JSON.stringify(indexesAppearingUnused));
 };
 
+
+const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => {
+  const currentIndexName = await getAsync('CurrentIndex_UserDevices');
+
+  try {
+    const skip = (pageNumber - 1) * pageSize;
+    let orderBy;
+    switch (sortBy) {
+      case 'serialNumber':
+        orderBy = sortAsc ? 'serialNumber' : 'serialNumber desc';
+        break;
+      case 'organisation':
+        orderBy = sortAsc ? 'organisationName' : 'organisationName desc';
+        break;
+      case 'lastlogin':
+        orderBy = sortAsc ? 'lastLogin desc' : 'lastLogin';
+        break;
+      default:
+        orderBy = sortAsc ? 'serialNumber' : 'serialNumber desc';
+        break;
+    }
+
+    const response = await azureSearch.search(currentIndexName, criteria, skip, pageSize, orderBy);
+
+    let numberOfPages = 1;
+    const totalNumberOfResults = parseInt(response['@odata.count']);
+    if (!isNaN(totalNumberOfResults)) {
+      numberOfPages = Math.ceil(totalNumberOfResults / pageSize);
+    }
+
+    return {
+      users: response.value.map((user) => {
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          organisation: user.organisationName ? {
+            name: user.organisationName
+          } : null,
+          lastLogin: user.lastLogin ? new Date(user.lastLogin) : null,
+          device: {
+            id: user.deviceId,
+            status: user.deviceStatus,
+            serialNumber: user.serialNumber,
+          }
+        }
+      }),
+      numberOfPages,
+      totalNumberOfResults,
+    };
+  } catch (e) {
+    throw e;
+  }
+};
+
 module.exports = {
   createIndex,
   updateIndex,
   updateActiveIndex,
   deleteUnusedIndexes,
+  search,
 };
 
