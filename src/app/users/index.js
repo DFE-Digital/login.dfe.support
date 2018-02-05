@@ -9,6 +9,7 @@ const postSearch = require('./postSearch');
 const getServices = require('./getServices');
 const getAudit = require('./getAudit');
 const getEditProfile = require('./getEditProfile');
+const postEditProfile = require('./postEditProfile');
 
 const router = express.Router({ mergeParams: true });
 
@@ -28,6 +29,7 @@ const users = (csrf) => {
   router.get('/:uid/audit', csrf, getAudit);
 
   router.get('/:uid/edit-profile', csrf, getEditProfile);
+  router.post('/:uid/edit-profile', csrf, postEditProfile);
 
   return router;
 };
