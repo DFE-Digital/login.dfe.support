@@ -1,6 +1,7 @@
 const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
 const { updateUser } = require('./../../infrastructure/directories');
+const { getById, updateIndex } = require('./../../infrastructure/users');
 
 const validate = (req) => {
   const validationMessages = {};
@@ -22,6 +23,15 @@ const validate = (req) => {
   };
 };
 
+const updateUserIndex = async (uid, firstName, lastName) => {
+  const user = await getById(uid);
+  user.name = `${firstName} ${lastName}`;
+  if (user.lastLogin) {
+    user.lastLogin = user.lastLogin.getTime();
+  }
+  await updateIndex([user]);
+};
+
 const postEditProfile = async (req, res) => {
   const validationResult = validate(req);
   if (!validationResult.isValid) {
@@ -36,6 +46,7 @@ const postEditProfile = async (req, res) => {
 
   const uid = req.params.uid;
   await updateUser(uid, req.body.firstName, req.body.lastName, req.id);
+  await updateUserIndex(uid, req.body.firstName, req.body.lastName);
   return res.redirect('services');
 };
 
