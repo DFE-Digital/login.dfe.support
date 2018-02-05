@@ -108,8 +108,8 @@ describe('when searching for a user in azure search', () => {
     expect(actual).not.toBeNull();
     expect(actual.numberOfPages).toBe(2);
     expect(actual.users).not.toBeNull();
-    expect(actual.users).toHaveLength(1);
-    expect(actual.users[0]).toMatchObject({
+    expect(actual.userDevices).toHaveLength(1);
+    expect(actual.userDevices[0]).toMatchObject({
       id: '34080a9c-fd79-45a6-a092-4756264d5c85',
       name: 'User One',
       email: 'user.one@unit.test',
