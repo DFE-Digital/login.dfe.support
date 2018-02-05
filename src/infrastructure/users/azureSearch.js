@@ -88,7 +88,7 @@ const getById = async (userId) => {
   try {
     const response = await rp({
       method: 'GET',
-      uri: `${getAzureSearchUri(currentIndexName, '/docs')}&filter=id+eq+'${userId}'`,
+      uri: `${getAzureSearchUri(currentIndexName, '/docs')}&$filter=id+eq+'${userId}'`,
       headers: {
         'content-type': 'application/json',
         'api-key': config.cache.params.apiKey,
