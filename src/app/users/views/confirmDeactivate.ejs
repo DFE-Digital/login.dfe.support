@@ -1,0 +1,30 @@
+<div class="row">
+    <div class="col-12">
+        <h1 class="heading-xlarge">
+            Confirm user deactivation
+        </h1>
+    </div>
+    <div class="col-12">
+        <form method="post" id="form-deactivate">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <fieldset>
+                <legend>Please confirm you would like to deactivate the user.</legend>
+                <div class="form-group <%= (locals.validationMessages.reason !== undefined) ? 'form-group-error' : '' %>">
+                    <label class="form-label" for="reason">Reason for deactivation of user (optional)</span> </label>
+                    <% if (locals.validationMessages.reason !== undefined) { %>
+                    <p class="error-message" id="validation-reason"><%= locals.validationMessages.reason %></p>
+                    <% } %>
+                    <textarea class="form-control full-width" id="reason" name="reason"
+                            <% if (locals.validationMessages.reason !== undefined) { %>
+                           aria-invalid="true" aria-describedby="validation-reason"
+                            <% } %>
+                           value="<%= locals.reason %>"></textarea>
+                </div>
+            </fieldset>
+            <div class="form-submit submit-buttons">
+                <button type="submit" class="button">Deactivate</button>
+                <a href="edit-profile" name="cancel" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
