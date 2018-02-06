@@ -38,7 +38,7 @@ const getUserAudit = async (userId, pageNumber) => {
 
     for (let i = 0; i < redisPage.length; i++) {
       const record = redisPage[i];
-      if (record.userId && record.userId === userId) {
+      if ((record.userId && record.userId === userId) || (record.editedUser && record.editedUser === userId)) {
         records.push(record);
       }
     }
@@ -109,9 +109,9 @@ const getUserChangeHistory = async (userId, pageNumber) => {
   let p = 1;
   let hasMorePages = true;
   while (hasMorePages && audits.length < requiredAudits) {
-    const pageOfAudits = await getPageOfAudits(p);
-    pageOfAudits.forEach((audit) => {
-      if (audit.type === 'support' && audit.subType === 'user-edit' && audit.editedUser === userId) {
+    const pageOfAudits = await getUserAudit(p);
+    pageOfAudits.audits.forEach((audit) => {
+      if (audit.type === 'support' && audit.subType === 'user-edit') {
         audits.push(audit);
       }
     });
