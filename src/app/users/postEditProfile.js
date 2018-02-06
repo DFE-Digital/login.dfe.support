@@ -1,3 +1,4 @@
+const logger = require('./../../infrastructure/logger');
 const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
 const { updateUser } = require('./../../infrastructure/directories');
@@ -32,10 +33,39 @@ const updateUserIndex = async (uid, firstName, lastName) => {
   await updateIndex([user]);
 };
 
+const auditEdit = (req, user) => {
+  const editedFields = [];
+
+  if (req.body.firstName !== user.firstName) {
+    editedFields.push({
+      name: 'given_name',
+      oldValue: user.firstName,
+      newValue: req.body.firstName,
+    });
+  }
+
+  if (req.body.lastName !== user.lastName) {
+    editedFields.push({
+      name: 'family_name',
+      oldValue: user.lastName,
+      newValue: req.body.lastName,
+    });
+  }
+
+  logger.audit(`${req.user.email} (id: ${req.user.sub}) updated user ${user.email} (id: ${user.id})`, {
+    type: 'support',
+    subType: 'user-edit',
+    userId: req.user.sub,
+    userEmail: req.user.email,
+    editedUser: user.id,
+    editedFields,
+  });
+};
+
 const postEditProfile = async (req, res) => {
+  const user = await getUserDetails(req);
   const validationResult = validate(req);
   if (!validationResult.isValid) {
-    const user = await getUserDetails(req);
     sendResult(req, res, 'users/views/editProfile', {
       csrfToken: req.csrfToken(),
       user,
@@ -47,6 +77,9 @@ const postEditProfile = async (req, res) => {
   const uid = req.params.uid;
   await updateUser(uid, req.body.firstName, req.body.lastName, req.id);
   await updateUserIndex(uid, req.body.firstName, req.body.lastName);
+
+  auditEdit(req, user);
+
   return res.redirect('services');
 };
 
