@@ -2,10 +2,12 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
 jest.mock('./../../../src/app/users/utils');
 jest.mock('./../../../src/infrastructure/directories');
+jest.mock('./../../../src/infrastructure/users');
 
 const logger = require('./../../../src/infrastructure/logger');
 const { getUserDetails } = require('./../../../src/app/users/utils');
 const { deactivate } = require('./../../../src/infrastructure/directories');
+const { getById, updateIndex } = require('./../../../src/infrastructure/users');
 const postConfirmDeactivate = require('./../../../src/app/users/postConfirmDeactivate');
 
 describe('When confirming deactivation of user', () => {
@@ -51,6 +53,17 @@ describe('When confirming deactivation of user', () => {
         successful: 0,
       },
     });
+
+    getById.mockReset().mockReturnValue({
+      id: '915a7382-576b-4699-ad07-a9fd329d3867',
+      name: 'Rupert Grint',
+      email: 'rupert.grint@hogwarts.test',
+      organisationName: 'Hogwarts School of Witchcraft and Wizardry',
+      lastLogin: null,
+      statusDescription: 'Active'
+    });
+
+    updateIndex.mockReset();
   });
 
   it('then it should redirect to view user profile', async () => {
@@ -66,6 +79,23 @@ describe('When confirming deactivation of user', () => {
     expect(deactivate.mock.calls).toHaveLength(1);
     expect(deactivate.mock.calls[0][0]).toBe('915a7382-576b-4699-ad07-a9fd329d3867');
     expect(deactivate.mock.calls[0][1]).toBe('correlationId');
+  });
+
+  it('then it should update user in search index', async () => {
+    await postConfirmDeactivate(req, res);
+
+    expect(updateIndex.mock.calls).toHaveLength(1);
+    expect(updateIndex.mock.calls[0][0]).toHaveLength(1);
+    expect(updateIndex.mock.calls[0][0][0]).toMatchObject({
+      id: '915a7382-576b-4699-ad07-a9fd329d3867',
+      name: 'Rupert Grint',
+      email: 'rupert.grint@hogwarts.test',
+      organisationName: 'Hogwarts School of Witchcraft and Wizardry',
+      lastLogin: null,
+      status:{
+        description: 'Deactivated'
+      }
+    })
   });
 
   it('then it should should audit user being deactivated', async () => {
