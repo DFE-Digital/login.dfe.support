@@ -242,6 +242,7 @@ describe('When syncing users materialised view', function () {
       status: {
         id: 1,
         description: 'Active',
+        changedOn: null,
       },
     });
     expect(users.updateIndex.mock.calls[0][0][1]).toEqual({
@@ -256,6 +257,7 @@ describe('When syncing users materialised view', function () {
       status: {
         id: 1,
         description: 'Active',
+        changedOn: null,
       },
     });
     expect(users.updateIndex.mock.calls[0][1]).toBe('test-index');

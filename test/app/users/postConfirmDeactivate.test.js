@@ -6,11 +6,11 @@ jest.mock('./../../../src/infrastructure/users');
 
 const logger = require('./../../../src/infrastructure/logger');
 const { getUserDetails } = require('./../../../src/app/users/utils');
-const { updateUser } = require('./../../../src/infrastructure/directories');
+const { deactivate } = require('./../../../src/infrastructure/directories');
 const { getById, updateIndex } = require('./../../../src/infrastructure/users');
-const postEditProfile = require('./../../../src/app/users/postEditProfile');
+const postConfirmDeactivate = require('./../../../src/app/users/postConfirmDeactivate');
 
-describe('when updating users profile details', () => {
+describe('When confirming deactivation of user', () => {
   let req;
   let res;
 
@@ -23,8 +23,7 @@ describe('when updating users profile details', () => {
         uid: '915a7382-576b-4699-ad07-a9fd329d3867',
       },
       body: {
-        firstName: 'Rupert',
-        lastName: 'Grint',
+        reason: 'some reason for deactivation',
       },
       user: {
         sub: 'suser1',
@@ -33,7 +32,6 @@ describe('when updating users profile details', () => {
     };
 
     res = {
-      render: jest.fn(),
       redirect: jest.fn(),
     };
 
@@ -42,8 +40,8 @@ describe('when updating users profile details', () => {
     getUserDetails.mockReset();
     getUserDetails.mockReturnValue({
       id: '915a7382-576b-4699-ad07-a9fd329d3867',
-      name: 'Bobby Grint',
-      firstName: 'Bobby',
+      name: 'Rupert Grint',
+      firstName: 'Rupert',
       lastName: 'Grint',
       email: 'rupert.grint@hogwarts.test',
       lastLogin: null,
@@ -56,11 +54,9 @@ describe('when updating users profile details', () => {
       },
     });
 
-    updateUser.mockReset();
-
     getById.mockReset().mockReturnValue({
       id: '915a7382-576b-4699-ad07-a9fd329d3867',
-      name: 'Bobby Grint',
+      name: 'Rupert Grint',
       email: 'rupert.grint@hogwarts.test',
       organisationName: 'Hogwarts School of Witchcraft and Wizardry',
       lastLogin: null,
@@ -70,46 +66,23 @@ describe('when updating users profile details', () => {
     updateIndex.mockReset();
   });
 
-  it('then it should render view if firstName missing', async () => {
-    req.body.firstName = undefined;
+  it('then it should redirect to view user profile', async () => {
+    await postConfirmDeactivate(req, res);
 
-    await postEditProfile(req, res);
-
-    expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/editProfile');
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      validationMessages: {
-        firstName: 'Must specify a first name',
-      },
-    });
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe('services');
   });
 
-  it('then it should render view if lastName missing', async () => {
-    req.body.lastName = undefined;
+  it('then it should deactivate user record in directories', async () => {
+    await postConfirmDeactivate(req, res);
 
-    await postEditProfile(req, res);
-
-    expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('users/views/editProfile');
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      validationMessages: {
-        lastName: 'Must specify a last name',
-      },
-    });
-  });
-
-  it('then it should update user in directories', async () => {
-    await postEditProfile(req, res);
-
-    expect(updateUser.mock.calls).toHaveLength(1);
-    expect(updateUser.mock.calls[0][0]).toBe('915a7382-576b-4699-ad07-a9fd329d3867');
-    expect(updateUser.mock.calls[0][1]).toBe('Rupert');
-    expect(updateUser.mock.calls[0][2]).toBe('Grint');
-    expect(updateUser.mock.calls[0][3]).toBe('correlationId');
+    expect(deactivate.mock.calls).toHaveLength(1);
+    expect(deactivate.mock.calls[0][0]).toBe('915a7382-576b-4699-ad07-a9fd329d3867');
+    expect(deactivate.mock.calls[0][1]).toBe('correlationId');
   });
 
   it('then it should update user in search index', async () => {
-    await postEditProfile(req, res);
+    await postConfirmDeactivate(req, res);
 
     expect(updateIndex.mock.calls).toHaveLength(1);
     expect(updateIndex.mock.calls[0][0]).toHaveLength(1);
@@ -119,22 +92,17 @@ describe('when updating users profile details', () => {
       email: 'rupert.grint@hogwarts.test',
       organisationName: 'Hogwarts School of Witchcraft and Wizardry',
       lastLogin: null,
-      statusDescription: 'Active'
+      status:{
+        description: 'Deactivated'
+      }
     })
   });
 
-  it('then it should redirect to user services', async () => {
-    await postEditProfile(req, res);
-
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('services');
-  });
-
-  it('then it should audit update of user', async () => {
-    await postEditProfile(req, res);
+  it('then it should should audit user being deactivated', async () => {
+    await postConfirmDeactivate(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe('super.user@unit.test (id: suser1) updated user rupert.grint@hogwarts.test (id: 915a7382-576b-4699-ad07-a9fd329d3867)');
+    expect(logger.audit.mock.calls[0][0]).toBe('super.user@unit.test (id: suser1) deactivated user rupert.grint@hogwarts.test (id: 915a7382-576b-4699-ad07-a9fd329d3867)');
     expect(logger.audit.mock.calls[0][1]).toMatchObject({
       type: 'support',
       subType: 'user-edit',
@@ -143,11 +111,12 @@ describe('when updating users profile details', () => {
       editedUser: '915a7382-576b-4699-ad07-a9fd329d3867',
       editedFields: [
         {
-          name: 'given_name',
-          oldValue: 'Bobby',
-          newValue: 'Rupert',
+          name: 'status',
+          oldValue: 1,
+          newValue: 0,
         }
-      ]
+      ],
+      reason: 'some reason for deactivation'
     });
-  })
+  });
 });
