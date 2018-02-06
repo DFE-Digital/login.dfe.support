@@ -1,20 +1,10 @@
-jest.mock('./../../../src/infrastructure/config', () => {
-  return {
-    directories: {
-      type: 'static',
-    },
-    cache: {
-      type: 'static',
-    },
-    audit: {
-      type: 'static',
-    },
-  };
-});
+jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
+jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
 jest.mock('./../../../src/app/users/utils');
 jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/users');
 
+const logger = require('./../../../src/infrastructure/logger');
 const { getUserDetails } = require('./../../../src/app/users/utils');
 const { updateUser } = require('./../../../src/infrastructure/directories');
 const { getById, updateIndex } = require('./../../../src/infrastructure/users');
@@ -36,6 +26,10 @@ describe('when updating users profile details', () => {
         firstName: 'Rupert',
         lastName: 'Grint',
       },
+      user: {
+        sub: 'suser1',
+        email: 'super.user@unit.test',
+      }
     };
 
     res = {
@@ -43,7 +37,24 @@ describe('when updating users profile details', () => {
       redirect: jest.fn(),
     };
 
+    logger.audit.mockReset();
+
     getUserDetails.mockReset();
+    getUserDetails.mockReturnValue({
+      id: '915a7382-576b-4699-ad07-a9fd329d3867',
+      name: 'Bobby Grint',
+      firstName: 'Bobby',
+      lastName: 'Grint',
+      email: 'rupert.grint@hogwarts.test',
+      lastLogin: null,
+      status: {
+        id: 1,
+        description: 'Active'
+      },
+      loginsInPast12Months: {
+        successful: 0,
+      },
+    });
 
     updateUser.mockReset();
 
@@ -118,4 +129,25 @@ describe('when updating users profile details', () => {
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe('services');
   });
+
+  it('then it should audit update of user', async () => {
+    await postEditProfile(req, res);
+
+    expect(logger.audit.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls[0][0]).toBe('super.user@unit.test (id: suser1) updated user rupert.grint@hogwarts.test (id: 915a7382-576b-4699-ad07-a9fd329d3867)');
+    expect(logger.audit.mock.calls[0][1]).toMatchObject({
+      type: 'support',
+      subType: 'user-edit',
+      userId: 'suser1',
+      userEmail: 'super.user@unit.test',
+      editedUser: '915a7382-576b-4699-ad07-a9fd329d3867',
+      editedFields: [
+        {
+          name: 'given_name',
+          oldValue: 'Bobby',
+          newValue: 'Rupert',
+        }
+      ]
+    })
+  })
 });
