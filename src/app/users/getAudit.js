@@ -22,7 +22,8 @@ const describeAuditEvent = async (audit) => {
     const editedStatusTo = audit.editedFields.find(x => x.name === 'status');
     if (editedStatusTo) {
       const newStatus = mapUserStatus(editedStatusTo.newValue);
-      return newStatus.description;
+      const reason = audit.reason ? audit.reason : 'no reason given';
+      return `${newStatus.description} (reason: ${reason})`;
     }
     return 'Edited user';
   }
