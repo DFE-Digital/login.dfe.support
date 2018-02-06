@@ -1,5 +1,6 @@
 const users = [
   {
+    id: 'fef763fe-0413-4ffc-a6e2-4dc0cc168991',
     name: 'Wade Wilson',
     email: 'deadpool@x-force.test',
     organisation: {
@@ -11,6 +12,7 @@ const users = [
     }
   },
   {
+    id: '89de4e03-7114-4761-8de3-b38112932343',
     name: 'Frank Castle',
     email: 'punisher@forcerecon.test',
     organisation: {
@@ -41,6 +43,10 @@ const search = async (criteria, pageNumber) => {
   });
 };
 
+const getById = async (userId) => {
+  return users.find(x => x.id === userId);
+};
+
 const createIndex = async () => {
   return Promise.resolve('new');
 };
@@ -59,6 +65,7 @@ const deleteUnusedIndexes = async () => {
 
 module.exports = {
   search,
+  getById,
   createIndex,
   updateIndex,
   updateActiveIndex,

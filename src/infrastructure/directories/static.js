@@ -35,8 +35,13 @@ const getUserDevices = async (uid, correlationId) => {
   ];
 };
 
+const updateUser = async (uid, givenName, familyName, correlationId) => {
+  return Promise.resolve();
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
   getUserDevices,
+  updateUser,
 };

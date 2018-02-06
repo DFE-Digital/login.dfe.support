@@ -4,6 +4,7 @@ const { getUserOrganisations } = require('./../../infrastructure/organisations')
 const { getUserDevices } = require('./../../infrastructure/directories');
 const { getClientIdForServiceId } = require('./../../infrastructure/serviceMapping');
 const { getUserLoginAuditsForService } = require('./../../infrastructure/audit');
+const logger = require('./../../infrastructure/logger');
 
 const getOrganisations = async (userId, correlationId) => {
   const orgServiceMapping = await getUserOrganisations(userId, correlationId);
@@ -80,6 +81,14 @@ const action = async (req, res) => {
     }));
     return org;
   }));
+
+  logger.audit(`${req.user.email} (id: ${req.user.sub}) viewed user ${user.email} (id: ${user.id})`, {
+    type: 'support',
+    subType: 'user-view',
+    userId: req.user.sub,
+    userEmail: req.user.email,
+    viewedUser: user.id,
+  });
 
   sendResult(req, res, 'users/views/services', {
     csrfToken: req.csrfToken(),
