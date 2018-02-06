@@ -1,4 +1,5 @@
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
+jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
 jest.mock('./../../../src/app/users/utils');
 jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/directories');
@@ -21,6 +22,10 @@ describe('when getting users service details', () => {
       id: 'correlationId',
       csrfToken: () => 'token',
       accepts: () => ['text/html'],
+      user: {
+        sub: 'user1',
+        email: 'super.user@unit.test',
+      }
     };
 
     res = {

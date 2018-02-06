@@ -97,7 +97,6 @@ describe('when updating users profile details', () => {
     expect(updateUser.mock.calls[0][3]).toBe('correlationId');
   });
 
-
   it('then it should update user in search index', async () => {
     await postEditProfile(req, res);
 
@@ -112,6 +111,7 @@ describe('when updating users profile details', () => {
       statusDescription: 'Active'
     })
   });
+
   it('then it should redirect to user services', async () => {
     await postEditProfile(req, res);
 
