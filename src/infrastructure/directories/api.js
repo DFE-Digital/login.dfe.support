@@ -74,8 +74,40 @@ const getUserDevices = async (uid, correlationId) => {
   }
 };
 
+const updateUser = async (uid, givenName, familyName, correlationId) => {
+  const token = await jwtStrategy(config.directories.service).getBearerToken();
+
+  try {
+    const body = {};
+    if (givenName) {
+      body.given_name = givenName;
+    }
+    if (familyName) {
+      body.family_name = familyName;
+    }
+
+    await rp({
+      method: 'PATCH',
+      uri: `${config.directories.service.url}/users/${uid}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      body,
+      json: true,
+    });
+  } catch (e) {
+    const status = e.statusCode ? e.statusCode : 500;
+    if (status === 401) {
+      return null;
+    }
+    throw e;
+  }
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
   getUserDevices,
+  updateUser,
 };
