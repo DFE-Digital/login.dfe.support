@@ -13,9 +13,11 @@ jest.mock('./../../../src/infrastructure/config', () => {
 });
 jest.mock('./../../../src/app/users/utils');
 jest.mock('./../../../src/infrastructure/directories');
+jest.mock('./../../../src/infrastructure/users');
 
 const { getUserDetails } = require('./../../../src/app/users/utils');
 const { updateUser } = require('./../../../src/infrastructure/directories');
+const { getById, updateIndex } = require('./../../../src/infrastructure/users');
 const postEditProfile = require('./../../../src/app/users/postEditProfile');
 
 describe('when updating users profile details', () => {
@@ -44,6 +46,17 @@ describe('when updating users profile details', () => {
     getUserDetails.mockReset();
 
     updateUser.mockReset();
+
+    getById.mockReset().mockReturnValue({
+      id: '915a7382-576b-4699-ad07-a9fd329d3867',
+      name: 'Bobby Grint',
+      email: 'rupert.grint@hogwarts.test',
+      organisationName: 'Hogwarts School of Witchcraft and Wizardry',
+      lastLogin: null,
+      statusDescription: 'Active'
+    });
+
+    updateIndex.mockReset();
   });
 
   it('then it should render view if firstName missing', async () => {
@@ -84,6 +97,21 @@ describe('when updating users profile details', () => {
     expect(updateUser.mock.calls[0][3]).toBe('correlationId');
   });
 
+
+  it('then it should update user in search index', async () => {
+    await postEditProfile(req, res);
+
+    expect(updateIndex.mock.calls).toHaveLength(1);
+    expect(updateIndex.mock.calls[0][0]).toHaveLength(1);
+    expect(updateIndex.mock.calls[0][0][0]).toMatchObject({
+      id: '915a7382-576b-4699-ad07-a9fd329d3867',
+      name: 'Rupert Grint',
+      email: 'rupert.grint@hogwarts.test',
+      organisationName: 'Hogwarts School of Witchcraft and Wizardry',
+      lastLogin: null,
+      statusDescription: 'Active'
+    })
+  });
   it('then it should redirect to user services', async () => {
     await postEditProfile(req, res);
 
