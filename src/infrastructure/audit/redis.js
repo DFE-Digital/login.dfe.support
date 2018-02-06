@@ -109,9 +109,9 @@ const getUserChangeHistory = async (userId, pageNumber) => {
   let p = 1;
   let hasMorePages = true;
   while (hasMorePages && audits.length < requiredAudits) {
-    const pageOfAudits = await getUserAudit(p);
+    const pageOfAudits = await getUserAudit(userId, p);
     pageOfAudits.audits.forEach((audit) => {
-      if (audit.type === 'support' && audit.subType === 'user-edit') {
+      if (audit.type === 'support' && audit.subType === 'user-edit' && audit.editedUser === userId) {
         audits.push(audit);
       }
     });
