@@ -148,6 +148,6 @@ describe('when updating users profile details', () => {
           newValue: 'Rupert',
         }
       ]
-    })
+    });
   })
 });

@@ -10,6 +10,8 @@ const getServices = require('./getServices');
 const getAudit = require('./getAudit');
 const getEditProfile = require('./getEditProfile');
 const postEditProfile = require('./postEditProfile');
+const getConfirmDeactivate = require('./getConfirmDeactivate');
+const postConfirmDeactivate = require('./postConfirmDeactivate');
 
 const router = express.Router({ mergeParams: true });
 
@@ -30,6 +32,9 @@ const users = (csrf) => {
 
   router.get('/:uid/edit-profile', csrf, getEditProfile);
   router.post('/:uid/edit-profile', csrf, postEditProfile);
+
+  router.get('/:uid/confirm-deactivation', csrf, getConfirmDeactivate);
+  router.post('/:uid/confirm-deactivation', csrf, postConfirmDeactivate);
 
   return router;
 };
