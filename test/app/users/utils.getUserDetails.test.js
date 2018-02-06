@@ -3,7 +3,7 @@ jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/audit');
 
 const { getUser } = require('./../../../src/infrastructure/directories');
-const { getUserLoginAuditsSince } = require('./../../../src/infrastructure/audit');
+const { getUserLoginAuditsSince, getUserChangeHistory } = require('./../../../src/infrastructure/audit');
 const { getUserDetails } = require('./../../../src/app/users/utils');
 
 describe('When getting user details', () => {
@@ -54,6 +54,29 @@ describe('When getting user details', () => {
       }
     ]);
 
+    getUserChangeHistory.mockReset();
+    getUserChangeHistory.mockReturnValue({
+      audits: [{
+        type: 'support',
+        subType: 'user-edit',
+        userId: "7a1b077a-d7d4-4b60-83e8-1a1b49849510",
+        userEmail: "some.user@test.tester",
+        editedUser: 'user1',
+        editedFields: [
+          {
+            name: 'status',
+            oldValue: 1,
+            newValue: 0,
+          }
+        ],
+        level: "audit",
+        message: "Successful login attempt for headmaster@hogwarts.com (id: user1)",
+        timestamp: "2017-10-24T12:35:51.633Z"
+      }],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
     req = {
       params: {
         uid: 'user1',
@@ -84,6 +107,7 @@ describe('When getting user details', () => {
       lastLogin: new Date('2017-10-24T12:35:51.633Z'),
       status: {
         description: 'Active',
+        changedOn: new Date("2017-10-24T12:35:51.633Z"),
       },
       loginsInPast12Months: {
         successful: 2,

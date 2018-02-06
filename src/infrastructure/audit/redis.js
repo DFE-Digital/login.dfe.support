@@ -100,12 +100,37 @@ const getUserLoginAuditsForService = async (userId, clientId, pageNumber) => {
     audits: page,
     numberOfPages: pages.length, // This will create a moving number of pages. Current use case will work, but may need re-thinking
   };
+};
 
-  return loginAudits;
+const getUserChangeHistory = async (userId, pageNumber) => {
+  const requiredAudits = pageNumber * pageSize;
+  const audits = [];
+
+  let p = 1;
+  let hasMorePages = true;
+  while (hasMorePages && audits.length < requiredAudits) {
+    const pageOfAudits = await getPageOfAudits(p);
+    pageOfAudits.forEach((audit) => {
+      if (audit.type === 'support' && audit.subType === 'user-edit' && audit.editedUser === userId) {
+        audits.push(audit);
+      }
+    });
+
+    p++;
+    hasMorePages = p <= pageOfAudits.numberOfPages;
+  }
+
+  const pages = chunk(audits, pageSize);
+  const page = pageNumber <= pages.length ? pages[pageNumber - 1] : [];
+  return {
+    audits: page,
+    numberOfPages: pages.length, // This will create a moving number of pages. Current use case will work, but may need re-thinking
+  };
 };
 
 module.exports = {
   getUserAudit,
   getUserLoginAuditsSince,
   getUserLoginAuditsForService,
+  getUserChangeHistory,
 };
