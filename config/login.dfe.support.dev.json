@@ -39,6 +39,9 @@
   "organisations": {
     "type": "static"
   },
+  "devices": {
+    "type": "static"
+  },
   "audit": {
     "type": "redis",
     "params": {
