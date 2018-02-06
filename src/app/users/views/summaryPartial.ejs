@@ -1,4 +1,18 @@
-
+<%if(locals.user.status.id === 0) {%>
+<div style="background-color: #c0c0c0; margin-top:20px; padding:15px;">
+    <div class="row">
+        <div class="col-8">
+            This account was deactivated
+            <%if(locals.user.status.changedOn) {%>
+            on <%=locals.moment(locals.user.status.changedOn).format('DD/MMM/YYYY')%>.
+            <%}%>
+        </div>
+        <div class="col-4"style="text-align: right;">
+            <a href="#">Reactivate</a>
+        </div>
+    </div>
+</div>
+<%}%>
 <div class="row">
     <div class="col-8">
         <h1 class="heading-xlarge">
