@@ -6,11 +6,11 @@ jest.mock('./../../../src/infrastructure/users');
 
 const logger = require('./../../../src/infrastructure/logger');
 const { getUserDetails } = require('./../../../src/app/users/utils');
-const { deactivate } = require('./../../../src/infrastructure/directories');
+const { reactivate } = require('./../../../src/infrastructure/directories');
 const { getById, updateIndex } = require('./../../../src/infrastructure/users');
-const postConfirmDeactivate = require('./../../../src/app/users/postConfirmDeactivate');
+const postConfirmReactivate = require('./../../../src/app/users/postConfirmReactivate');
 
-describe('When confirming deactivation of user', () => {
+describe('When reactivating an user account', () => {
   let req;
   let res;
 
@@ -22,9 +22,7 @@ describe('When confirming deactivation of user', () => {
       params: {
         uid: '915a7382-576b-4699-ad07-a9fd329d3867',
       },
-      body: {
-        reason: 'some reason for deactivation',
-      },
+      body: {},
       user: {
         sub: 'suser1',
         email: 'super.user@unit.test',
@@ -46,8 +44,8 @@ describe('When confirming deactivation of user', () => {
       email: 'rupert.grint@hogwarts.test',
       lastLogin: null,
       status: {
-        id: 1,
-        description: 'Active'
+        id: 0,
+        description: 'Deactivated'
       },
       loginsInPast12Months: {
         successful: 0,
@@ -67,22 +65,22 @@ describe('When confirming deactivation of user', () => {
   });
 
   it('then it should redirect to view user profile', async () => {
-    await postConfirmDeactivate(req, res);
+    await postConfirmReactivate(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe('services');
   });
 
-  it('then it should deactivate user record in directories', async () => {
-    await postConfirmDeactivate(req, res);
+  it('then it should activate user in directories', async () => {
+    await postConfirmReactivate(req, res);
 
-    expect(deactivate.mock.calls).toHaveLength(1);
-    expect(deactivate.mock.calls[0][0]).toBe('915a7382-576b-4699-ad07-a9fd329d3867');
-    expect(deactivate.mock.calls[0][1]).toBe('correlationId');
+    expect(reactivate.mock.calls).toHaveLength(1);
+    expect(reactivate.mock.calls[0][0]).toBe('915a7382-576b-4699-ad07-a9fd329d3867');
+    expect(reactivate.mock.calls[0][1]).toBe('correlationId');
   });
 
   it('then it should update user in search index', async () => {
-    await postConfirmDeactivate(req, res);
+    await postConfirmReactivate(req, res);
 
     expect(updateIndex.mock.calls).toHaveLength(1);
     expect(updateIndex.mock.calls[0][0]).toHaveLength(1);
@@ -93,17 +91,17 @@ describe('When confirming deactivation of user', () => {
       organisationName: 'Hogwarts School of Witchcraft and Wizardry',
       lastLogin: null,
       status:{
-        id: 0,
-        description: 'Deactivated'
+        id: 1,
+        description: 'Active'
       }
     })
   });
 
-  it('then it should should audit user being deactivated', async () => {
-    await postConfirmDeactivate(req, res);
+  it('then it should should audit user being reactivated', async () => {
+    await postConfirmReactivate(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe('super.user@unit.test (id: suser1) deactivated user rupert.grint@hogwarts.test (id: 915a7382-576b-4699-ad07-a9fd329d3867)');
+    expect(logger.audit.mock.calls[0][0]).toBe('super.user@unit.test (id: suser1) reactivated user rupert.grint@hogwarts.test (id: 915a7382-576b-4699-ad07-a9fd329d3867)');
     expect(logger.audit.mock.calls[0][1]).toMatchObject({
       type: 'support',
       subType: 'user-edit',
@@ -113,11 +111,10 @@ describe('When confirming deactivation of user', () => {
       editedFields: [
         {
           name: 'status',
-          oldValue: 1,
-          newValue: 0,
+          oldValue: 0,
+          newValue: 1,
         }
       ],
-      reason: 'some reason for deactivation'
     });
   });
 });

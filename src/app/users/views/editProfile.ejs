@@ -39,7 +39,11 @@
         <aside>
             <h2 class="heading-medium">Actions</h2>
             <ul class="list">
+                <%if(locals.user.status.id === 0) {%>
+                <li><a href="confirm-reactivation">Reactivate</a></li>
+                <%} else {%>
                 <li><a href="confirm-deactivation">Deactivate</a></li>
+                <%}%>
             </ul>
         </aside>
     </div>

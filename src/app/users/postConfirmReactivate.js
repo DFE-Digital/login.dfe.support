@@ -1,13 +1,13 @@
 const logger = require('./../../infrastructure/logger');
 const { getUserDetails } = require('./utils');
-const { deactivate } = require('./../../infrastructure/directories');
+const { reactivate } = require('./../../infrastructure/directories');
 const { getById, updateIndex } = require('./../../infrastructure/users');
 
 const updateUserIndex = async (uid) => {
   const user = await getById(uid);
   user.status = {
-    id: 0,
-    description: 'Deactivated',
+    id: 1,
+    description: 'Active',
   };
   if (user.lastLogin) {
     user.lastLogin = user.lastLogin.getTime();
@@ -15,13 +15,14 @@ const updateUserIndex = async (uid) => {
   await updateIndex([user]);
 };
 
-const postConfirmDeactivate = async (req, res) => {
+const postConfirmReactivate = async (req, res) => {
   const user = await getUserDetails(req);
 
-  await deactivate(user.id, req.id);
-  await updateUserIndex(user.id);
+  await reactivate(req.params.uid, req.id);
+  await updateUserIndex(req.params.uid);
 
-  logger.audit(`${req.user.email} (id: ${req.user.sub}) deactivated user ${user.email} (id: ${user.id})`, {
+  // Audit
+  logger.audit(`${req.user.email} (id: ${req.user.sub}) reactivated user ${user.email} (id: ${user.id})`, {
     type: 'support',
     subType: 'user-edit',
     userId: req.user.sub,
@@ -31,13 +32,12 @@ const postConfirmDeactivate = async (req, res) => {
       {
         name: 'status',
         oldValue: user.status.id,
-        newValue: 0,
+        newValue: 1,
       }
     ],
-    reason: req.body.reason,
   });
 
-  return res.redirect('services');
+  res.redirect('services');
 };
 
-module.exports = postConfirmDeactivate;
+module.exports = postConfirmReactivate;
