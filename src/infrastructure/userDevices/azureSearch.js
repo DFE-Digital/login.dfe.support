@@ -98,7 +98,7 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
     }
 
     return {
-      users: response.value.map((user) => {
+      userDevices: response.value.map((user) => {
         return {
           id: user.id,
           name: user.name,
