@@ -119,10 +119,25 @@ const deactivate = async (uid, correlationId) => {
   });
 };
 
+const reactivate = async (uid, correlationId) => {
+  const token = await jwtStrategy(config.directories.service).getBearerToken();
+
+  await rp({
+    method: 'POST',
+    uri: `${config.directories.service.url}/users/${uid}/activate`,
+    headers: {
+      authorization: `bearer ${token}`,
+      'x-correlation-id': correlationId,
+    },
+    json: true,
+  });
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
   getUserDevices,
   updateUser,
   deactivate,
+  reactivate,
 };

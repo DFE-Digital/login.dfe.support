@@ -16,6 +16,10 @@ const auditSorter = (x, y) => {
   }
   return 0;
 };
+const auditDateFixer = (audit) => {
+  audit.timestamp = new Date(audit.timestamp);
+  return audit;
+};
 
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
@@ -76,14 +80,11 @@ const search = async (req) => {
 const getUserDetails = async (req) => {
   const uid = req.params.uid;
   const user = await getUser(uid);
-  const logins = (await getUserLoginAuditsSince(uid, moment().subtract(1, 'years').toDate())).map(x => {
-    x.timestamp = new Date(x.timestamp);
-    return x;
-  });
+  const logins = (await getUserLoginAuditsSince(uid, moment().subtract(1, 'years').toDate())).map(auditDateFixer);
   const successfulLogins = logins.filter(x => x.success).sort(auditSorter);
 
   const userChangeHistory = await getUserChangeHistory(uid, 1);
-  const statusChanges = userChangeHistory.audits.filter(x => x.editedFields && x.editedFields.find(y => y.name === 'status')).sort(auditSorter);
+  const statusChanges = userChangeHistory.audits.filter(x => x.editedFields && x.editedFields.find(y => y.name === 'status')).map(auditDateFixer).sort(auditSorter);
   const statusLastChangedOn = statusChanges && statusChanges.length > 0 ? new Date(statusChanges[0].timestamp) : null;
 
   return {
