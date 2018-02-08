@@ -10,9 +10,11 @@ const buildUser = async (user, allDevices,  correlationId) => {
 
   const userDevices = await getUserDevices(user.sub, correlationId);
 
-  if(!userDevices) {
+  if(!userDevices || userDevices.length === 0) {
     return null;
   }
+
+  logger.info(`Building user ${user.email} (id:${user.sub}) for userDevice syncing`);
 
   // Update with orgs
   const orgServiceMapping = await organisations.getUserOrganisations(user.sub, correlationId);
@@ -39,9 +41,11 @@ const buildUser = async (user, allDevices,  correlationId) => {
       email: user.email,
       organisation: orgServiceMapping && orgServiceMapping.length > 0 ? orgServiceMapping[0].organisation : null,
       lastLogin: successfulLoginAudit ? new Date(successfulLoginAudit.timestamp).getTime() : null,
-      deviceId :device.id,
-      serialNumber: device.serialNumber,
-      deviceStatus: 'Active'
+      device: {
+        id :device.id,
+        serialNumber: device.serialNumber,
+        status: 'Active'
+      }
     };
   });
 };
@@ -49,14 +53,16 @@ const buildUser = async (user, allDevices,  correlationId) => {
 const buildDevicesWithoutUser = (devices) => {
   return devices.map((device) => {
     return {
-      id: undefined,
+      id: uuid(),
       name: undefined,
       email: undefined,
       organisation: undefined,
       lastLogin: undefined,
-      deviceId :device.id,
-      serialNumber: device.serialNumber,
-      deviceStatus: 'Unassigned'
+      device: {
+        id :device.id,
+        serialNumber: device.serialNumber,
+        status: 'Unassigned'
+      }
     }
   });
 };
@@ -64,7 +70,7 @@ const buildDevicesWithoutUser = (devices) => {
 const syncUserDevicesView = async () => {
   const correlationId = uuid();
 
-  logger.info(`Starting to sync users view (correlation id: ${correlationId})`);
+  logger.info(`Starting to sync user devices view (correlation id: ${correlationId})`);
 
   // Create new index
   const newIndexName = await userDevices.createIndex();
@@ -79,7 +85,6 @@ const syncUserDevicesView = async () => {
     const pageOfUsers = await getPageOfUsers(pageNumber, correlationId);
     if (pageOfUsers.users) {
       const mappedUsers = await Promise.all(pageOfUsers.users.map(async (user) => {
-        logger.info(`Building user ${user.email} (id:${user.sub}) for syncing`);
         return await buildUser(user,allDevices, correlationId);
       }));
 
@@ -95,7 +100,7 @@ const syncUserDevicesView = async () => {
 
   const devicesWithoutUsers = buildDevicesWithoutUser(allDevices.filter((device)=>{return device.isAssigned === undefined;}));
 
-  await userDevices.updateIndex(...devicesWithoutUsers, newIndexName);
+  await userDevices.updateIndex(devicesWithoutUsers, newIndexName);
 
   await userDevices.updateActiveIndex(newIndexName);
   logger.info(`Pointed user index to ${newIndexName}`);
