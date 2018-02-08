@@ -6,13 +6,7 @@
       "port": 6379,
       "auth": ""
     },
-    "logLevel": "debug",
-    "colors": {
-      "info": "yellow",
-      "ok": "green",
-      "error": "red",
-      "audit": "magenta"
-    }
+    "logLevel": "debug"
   },
   "hostingEnvironment": {
     "useDevViews": true,
@@ -45,6 +39,9 @@
   "organisations": {
     "type": "static"
   },
+  "devices": {
+    "type": "static"
+  },
   "audit": {
     "type": "redis",
     "params": {
@@ -52,6 +49,8 @@
     }
   },
   "schedules": {
-    "users": "*/5 * * * *"
+    "users": "*/5 * * * *",
+    "userDevices": "*/5 * * * *",
+    "indexTidy": "*/15 * * * *"
   }
 }

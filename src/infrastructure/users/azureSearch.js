@@ -212,7 +212,7 @@ const deleteUnusedIndexes = async () => {
     },
     json: true,
   });
-  const indexesAppearingUnused = indexesResponse.value.map(x => x.name).filter(x => x !== currentIndexName);
+  const indexesAppearingUnused = indexesResponse.value.map(x => x.name).filter(x => x !== currentIndexName && x.toLowerCase().indexOf('users-') !== -1);
   await setAsync('UnusedIndexes_Users', JSON.stringify(indexesAppearingUnused));
 };
 

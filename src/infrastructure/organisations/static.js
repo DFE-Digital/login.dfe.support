@@ -27,7 +27,26 @@ const getServiceById = async (serviceId, correlationId) => {
   });
 };
 
+const getPageOfOrganisations = async (pageNumber) => {
+  return Promise.resolve({
+    organisations: [
+      {
+        "id": "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+        "name": "Some service",
+      }
+    ],
+    page: pageNumber,
+    totalNumberOfPages: 1,
+  });
+};
+
+const getAllOrganisations = async () => {
+  return (await getPageOfOrganisations(1)).organisations;
+};
+
 module.exports = {
   getUserOrganisations,
   getServiceById,
+  getPageOfOrganisations,
+  getAllOrganisations,
 };

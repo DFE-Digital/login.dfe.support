@@ -35,6 +35,7 @@
     "login.dfe.healthcheck": "git+https://github.com/DFE-Digital/login.dfe.healthcheck.git#v1.1",
     "login.dfe.jwt-strategies": "^1.0.4",
     "login.dfe.sanitization": "git+https://github.com/DFE-Digital/login.dfe.sanitization.git#v1.0",
+    "login.dfe.validation": "git+https://github.com/DFE-Digital/login.dfe.validation.git#v1.1.0",
     "moment": "^2.20.1",
     "morgan": "^1.9.0",
     "node-schedule": "^1.3.0",
@@ -56,7 +57,7 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "collectCoverage": true,
+    "collectCoverage": false,
     "clearMocks": true
   }
 }
