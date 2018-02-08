@@ -72,9 +72,9 @@ describe('when creating an index in azure search', () => {
         name: 'userdevices-some-uuid',
         fields: [
           { name: 'id', type: 'Edm.String', key: true, searchable: false },
-          { name: 'deviceId', type: 'Edm.String', key: true, searchable: false },
+          { name: 'deviceId', type: 'Edm.String', searchable: false },
           { name: 'deviceStatus', type: 'Edm.String', searchable: false, filterable: true },
-          { name: 'serialNumber', type: 'Edm.String', key: true, searchable: true },
+          { name: 'serialNumber', type: 'Edm.String',sortable:true, searchable: true },
           { name: 'name', type: 'Edm.String', sortable: true, filterable: true, searchable: true },
           { name: 'email', type: 'Edm.String', sortable: true, filterable: true, searchable: true },
           { name: 'organisationName', type: 'Edm.String', sortable: true, filterable: true, searchable: true },
