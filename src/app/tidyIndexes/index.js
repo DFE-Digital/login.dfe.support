@@ -10,7 +10,7 @@ const tidyIndexes = async () => {
   await users.deleteUnusedIndexes();
 
   logger.info('Deleting unused userDevice indexes');
-  await userDevices.deletedUnusedIndexes();
+  await userDevices.deleteUnusedIndexes();
 
   logger.info('Finished tidying indexes');
 };

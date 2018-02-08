@@ -274,9 +274,12 @@ describe('When syncing userDevices materialised view', function () {
         name: 'Test Org'
       },
       lastLogin: 1508848551633,
-      deviceId: '6eebc499-e69e-4556-95e5-dc0300c12748',
-      deviceStatus: 'Active',
-      serialNumber: '1234567890'
+      device: {
+        id: '6eebc499-e69e-4556-95e5-dc0300c12748',
+        status: 'Active',
+        serialNumber: '1234567890'
+      }
+
     });
     expect(userDevices.updateIndex.mock.calls[0][1]).toBe('test-index');
   });
@@ -307,15 +310,17 @@ describe('When syncing userDevices materialised view', function () {
   it('then all devices not assigned are added to the index', async () => {
     await syncUserDevicesView();
 
-    expect(userDevices.updateIndex.mock.calls[1][0]).toEqual({
-      id: undefined,
+    expect(userDevices.updateIndex.mock.calls[1][0]).toEqual([{
+      id: 'new-uuid',
       name: undefined,
       email: undefined,
       organisation: undefined,
       lastLogin: undefined,
-      deviceId: undefined,
-      deviceStatus: 'Unassigned',
-      serialNumber: '2234567890'
-    });
+      device: {
+        id: undefined,
+        status: 'Unassigned',
+        serialNumber: '2234567890'
+      }
+    }]);
   });
 });
