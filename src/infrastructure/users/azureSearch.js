@@ -82,6 +82,42 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
   }
 };
 
+const getById = async (userId) => {
+  const currentIndexName = await getAsync('CurrentIndex_Users');
+
+  try {
+    const response = await rp({
+      method: 'GET',
+      uri: `${getAzureSearchUri(currentIndexName, '/docs')}&$filter=id+eq+'${userId}'`,
+      headers: {
+        'content-type': 'application/json',
+        'api-key': config.cache.params.apiKey,
+      },
+      json: true,
+    });
+
+    if (response.value.length === 0) {
+      return null;
+    }
+
+    const user = response.value[0];
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      organisation: user.organisationName ? {
+        name: user.organisationName
+      } : null,
+      lastLogin: user.lastLogin ? new Date(user.lastLogin) : null,
+      status: {
+        description: user.statusDescription
+      }
+    };
+  } catch (e) {
+    throw e;
+  }
+};
+
 const createIndex = async () => {
   try {
     const indexName = `users-${uuid()}`;
@@ -112,6 +148,9 @@ const createIndex = async () => {
 };
 
 const updateIndex = async (users, index) => {
+  if (!index) {
+    index = await getAsync('CurrentIndex_Users');
+  }
   try {
     await rp({
       method: 'POST',
@@ -179,6 +218,7 @@ const deleteUnusedIndexes = async () => {
 
 module.exports = {
   search,
+  getById,
   createIndex,
   updateIndex,
   updateActiveIndex,

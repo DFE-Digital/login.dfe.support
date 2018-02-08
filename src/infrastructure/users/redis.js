@@ -102,6 +102,25 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
   };
 };
 
+const getById = async (userId) => {
+  const indexName = await getAsync('CurrentIndex');
+  if (!indexName) {
+    return null;
+  }
+
+  let pointer = 0;
+  do {
+    const result = await scanAsync(pointer, 'MATCH', `${indexName}-*`);
+
+    pointer = result[0];
+    const user = result[1].find(x => x.id === userId);
+    if (user) {
+      return user;
+    }
+  } while (pointer > 0);
+  return null;
+};
+
 const createIndex = async () => {
   return Promise.resolve(uuid());
 };
@@ -151,6 +170,7 @@ const deleteUnusedIndexes = async () => {
 
 module.exports = {
   search,
+  getById,
   createIndex,
   updateIndex,
   updateActiveIndex,
