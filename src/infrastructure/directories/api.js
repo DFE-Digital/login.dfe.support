@@ -43,7 +43,7 @@ const getUser = async (uid, correlationId) => {
     return user;
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
-    if (status === 401) {
+    if (status === 404) {
       return null;
     }
     throw e;
@@ -119,10 +119,25 @@ const deactivate = async (uid, correlationId) => {
   });
 };
 
+const reactivate = async (uid, correlationId) => {
+  const token = await jwtStrategy(config.directories.service).getBearerToken();
+
+  await rp({
+    method: 'POST',
+    uri: `${config.directories.service.url}/users/${uid}/activate`,
+    headers: {
+      authorization: `bearer ${token}`,
+      'x-correlation-id': correlationId,
+    },
+    json: true,
+  });
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
   getUserDevices,
   updateUser,
   deactivate,
+  reactivate,
 };
