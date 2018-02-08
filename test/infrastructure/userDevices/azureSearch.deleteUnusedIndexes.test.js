@@ -38,7 +38,7 @@ describe('When deleting unused indexes from Azure Search', () => {
       };
     });
 
-    deleteUnusedIndexes = require('./../../../src/infrastructure/users/azureSearch').deleteUnusedIndexes;
+    deleteUnusedIndexes = require('./../../../src/infrastructure/userDevices/azureSearch').deleteUnusedIndexes;
   });
   beforeEach(() => {
     rp.mockReset();
@@ -49,17 +49,17 @@ describe('When deleting unused indexes from Azure Search', () => {
           "value": [
             {
               "@odata.etag": "\"0x8D561869625D56C\"",
-              "name": "users-58457890-ba74-49ae-86eb-b4a144649805",
+              "name": "userDevices-58457890-ba74-49ae-86eb-b4a144649805",
               /*other properties omitted*/
             },
             {
               "@odata.etag": "\"0x8D561869625D56C\"",
-              "name": "users-4771d85e-f3ef-4e71-82ca-30f0663b10c9",
+              "name": "userDevices-4771d85e-f3ef-4e71-82ca-30f0663b10c9",
               /*other properties omitted*/
             },
             {
               "@odata.etag": "\"0x8D561869625D56C\"",
-              "name": "userDevices-24b1f0da-7f82-48b0-9106-720135f9b051",
+              "name": "users-24b1f0da-7f82-48b0-9106-720135f9b051",
               /*other properties omitted*/
             }
           ]
@@ -69,10 +69,10 @@ describe('When deleting unused indexes from Azure Search', () => {
 
     get.mockReset();
     get.mockImplementation((key, callback) => {
-      if (key === 'CurrentIndex_Users') {
-        callback(null, 'users-58457890-ba74-49ae-86eb-b4a144649805');
-      } else if (key === 'UnusedIndexes_Users') {
-        callback(null, '["users-4771d85e-f3ef-4e71-82ca-30f0663b10c9"]');
+      if (key === 'CurrentIndex_UserDevices') {
+        callback(null, 'userDevices-58457890-ba74-49ae-86eb-b4a144649805');
+      } else if (key === 'UnusedIndexes_UserDevices') {
+        callback(null, '["userDevices-4771d85e-f3ef-4e71-82ca-30f0663b10c9"]');
       }
     });
 
@@ -82,12 +82,12 @@ describe('When deleting unused indexes from Azure Search', () => {
     });
   });
 
-  it('then it should delete users in indexes marked as unused that are still not used', async () => {
+  it('then it should delete user devices in indexes marked as unused that are still not used', async () => {
     await deleteUnusedIndexes();
 
     expect(rp.mock.calls[0][0]).toMatchObject({
       method: 'DELETE',
-      uri: 'https://test-search.search.windows.net/indexes/users-4771d85e-f3ef-4e71-82ca-30f0663b10c9?api-version=2016-09-01',
+      uri: 'https://test-search.search.windows.net/indexes/userDevices-4771d85e-f3ef-4e71-82ca-30f0663b10c9?api-version=2016-09-01',
     });
   });
 
@@ -95,7 +95,7 @@ describe('When deleting unused indexes from Azure Search', () => {
     await deleteUnusedIndexes();
 
     rp.mock.calls.forEach((call) => {
-      expect(call[0].uri).not.toMatch(/indexes\/users-58457890-ba74-49ae-86eb-b4a144649805/);
+      expect(call[0].uri).not.toMatch(/indexes\/userDevices-58457890-ba74-49ae-86eb-b4a144649805/);
     });
   });
 
@@ -103,9 +103,9 @@ describe('When deleting unused indexes from Azure Search', () => {
     await deleteUnusedIndexes();
 
     expect(set.mock.calls).toHaveLength(1);
-    expect(set.mock.calls[0][0]).toBe('UnusedIndexes_Users');
+    expect(set.mock.calls[0][0]).toBe('UnusedIndexes_UserDevices');
     expect(set.mock.calls[0][1]).toBe(JSON.stringify([
-      'users-4771d85e-f3ef-4e71-82ca-30f0663b10c9',
+      'userDevices-4771d85e-f3ef-4e71-82ca-30f0663b10c9',
     ]));
   });
 });

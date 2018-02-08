@@ -24,6 +24,9 @@ const configMockFactory = (customConfig) => {
     audit: {
       type: 'static',
     },
+    devices: {
+      type: 'static',
+    }
   }, customConfig);
 };
 

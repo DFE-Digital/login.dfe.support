@@ -1,4 +1,5 @@
 const users = require('./app/users');
+const userDevices = require('./app/userDevices');
 const errors = require('./app/errors');
 const healthCheck = require('login.dfe.healthcheck');
 const { getHealthCheckChecks } = require('./infrastructure/healthCheck');
@@ -9,6 +10,7 @@ const routes = (app, csrf) => {
   app.use('/healthcheck', healthCheck({ config, checks: healthCheckChecks }));
 
   app.use('/users', users(csrf));
+  app.use('/userDevices', userDevices(csrf));
   app.use('/', errors(csrf));
 
   app.get('/', (req, res) => {
