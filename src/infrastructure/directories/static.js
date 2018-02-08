@@ -35,8 +35,23 @@ const getUserDevices = async (uid, correlationId) => {
   ];
 };
 
+const updateUser = async (uid, givenName, familyName, correlationId) => {
+  return Promise.resolve();
+};
+
+const deactivate = async (uid, correlationId) => {
+  return Promise.resolve();
+};
+
+const reactivate = async (uid, correlationId) => {
+  return Promise.resolve();
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
   getUserDevices,
+  updateUser,
+  deactivate,
+  reactivate,
 };

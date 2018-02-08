@@ -1,14 +1,13 @@
-const { sendResult } = require('./../../infrastructure/utils');
+const { sendResult, mapUserStatus } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
 const { getUserAudit } = require('./../../infrastructure/audit');
 const { getServiceIdForClientId } = require('./../../infrastructure/serviceMapping');
 const { getServiceById } = require('./../../infrastructure/organisations');
 
-const describeAuditEvent = (type, subType) => {
-  let description = `${type} / ${subType}`;
-  if (type === 'sign-in') {
-    description = 'Sign-in';
-    switch (subType) {
+const describeAuditEvent = async (audit) => {
+  if (audit.type === 'sign-in') {
+    let description = 'Sign-in';
+    switch (audit.subType) {
       case 'username-password':
         description += ' using email address and password';
         break;
@@ -16,8 +15,41 @@ const describeAuditEvent = (type, subType) => {
         description += ' using a digipass key fob';
         break;
     }
+    return description;
   }
-  return description;
+
+  if (audit.type === 'support' && audit.subType === 'user-edit') {
+    const editedStatusTo = audit.editedFields.find(x => x.name === 'status');
+    if (editedStatusTo && editedStatusTo.newValue === 0) {
+      const newStatus = mapUserStatus(editedStatusTo.newValue);
+      const reason = audit.reason ? audit.reason : 'no reason given';
+      return `${newStatus.description} (reason: ${reason})`;
+    }
+    if (editedStatusTo) {
+      const newStatus = mapUserStatus(editedStatusTo.newValue);
+      return newStatus.description;
+    }
+    return 'Edited user';
+  }
+
+  if (audit.type === 'support' && audit.subType === 'user-view') {
+    const viewedUser = await getUserDetails({ params: { uid: audit.viewedUser } });
+    return `Viewed user ${viewedUser.firstName} ${viewedUser.lastName}`;
+  }
+
+  if (audit.type === 'support' && audit.subType === 'user-search') {
+    return `Searched for users using criteria "${audit.criteria}"`;
+  }
+
+  if (audit.type === 'change-password') {
+    return 'Changed password';
+  }
+
+  if (audit.type === 'reset-password') {
+    return 'Reset password';
+  }
+
+  return `${audit.type} / ${audit.subType}`;
 };
 
 const getAudit = async (req, res) => {
@@ -41,11 +73,11 @@ const getAudit = async (req, res) => {
       event: {
         type: audit.type,
         subType: audit.subType,
-        description: describeAuditEvent(audit.type, audit.subType),
+        description: await describeAuditEvent(audit),
       },
       service,
-      result: audit.success,
-      user: audit.userId === user.id ? user : await getUserDetails(audit.userId),
+      result: audit.success === undefined ? true : audit.success,
+      user: audit.userId === user.id ? user : await getUserDetails({ params: { uid: audit.userId } }),
     }
   }));
 
