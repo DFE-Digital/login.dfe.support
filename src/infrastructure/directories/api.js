@@ -43,7 +43,7 @@ const getUser = async (uid, correlationId) => {
     return user;
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
-    if (status === 401) {
+    if (status === 404) {
       return null;
     }
     throw e;
