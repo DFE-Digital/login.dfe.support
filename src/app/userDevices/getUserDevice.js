@@ -7,6 +7,7 @@ const action = async (req, res) => {
 
   sendResult(req, res, 'userDevices/views/userDevice', {
     csrfToken: req.csrfToken(),
+    uid: tokenDetails.uid,
     serialNumber: tokenDetails.serialNumber,
     serialNumberFormatted: tokenDetails.serialNumberFormatted,
     name: tokenDetails.name,

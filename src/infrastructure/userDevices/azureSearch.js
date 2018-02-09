@@ -111,6 +111,7 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
             id: user.deviceId,
             status: user.deviceStatus,
             serialNumber: user.serialNumber,
+            serialNumberFormatted: `${user.serialNumber.substr(0, 2)}-${user.serialNumber.substr(2, 7)}-${user.serialNumber.substr(9, 1)}`
           }
         }
       }),
