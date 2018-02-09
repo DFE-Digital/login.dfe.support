@@ -2,8 +2,7 @@ const { getAllOrganisations } = require('./../../infrastructure/organisations');
 
 const getNewUserK2S = async (req, res) => {
   const orgs = await getAllOrganisations();
-
-  res.render('users/views/newUserK2S', {
+  let model = {
     csrfToken: req.csrfToken(),
     firstName: '',
     lastName: '',
@@ -12,7 +11,12 @@ const getNewUserK2S = async (req, res) => {
     k2sId: '',
     localAuthorities: orgs,
     validationMessages: {},
-  });
+  };
+  if (req.session.k2sUser) {
+    model = Object.assign(model, req.session.k2sUser);
+  }
+
+  res.render('users/views/newUserK2S', model);
 };
 
 module.exports = getNewUserK2S;
