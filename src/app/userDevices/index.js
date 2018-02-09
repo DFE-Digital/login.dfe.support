@@ -17,7 +17,7 @@ const users = (csrf) => {
   router.use(setCurrentArea('tokens'));
 
   router.get('/', csrf, getSearch);
-  router.get('/:serialNumber', csrf, getUserDevice);
+  router.get('/:serialNumber/:uid', csrf, getUserDevice);
   router.post('/', csrf, postSearch);
 
   return router;
