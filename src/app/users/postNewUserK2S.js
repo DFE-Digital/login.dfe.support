@@ -1,7 +1,13 @@
 const { sendResult } = require('./../../infrastructure/utils');
-const { getAllOrganisations } = require('./../../infrastructure/organisations');
+const config = require('./../../infrastructure/config');
+const { getAllOrganisations, getServiceIdentifierDetails } = require('./../../infrastructure/organisations');
 const { getUser } = require('./../../infrastructure/directories');
 const { emailPolicy } = require('login.dfe.validation');
+
+const keyToSuccessIdentifierAlreadyUsed = async (k2sId, correlationId) => {
+  const identifier = await getServiceIdentifierDetails(config.serviceMapping.key2SuccessServiceId, 'k2s-id', k2sId, correlationId);
+  return identifier ? true : false;
+};
 
 const validateInput = async (req, orgs) => {
   const model = {
@@ -49,6 +55,9 @@ const validateInput = async (req, orgs) => {
   } else if (model.k2sId.length !== 7 || isNaN(parseInt(model.k2sId))) {
     model.isValid = false;
     model.validationMessages.k2sId = 'Key to Success ID should be 7 numbers';
+  } else if (await keyToSuccessIdentifierAlreadyUsed(model.k2sId, req.id)) {
+    model.isValid = false;
+    model.validationMessages.k2sId = 'User already exists with this Key to Success ID';
   }
 
   return model;

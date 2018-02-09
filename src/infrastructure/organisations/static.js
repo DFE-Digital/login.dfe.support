@@ -44,9 +44,14 @@ const getAllOrganisations = async () => {
   return (await getPageOfOrganisations(1)).organisations;
 };
 
+const getServiceIdentifierDetails = async () => {
+  return Promise.resolve(null);
+};
+
 module.exports = {
   getUserOrganisations,
   getServiceById,
   getPageOfOrganisations,
   getAllOrganisations,
+  getServiceIdentifierDetails,
 };
