@@ -57,8 +57,9 @@ const search = async (req) => {
   };
 };
 
-const getUserDetails = async (req) => {
-  const uid = req.params.uid;
+const getTokenDetails = async (params) => {
+  const uid = params.uid;
+  const serialNumber = params.serialNumber;
   const user = await getUser(uid);
   const logins = (await getUserLoginAuditsSince(uid, moment().subtract(1, 'years').toDate())).map(x => {
     x.timestamp = new Date(x.timestamp);
@@ -77,7 +78,7 @@ const getUserDetails = async (req) => {
   });
 
   return {
-    id: uid,
+    uid: uid,
     name: `${user.given_name} ${user.family_name}`,
     email: user.email,
     lastLogin: successfulLogins && successfulLogins.length > 0 ? successfulLogins[0].timestamp : null,
@@ -90,5 +91,5 @@ const getUserDetails = async (req) => {
 
 module.exports = {
   search,
-  getUserDetails,
+  getTokenDetails,
 };

@@ -1,6 +1,7 @@
 jest.mock('./../../../src/app/userDevices/utils', () => {
   return {
     getTokenDetails: jest.fn().mockReturnValue({
+      uid: 'afed345tgb678',
       serialNumber: '123test456',
       serialNumberFormatted: '123-test-456',
       name: 'Mr Test Testing',
@@ -71,6 +72,7 @@ describe('When processing a get for a user device', () => {
     await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
+      uid: 'afed345tgb678',
       serialNumberFormatted: '123-test-456',
       serialNumber: '123test456',
       name: 'Mr Test Testing',

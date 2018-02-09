@@ -1,8 +1,8 @@
 <div class="row">
     <div class="col-8">
         <h1 class="heading-xlarge">
-            Token <%=locals.serialNumber%>
-            <small><%=locals.name%>, <%=locals.orgName%></small>
+            Token <%=locals.serialNumberFormatted%>
+            <small><a href="/users/<%=locals.uid%>"><%=locals.name%></a>, <%=locals.orgName%></small>
         </h1>
         <dl class="inline condensed">
             <dt class="label">Last login:</dt>
@@ -10,7 +10,7 @@
             <dt class="label">Token status:</dt>
             <dd><%=locals.tokenStatus%></dd>
             <dt class="label">Sessions in the last 12 months:</dt>
-            <dd><%=locals.loginsInTwelveMonths%></dd>
+            <dd><%=locals.numberOfSuccessfulLoginAttemptsInTwelveMonths%></dd>
         </dl>
     </div>
     <div class="col-4">
