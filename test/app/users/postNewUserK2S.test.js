@@ -1,8 +1,12 @@
-jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
+jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
+  serviceMapping: {
+    key2SuccessServiceId: 'key-to-success-service-id'
+  }
+}));
 jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/directories');
 
-const { getAllOrganisations } = require('./../../../src/infrastructure/organisations');
+const { getAllOrganisations, getServiceIdentifierDetails } = require('./../../../src/infrastructure/organisations');
 const { getUser } = require('./../../../src/infrastructure/directories');
 const postNewUserK2S = require('./../../../src/app/users/postNewUserK2S');
 
@@ -43,6 +47,9 @@ describe('when handling post of new key-to-success user details', () => {
       { id: 'org2', name: 'org two' },
       { id: 'org3', name: 'org three' },
     ]);
+
+    getServiceIdentifierDetails.mockReset();
+    getServiceIdentifierDetails.mockReturnValue(null);
 
     getUser.mockReset();
     getUser.mockReturnValue(null);
@@ -164,18 +171,30 @@ describe('when handling post of new key-to-success user details', () => {
   });
 
   it('then it should render view with error if key-to-success id is already in use', async () => {
-    // TODO: k2s id check
+    getServiceIdentifierDetails.mockReturnValue({
+      userId: 'user-1',
+      serviceId: 'service-1',
+      organisationId: 'organisation-1',
+      key: 'k2s-id',
+      value: '1234567'
+    });
 
-    // await postNewUserK2S(req, res);
-    //
-    // expect(res.render.mock.calls).toHaveLength(1);
-    // expect(res.render.mock.calls[0][0]).toBe('users/views/newUserK2S');
-    // expect(res.render.mock.calls[0][1]).toMatchObject({
-    //   k2sId: req.body.k2sId,
-    //   validationMessages: {
-    //     k2sId: 'Key to Success ID should be 7 numbers'
-    //   }
-    // });
+    await postNewUserK2S(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe('users/views/newUserK2S');
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      k2sId: req.body.k2sId,
+      validationMessages: {
+        k2sId: 'User already exists with this Key to Success ID'
+      }
+    });
+
+    expect(getServiceIdentifierDetails.mock.calls).toHaveLength(1);
+    expect(getServiceIdentifierDetails.mock.calls[0][0]).toBe('key-to-success-service-id');
+    expect(getServiceIdentifierDetails.mock.calls[0][1]).toBe('k2s-id');
+    expect(getServiceIdentifierDetails.mock.calls[0][2]).toBe(req.body.k2sId);
+    expect(getServiceIdentifierDetails.mock.calls[0][3]).toBe('correlationId');
   });
 
   it('then it should store user details in session', async () => {

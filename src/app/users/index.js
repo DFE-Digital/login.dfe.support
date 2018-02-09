@@ -30,6 +30,9 @@ const users = (csrf) => {
 
   router.get('/new-k2s-user', csrf, getNewUserK2S);
   router.post('/new-k2s-user', csrf, postNewUserK2S);
+  router.get('/assign-digipass', csrf, (req, res) => {
+    res.send('TODO');
+  });
 
   router.get('/:uid', (req, res) => {
     res.redirect(`/users/${req.params.uid}/services`);

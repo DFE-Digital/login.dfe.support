@@ -92,9 +92,34 @@ const getAllOrganisations = async () => {
   return all;
 };
 
+const getServiceIdentifierDetails = async (serviceId, identifierKey, identifierValue, correlationId) => {
+  const token = await jwtStrategy(config.organisations.service).getBearerToken();
+
+  try {
+    const service = await rp({
+      method: 'GET',
+      uri: `${config.organisations.service.url}/services/${serviceId}/identifiers/${identifierKey}/${identifierValue}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+
+    return service;
+  } catch (e) {
+    const status = e.statusCode ? e.statusCode : 500;
+    if (status === 404) {
+      return null;
+    }
+    throw e;
+  }
+};
+
 module.exports = {
   getUserOrganisations,
   getServiceById,
   getPageOfOrganisations,
   getAllOrganisations,
+  getServiceIdentifierDetails,
 };
