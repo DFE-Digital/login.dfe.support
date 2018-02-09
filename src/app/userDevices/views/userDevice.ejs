@@ -1,18 +1,27 @@
 <div class="row">
-    <div class="col-6">
-        <h1 class="heading-xlarge">Token <%=locals.serialNumber%></h1>
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Token <%=locals.serialNumber%>
+            <small><%=locals.name%>, <%=locals.orgName%></small>
+        </h1>
+        <dl class="inline condensed">
+            <dt class="label">Last login:</dt>
+            <dd><%=locals.lastLogin ? locals.moment(locals.lastLogin).format('DD/MMM/YYYY HH:mm:ss') : 'Never'%></dd>
+            <dt class="label">Token status:</dt>
+            <dd><%=locals.tokenStatus%></dd>
+            <dt class="label">Sessions in the last 12 months:</dt>
+            <dd><%=locals.loginsInTwelveMonths%></dd>
+        </dl>
     </div>
-</div>
-
-<div class="row row-spacer">
-    <div class="col-6">
-
-    </div>
-    <div class="col-6">
-        <h2><%=locals.name%>, <%=locals.orgName%></h2>
-        Last login: <%=locals.lastLogin%>
-        Token status:  <%=locals.tokenStatus%>
-        Logins last 12 months:  <%=locals.loginsInTwelveMonths%>
+    <div class="col-4">
+        <aside>
+            <h2 class="heading-medium">Actions</h2>
+            <ul class="list">
+                <li><a href="#">Deactivate token</a></li>
+                <li><a href="#">Resync token</a></li>
+                <li><a href="#">Unlock token</a></li>
+            </ul>
+        </aside>
     </div>
 </div>
 
@@ -28,8 +37,8 @@
             <thead>
                 <tr class="sortable">
                     <th scope="col" class="cwp-20">Date</th>
-                    <th scope="col" class="cwp-10">Event</th>
-                    <th scope="col" class="cwp-55">Result</th>
+                    <th scope="col" class="cwp-50">Event</th>
+                    <th scope="col" class="cwp-15">Result</th>
                     <th scope="col" class="cwp-15">User</th>
                 </tr>
             </thead>
