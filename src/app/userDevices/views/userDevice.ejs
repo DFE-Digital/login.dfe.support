@@ -1,0 +1,53 @@
+<div class="row">
+    <div class="col-6">
+        <h1 class="heading-xlarge">Token <%=locals.serialNumber%></h1>
+    </div>
+</div>
+
+<div class="row row-spacer">
+    <div class="col-6">
+
+    </div>
+    <div class="col-6">
+        <h2><%=locals.name%>, <%=locals.orgName%></h2>
+        Last login: <%=locals.lastLogin%>
+        Token status:  <%=locals.tokenStatus%>
+        Logins last 12 months:  <%=locals.loginsInTwelveMonths%>
+    </div>
+</div>
+
+<div class="row meta">
+    <div class="col-6">
+        <p>Showing <b><%=locals.audit.length%></b> audits</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <table class="data">
+            <thead>
+                <tr class="sortable">
+                    <th scope="col" class="cwp-20">Date</th>
+                    <th scope="col" class="cwp-10">Event</th>
+                    <th scope="col" class="cwp-55">Result</th>
+                    <th scope="col" class="cwp-15">User</th>
+                </tr>
+            </thead>
+            <tbody>
+            <% if(locals.audit.length === 0) { %>
+                <tr>
+                    <td colspan="5"><span class="empty-state">No audit events found</span></td>
+                </tr>
+            <% } %>
+            <% for (let i = 0; i < locals.audit.length; i++) { %>
+                <tr>
+                    <td><%= audit[i].date %></td>
+                    <td><%= audit[i].event %></td>
+                    <td><%= audit[i].result %></td>
+                    <td><%= audit[i].user %></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
