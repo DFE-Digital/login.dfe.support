@@ -1,22 +1,20 @@
-
+const {getTokenDetails} = require('./utils');
 const { sendResult } = require('./../../infrastructure/utils');
 
 const action = async (req, res) => {
 
+  const tokenDetails = await getTokenDetails(req.params);
+
   sendResult(req, res, 'userDevices/views/userDevice', {
     csrfToken: req.csrfToken(),
-    serialNumber: '123-test',
-    name: 'Mr Test Test',
-    orgName: "My Org",
-    lastLogin: '15:32:42  05/11/2017',
-    loginsInTwelveMonths: '10',
-    tokenStatus: 'Active',
-    audit: [{
-      date: '15:32:42  05/11/2017',
-      event:'Login',
-      result:'Success',
-      user: 'Barry',
-    }],
+    serialNumber: tokenDetails.serialNumber,
+    serialNumberFormatted: tokenDetails.serialNumberFormatted,
+    name: tokenDetails.name,
+    orgName: tokenDetails.orgName,
+    lastLogin: tokenDetails.lastLogin,
+    numberOfSuccessfulLoginAttemptsInTwelveMonths: tokenDetails.numberOfSuccessfulLoginAttemptsInTwelveMonths,
+    tokenStatus: tokenDetails.tokenStatus,
+    audit: tokenDetails.audit,
   });
 };
 
