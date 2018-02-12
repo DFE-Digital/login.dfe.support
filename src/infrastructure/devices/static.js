@@ -5,6 +5,11 @@ const getDevices = async (correlationId) => {
   ]);
 };
 
+const deviceExists = async (serialNumber, correlationId) => {
+  return Promise.resolve(false);
+};
+
 module.exports = {
   getDevices,
+  deviceExists,
 };
