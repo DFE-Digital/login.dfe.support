@@ -1,5 +1,6 @@
 const { sendResult } = require('./../../infrastructure/utils');
 const { deviceExists } = require('./../../infrastructure/devices');
+const { getUserAssociatedToDevice } = require('./../../infrastructure/directories');
 
 const validateInput = async (req) => {
   const model = {
@@ -19,6 +20,9 @@ const validateInput = async (req) => {
   } else if (!await deviceExists(model.serialNumber, req.id)) {
     model.isValid = false;
     model.validationMessages.serialNumber = 'Serial number does not exist';
+  } else if (await getUserAssociatedToDevice('digipass', model.serialNumber, req.id)) {
+    model.isValid = false;
+    model.validationMessages.serialNumber = 'Serial number is already assigned to another user';
   }
 
   return model;
