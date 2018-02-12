@@ -73,6 +73,7 @@ const init = async () => {
 
   await oidc.init(app);
 
+  app.use('/assets', express.static(path.join(__dirname, 'app/assets')));
   registerRoutes(app, csrf);
 
   if (config.hostingEnvironment.env === 'dev') {

@@ -10,6 +10,7 @@ jest.mock('./../../../src/app/users/utils', () => {
 });
 
 const utils = require('./../../../src/app/users/utils');
+const { getRequestMock, getResponseMock } = require('./../../utils');
 const get = require('./../../../src/app/users/getSearch');
 
 describe('When processing a get to search for users', () => {
@@ -18,22 +19,14 @@ describe('When processing a get to search for users', () => {
   let usersSearchResult;
 
   beforeEach(() => {
-    req = {
+    req = getRequestMock({
       method: 'GET',
       query: {
         criteria: 'test',
       },
-      csrfToken: () => {
-        return 'token';
-      },
-      accepts: () => {
-        return ['text/html'];
-      },
-    };
+    });
 
-    res = {
-      render: jest.fn(),
-    };
+    res = getResponseMock();
 
     usersSearchResult = [
       {

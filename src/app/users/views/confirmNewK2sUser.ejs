@@ -1,0 +1,50 @@
+<div class="row">
+    <div class="col-12">
+        <h1 class="heading-xlarge">
+            Review invite details
+        </h1>
+        <p>Please confirm these details before granting access to Key to Success.</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-8">
+        <h2 class="heading-small">Details</h2>
+        <div class="row">
+            <div class="col-4">Name:</div>
+            <div class="col-8"><%=user.firstName%> <%=user.lastName%></div>
+        </div>
+        <div class="row">
+            <div class="col-4">Email address:</div>
+            <div class="col-8"><%=user.email%></div>
+        </div>
+        <div class="row">
+            <div class="col-4">Local authority:</div>
+            <div class="col-8"><%=user.localAuthority%></div>
+        </div>
+        <div class="row">
+            <div class="col-4">Key to Success ID:</div>
+            <div class="col-8"><%=user.k2sId%></div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-8">
+        <h2 class="heading-small">Key to Success token</h2>
+        <div class="row">
+            <div class="col-4">Serial number:</div>
+            <div class="col-8"><%=digipassSerialNumberToAssign%></div>
+        </div>
+    </div>
+</div>
+<div class="row" style="margin-top: 25px;">
+    <div class="col-8">
+        <form method="post" id="form-assign-digipass">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+            <div class="form-submit submit-buttons">
+                <a href="assign-digipass" class="button button-secondary">&lt;&lt; Go Back</a>
+                <button type="submit" class="button">Continue</button>
+                <a href="../" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

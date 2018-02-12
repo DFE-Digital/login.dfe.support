@@ -1,0 +1,34 @@
+<div class="row">
+    <div class="col-12">
+        <h1 class="heading-xlarge">
+            Assign token to <%=user.firstName%> <%=user.lastName%>
+        </h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col-8">
+        <form method="post" id="form-assign-digipass">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+            <fieldset>
+                <legend>Please find the serial number found on the back of the token you'd like to add to the user.</legend>
+                <div class="form-group <%= (locals.validationMessages.serialNumber !== undefined) ? 'form-group-error' : '' %>">
+                    <label class="form-label" for="firstName">Token serial number</span> </label>
+                    <% if (locals.validationMessages.serialNumber !== undefined) { %>
+                    <p class="error-message" id="validation-serialNumber"><%=locals.validationMessages.serialNumber%></p>
+                    <% } %>
+                    <input class="form-control full-width" id="serialNumber" name="serialNumber" type="text"
+                           <% if (locals.validationMessages.serialNumber !== undefined) { %>aria-invalid="true" aria-describedby="validation-serialNumber"<% } %>
+                           value="<%=serialNumber%>">
+                </div>
+            </fieldset>
+            <div class="form-submit submit-buttons">
+                <a href="new-k2s-user" class="button button-secondary">&lt;&lt; Go Back</a>
+                <button type="submit" class="button">Continue</button>
+                <a href="../" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+    <div class="col-4">
+        <img src="/assets/images/digipass-serial.png" alt="Digipass serial number examle">
+    </div>
+</div>
