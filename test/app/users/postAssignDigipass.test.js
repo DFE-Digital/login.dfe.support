@@ -1,4 +1,8 @@
+jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
+jest.mock('./../../../src/infrastructure/devices');
+
 const { getRequestMock, getResponseMock } = require('./../../utils');
+const { deviceExists } = require('./../../../src/infrastructure/devices');
 const postAssignDigipass = require('./../../../src/app/users/postAssignDigipass');
 
 describe('When assigning digipass to user', () => {
@@ -22,6 +26,9 @@ describe('When assigning digipass to user', () => {
     });
 
     res = getResponseMock();
+
+    deviceExists.mockReset();
+    deviceExists.mockReturnValue(true);
   });
 
   it('then it should redirect to user list if no k2suser in session', async () => {
@@ -114,8 +121,8 @@ describe('When assigning digipass to user', () => {
     expect(res.redirect.mock.calls).toHaveLength(0);
   });
 
-  it.skip('then it should render view with error if serial number does not exist', async () => {
-    // TODO: arrange
+  it('then it should render view with error if serial number does not exist', async () => {
+    deviceExists.mockReturnValue(false);
 
     await postAssignDigipass(req, res);
 
