@@ -17,10 +17,10 @@ const validateInput = async (req) => {
   } else if (model.cleanSerialNumber.length !== 10 || isNaN(numericSerialNumber) || numericSerialNumber.toString().length !== 10) {
     model.isValid = false;
     model.validationMessages.serialNumber = 'Serial number must be 10 digits (excluding hyphens)';
-  } else if (!await deviceExists(model.serialNumber, req.id)) {
+  } else if (!await deviceExists(model.cleanSerialNumber, req.id)) {
     model.isValid = false;
     model.validationMessages.serialNumber = 'Serial number does not exist';
-  } else if (await getUserAssociatedToDevice('digipass', model.serialNumber, req.id)) {
+  } else if (await getUserAssociatedToDevice('digipass', model.cleanSerialNumber, req.id)) {
     model.isValid = false;
     model.validationMessages.serialNumber = 'Serial number is already assigned to another user';
   }
