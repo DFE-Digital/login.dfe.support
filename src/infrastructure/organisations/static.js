@@ -48,10 +48,15 @@ const getServiceIdentifierDetails = async () => {
   return Promise.resolve(null);
 };
 
+const addInvitationService = async () => {
+  return Promise.resolve(null);
+};
+
 module.exports = {
   getUserOrganisations,
   getServiceById,
   getPageOfOrganisations,
   getAllOrganisations,
   getServiceIdentifierDetails,
+  addInvitationService,
 };

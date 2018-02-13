@@ -157,6 +157,29 @@ const reactivate = async (uid, correlationId) => {
   });
 };
 
+const createInvite = async (givenName, familyName, email, k2sId, digipassSerialNumber, correlationId) => {
+  const token = await jwtStrategy(config.directories.service).getBearerToken();
+
+  const invitation = await rp({
+    method: 'POST',
+    uri: `${config.directories.service.url}/invitations`,
+    headers: {
+      authorization: `bearer ${token}`,
+      'x-correlation-id': correlationId,
+    },
+    body: {
+      firstName: givenName,
+      lastName: familyName,
+      email,
+      keyToSuccessId: k2sId,
+      tokenSerialNumber: digipassSerialNumber,
+    },
+    json: true,
+  });
+
+  return invitation.id;
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
@@ -165,4 +188,5 @@ module.exports = {
   updateUser,
   deactivate,
   reactivate,
+  createInvite,
 };
