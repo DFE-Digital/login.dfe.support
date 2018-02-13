@@ -116,10 +116,32 @@ const getServiceIdentifierDetails = async (serviceId, identifierKey, identifierV
   }
 };
 
+const addInvitationService = async (invitationId, organisationId, serviceId, roleId, correlationId) => {
+  const token = await jwtStrategy(config.organisations.service).getBearerToken();
+
+  try {
+    await rp({
+      method: 'PUT',
+      uri: `${config.organisations.service.url}/organisations/${organisationId}/services/${serviceId}/invitations/${invitationId}`,
+      headers: {
+        authorization: `Bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      body: {
+        roleId,
+      },
+      json: true,
+    });
+  } catch (e) {
+    throw e;
+  }
+};
+
 module.exports = {
   getUserOrganisations,
   getServiceById,
   getPageOfOrganisations,
   getAllOrganisations,
   getServiceIdentifierDetails,
+  addInvitationService,
 };

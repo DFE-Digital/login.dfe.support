@@ -1,3 +1,5 @@
+const uuid = require('uuid/v4');
+
 const getPageOfUsers = async (pageNumber, correlationId) => {
   return Promise.resolve({
     users: [
@@ -51,6 +53,10 @@ const reactivate = async (uid, correlationId) => {
   return Promise.resolve();
 };
 
+const createInvite = async (givenName, familyName, email, k2sId, digipassSerialNumber) => {
+  return Promise.resolve(uuid());
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
@@ -59,4 +65,5 @@ module.exports = {
   updateUser,
   deactivate,
   reactivate,
+  createInvite,
 };
