@@ -6,8 +6,10 @@ const config = require('./../config');
 const uuid = require('uuid/v4');
 const azureSearch = require('./../azureSearch');
 
+const tls = config.cache.params.indexPointerConnectionString.includes('6380');
 const client = redis.createClient({
   url: config.cache.params.indexPointerConnectionString,
+  tls,
 });
 
 const getAsync = promisify(client.get).bind(client);
