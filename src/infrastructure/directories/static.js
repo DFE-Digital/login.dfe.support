@@ -35,12 +35,23 @@ const getPageOfInvitations = async (pageNumber, correlationId) => {
   };
 };
 
+const getInvitation = async (invitationId, correlationId) => {
+  return {
+    firstName: 'Some',
+    lastName: 'User',
+    email: 'some.user@test.local',
+    keyToSuccessId: '1234567',
+    tokenSerialNumber: '12345678901',
+    id: invitationId
+  };
+};
+
 const getUserDevices = async (uid, correlationId) => {
   return [
     {
-      "id": "6eebc499-e69e-4556-95e5-dc0300c12748",
-      "type": "digipass",
-      "serialNumber": "1234567890"
+      'id': '6eebc499-e69e-4556-95e5-dc0300c12748',
+      'type': 'digipass',
+      'serialNumber': '1234567890'
     }
   ];
 };
@@ -69,6 +80,7 @@ module.exports = {
   getPageOfUsers,
   getUser,
   getPageOfInvitations,
+  getInvitation,
   getUserDevices,
   getUserAssociatedToDevice,
   updateUser,
