@@ -3,6 +3,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
     key2SuccessServiceId: '1234567',
   },
 }));
+jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
 jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/organisations');
 
