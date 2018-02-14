@@ -43,7 +43,7 @@ const getUser = async (uid, correlationId) => {
     return user;
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
-    if (status === 401) {
+    if (status === 404) {
       return null;
     }
     throw e;
@@ -68,6 +68,30 @@ const getUserDevices = async (uid, correlationId) => {
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
     if (status === 401) {
+      return null;
+    }
+    throw e;
+  }
+};
+
+const getUserAssociatedToDevice = async (type, serialNumber, correlationId) => {
+  const token = await jwtStrategy(config.directories.service).getBearerToken();
+
+  try {
+    const deviceAssociation = await rp({
+      method: 'GET',
+      uri: `${config.directories.service.url}/devices/${type}/${serialNumber}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+
+    return deviceAssociation ? deviceAssociation.associatedWith.sub : null;
+  } catch (e) {
+    const status = e.statusCode ? e.statusCode : 500;
+    if (status === 404) {
       return null;
     }
     throw e;
@@ -137,6 +161,7 @@ module.exports = {
   getPageOfUsers,
   getUser,
   getUserDevices,
+  getUserAssociatedToDevice,
   updateUser,
   deactivate,
   reactivate,
