@@ -1,9 +1,7 @@
 const userDevices = require('./../../infrastructure/userDevices');
 const logger = require('./../../infrastructure/logger');
-const { getUser } = require('./../../infrastructure/directories');
-const { getUserLoginAuditsSince } = require('./../../infrastructure/audit');
+const { getUserLoginAuditsSince, getTokenAudits } = require('./../../infrastructure/audit');
 const moment = require('moment');
-const { mapUserStatus } = require('./../../infrastructure/utils');
 
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
@@ -57,9 +55,10 @@ const search = async (req) => {
   };
 };
 
-const getUserDetails = async (req) => {
-  const uid = req.params.uid;
-  const user = await getUser(uid);
+const getUserTokenDetails = async (req, params) => {
+  const uid = params.uid;
+  const serialNumber = params.serialNumber;
+
   const logins = (await getUserLoginAuditsSince(uid, moment().subtract(1, 'years').toDate())).map(x => {
     x.timestamp = new Date(x.timestamp);
     return x;
@@ -76,19 +75,36 @@ const getUserDetails = async (req) => {
     return 0;
   });
 
+  const result = await userDevices.getByUserId(uid);
+  let auditRecords = [];
+  if(result) {
+    auditRecords = await getTokenAudits(uid, serialNumber, 1, result.name);
+  }
+
+  logger.audit(`${req.user.email} (id: ${req.user.sub}) viewed users device userId:${uid} ${req.user.email} in support`, {
+    type: 'support',
+    subType: 'userDevice-detail',
+    userId: req.user.sub,
+    userEmail: req.user.email,
+  });
+
+
+
   return {
-    id: uid,
-    name: `${user.given_name} ${user.family_name}`,
-    email: user.email,
+    uid: uid,
+    name: result.name,
+    serialNumber: result.device.serialNumber,
+    serialNumberFormatted: result.device.serialNumberFormatted,
+    tokenStatus :  result.name ? 'Active' : 'Unassigned',
+    orgName: result.organisation ? result.organisation.name : '',
+    email: result.email,
     lastLogin: successfulLogins && successfulLogins.length > 0 ? successfulLogins[0].timestamp : null,
-    status: mapUserStatus(user.status),
-    loginsInPast12Months: {
-      successful: successfulLogins ? successfulLogins.length : 0,
-    },
+    numberOfSuccessfulLoginAttemptsInTwelveMonths:  successfulLogins ? successfulLogins.length : 0,
+    audit: auditRecords,
   };
 };
 
 module.exports = {
   search,
-  getUserDetails,
+  getUserTokenDetails,
 };
