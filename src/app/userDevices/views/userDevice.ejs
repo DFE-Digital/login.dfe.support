@@ -1,0 +1,64 @@
+<div class="row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Token <%=locals.serialNumberFormatted%>
+            <% if(locals.name) { %>
+                <small><a href="/users/<%=locals.uid%>"><%=locals.name%></a>, <%=locals.orgName%></small>
+            <% }%>
+        </h1>
+        <dl class="inline condensed">
+            <dt class="label">Last login:</dt>
+            <dd><%=locals.lastLogin ? locals.moment(locals.lastLogin).format('DD/MMM/YYYY HH:mm:ss') : 'Never'%></dd>
+            <dt class="label">Token status:</dt>
+            <dd><%=locals.tokenStatus%></dd>
+            <dt class="label">Sessions in the last 12 months:</dt>
+            <dd><%=locals.numberOfSuccessfulLoginAttemptsInTwelveMonths%></dd>
+        </dl>
+    </div>
+    <div class="col-4">
+        <aside>
+            <h2 class="heading-medium">Actions</h2>
+            <ul class="list">
+                <li><a href="#">Deactivate token</a></li>
+                <li><a href="#">Resync token</a></li>
+                <li><a href="#">Unlock token</a></li>
+            </ul>
+        </aside>
+    </div>
+</div>
+
+<div class="row meta">
+    <div class="col-6">
+        <p>Showing <b><%=locals.audit.audits.length%></b> audits</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <table class="data">
+            <thead>
+                <tr class="sortable">
+                    <th scope="col" class="cwp-20">Date</th>
+                    <th scope="col" class="cwp-50">Event</th>
+                    <th scope="col" class="cwp-15">Result</th>
+                    <th scope="col" class="cwp-15">User</th>
+                </tr>
+            </thead>
+            <tbody>
+            <% if(locals.audit.audits.length === 0) { %>
+                <tr>
+                    <td colspan="5"><span class="empty-state">No audit events found</span></td>
+                </tr>
+            <% } %>
+            <% for (let i = 0; i < locals.audit.audits.length; i++) { %>
+                <tr>
+                    <td><%= locals.moment(audit.audits[i].date).format('DD/MMM/YYYY HH:mm:ss') %></td>
+                    <td><%= audit.audits[i].event %></td>
+                    <td><%= audit.audits[i].success %></td>
+                    <td><%= audit.audits[i].name %></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>

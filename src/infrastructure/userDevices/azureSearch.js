@@ -6,8 +6,10 @@ const config = require('./../config');
 const uuid = require('uuid/v4');
 const azureSearch = require('./../azureSearch');
 
+const tls = config.cache.params.indexPointerConnectionString.includes('6380');
 const client = redis.createClient({
   url: config.cache.params.indexPointerConnectionString,
+  tls,
 });
 
 const getAsync = promisify(client.get).bind(client);
@@ -67,6 +69,24 @@ const deleteUnusedIndexes = async () => {
   await setAsync('UnusedIndexes_UserDevices', JSON.stringify(indexesAppearingUnused));
 };
 
+const mapUser = (user) => {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    organisation: user.organisationName ? {
+      name: user.organisationName
+    } : null,
+    lastLogin: user.lastLogin ? new Date(user.lastLogin) : null,
+    device: {
+      id: user.deviceId,
+      status: user.deviceStatus,
+      serialNumber: user.serialNumber,
+      serialNumberFormatted: `${user.serialNumber.substr(0, 2)}-${user.serialNumber.substr(2, 7)}-${user.serialNumber.substr(9, 1)}`
+    }
+  }
+};
+
 
 const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => {
   const currentIndexName = await getAsync('CurrentIndex_UserDevices');
@@ -89,6 +109,12 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
         break;
     }
 
+    const formattedCriteria = criteria.replace('-','');
+    const serialNumber = parseInt(formattedCriteria);
+    if(!isNaN(serialNumber)) {
+      criteria = formattedCriteria;
+    }
+
     const response = await azureSearch.search(currentIndexName, criteria, skip, pageSize, orderBy);
 
     let numberOfPages = 1;
@@ -99,24 +125,21 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
 
     return {
       userDevices: response.value.map((user) => {
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          organisation: user.organisationName ? {
-            name: user.organisationName
-          } : null,
-          lastLogin: user.lastLogin ? new Date(user.lastLogin) : null,
-          device: {
-            id: user.deviceId,
-            status: user.deviceStatus,
-            serialNumber: user.serialNumber,
-          }
-        }
+        return mapUser(user);
       }),
       numberOfPages,
       totalNumberOfResults,
     };
+  } catch (e) {
+    throw e;
+  }
+};
+
+const getByUserId = async (userId) => {
+  try {
+    const currentIndexName = await getAsync('CurrentIndex_UserDevices');
+    const user = await azureSearch.getIndexById(currentIndexName, userId);
+    return mapUser(user);
   } catch (e) {
     throw e;
   }
@@ -128,5 +151,6 @@ module.exports = {
   updateActiveIndex,
   deleteUnusedIndexes,
   search,
+  getByUserId,
 };
 
