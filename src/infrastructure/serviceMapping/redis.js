@@ -2,8 +2,10 @@ const redis = require('redis');
 const { promisify } = require('util');
 const config = require('./../config');
 
+const tls = config.serviceMapping.params.connectionString.includes('6380');
 const client = redis.createClient({
   url: config.serviceMapping.params.connectionString,
+  tls,
 });
 const getAsync = promisify(client.get).bind(client);
 

@@ -3,11 +3,14 @@ const { promisify } = require('util');
 const config = require('./../config');
 const { chunk } = require('lodash');
 const moment = require('moment');
+const { getUser } = require('./../../infrastructure/directories');
 
 const pageSize = 25;
 
+const tls = config.audit.params.connectionString.includes('6380');
 const client = redis.createClient({
   url: config.audit.params.connectionString,
+  tls,
 });
 const lrangeAsync = promisify(client.lrange).bind(client); //lrange(indexname, start, stop)
 
@@ -76,6 +79,40 @@ const getUserLoginAuditsSince = async (userId, sinceDate) => {
   return loginAudits;
 };
 
+const getUserName = async(userId) => {
+  const user = await getUser(userId);
+
+  return `${user.given_name} ${user.family_name}`;
+};
+
+const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
+  const requiredAudits = pageNumber * pageSize;
+  let loginAudits = [];
+
+  let p = 1;
+  let hasMorePages = true;
+  while (hasMorePages && loginAudits.length < requiredAudits) {
+    const pageOfAudits = await getUserAudit(userId, p);
+     let loginAuditsPage = await Promise.all(pageOfAudits.audits.filter((audit) =>  {return (audit.type === 'sign-in' && audit.subType === 'digipass' && audit.deviceSerialNumber === serialNumber)}).map(async (audit) => {
+      audit.event = 'Sign-in using a digipass key fob';
+      audit.date = new Date(audit.timestamp);
+      audit.name = audit.userId === userId ? userName : await getUserName(audit.userId);
+      audit.success = audit.success ? 'Success' : 'Failure';
+      return audit;
+    }));
+    loginAudits.push(...loginAuditsPage);
+    p++;
+    hasMorePages = p <= pageOfAudits.numberOfPages;
+  }
+
+  const pages = chunk(loginAudits, pageSize);
+  const page = pageNumber <= pages.length ? pages[pageNumber - 1] : [];
+  return {
+    audits: page,
+    numberOfPages: pages.length,
+  };
+};
+
 const getUserLoginAuditsForService = async (userId, clientId, pageNumber) => {
   const requiredAudits = pageNumber * pageSize;
   const loginAudits = [];
@@ -95,7 +132,7 @@ const getUserLoginAuditsForService = async (userId, clientId, pageNumber) => {
   }
 
   const pages = chunk(loginAudits, pageSize);
-  const page = pageNumber < pages.length ? pages[pageNumber - 1] : [];
+  const page = pageNumber <= pages.length ? pages[pageNumber - 1] : [];
   return {
     audits: page,
     numberOfPages: pages.length, // This will create a moving number of pages. Current use case will work, but may need re-thinking
@@ -133,4 +170,5 @@ module.exports = {
   getUserLoginAuditsSince,
   getUserLoginAuditsForService,
   getUserChangeHistory,
+  getTokenAudits,
 };
