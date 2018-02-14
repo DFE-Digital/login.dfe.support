@@ -1,6 +1,6 @@
 jest.mock('./../../../src/app/userDevices/utils', () => {
   return {
-    getTokenDetails: jest.fn().mockReturnValue({
+    getUserTokenDetails: jest.fn().mockReturnValue({
       uid: 'afed345tgb678',
       serialNumber: '123test456',
       serialNumberFormatted: '123-test-456',
@@ -64,8 +64,8 @@ describe('When processing a get for a user device', () => {
   it('then the req is passed onto the getTokenDetails function', async () => {
     await get(req, res);
 
-    expect(utils.getTokenDetails.mock.calls).toHaveLength(1);
-    expect(utils.getTokenDetails.mock.calls[0][0]).toMatchObject(req.params);
+    expect(utils.getUserTokenDetails.mock.calls).toHaveLength(1);
+    expect(utils.getUserTokenDetails.mock.calls[0][0]).toMatchObject(req, req.params);
   });
 
   test('then it should include page details', async () => {

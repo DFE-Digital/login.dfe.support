@@ -1,9 +1,9 @@
-const {getTokenDetails} = require('./utils');
+const {getUserTokenDetails} = require('./utils');
 const { sendResult } = require('./../../infrastructure/utils');
 
 const action = async (req, res) => {
 
-  const tokenDetails = await getTokenDetails(req.params);
+  const tokenDetails = await getUserTokenDetails(req, req.params);
 
   sendResult(req, res, 'userDevices/views/userDevice', {
     csrfToken: req.csrfToken(),

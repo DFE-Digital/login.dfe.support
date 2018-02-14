@@ -2,7 +2,9 @@
     <div class="col-8">
         <h1 class="heading-xlarge">
             Token <%=locals.serialNumberFormatted%>
-            <small><a href="/users/<%=locals.uid%>"><%=locals.name%></a>, <%=locals.orgName%></small>
+            <% if(locals.name) { %>
+                <small><a href="/users/<%=locals.uid%>"><%=locals.name%></a>, <%=locals.orgName%></small>
+            <% }%>
         </h1>
         <dl class="inline condensed">
             <dt class="label">Last login:</dt>
@@ -27,7 +29,7 @@
 
 <div class="row meta">
     <div class="col-6">
-        <p>Showing <b><%=locals.audit.length%></b> audits</p>
+        <p>Showing <b><%=locals.audit.audits.length%></b> audits</p>
     </div>
 </div>
 
@@ -43,17 +45,17 @@
                 </tr>
             </thead>
             <tbody>
-            <% if(locals.audit.length === 0) { %>
+            <% if(locals.audit.audits.length === 0) { %>
                 <tr>
                     <td colspan="5"><span class="empty-state">No audit events found</span></td>
                 </tr>
             <% } %>
-            <% for (let i = 0; i < locals.audit.length; i++) { %>
+            <% for (let i = 0; i < locals.audit.audits.length; i++) { %>
                 <tr>
-                    <td><%= audit[i].date %></td>
-                    <td><%= audit[i].event %></td>
-                    <td><%= audit[i].result %></td>
-                    <td><%= audit[i].user %></td>
+                    <td><%= locals.moment(audit.audits[i].date).format('DD/MMM/YYYY HH:mm:ss') %></td>
+                    <td><%= audit.audits[i].event %></td>
+                    <td><%= audit.audits[i].success %></td>
+                    <td><%= audit.audits[i].name %></td>
                 </tr>
             <% } %>
             </tbody>
