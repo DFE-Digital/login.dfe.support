@@ -80,6 +80,15 @@ describe('when searching for a user in azure search', () => {
       uri: 'https://test-search.search.windows.net/indexes/test-index/docs?api-version=2016-09-01&search=test&$count=true&$skip=0&$top=25&$orderby=serialNumber',
     });
   });
+  it('then it if the search criteria contains - and is a number the - are stripped out', async () => {
+    await search('00123-456', 1);
+
+    expect(rp.mock.calls).toHaveLength(1);
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      method: 'GET',
+      uri: 'https://test-search.search.windows.net/indexes/test-index/docs?api-version=2016-09-01&search=00123456&$count=true&$skip=0&$top=25&$orderby=serialNumber',
+    });
+  });
 
   it('then it should search the current index for the criteria and page, with a page size of 25 and ordered by specified field if possible', async () => {
     await search('test', 1, 'organisation', false);

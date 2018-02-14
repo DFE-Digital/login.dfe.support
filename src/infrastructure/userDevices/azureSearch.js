@@ -107,6 +107,12 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
         break;
     }
 
+    const formattedCriteria = criteria.replace('-','');
+    const serialNumber = parseInt(formattedCriteria);
+    if(!isNaN(serialNumber)) {
+      criteria = formattedCriteria;
+    }
+
     const response = await azureSearch.search(currentIndexName, criteria, skip, pageSize, orderBy);
 
     let numberOfPages = 1;
