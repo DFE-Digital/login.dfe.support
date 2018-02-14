@@ -48,6 +48,13 @@
       "connectionString": "redis://localhost:6379"
     }
   },
+  "serviceMapping": {
+    "type": "redis",
+    "params": {
+      "connectionString": "redis://localhost:6379"
+    },
+    "key2SuccessServiceId": ""
+  },
   "schedules": {
     "users": "*/5 * * * *",
     "userDevices": "*/5 * * * *",

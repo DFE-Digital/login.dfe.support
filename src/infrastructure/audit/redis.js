@@ -7,8 +7,10 @@ const { getUser } = require('./../../infrastructure/directories');
 
 const pageSize = 25;
 
+const tls = config.audit.params.connectionString.includes('6380');
 const client = redis.createClient({
   url: config.audit.params.connectionString,
+  tls,
 });
 const lrangeAsync = promisify(client.lrange).bind(client); //lrange(indexname, start, stop)
 

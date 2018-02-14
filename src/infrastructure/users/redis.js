@@ -5,8 +5,10 @@ const { concat, chunk } = require('lodash');
 const uuid = require('uuid/v4');
 const logger = require('./../logger');
 
+const tls = config.cache.params.connectionString.includes('6380');
 const client = redis.createClient({
   url: config.cache.params.connectionString,
+  tls,
 });
 const getAsync = promisify(client.get).bind(client);
 const setAsync = promisify(client.set).bind(client);
