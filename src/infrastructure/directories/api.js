@@ -74,6 +74,30 @@ const getPageOfInvitations = async (pageNumber, correlationId) => {
   }
 };
 
+const getInvitation = async (invitationId, correlationId) => {
+  const token = await jwtStrategy(config.directories.service).getBearerToken();
+
+  try {
+    const invitation = await rp({
+      method: 'GET',
+      uri: `${config.directories.service.url}/invitations/${invitationId}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+
+    return invitation;
+  } catch (e) {
+    const status = e.statusCode ? e.statusCode : 500;
+    if (status === 404) {
+      return null;
+    }
+    throw e;
+  }
+};
+
 const getUserDevices = async (uid, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
@@ -208,6 +232,7 @@ module.exports = {
   getPageOfUsers,
   getUser,
   getPageOfInvitations,
+  getInvitation,
   getUserDevices,
   getUserAssociatedToDevice,
   updateUser,

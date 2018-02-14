@@ -1,13 +1,13 @@
 const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
-const { getUserOrganisations } = require('./../../infrastructure/organisations');
-const { getUserDevices } = require('./../../infrastructure/directories');
+const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
+const { getUserDevices, getInvitation } = require('./../../infrastructure/directories');
 const { getClientIdForServiceId } = require('./../../infrastructure/serviceMapping');
 const { getUserLoginAuditsForService } = require('./../../infrastructure/audit');
 const logger = require('./../../infrastructure/logger');
 
 const getOrganisations = async (userId, correlationId) => {
-  const orgServiceMapping = await getUserOrganisations(userId, correlationId);
+  const orgServiceMapping = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), correlationId) : await getUserOrganisations(userId, correlationId);
   if (!orgServiceMapping) {
     return [];
   }
@@ -24,12 +24,12 @@ const getOrganisations = async (userId, correlationId) => {
       organisations.push(org);
     }
     org.services.push({
-      id: orgSvcMap.id,
-      name: orgSvcMap.name,
+      id: orgSvcMap.service ? orgSvcMap.service.id : orgSvcMap.id,
+      name: orgSvcMap.service ? orgSvcMap.service.name : orgSvcMap.name,
       userType: orgSvcMap.role,
-      grantedAccessOn: new Date(orgSvcMap.requestDate),
+      grantedAccessOn: orgSvcMap.requestDate ? new Date(orgSvcMap.requestDate) : null,
       lastLogin: null,
-      approvers: orgSvcMap.approvers,
+      approvers: orgSvcMap.approvers ? orgSvcMap.approvers : [],
       token: null,
     });
   });
@@ -37,6 +37,10 @@ const getOrganisations = async (userId, correlationId) => {
   return organisations;
 };
 const getLastLoginForService = async (userId, serviceId) => {
+  if (userId.startsWith('inv-')) {
+    return null;
+  }
+
   const clientId = await getClientIdForServiceId(serviceId);
   if (!clientId) {
     return null;
@@ -58,16 +62,31 @@ const getLastLoginForService = async (userId, serviceId) => {
   return lastLogin;
 };
 const getToken = async (userId, serviceId, correlationId) => {
-  const tokens = await getUserDevices(userId, correlationId)
-  if (!tokens || tokens.length === 0) {
-    return null;
-  }
+  if (userId.startsWith('inv-')) {
+    const invitation = await getInvitation(userId.substr(4), correlationId);
+    let serialNumber = invitation.tokenSerialNumber;
+    if (!serialNumber && invitation.oldCredentials.tokenSerialNumber) {
+      serialNumber = invitation.oldCredentials.tokenSerialNumber;
+    }
+    if (!serialNumber) {
+      return null;
+    }
+    return {
+      type: 'digipass',
+      serialNumber: `${serialNumber.substr(0, 2)}-${serialNumber.substr(2, 7)}-${serialNumber.substr(9, 1)}`,
+    };
+  } else {
+    const tokens = await getUserDevices(userId, correlationId)
+    if (!tokens || tokens.length === 0) {
+      return null;
+    }
 
-  const digipass = tokens.find(t => t.type === 'digipass');
-  return {
-    type: digipass.type,
-    serialNumber: `${digipass.serialNumber.substr(0, 2)}-${digipass.serialNumber.substr(2, 7)}-${digipass.serialNumber.substr(9, 1)}`,
-  };
+    const digipass = tokens.find(t => t.type === 'digipass');
+    return {
+      type: digipass.type,
+      serialNumber: `${digipass.serialNumber.substr(0, 2)}-${digipass.serialNumber.substr(2, 7)}-${digipass.serialNumber.substr(9, 1)}`,
+    };
+  }
 };
 
 const action = async (req, res) => {
@@ -94,6 +113,7 @@ const action = async (req, res) => {
     csrfToken: req.csrfToken(),
     user,
     organisations,
+    isInvitation: req.params.uid.startsWith('inv-'),
   });
 };
 

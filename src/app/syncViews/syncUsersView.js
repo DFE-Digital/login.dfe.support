@@ -38,7 +38,7 @@ const loadUsers = async (newIndexName, correlationId) => {
   while (hasMorePages) {
     logger.info(`Syncing page ${pageNumber} of users`);
     const pageOfUsers = await directories.getPageOfUsers(pageNumber, correlationId);
-    if (pageOfUsers.users) {
+    if (pageOfUsers.users && pageOfUsers.users.length > 0) {
       const mappedUsers = await Promise.all(pageOfUsers.users.map(async (user) => {
         logger.info(`Building user ${user.email} (id:${user.sub}) for syncing`);
         return await buildUser(user, correlationId);
@@ -56,7 +56,7 @@ const loadInvitations = async (newIndexName, correlationId) => {
   while (hasMorePages) {
     logger.info(`Syncing page ${pageNumber} of invitations`);
     const pageOfInvitations = await directories.getPageOfInvitations(pageNumber, correlationId);
-    if (pageOfInvitations.invitations) {
+    if (pageOfInvitations.invitations && pageOfInvitations.invitations.length > 0) {
       const mappedInvitations = await Promise.all(pageOfInvitations.invitations.map(async (invitation) => {
         logger.info(`Building invitation ${invitation.email} (id:${invitation.id}) for syncing`);
         const orgServiceMapping = await organisations.getInvitationOrganisations(invitation.id, correlationId);
@@ -66,7 +66,7 @@ const loadInvitations = async (newIndexName, correlationId) => {
           email: invitation.email,
           organisation: orgServiceMapping && orgServiceMapping.length > 0 ? orgServiceMapping[0].organisation : null,
           lastLogin: null,
-          status: { id: -1, description: 'Invited', changedOn: null },
+          status: mapUserStatus(-1),
         };
       }));
       await users.updateIndex(mappedInvitations, newIndexName);
