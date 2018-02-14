@@ -50,6 +50,30 @@ const getUser = async (uid, correlationId) => {
   }
 };
 
+const getPageOfInvitations = async (pageNumber, correlationId) => {
+  const token = await jwtStrategy(config.directories.service).getBearerToken();
+
+  try {
+    const pageOfInvitations = await rp({
+      method: 'GET',
+      uri: `${config.directories.service.url}/invitations?page=${pageNumber}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+
+    return pageOfInvitations;
+  } catch (e) {
+    const status = e.statusCode ? e.statusCode : 500;
+    if (status === 404) {
+      return null;
+    }
+    throw e;
+  }
+};
+
 const getUserDevices = async (uid, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
@@ -183,6 +207,7 @@ const createInvite = async (givenName, familyName, email, k2sId, digipassSerialN
 module.exports = {
   getPageOfUsers,
   getUser,
+  getPageOfInvitations,
   getUserDevices,
   getUserAssociatedToDevice,
   updateUser,
