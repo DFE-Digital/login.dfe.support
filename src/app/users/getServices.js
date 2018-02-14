@@ -1,7 +1,7 @@
 const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
-const { getUserDevices, getInvitation } = require('./../../infrastructure/directories');
+const { getUser, getUserDevices, getInvitation } = require('./../../infrastructure/directories');
 const { getClientIdForServiceId } = require('./../../infrastructure/serviceMapping');
 const { getUserLoginAuditsForService } = require('./../../infrastructure/audit');
 const logger = require('./../../infrastructure/logger');
@@ -12,8 +12,11 @@ const getOrganisations = async (userId, correlationId) => {
     return [];
   }
 
+  const userMap = [];
   const organisations = [];
-  orgServiceMapping.forEach((orgSvcMap) => {
+  // orgServiceMapping.forEach((orgSvcMap) => {
+  for (let i = 0; i < orgServiceMapping.length; i += 1) {
+    const orgSvcMap = orgServiceMapping[i];
     let org = organisations.find(o => o.id === orgSvcMap.organisation.id);
     if (!org) {
       org = {
@@ -23,16 +26,30 @@ const getOrganisations = async (userId, correlationId) => {
       };
       organisations.push(org);
     }
+
+    const approvers = orgSvcMap.approvers ? await Promise.all(orgSvcMap.approvers.map(async (approverId) => {
+      let approver = userMap.find(u => u.id === approverId);
+      if (!approver) {
+        const user = await getUser(approverId, correlationId);
+        approver = {
+          id: approverId,
+          name: `${user.given_name} ${user.family_name}`,
+        };
+      }
+
+      return approver;
+    })) : [];
+
     org.services.push({
       id: orgSvcMap.service ? orgSvcMap.service.id : orgSvcMap.id,
       name: orgSvcMap.service ? orgSvcMap.service.name : orgSvcMap.name,
       userType: orgSvcMap.role,
       grantedAccessOn: orgSvcMap.requestDate ? new Date(orgSvcMap.requestDate) : null,
       lastLogin: null,
-      approvers: orgSvcMap.approvers ? orgSvcMap.approvers : [],
+      approvers,
       token: null,
     });
-  });
+  }
 
   return organisations;
 };
