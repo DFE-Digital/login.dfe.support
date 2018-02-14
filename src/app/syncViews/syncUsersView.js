@@ -32,15 +32,7 @@ const buildUser = async (user, correlationId) => {
   };
 };
 
-const syncUsersView = async () => {
-  const correlationId = uuid();
-
-  logger.info(`Starting to sync users view (correlation id: ${correlationId})`);
-
-  // Create new index
-  const newIndexName = await users.createIndex();
-
-  // Get all users from directories
+const loadUsers = async (newIndexName, correlationId) => {
   let hasMorePages = true;
   let pageNumber = 1;
   while (hasMorePages) {
@@ -56,7 +48,46 @@ const syncUsersView = async () => {
     pageNumber++;
     hasMorePages = pageNumber <= pageOfUsers.numberOfPages;
   }
+};
 
+const loadInvitations = async (newIndexName, correlationId) => {
+  let hasMorePages = true;
+  let pageNumber = 1;
+  while (hasMorePages) {
+    logger.info(`Syncing page ${pageNumber} of invitations`);
+    const pageOfInvitations = await directories.getPageOfInvitations(pageNumber, correlationId);
+    if (pageOfInvitations.invitations) {
+      const mappedInvitations = await Promise.all(pageOfInvitations.invitations.map(async (invitation) => {
+        logger.info(`Building invitation ${invitation.email} (id:${invitation.id}) for syncing`);
+        return {
+          id: `inv-${invitation.id}`,
+          name: `${invitation.firstName} ${invitation.lastName}`,
+          email: invitation.email,
+          organisation: null, // orgServiceMapping && orgServiceMapping.length > 0 ? orgServiceMapping[0].organisation : null,
+          lastLogin: null,
+          status: { id: -1, description: 'Invited', changedOn: null },
+        };
+      }));
+      await users.updateIndex(mappedInvitations, newIndexName);
+    }
+    pageNumber++;
+    hasMorePages = pageNumber <= pageOfInvitations.numberOfPages;
+  }
+};
+
+const syncUsersView = async () => {
+  const correlationId = uuid();
+
+  logger.info(`Starting to sync users view (correlation id: ${correlationId})`);
+
+  // Create new index
+  const newIndexName = await users.createIndex();
+
+  // Get all users from directories
+  await loadUsers(newIndexName, correlationId);
+  await loadInvitations(newIndexName, correlationId);
+
+  // Re-point current index
   await users.updateActiveIndex(newIndexName);
   logger.info(`Pointed user index to ${newIndexName}`);
 

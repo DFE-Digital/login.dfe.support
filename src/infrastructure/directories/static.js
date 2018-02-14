@@ -27,6 +27,14 @@ const getUser = async (uid, correlationId) => {
   };
 };
 
+const getPageOfInvitations = async (pageNumber, correlationId) => {
+  return {
+    invitations: [],
+    numberOfPages: 1,
+    page: pageNumber,
+  };
+};
+
 const getUserDevices = async (uid, correlationId) => {
   return [
     {
@@ -60,6 +68,7 @@ const createInvite = async (givenName, familyName, email, k2sId, digipassSerialN
 module.exports = {
   getPageOfUsers,
   getUser,
+  getPageOfInvitations,
   getUserDevices,
   getUserAssociatedToDevice,
   updateUser,
