@@ -23,7 +23,7 @@ const rp = require('request-promise');
 describe('when searching for a user in azure search', () => {
   let get;
   let set;
-  let search;
+  let getByUserId;
 
   beforeEach(() => {
     rp.mockReset();
@@ -61,47 +61,28 @@ describe('when searching for a user in azure search', () => {
       };
     });
 
-    search = require('./../../../src/infrastructure/userDevices/azureSearch').search;
+      getByUserId = require('./../../../src/infrastructure/userDevices/azureSearch').getByUserId;
   });
 
   it('then it should lookup current index', async () => {
-    await search('test', 1);
+    await getByUserId('test', 1);
 
     expect(get.mock.calls).toHaveLength(1);
     expect(get.mock.calls[0][0]).toBe('CurrentIndex_UserDevices');
   });
 
-  it('then it should search the current index for the criteria and page, with a page size of 25 and ordered by serial number if no order specified', async () => {
-    await search('test', 1);
+  it('then it gets the record by user id with the current index', async () => {
+    await getByUserId('test', 1);
 
     expect(rp.mock.calls).toHaveLength(1);
     expect(rp.mock.calls[0][0]).toMatchObject({
       method: 'GET',
-      uri: 'https://test-search.search.windows.net/indexes/test-index/docs?api-version=2016-09-01&search=test&$count=true&$skip=0&$top=25&$orderby=serialNumber',
-    });
-  });
-  it('then it if the search criteria contains - and is a number the - are stripped out', async () => {
-    await search('00123-456', 1);
-
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
-      method: 'GET',
-      uri: 'https://test-search.search.windows.net/indexes/test-index/docs?api-version=2016-09-01&search=00123456&$count=true&$skip=0&$top=25&$orderby=serialNumber',
+      uri: `https://test-search.search.windows.net/indexes/test-index/docs?api-version=2016-09-01&$filter=id+eq+'test'`,
     });
   });
 
-  it('then it should search the current index for the criteria and page, with a page size of 25 and ordered by specified field if possible', async () => {
-    await search('test', 1, 'organisation', false);
-
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
-      method: 'GET',
-      uri: 'https://test-search.search.windows.net/indexes/test-index/docs?api-version=2016-09-01&search=test&$count=true&$skip=0&$top=25&$orderby=organisationName desc',
-    });
-  });
-
-  it('then it should include the api key from config', async () => {
-    await search('test', 1);
+  it('then the api key from config is included', async () => {
+    await getByUserId('test', 1);
 
     expect(rp.mock.calls).toHaveLength(1);
     expect(rp.mock.calls[0][0]).toMatchObject({
@@ -112,13 +93,10 @@ describe('when searching for a user in azure search', () => {
   });
 
   it('then it should map results to response', async () => {
-    const actual = await search('test', 1);
+    const actual = await getByUserId('test', 1);
 
     expect(actual).not.toBeNull();
-    expect(actual.numberOfPages).toBe(2);
-    expect(actual.users).not.toBeNull();
-    expect(actual.userDevices).toHaveLength(1);
-    expect(actual.userDevices[0]).toMatchObject({
+    expect(actual).toMatchObject({
       id: '34080a9c-fd79-45a6-a092-4756264d5c85',
       name: 'User One',
       email: 'user.one@unit.test',
