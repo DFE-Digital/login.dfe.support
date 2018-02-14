@@ -136,7 +136,7 @@ const getUserAssociatedToDevice = async (type, serialNumber, correlationId) => {
       json: true,
     });
 
-    return deviceAssociation ? deviceAssociation.associatedWith.sub : null;
+    return deviceAssociation ? deviceAssociation.associatedWith : null;
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
     if (status === 404) {
