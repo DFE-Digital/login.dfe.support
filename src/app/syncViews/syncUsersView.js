@@ -59,11 +59,12 @@ const loadInvitations = async (newIndexName, correlationId) => {
     if (pageOfInvitations.invitations) {
       const mappedInvitations = await Promise.all(pageOfInvitations.invitations.map(async (invitation) => {
         logger.info(`Building invitation ${invitation.email} (id:${invitation.id}) for syncing`);
+        const orgServiceMapping = await organisations.getInvitationOrganisations(invitation.id, correlationId);
         return {
           id: `inv-${invitation.id}`,
           name: `${invitation.firstName} ${invitation.lastName}`,
           email: invitation.email,
-          organisation: null, // orgServiceMapping && orgServiceMapping.length > 0 ? orgServiceMapping[0].organisation : null,
+          organisation: orgServiceMapping && orgServiceMapping.length > 0 ? orgServiceMapping[0].organisation : null,
           lastLogin: null,
           status: { id: -1, description: 'Invited', changedOn: null },
         };

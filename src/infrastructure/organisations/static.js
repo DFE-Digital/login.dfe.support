@@ -19,6 +19,27 @@ const getUserOrganisations = async (userId) => {
     }
   ]);
 };
+
+const getInvitationOrganisations = async (invitationId, correlationId) => {
+  return Promise.resolve([
+    {
+      "invitationId": invitationId,
+      "role": {
+        "id": 0,
+        "name": "End user"
+      },
+      "service": {
+        "id": "3bfde961-f061-4786-b618-618deaf96e44",
+        "name": "Key to success (KtS)"
+      },
+      "organisation": {
+        "id": "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+        "name": "Big School"
+      }
+    }
+  ])
+};
+
 const getServiceById = async (serviceId, correlationId) => {
   return Promise.resolve({
     "id": "83f00ace-f1a0-4338-8784-fa14f5943e5a",
@@ -54,6 +75,7 @@ const addInvitationService = async () => {
 
 module.exports = {
   getUserOrganisations,
+  getInvitationOrganisations,
   getServiceById,
   getPageOfOrganisations,
   getAllOrganisations,

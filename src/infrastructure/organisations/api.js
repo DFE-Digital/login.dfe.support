@@ -26,6 +26,30 @@ const getUserOrganisations = async (userId, correlationId) => {
   }
 };
 
+const getInvitationOrganisations = async (invitationId, correlationId) => {
+  const token = await jwtStrategy(config.organisations.service).getBearerToken();
+
+  try {
+    const invitationServiceMapping = await rp({
+      method: 'GET',
+      uri: `${config.organisations.service.url}/invitations/${invitationId}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+
+    return invitationServiceMapping;
+  } catch (e) {
+    const status = e.statusCode ? e.statusCode : 500;
+    if (status === 401 || status === 404) {
+      return null;
+    }
+    throw e;
+  }
+};
+
 const getServiceById = async (serviceId, correlationId) => {
   const token = await jwtStrategy(config.organisations.service).getBearerToken();
 
@@ -139,6 +163,7 @@ const addInvitationService = async (invitationId, organisationId, serviceId, rol
 
 module.exports = {
   getUserOrganisations,
+  getInvitationOrganisations,
   getServiceById,
   getPageOfOrganisations,
   getAllOrganisations,
