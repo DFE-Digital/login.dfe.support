@@ -1,0 +1,64 @@
+<% if (locals.validationFailed && !locals.validationMessages.username && !locals.validationMessages.password) { %>
+<div class="notification notification-error" tabindex="-1">
+    <h1 class="bold-medium">Information missing or incorrect</h1>
+    <p>The codes you have entered are incorrect</p>
+</div>
+<% } %>
+
+<div class="grid-row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Sync your token
+        </h1>
+        <p class="lede">To use your token with DfE Sign-in, we need to sync your token with the system. </p>
+    </div>
+</div>
+
+<form method="post">
+    <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+    <div class="grid-row">
+        <div class="col-6">
+            <h2 class="heading-medium">Sync instructions</h2>
+            <ol class="list list-number">
+                <li>Press the arrow on the token</li>
+                <li>Enter your PIN</li>
+                <li>Enter the eight-digit code that appears on your token in the Token code 1 text field</li>
+            </ol>
+            <div class="form-group <%= locals.validationMessages.code1 ? 'form-group-error' : '' %>">
+                <label class="form-label" for="code1">Token code 1</label>
+                <% if (locals.validationMessages.code1) { %>
+                <p class="error-message" id="validation-code1"><%=locals.validationMessages.code1%></p>
+                <% } %>
+                <input class="form-control char-width-8" type="text" maxlength="8" name="code1" id="code1" required="required" value="<%=locals.code1%>"
+                        <% if (locals.validationMessages.code1) { %> aria-invalid="true" aria-describedby="validation-code1" <% } %>>
+            </div>
+        </div>
+        <div class="col-6">
+            <img src="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/images/token.svg" class="responsive spacing" alt="Token">
+        </div>
+    </div>
+    <div class="grid-row">
+        <div class="col-6">
+            <ol start="4" class="list list-number">
+                <li>Wait until the code clears from the token screen (this will take around 30 seconds)</li>
+                <li>Repeat steps 1 and 2, entering the new eight-digit code in the Token code 2 text field</li>
+            </ol>
+            <div class="form-group <%= locals.validationMessages.code2 ? 'form-group-error' : '' %>">
+                <label class="form-label" for="code2">Token code 2</label>
+                <% if (locals.validationMessages.code2) { %>
+                <p class="error-message" id="validation-code2"><%=locals.validationMessages.code2%></p>
+                <% } %>
+                <div>
+                    <input class="form-control char-width-8" id="code2" name="code2" type="text" maxlength="8" required="required"
+                            <% if (locals.validationMessages.code2) { %> aria-invalid="true" aria-describedby="validation-password" <% } %>>
+                </div>
+            </div>
+            <input type="hidden" name="serialNumber" id="serialNumber" value="<%=locals.serialNumber%>">
+            <input type="hidden" name="uid" id="uid" value="<%=locals.uid%>">
+            <div class="form-group submit-buttons">
+                <input type="submit" class="button" value="Resync">
+                <a href="/userdevices/<%=locals.serialNumber%>/<%=locals.uid%>" class="button button-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>
