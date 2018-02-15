@@ -11,7 +11,7 @@ jest.mock('./../../../src/app/userDevices/utils', () => {
 
 const get = require('./../../../src/app/userDevices/getResyncToken');
 
-describe('When processing a get to search for user devices', () => {
+describe('When processing a get to resync a device', () => {
   let req;
   let res;
 
