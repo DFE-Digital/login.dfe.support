@@ -68,11 +68,11 @@ describe('when handling post of new key-to-success user details', () => {
     expect(res.render.mock.calls[0][0]).toBe('users/views/newUserK2S');
     expect(res.render.mock.calls[0][1]).toMatchObject({
       validationMessages: {
-        firstName: 'First name is required',
-        lastName: 'Last name is required',
-        email: 'Email address is required',
+        firstName: 'Please enter a first name',
+        lastName: 'Please enter a last name',
+        email: 'Please enter an email address',
         localAuthority: 'Local authority is required',
-        k2sId: 'Key to Success ID is required',
+        k2sId: 'Please enter a Key to Success ID',
       }
     });
   });
@@ -105,7 +105,7 @@ describe('when handling post of new key-to-success user details', () => {
     expect(res.render.mock.calls[0][1]).toMatchObject({
       email: req.body.email,
       validationMessages: {
-        email: 'Email address must be in a valid format'
+        email: 'Please enter a valid email address'
       }
     });
   });
@@ -120,7 +120,7 @@ describe('when handling post of new key-to-success user details', () => {
     expect(res.render.mock.calls[0][1]).toMatchObject({
       email: req.body.email,
       validationMessages: {
-        email: 'User already exists with this email address'
+        email: 'A DfE Sign-in user already exists with that email address'
       }
     });
   });
@@ -135,7 +135,7 @@ describe('when handling post of new key-to-success user details', () => {
     expect(res.render.mock.calls[0][1]).toMatchObject({
       k2sId: req.body.k2sId,
       validationMessages: {
-        k2sId: 'Key to Success ID should be 7 numbers'
+        k2sId: 'Please enter a valid Key to Success ID'
       }
     });
   });
@@ -150,7 +150,7 @@ describe('when handling post of new key-to-success user details', () => {
     expect(res.render.mock.calls[0][1]).toMatchObject({
       k2sId: req.body.k2sId,
       validationMessages: {
-        k2sId: 'Key to Success ID should be 7 numbers'
+        k2sId: 'Please enter a valid Key to Success ID'
       }
     });
   });
@@ -165,7 +165,7 @@ describe('when handling post of new key-to-success user details', () => {
     expect(res.render.mock.calls[0][1]).toMatchObject({
       k2sId: req.body.k2sId,
       validationMessages: {
-        k2sId: 'Key to Success ID should be 7 numbers'
+        k2sId: 'Please enter a valid Key to Success ID'
       }
     });
   });
@@ -186,7 +186,7 @@ describe('when handling post of new key-to-success user details', () => {
     expect(res.render.mock.calls[0][1]).toMatchObject({
       k2sId: req.body.k2sId,
       validationMessages: {
-        k2sId: 'User already exists with this Key to Success ID'
+        k2sId: 'A DfE Sign-in user already exists with that Key to Success ID'
       }
     });
 
