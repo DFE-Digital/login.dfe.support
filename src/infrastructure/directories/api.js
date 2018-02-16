@@ -50,6 +50,54 @@ const getUser = async (uid, correlationId) => {
   }
 };
 
+const getPageOfInvitations = async (pageNumber, correlationId) => {
+  const token = await jwtStrategy(config.directories.service).getBearerToken();
+
+  try {
+    const pageOfInvitations = await rp({
+      method: 'GET',
+      uri: `${config.directories.service.url}/invitations?page=${pageNumber}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+
+    return pageOfInvitations;
+  } catch (e) {
+    const status = e.statusCode ? e.statusCode : 500;
+    if (status === 404) {
+      return null;
+    }
+    throw e;
+  }
+};
+
+const getInvitation = async (invitationId, correlationId) => {
+  const token = await jwtStrategy(config.directories.service).getBearerToken();
+
+  try {
+    const invitation = await rp({
+      method: 'GET',
+      uri: `${config.directories.service.url}/invitations/${invitationId}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+
+    return invitation;
+  } catch (e) {
+    const status = e.statusCode ? e.statusCode : 500;
+    if (status === 404) {
+      return null;
+    }
+    throw e;
+  }
+};
+
 const getUserDevices = async (uid, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
@@ -88,7 +136,7 @@ const getUserAssociatedToDevice = async (type, serialNumber, correlationId) => {
       json: true,
     });
 
-    return deviceAssociation ? deviceAssociation.associatedWith.sub : null;
+    return deviceAssociation ? deviceAssociation.associatedWith : null;
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
     if (status === 404) {
@@ -157,12 +205,38 @@ const reactivate = async (uid, correlationId) => {
   });
 };
 
+const createInvite = async (givenName, familyName, email, k2sId, digipassSerialNumber, correlationId) => {
+  const token = await jwtStrategy(config.directories.service).getBearerToken();
+
+  const invitation = await rp({
+    method: 'POST',
+    uri: `${config.directories.service.url}/invitations`,
+    headers: {
+      authorization: `bearer ${token}`,
+      'x-correlation-id': correlationId,
+    },
+    body: {
+      firstName: givenName,
+      lastName: familyName,
+      email,
+      keyToSuccessId: k2sId,
+      tokenSerialNumber: digipassSerialNumber,
+    },
+    json: true,
+  });
+
+  return invitation.id;
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
+  getPageOfInvitations,
+  getInvitation,
   getUserDevices,
   getUserAssociatedToDevice,
   updateUser,
   deactivate,
   reactivate,
+  createInvite,
 };
