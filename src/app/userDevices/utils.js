@@ -149,10 +149,27 @@ const resyncToken = async (req) => {
     }
   }
 
-  const resyncResult = await devices.syncDigipassToken(serialNumber, code1, code2)
+  const resyncResult = await devices.syncDigipassToken(serialNumber, code1, code2);
 
   if(!resyncResult) {
     validationResult.messages.syncError = 'The codes you entered are not correct';
+    logger.audit(`${req.user.email} (id: ${req.user.sub}) failed to resync token "${serialNumber}"`, {
+      type: 'support',
+      subType: 'digipass-resync',
+      success: false,
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      deviceSerialNumber: serialNumber,
+    });
+  } else {
+    logger.audit(`${req.user.email} (id: ${req.user.sub}) did a token resync "${serialNumber}"`, {
+      type: 'support',
+      subType: 'digipass-resync',
+      success: true,
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      deviceSerialNumber: serialNumber,
+    });
   }
 
   return {
