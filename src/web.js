@@ -15,6 +15,7 @@ const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
 const oidc = require('./infrastructure/oidc');
 const moment = require('moment');
+var flash = require('express-flash-2');
 const setCorrelationId = require('express-mw-correlation-id');
 const registerRoutes = require('./routes');
 
@@ -58,6 +59,7 @@ const init = async () => {
       secure: true,
     },
   }));
+  app.use(flash());
 
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(cookieParser());
