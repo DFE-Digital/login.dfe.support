@@ -6,7 +6,7 @@ const action = async (req, res) => {
   const resyncTokenResult = await resyncToken(req);
 
   if(resyncTokenResult.success) {
-    res.flash('info', `Resync complete - Please ask the user to sign in to check the token is synced with the system`);
+    res.flash('info', 'Resync complete - Please ask the user to sign in to check the token is synced with the system');
     res.redirect(`userDevices/${req.body.serialNumber}/${req.body.uid}`)
   }
   else {
