@@ -1,4 +1,5 @@
 const userDevices = require('./../../infrastructure/userDevices');
+const devices = require('./../../infrastructure/devices');
 const logger = require('./../../infrastructure/logger');
 const { getUserLoginAuditsSince, getTokenAudits } = require('./../../infrastructure/audit');
 const moment = require('moment');
@@ -104,7 +105,83 @@ const getUserTokenDetails = async (req, params) => {
   };
 };
 
+const validateResyncCodes = (code1, code2) => {
+  const messages = {
+    code1: '',
+    code2: '',
+  };
+
+  const codeValidation = (code, codeName) => {
+    if (!code) {
+      return `You must provide ${codeName} code`;
+    }
+    if (isNaN(parseInt(code))) {
+      return `${codeName} code must be a number`;
+    }
+    if (code.length !== 8) {
+      return `${codeName} code must be 8 digits long`;
+    }
+    return null;
+  };
+
+  messages.code1 = codeValidation(code1, 'first');
+  messages.code2 = codeValidation(code2, 'second');
+
+  const failed = messages.code1 || messages.code2;
+
+  return {
+    failed,
+    messages,
+  };
+};
+
+const resyncToken = async (req) => {
+  const serialNumber = req.body.serialNumber;
+  const code1 = req.body.code1;
+  const code2 = req.body.code2;
+
+  const validationResult = validateResyncCodes(code1, code2);
+
+  if(validationResult.failed) {
+    return {
+      validationResult,
+      resyncResult:false,
+    }
+  }
+
+  const resyncResult = await devices.syncDigipassToken(serialNumber, code1, code2);
+
+  if(!resyncResult) {
+    validationResult.messages.syncError = 'The codes you entered are not correct';
+    logger.audit(`${req.user.email} (id: ${req.user.sub}) failed to resync token "${serialNumber}"`, {
+      type: 'support',
+      subType: 'digipass-resync',
+      success: false,
+      editedUser: req.body.uid,
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      deviceSerialNumber: serialNumber,
+    });
+  } else {
+    logger.audit(`${req.user.email} (id: ${req.user.sub}) did a token resync "${serialNumber}"`, {
+      type: 'support',
+      subType: 'digipass-resync',
+      success: true,
+      editedUser: req.body.uid,
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      deviceSerialNumber: serialNumber,
+    });
+  }
+
+  return {
+    validationResult,
+    resyncResult:resyncResult,
+  };
+};
+
 module.exports = {
   search,
   getUserTokenDetails,
+  resyncToken,
 };

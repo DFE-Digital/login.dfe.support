@@ -93,12 +93,20 @@ const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
   let hasMorePages = true;
   while (hasMorePages && loginAudits.length < requiredAudits) {
     const pageOfAudits = await getUserAudit(userId, p);
-     let loginAuditsPage = await Promise.all(pageOfAudits.audits.filter((audit) =>  {return (audit.type === 'sign-in' && audit.subType === 'digipass' && audit.deviceSerialNumber === serialNumber)}).map(async (audit) => {
-      audit.event = 'Sign-in using a digipass key fob';
-      audit.date = new Date(audit.timestamp);
-      audit.name = audit.userId === userId ? userName : await getUserName(audit.userId);
-      audit.success = audit.success ? 'Success' : 'Failure';
-      return audit;
+     let loginAuditsPage = await Promise.all(pageOfAudits.audits.filter((audit) =>  {
+       return (audit.deviceSerialNumber === serialNumber)}).map(async (audit) => {
+         audit.date = new Date(audit.timestamp);
+         audit.name = audit.userId === userId ? userName : await getUserName(audit.userId);
+         audit.success = audit.success ? 'Success' : 'Failure';
+
+        if(audit.type==='sign-in' && audit.subType==='digipass') {
+          audit.event = 'Login';
+        } else if(audit.type==='support' && audit.subType === 'digipass-resync') {
+          audit.event = 'Resync';
+        } else {
+          audit.event = $`Digipass event ${audit.type} - ${audit.subType}`;
+        }
+        return audit;
     }));
     loginAudits.push(...loginAuditsPage);
     p++;

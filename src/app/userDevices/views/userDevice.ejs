@@ -6,6 +6,11 @@
                 <small><a href="/users/<%=locals.uid%>"><%=locals.name%></a>, <%=locals.orgName%></small>
             <% }%>
         </h1>
+        <% if (locals.flash.info) { %>
+        <div class="notification notification-success">
+            <%=locals.flash.info%>
+        </div>
+        <% } %>
         <dl class="inline condensed">
             <dt class="label">Last login:</dt>
             <dd><%=locals.lastLogin ? locals.moment(locals.lastLogin).format('DD/MMM/YYYY HH:mm:ss') : 'Never'%></dd>
@@ -20,7 +25,7 @@
             <h2 class="heading-medium">Actions</h2>
             <ul class="list">
                 <li><a href="#">Deactivate token</a></li>
-                <li><a href="#">Resync token</a></li>
+                <li><a href="/userDevices/<%=locals.serialNumber%>/resync/<%=locals.uid%>">Resync token</a></li>
                 <li><a href="#">Unlock token</a></li>
             </ul>
         </aside>
