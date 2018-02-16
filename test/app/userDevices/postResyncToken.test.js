@@ -38,6 +38,7 @@ describe('When processing a get to search for user devices', () => {
     res = {
       render: jest.fn(),
       redirect: jest.fn(),
+      flash: jest.fn(),
     };
 
     utils = require('./../../../src/app/userDevices/utils');
@@ -72,6 +73,8 @@ describe('When processing a get to search for user devices', () => {
     await post(req,res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.flash.mock.calls[0][0]).toBe('info');
+    expect(res.flash.mock.calls[0][1]).toBe('Resync complete - Please ask the user to sign in to check the token is synced with the system');
     expect(res.redirect.mock.calls[0][0]).toBe('userDevices/123456/test');
   });
 
