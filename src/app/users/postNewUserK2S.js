@@ -22,23 +22,23 @@ const validateInput = async (req, orgs) => {
 
   if (!model.firstName) {
     model.isValid = false;
-    model.validationMessages.firstName = 'First name is required';
+    model.validationMessages.firstName = 'Please enter a first name';
   }
 
   if (!model.lastName) {
     model.isValid = false;
-    model.validationMessages.lastName = 'Last name is required';
+    model.validationMessages.lastName = 'Please enter a last name';
   }
 
   if (!model.email) {
     model.isValid = false;
-    model.validationMessages.email = 'Email address is required';
+    model.validationMessages.email = 'Please enter an email address';
   } else if (!emailPolicy.doesEmailMeetPolicy(model.email)) {
     model.isValid = false;
-    model.validationMessages.email = 'Email address must be in a valid format';
+    model.validationMessages.email = 'Please enter a valid email address';
   } else if (await getUser(model.email, req.id)) {
     model.isValid = false;
-    model.validationMessages.email = 'User already exists with this email address';
+    model.validationMessages.email = 'A DfE Sign-in user already exists with that email address';
   }
 
   if (!model.localAuthority) {
@@ -51,13 +51,13 @@ const validateInput = async (req, orgs) => {
 
   if (!model.k2sId) {
     model.isValid = false;
-    model.validationMessages.k2sId = 'Key to Success ID is required';
+    model.validationMessages.k2sId = 'Please enter a Key to Success ID';
   } else if (model.k2sId.length !== 7 || isNaN(parseInt(model.k2sId))) {
     model.isValid = false;
-    model.validationMessages.k2sId = 'Key to Success ID should be 7 numbers';
+    model.validationMessages.k2sId = 'Please enter a valid Key to Success ID';
   } else if (await keyToSuccessIdentifierAlreadyUsed(model.k2sId, req.id)) {
     model.isValid = false;
-    model.validationMessages.k2sId = 'User already exists with this Key to Success ID';
+    model.validationMessages.k2sId = 'A DfE Sign-in user already exists with that Key to Success ID';
   }
 
   return model;
