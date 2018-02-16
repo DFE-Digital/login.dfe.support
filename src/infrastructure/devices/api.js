@@ -57,8 +57,36 @@ const deviceExists = async (serialNumber, correlationId) => {
   }
 };
 
+const syncDigipassToken = async (serialNumber, code1, code2) => {
+  const token = await jwtStrategy(config.devices.service).getBearerToken();
+  try {
+    const response = await rp({
+      method: 'POST',
+      uri: `${config.devices.service.url}/digipass/${serialNumber}/sync`,
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      body: {
+        code1,
+        code2,
+      },
+      json: true,
+    });
+
+    return response.valid;
+  } catch (e) {
+    if (e.statusCode === 400) {
+      return null;
+    } else if (e.statusCode === 404) {
+      return null;
+    }
+    throw e;
+  }
+};
+
 
 module.exports = {
   getDevices,
   deviceExists,
+  syncDigipassToken,
 };
