@@ -6,6 +6,11 @@
                 <small><a href="/users/<%=locals.uid%>"><%=locals.name%></a>, <%=locals.orgName%></small>
             <% }%>
         </h1>
+        <% if (locals.flash.info) { %>
+        <div class="notification notification-success">
+            <%=locals.flash.info%>
+        </div>
+        <% } %>
         <dl class="inline condensed">
             <dt class="label">Last login:</dt>
             <dd><%=locals.lastLogin ? locals.moment(locals.lastLogin).format('DD/MMM/YYYY HH:mm:ss') : 'Never'%></dd>

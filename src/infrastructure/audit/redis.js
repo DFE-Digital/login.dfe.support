@@ -99,9 +99,9 @@ const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
          audit.name = audit.userId === userId ? userName : await getUserName(audit.userId);
          audit.success = audit.success ? 'Success' : 'Failure';
 
-        if(audit.type==='support' && audit.subType === 'digipass-resync') {
+        if(audit.type==='sign-in' && audit.subType==='digipass') {
           audit.event = 'Login';
-        } else if(audit.type==='sign-in' && audit.subType==='digipass') {
+        } else if(audit.type==='support' && audit.subType === 'digipass-resync') {
           audit.event = 'Resync';
         } else {
           audit.event = $`Digipass event ${audit.type} - ${audit.subType}`;
