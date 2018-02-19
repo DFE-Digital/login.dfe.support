@@ -1,0 +1,43 @@
+<div class="grid-row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Enter the token lock code
+        </h1>
+        <p class="lede">Select the code shown on the token.</p>
+    </div>
+</div>
+
+<div class="grid-row">
+    <div class="col-6">
+        <form>
+            <div class="form-group">
+                <fieldset>
+                    <legend>
+                        <p class="form-label-bold">Token code</p>
+                    </legend>
+
+                    <div class="multiple-choice">
+                        <input id="code-1" type="radio" name="token-code" value="code-1">
+                        <label for="code-1">Code 1</label>
+                    </div>
+                    <div class="multiple-choice">
+                        <input id="code-2" type="radio" name="token-code" value="code-2">
+                        <label for="code-2">Code 2</label>
+                    </div>
+                    <div class="multiple-choice">
+                        <input id="disabled" type="radio" name="token-code" value="disabled">
+                        <label for="disabled">Disabled (token will need to deactivated)</label>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="form-group submit-buttons">
+                <button type="submit" class="button">Continue</button>
+                <a href="#" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
+        <p>NOTE: If the message on the token is 'Fail' the user needs to enter a pin until a token lock code is shown.</p>
+    </div>
+    <div class="col-6">
+        <img src="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/images/token-code.svg" class="responsive spacing" alt="Token">
+    </div>
+</div>
