@@ -34,7 +34,7 @@
     "helmet": "^3.9.0",
     "lodash": "^4.17.4",
     "login.dfe.healthcheck": "git+https://github.com/DFE-Digital/login.dfe.healthcheck.git#v1.1",
-    "login.dfe.jwt-strategies": "^1.0.4",
+    "login.dfe.jwt-strategies": "https://github.com/DFE-Digital/login.dfe.jwt-strategies.git#v2.0.1",
     "login.dfe.sanitization": "git+https://github.com/DFE-Digital/login.dfe.sanitization.git#v1.0",
     "login.dfe.validation": "git+https://github.com/DFE-Digital/login.dfe.validation.git#v1.1.0",
     "moment": "^2.20.1",
