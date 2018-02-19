@@ -7,8 +7,8 @@ const action = async (req, res) => {
 
   sendResult(req, res, 'userDevices/views/getUnlockCode', {
     csrfToken: req.csrfToken(),
-    uid: tokenDetails.uid,
-    serialNumber: tokenDetails.serialNumber,
+    uid: req.params.uid,
+    serialNumber: req.params.serialNumber,
   });
 };
 
