@@ -180,8 +180,13 @@ const resyncToken = async (req) => {
   };
 };
 
+const unlockToken = async (req) => {
+
+};
+
 module.exports = {
   search,
   getUserTokenDetails,
   resyncToken,
+  unlockToken,
 };
