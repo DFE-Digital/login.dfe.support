@@ -7,6 +7,7 @@ const logger = require('../../infrastructure/logger');
 const getSearch = require('./getSearch');
 const getUserDevice = require('./getUserDevice');
 const getResyncToken = require('./getResyncToken');
+const getUnlockCode = require('./getUnlockCode');
 const postResyncToken = require('./postResyncToken');
 const postSearch = require('./postSearch');
 
@@ -21,6 +22,7 @@ const users = (csrf) => {
   router.get('/', csrf, getSearch);
   router.get('/:serialNumber/:uid', csrf, getUserDevice);
   router.get('/:serialNumber/resync/:uid', csrf, getResyncToken);
+  router.get('/:serialNumber/unlock/:uid', csrf, getUnlockCode);
   router.post('/:serialNumber/resync/:uid', csrf, postResyncToken);
   router.post('/', csrf, postSearch);
 
