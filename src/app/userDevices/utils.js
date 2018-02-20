@@ -185,6 +185,18 @@ const unlockToken = async (req) => {
   const unlockType = req.body.tokenCode;
   const serialNumber = req.body.serialNumber;
 
+  if(!unlockType) {
+    return {
+      success:false,
+      validationResult: {
+        failed: true,
+        message: {
+          unlockCode: 'Please select an option'
+        }
+      }
+    }
+  }
+
   if(unlockType.toLowerCase() === 'disabled'){
     return {
       success:false,
