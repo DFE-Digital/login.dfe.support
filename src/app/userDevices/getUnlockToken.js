@@ -7,6 +7,7 @@ const action = async (req, res) => {
     csrfToken: req.csrfToken(),
     uid: req.params.uid,
     serialNumber: req.params.serialNumber,
+    validationMessages: {},
   });
 };
 
