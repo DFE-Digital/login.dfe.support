@@ -182,6 +182,22 @@ const resyncToken = async (req) => {
 
 const unlockToken = async (req) => {
 
+  const unlockType = req.body.tokenCode;
+  const serialNumber = req.body.serialNumber;
+
+  if(unlockType.toLowerCase() === 'disabled'){
+    return {
+      success:false,
+    }
+  }
+
+  const unlockResult = await devices.getDeviceUnlockCode(serialNumber, unlockType, req.id);
+
+  return {
+    success: unlockResult !== undefined ,
+    unlockCode: unlockResult !== undefined ? unlockResult.code : '',
+  }
+
 };
 
 module.exports = {
