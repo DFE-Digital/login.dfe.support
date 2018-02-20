@@ -19,6 +19,7 @@ const postNewUserK2S = require('./postNewUserK2S');
 const getAssignDigipass = require('./getAssignDigipass');
 const postAssignDigipass = require('./postAssignDigipass');
 const getConfirmNewK2sUser = require('./getConfirmNewK2sUser');
+const postConfirmNewK2sUser = require('./postConfirmNewK2sUser');
 
 const router = express.Router({ mergeParams: true });
 
@@ -36,6 +37,7 @@ const users = (csrf) => {
   router.get('/assign-digipass', csrf, getAssignDigipass);
   router.post('/assign-digipass', csrf, postAssignDigipass);
   router.get('/confirm-new-k2s-user', csrf, getConfirmNewK2sUser);
+  router.post('/confirm-new-k2s-user', csrf, postConfirmNewK2sUser);
 
   router.get('/:uid', (req, res) => {
     res.redirect(`/users/${req.params.uid}/services`);

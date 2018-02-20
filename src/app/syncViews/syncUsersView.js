@@ -32,21 +32,13 @@ const buildUser = async (user, correlationId) => {
   };
 };
 
-const syncUsersView = async () => {
-  const correlationId = uuid();
-
-  logger.info(`Starting to sync users view (correlation id: ${correlationId})`);
-
-  // Create new index
-  const newIndexName = await users.createIndex();
-
-  // Get all users from directories
+const loadUsers = async (newIndexName, correlationId) => {
   let hasMorePages = true;
   let pageNumber = 1;
   while (hasMorePages) {
     logger.info(`Syncing page ${pageNumber} of users`);
     const pageOfUsers = await directories.getPageOfUsers(pageNumber, correlationId);
-    if (pageOfUsers.users) {
+    if (pageOfUsers.users && pageOfUsers.users.length > 0) {
       const mappedUsers = await Promise.all(pageOfUsers.users.map(async (user) => {
         logger.info(`Building user ${user.email} (id:${user.sub}) for syncing`);
         return await buildUser(user, correlationId);
@@ -56,7 +48,47 @@ const syncUsersView = async () => {
     pageNumber++;
     hasMorePages = pageNumber <= pageOfUsers.numberOfPages;
   }
+};
 
+const loadInvitations = async (newIndexName, correlationId) => {
+  let hasMorePages = true;
+  let pageNumber = 1;
+  while (hasMorePages) {
+    logger.info(`Syncing page ${pageNumber} of invitations`);
+    const pageOfInvitations = await directories.getPageOfInvitations(pageNumber, correlationId);
+    if (pageOfInvitations.invitations && pageOfInvitations.invitations.length > 0) {
+      const mappedInvitations = await Promise.all(pageOfInvitations.invitations.map(async (invitation) => {
+        logger.info(`Building invitation ${invitation.email} (id:${invitation.id}) for syncing`);
+        const orgServiceMapping = await organisations.getInvitationOrganisations(invitation.id, correlationId);
+        return {
+          id: `inv-${invitation.id}`,
+          name: `${invitation.firstName} ${invitation.lastName}`,
+          email: invitation.email,
+          organisation: orgServiceMapping && orgServiceMapping.length > 0 ? orgServiceMapping[0].organisation : null,
+          lastLogin: null,
+          status: mapUserStatus(-1),
+        };
+      }));
+      await users.updateIndex(mappedInvitations, newIndexName);
+    }
+    pageNumber++;
+    hasMorePages = pageNumber <= pageOfInvitations.numberOfPages;
+  }
+};
+
+const syncUsersView = async () => {
+  const correlationId = uuid();
+
+  logger.info(`Starting to sync users view (correlation id: ${correlationId})`);
+
+  // Create new index
+  const newIndexName = await users.createIndex();
+
+  // Get all users from directories
+  await loadUsers(newIndexName, correlationId);
+  await loadInvitations(newIndexName, correlationId);
+
+  // Re-point current index
   await users.updateActiveIndex(newIndexName);
   logger.info(`Pointed user index to ${newIndexName}`);
 
