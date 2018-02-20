@@ -6,10 +6,10 @@
         <p class="lede">Press the arrow on the token and then enter this code.</p>
         <div class="govuk-box-highlight">
             <h1 class="heading-xlarge">
-                12345678
+                <%=locals.unlockCode%>
             </h1>
         </div>
         <p>It should now be possible to reset the pin following the instructions on the screen.</p>
-        <p><a href="..." class="button">Finish</a></p>
+        <p><a href="/userdevices/<%=locals.serialNumber%>/<%=locals.uid%>" class="button">Finish</a></p>
     </div>
 </div>
