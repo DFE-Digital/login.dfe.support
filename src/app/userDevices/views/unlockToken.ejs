@@ -12,15 +12,13 @@
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
             <div class="form-group <%= (locals.validationMessages.unlockCode !== undefined) ? 'form-group-error' : '' %>">
-                <% if (locals.validationMessages.unlockCode !== undefined) { %>
-                    <p class="error-message" id="validation-tokenCode"><%=locals.validationMessages.unlockCode%></p>
-                <% } %>
-
                 <fieldset>
                     <legend>
-                        <p class="form-label-bold" id="unlockCode">Token code</p>
+                        <span class="form-label-bold" id="unlockCode">Token code</span>
+                        <% if (locals.validationMessages.unlockCode !== undefined) { %>
+                        <span class="error-message" id="validation-tokenCode"><%=locals.validationMessages.unlockCode%></span>
+                        <% } %>
                     </legend>
-
                     <div class="multiple-choice">
                         <input id="code-1" type="radio" name="tokenCode" value="unlock1">
                         <label for="code-1">Code 1</label>
