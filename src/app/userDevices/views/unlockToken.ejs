@@ -35,7 +35,7 @@
             <input type="hidden" value="<%=locals.uid%>" name="uid" id="uid" />
             <div class="form-group submit-buttons">
                 <button type="submit" class="button">Continue</button>
-                <a href="#" class="button button-secondary">Cancel</a>
+                <a href="/userdevices/<%=locals.serialNumber%>/<%=locals.uid%>" class="button button-secondary">Cancel</a>
             </div>
         </form>
         <p>NOTE: If the message on the token is 'Fail' the user needs to enter a pin until a token lock code is shown.</p>
