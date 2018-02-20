@@ -190,12 +190,13 @@ const unlockToken = async (req) => {
       success:false,
       validationResult: {
         failed: true,
-        message: {
+        messages: {
           unlockCode: 'Please select an option'
         }
       }
     }
   }
+
 
   if(unlockType.toLowerCase() === 'disabled'){
     return {
@@ -204,6 +205,18 @@ const unlockToken = async (req) => {
   }
 
   const unlockResult = await devices.getDeviceUnlockCode(serialNumber, unlockType, req.id);
+
+
+  logger.audit(`${req.user.email} (id: ${req.user.sub}) Requested a token unlock "${serialNumber}" with unlock code: "${unlockType}"`, {
+    type: 'support',
+    subType: 'digipass-unlock',
+    success: unlockResult !== undefined,
+    editedUser: req.body.uid,
+    userId: req.user.sub,
+    userEmail: req.user.email,
+    deviceSerialNumber: serialNumber,
+    unlockType: unlockType,
+  });
 
   return {
     success: unlockResult !== undefined ,
