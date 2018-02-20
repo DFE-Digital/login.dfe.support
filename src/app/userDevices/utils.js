@@ -17,7 +17,7 @@ const search = async (req) => {
     page = 1;
   }
 
-  let sortBy = paramsSource.sort ? paramsSource.sort.toLowerCase() : 'name';
+  let sortBy = paramsSource.sort ? paramsSource.sort.toLowerCase() : 'serialNumber';
   let sortAsc = (paramsSource.sortdir ? paramsSource.sortdir : 'asc').toLowerCase() === 'asc';
 
   const results = await userDevices.search(criteria + '*', page, sortBy, sortAsc);
@@ -41,8 +41,8 @@ const search = async (req) => {
     userDevices: results.userDevices,
     sort: {
       serialNumber: {
-        nextDirection: sortBy === 'serialNumber' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-        applied: sortBy === 'serialNumber',
+        nextDirection: sortBy === 'serialnumber' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'serialnumber',
       },
       organisation: {
         nextDirection: sortBy === 'organisation' ? (sortAsc ? 'desc' : 'asc') : 'asc',
