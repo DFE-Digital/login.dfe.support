@@ -46,7 +46,7 @@
                     <% if (locals.validationMessages.localAuthority !== undefined) { %>
                     <p class="error-message" id="validation-localAuthority"><%= locals.validationMessages.localAuthority %></p>
                     <% } %>
-                    <select class="form-control" id="localAuthority" name="localAuthority"
+                    <select class="form-control select2" id="localAuthority" name="localAuthority"
                            <% if (locals.validationMessages.localAuthority !== undefined) { %>aria-invalid="true" aria-describedby="validation-localAuthority"<% } %>>
                         <%for(let i = 0; i < locals.localAuthorities.length; i++) {%>
                         <%const la = locals.localAuthorities[i];%>
