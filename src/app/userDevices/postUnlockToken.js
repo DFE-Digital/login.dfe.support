@@ -8,7 +8,7 @@ const action = async (req, res) => {
   if(unlockTokenResult.success) {
     sendResult(req, res, 'userDevices/views/unlockTokenCode', {
       csrfToken: req.csrfToken(),
-      unlockCode: unlockTokenResult.code,
+      unlockCode: unlockTokenResult.unlockCode,
       uid: req.body.uid,
       serialNumber: req.body.serialNumber,
     });
@@ -16,8 +16,6 @@ const action = async (req, res) => {
   else {
     sendResult(req, res, 'userDevices/views/unlockToken', {
       csrfToken: req.csrfToken(),
-      code1: '',
-      code2: '',
       validationMessages: unlockTokenResult.validationResult.messages,
       uid: req.body.uid,
       serialNumber: req.body.serialNumber,

@@ -98,7 +98,12 @@ const getDeviceUnlockCode = async (serialNumber,code, correlationId) => {
       json: true,
     });
 
-    return device || undefined;
+    return Object.values(Object.keys(device)
+      .filter(key => code === key)
+      .reduce((obj,key) => {
+      obj[key] = device[key];
+      return obj;
+    },{}))[0] || undefined;
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
     if (status === 401) {

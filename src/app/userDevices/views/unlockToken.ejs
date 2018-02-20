@@ -9,7 +9,8 @@
 
 <div class="grid-row">
     <div class="col-6">
-        <form>
+        <form method="post">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
             <div class="form-group">
                 <fieldset>
                     <legend>
@@ -17,19 +18,21 @@
                     </legend>
 
                     <div class="multiple-choice">
-                        <input id="code-1" type="radio" name="token-code" value="code-1">
+                        <input id="code-1" type="radio" name="tokenCode" value="unlock1">
                         <label for="code-1">Code 1</label>
                     </div>
                     <div class="multiple-choice">
-                        <input id="code-2" type="radio" name="token-code" value="code-2">
+                        <input id="code-2" type="radio" name="tokenCode" value="unlock2">
                         <label for="code-2">Code 2</label>
                     </div>
                     <div class="multiple-choice">
-                        <input id="disabled" type="radio" name="token-code" value="disabled">
+                        <input id="disabled" type="radio" name="tokenCode" value="disabled">
                         <label for="disabled">Disabled (token will need to deactivated)</label>
                     </div>
                 </fieldset>
             </div>
+            <input type="hidden" value="<%=locals.serialNumber%>" name="serialNumber" id="serialNumber" />
+            <input type="hidden" value="<%=locals.uid%>" name="uid" id="uid" />
             <div class="form-group submit-buttons">
                 <button type="submit" class="button">Continue</button>
                 <a href="#" class="button button-secondary">Cancel</a>
