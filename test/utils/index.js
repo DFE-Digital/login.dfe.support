@@ -52,6 +52,7 @@ const getResponseMock = () => {
     status: jest.fn(),
     contentType: jest.fn(),
     send: jest.fn(),
+    flash: jest.fn(),
   };
 
   res.render.mockReturnValue(res);

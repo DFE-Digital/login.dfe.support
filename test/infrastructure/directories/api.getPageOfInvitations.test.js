@@ -11,16 +11,21 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 
 const rp = require('request-promise');
 const jwtStrategy = require('login.dfe.jwt-strategies');
-const { getUserAssociatedToDevice } = require('./../../../src/infrastructure/directories/api');
+const { getPageOfInvitations } = require('./../../../src/infrastructure/directories/api');
 
+const pageNumber = 1;
 const correlationId = 'abc123';
-const type = 'digipass';
-const serialNumber = '1234567890';
 const apiResponse = {
-  associatedWith: {
-    type: 'user',
-    sub: 'user1',
-  }
+  invitations: [{
+    firstName: 'User',
+    lastName: 'One',
+    email: 'user.one@unit.test',
+    keyToSuccessId: '1234567',
+    tokenSerialNumber: '1234567890',
+    id: 'c5e57976-0bef-4f55-b16f-f63a241c9bfa',
+  }],
+  numberOfPages: 1,
+  page: 1,
 };
 
 describe('when getting a page of users from directories api', () => {
@@ -38,18 +43,18 @@ describe('when getting a page of users from directories api', () => {
     })
   });
 
-  it('then it should call devices resource with type and serial number', async () => {
-    await getUserAssociatedToDevice(type, serialNumber, correlationId);
+  it('then it should call users resource with page', async () => {
+    await getPageOfInvitations(pageNumber, correlationId);
 
     expect(rp.mock.calls).toHaveLength(1);
     expect(rp.mock.calls[0][0]).toMatchObject({
       method: 'GET',
-      uri: 'http://directories.test/devices/digipass/1234567890',
+      uri: 'http://directories.test/invitations?page=1',
     });
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
-    await getUserAssociatedToDevice(type, serialNumber, correlationId);
+    await getPageOfInvitations(pageNumber, correlationId);
 
     expect(rp.mock.calls[0][0]).toMatchObject({
       headers: {
@@ -59,7 +64,7 @@ describe('when getting a page of users from directories api', () => {
   });
 
   it('then it should include the correlation id', async () => {
-    await getUserAssociatedToDevice(type, serialNumber, correlationId);
+    await getPageOfInvitations(pageNumber, correlationId);
 
     expect(rp.mock.calls[0][0]).toMatchObject({
       headers: {
@@ -68,24 +73,9 @@ describe('when getting a page of users from directories api', () => {
     });
   });
 
-  it('then it should return associated user sub if associated', async () => {
-    const actual = await getUserAssociatedToDevice(type, serialNumber, correlationId);
+  it('then it should return api result', async () => {
+    const actual = await getPageOfInvitations(pageNumber, correlationId);
 
-    expect(actual).toEqual({
-      type: 'user',
-      sub: 'user1',
-    });
-  });
-
-  it('then it should return null if not associated', async () => {
-    rp.mockImplementation(() => {
-      const notFound = new Error('not found');
-      notFound.statusCode = 404;
-      throw notFound;
-    });
-
-    const actual = await getUserAssociatedToDevice(type, serialNumber, correlationId);
-
-    expect(actual).toBeNull();
+    expect(actual).toMatchObject(apiResponse);
   });
 });

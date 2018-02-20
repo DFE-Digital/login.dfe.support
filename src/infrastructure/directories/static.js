@@ -1,3 +1,5 @@
+const uuid = require('uuid/v4');
+
 const getPageOfUsers = async (pageNumber, correlationId) => {
   return Promise.resolve({
     users: [
@@ -25,12 +27,31 @@ const getUser = async (uid, correlationId) => {
   };
 };
 
+const getPageOfInvitations = async (pageNumber, correlationId) => {
+  return {
+    invitations: [],
+    numberOfPages: 1,
+    page: pageNumber,
+  };
+};
+
+const getInvitation = async (invitationId, correlationId) => {
+  return {
+    firstName: 'Some',
+    lastName: 'User',
+    email: 'some.user@test.local',
+    keyToSuccessId: '1234567',
+    tokenSerialNumber: '12345678901',
+    id: invitationId
+  };
+};
+
 const getUserDevices = async (uid, correlationId) => {
   return [
     {
-      "id": "6eebc499-e69e-4556-95e5-dc0300c12748",
-      "type": "digipass",
-      "serialNumber": "1234567890"
+      'id': '6eebc499-e69e-4556-95e5-dc0300c12748',
+      'type': 'digipass',
+      'serialNumber': '1234567890'
     }
   ];
 };
@@ -51,12 +72,19 @@ const reactivate = async (uid, correlationId) => {
   return Promise.resolve();
 };
 
+const createInvite = async (givenName, familyName, email, k2sId, digipassSerialNumber) => {
+  return Promise.resolve(uuid());
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
+  getPageOfInvitations,
+  getInvitation,
   getUserDevices,
   getUserAssociatedToDevice,
   updateUser,
   deactivate,
   reactivate,
+  createInvite,
 };
