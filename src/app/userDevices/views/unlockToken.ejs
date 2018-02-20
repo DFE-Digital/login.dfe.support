@@ -12,21 +12,27 @@
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
             <div class="form-group">
+                <% if (locals.validationMessages.unlockCode) { %>
+                <p class="error-message" id="validation-tokenCode"><%=locals.validationMessages.unlockCode%></p>
+                <% } %>
                 <fieldset>
                     <legend>
                         <p class="form-label-bold">Token code</p>
                     </legend>
 
                     <div class="multiple-choice">
-                        <input id="code-1" type="radio" name="tokenCode" value="unlock1">
+                        <input id="code-1" type="radio" name="tokenCode" value="unlock1"
+                                <% if (locals.validationMessages.unlockCode) { %> aria-invalid="true" aria-describedby="validation-tokenCode" <% } %>>
                         <label for="code-1">Code 1</label>
                     </div>
                     <div class="multiple-choice">
-                        <input id="code-2" type="radio" name="tokenCode" value="unlock2">
+                        <input id="code-2" type="radio" name="tokenCode" value="unlock2"
+                                <% if (locals.validationMessages.unlockCode) { %> aria-invalid="true" aria-describedby="validation-tokenCode" <% } %>>
                         <label for="code-2">Code 2</label>
                     </div>
                     <div class="multiple-choice">
-                        <input id="disabled" type="radio" name="tokenCode" value="disabled">
+                        <input id="disabled" type="radio" name="tokenCode" value="disabled"
+                                <% if (locals.validationMessages.unlockCode) { %> aria-invalid="true" aria-describedby="validation-tokenCode" <% } %>>
                         <label for="disabled">Disabled (token will need to deactivated)</label>
                     </div>
                 </fieldset>
