@@ -16,7 +16,7 @@ const action = async (req, res) => {
   else {
     sendResult(req, res, 'userDevices/views/unlockToken', {
       csrfToken: req.csrfToken(),
-      validationMessages: unlockTokenResult.validationResult.messages,
+      validationMessages: unlockTokenResult.validationResult.message,
       uid: req.body.uid,
       serialNumber: req.body.serialNumber,
     });

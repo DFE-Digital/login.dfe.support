@@ -11,28 +11,26 @@
     <div class="col-6">
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-            <div class="form-group">
-                <% if (locals.validationMessages.unlockCode) { %>
-                <p class="error-message" id="validation-tokenCode"><%=locals.validationMessages.unlockCode%></p>
+            <div class="form-group <%= (locals.validationMessages.unlockCode !== undefined) ? 'form-group-error' : '' %>">
+                <% if (locals.validationMessages.unlockCode !== undefined) { %>
+                    <p class="error-message" id="validation-tokenCode"><%=locals.validationMessages.unlockCode%></p>
                 <% } %>
+
                 <fieldset>
                     <legend>
-                        <p class="form-label-bold">Token code</p>
+                        <p class="form-label-bold" id="unlockCode">Token code</p>
                     </legend>
 
                     <div class="multiple-choice">
-                        <input id="code-1" type="radio" name="tokenCode" value="unlock1"
-                                <% if (locals.validationMessages.unlockCode) { %> aria-invalid="true" aria-describedby="validation-tokenCode" <% } %>>
+                        <input id="code-1" type="radio" name="tokenCode" value="unlock1">
                         <label for="code-1">Code 1</label>
                     </div>
                     <div class="multiple-choice">
-                        <input id="code-2" type="radio" name="tokenCode" value="unlock2"
-                                <% if (locals.validationMessages.unlockCode) { %> aria-invalid="true" aria-describedby="validation-tokenCode" <% } %>>
+                        <input id="code-2" type="radio" name="tokenCode" value="unlock2">
                         <label for="code-2">Code 2</label>
                     </div>
                     <div class="multiple-choice">
-                        <input id="disabled" type="radio" name="tokenCode" value="disabled"
-                                <% if (locals.validationMessages.unlockCode) { %> aria-invalid="true" aria-describedby="validation-tokenCode" <% } %>>
+                        <input id="disabled" type="radio" name="tokenCode" value="disabled">
                         <label for="disabled">Disabled (token will need to deactivated)</label>
                     </div>
                 </fieldset>
