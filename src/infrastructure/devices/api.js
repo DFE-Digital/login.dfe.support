@@ -84,9 +84,38 @@ const syncDigipassToken = async (serialNumber, code1, code2) => {
   }
 };
 
+const getDeviceUnlockCode = async (serialNumber,code, correlationId) => {
+  const token = await jwtStrategy(config.devices.service).getBearerToken();
+
+  try {
+    const device = await rp({
+      method: 'GET',
+      uri: `${config.devices.service.url}/digipass/${serialNumber}?fields=${code}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+
+    return Object.values(Object.keys(device)
+      .filter(key => code === key)
+      .reduce((obj,key) => {
+      obj[key] = device[key];
+      return obj;
+    },{}))[0] || undefined;
+  } catch (e) {
+    const status = e.statusCode ? e.statusCode : 500;
+    if (status === 401) {
+      return null;
+    }
+    throw e;
+  }
+};
 
 module.exports = {
   getDevices,
   deviceExists,
   syncDigipassToken,
+  getDeviceUnlockCode,
 };
