@@ -201,6 +201,10 @@ const unlockToken = async (req) => {
   if(unlockType.toLowerCase() === 'disabled'){
     return {
       success:false,
+      validationResult: {
+        failed: true,
+        messages: {}
+      }
     }
   }
 
@@ -220,7 +224,7 @@ const unlockToken = async (req) => {
 
   return {
     success: unlockResult !== undefined ,
-    unlockCode: unlockResult !== undefined ? unlockResult.code : '',
+    unlockCode: unlockResult !== undefined ? unlockResult : '',
   }
 
 };
