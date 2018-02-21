@@ -1,8 +1,5 @@
-jest.mock('redis', () => {
-  return {
-    createClient: jest.fn(),
-  };
-});
+jest.mock('ioredis', () => jest.fn().mockImplementation(() => {
+}));
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
   cache: {
     params: {
@@ -18,29 +15,24 @@ jest.mock('uuid/v4', () => {
 });
 
 
-const rp = require('request-promise');
+
 
 describe('When deleting unused indexes from Azure Search', () => {
-  let get;
-  let set;
   let deleteUnusedIndexes;
+  let rp;
 
-  beforeAll(() => {
-    get = jest.fn();
-
-    set = jest.fn();
-
-    const redis = require('redis');
-    redis.createClient = jest.fn().mockImplementation(() => {
-      return {
-        get,
-        set,
-      };
-    });
-
-    deleteUnusedIndexes = require('./../../../src/infrastructure/users/azureSearch').deleteUnusedIndexes;
-  });
   beforeEach(() => {
+
+    jest.resetModules();
+    jest.doMock('ioredis', () => jest.fn().mockImplementation(() => {
+      const RedisMock = require('ioredis-mock').default;
+      const redisMock = new RedisMock();
+      redisMock.set('CurrentIndex_Users', 'users-58457890-ba74-49ae-86eb-b4a144649805');
+      redisMock.set('UnusedIndexes_Users', '["users-4771d85e-f3ef-4e71-82ca-30f0663b10c9"]');
+      return redisMock;
+    }));
+
+    rp = require('request-promise');
     rp.mockReset();
     rp.mockImplementation((opts) => {
       if (opts.method === 'GET') {
@@ -66,20 +58,7 @@ describe('When deleting unused indexes from Azure Search', () => {
         }
       }
     });
-
-    get.mockReset();
-    get.mockImplementation((key, callback) => {
-      if (key === 'CurrentIndex_Users') {
-        callback(null, 'users-58457890-ba74-49ae-86eb-b4a144649805');
-      } else if (key === 'UnusedIndexes_Users') {
-        callback(null, '["users-4771d85e-f3ef-4e71-82ca-30f0663b10c9"]');
-      }
-    });
-
-    set.mockReset();
-    set.mockImplementation((key, value, callback) => {
-      callback(null, null);
-    });
+    deleteUnusedIndexes = require('./../../../src/infrastructure/users/azureSearch').deleteUnusedIndexes;
   });
 
   it('then it should delete users in indexes marked as unused that are still not used', async () => {
@@ -100,12 +79,15 @@ describe('When deleting unused indexes from Azure Search', () => {
   });
 
   it('then it should mark any indexes that are not current as unused', async () => {
+    const ioRedis = require('ioredis');
+
     await deleteUnusedIndexes();
 
-    expect(set.mock.calls).toHaveLength(1);
-    expect(set.mock.calls[0][0]).toBe('UnusedIndexes_Users');
-    expect(set.mock.calls[0][1]).toBe(JSON.stringify([
+    const mockRedis = ioRedis();
+    const actual = await mockRedis.get('UnusedIndexes_Users');
+    expect(actual).toBe(JSON.stringify([
       'users-4771d85e-f3ef-4e71-82ca-30f0663b10c9',
     ]));
+
   });
 });
