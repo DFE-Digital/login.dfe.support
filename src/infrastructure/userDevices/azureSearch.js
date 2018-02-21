@@ -1,19 +1,11 @@
 'use strict';
 
-const redis = require('redis');
-const { promisify } = require('util');
+const Redis = require('ioredis');
 const config = require('./../config');
 const uuid = require('uuid/v4');
 const azureSearch = require('./../azureSearch');
 
-const tls = config.cache.params.indexPointerConnectionString.includes('6380');
-const client = redis.createClient({
-  url: config.cache.params.indexPointerConnectionString,
-  tls,
-});
-
-const getAsync = promisify(client.get).bind(client);
-const setAsync = promisify(client.set).bind(client);
+const client = new Redis(config.cache.params.indexPointerConnectionString);
 
 const pageSize = 25;
 
@@ -52,21 +44,21 @@ const updateIndex = async (userDevices, index) => {
 };
 
 const updateActiveIndex = async (index) => {
-  await setAsync('CurrentIndex_UserDevices', index)
+  await client.set('CurrentIndex_UserDevices', index)
 };
 
 const deleteUnusedIndexes = async () => {
-  const currentIndexName = await getAsync('CurrentIndex_UserDevices');
+  const currentIndexName = await client.get('CurrentIndex_UserDevices');
 
   // Delete any indexes already marked as unused
-  const unusedJson = await getAsync('UnusedIndexes_UserDevices');
+  const unusedJson = await client.get('UnusedIndexes_UserDevices');
   const unusedIndexes = unusedJson ? JSON.parse(unusedJson) : [];
   await azureSearch.deleteUnusedIndexes(unusedIndexes, currentIndexName);
 
   // Find any remaining indexes that appear to be unused
   const indexesResponse = await azureSearch.getIndexes();
   const indexesAppearingUnused = indexesResponse.value.map(x => x.name).filter(x => x !== currentIndexName && x.toLowerCase().indexOf('userdevices-') !== -1);
-  await setAsync('UnusedIndexes_UserDevices', JSON.stringify(indexesAppearingUnused));
+  await client.set('UnusedIndexes_UserDevices', JSON.stringify(indexesAppearingUnused));
 };
 
 const mapUser = (user) => {
@@ -87,9 +79,8 @@ const mapUser = (user) => {
   }
 };
 
-
 const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => {
-  const currentIndexName = await getAsync('CurrentIndex_UserDevices');
+  const currentIndexName = await client.get('CurrentIndex_UserDevices');
 
   try {
     const skip = (pageNumber - 1) * pageSize;
@@ -137,7 +128,7 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
 
 const getByUserId = async (userId) => {
   try {
-    const currentIndexName = await getAsync('CurrentIndex_UserDevices');
+    const currentIndexName = await client.get('CurrentIndex_UserDevices');
     const user = await azureSearch.getIndexById(currentIndexName, userId);
     return mapUser(user);
   } catch (e) {

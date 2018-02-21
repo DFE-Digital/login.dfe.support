@@ -1,8 +1,8 @@
-jest.mock('redis', () => {
-  return {
-    createClient: jest.fn(),
-  };
-});
+jest.mock('ioredis', () => jest.fn().mockImplementation(() => {
+  const RedisMock = require('ioredis-mock').default;
+  const redisMock = new RedisMock();
+  return redisMock;
+}));
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
   cache: {
     params: {
