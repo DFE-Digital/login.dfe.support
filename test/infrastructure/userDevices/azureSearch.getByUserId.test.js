@@ -1,8 +1,5 @@
-jest.mock('redis', () => {
-  return {
-    createClient: jest.fn(),
-  };
-});
+jest.mock('ioredis', () => jest.fn().mockImplementation(() => {
+}));
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
   cache: {
     params: {
@@ -21,8 +18,6 @@ jest.mock('uuid/v4', () => {
 const rp = require('request-promise');
 
 describe('when searching for a user in azure search', () => {
-  let get;
-  let set;
   let getByUserId;
 
   beforeEach(() => {
@@ -47,29 +42,17 @@ describe('when searching for a user in azure search', () => {
       };
     });
 
-    get = jest.fn().mockImplementation((key, callback) => {
-      callback(null, 'test-index');
-    });
+    jest.doMock('ioredis', () => jest.fn().mockImplementation(() => {
+      const RedisMock = require('ioredis-mock').default;
+      const redisMock = new RedisMock();
+      redisMock.set('CurrentIndex_UserDevices', 'test-index');
+      return redisMock;
+    }));
 
-    set = jest.fn();
-
-    const redis = require('redis');
-    redis.createClient = jest.fn().mockImplementation(() => {
-      return {
-        get,
-        set,
-      };
-    });
 
       getByUserId = require('./../../../src/infrastructure/userDevices/azureSearch').getByUserId;
   });
 
-  it('then it should lookup current index', async () => {
-    await getByUserId('test', 1);
-
-    expect(get.mock.calls).toHaveLength(1);
-    expect(get.mock.calls[0][0]).toBe('CurrentIndex_UserDevices');
-  });
 
   it('then it gets the record by user id with the current index', async () => {
     await getByUserId('test', 1);
