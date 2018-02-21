@@ -176,7 +176,7 @@ const resyncToken = async (req) => {
 
   return {
     validationResult,
-    resyncResult:resyncResult,
+    resyncResult,
   };
 };
 
