@@ -1,5 +1,4 @@
-const redis = require('redis');
-const { promisify } = require('util');
+const Redis = require('ioredis');
 const config = require('./../config');
 const { chunk } = require('lodash');
 const moment = require('moment');
@@ -7,19 +6,14 @@ const { getUser } = require('./../../infrastructure/directories');
 
 const pageSize = 25;
 
-const tls = config.audit.params.connectionString.includes('6380');
-const client = redis.createClient({
-  url: config.audit.params.connectionString,
-  tls,
-});
-const lrangeAsync = promisify(client.lrange).bind(client); //lrange(indexname, start, stop)
+const client = new Redis(config.audit.params.connectionString);
 
 const getPageOfAudits = async (pageNumber) => {
   const pageSize = 200;
   const start = (pageNumber - 1) * pageSize;
   const stop = start + pageSize - 1;
 
-  const range = await lrangeAsync('winston', start, stop);
+  const range = await client.lrange('winston', start, stop);
   if (!range || range.length === 0) {
     return [];
   }
