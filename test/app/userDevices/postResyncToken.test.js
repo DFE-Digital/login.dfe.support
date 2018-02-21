@@ -62,7 +62,7 @@ describe('When processing a get to search for user devices', () => {
   it('then it should redirect to userdevices if the result is true', async () => {
     utils.resyncToken.mockReturnValue(
       {
-        success: true,
+        resyncResult: true,
         validationResult:{
           messages:{
           }
