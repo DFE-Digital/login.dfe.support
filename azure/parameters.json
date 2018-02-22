@@ -10,6 +10,9 @@
         },
         "appServiceConfigPath": {
             "value": ""
+        },
+        "appServicePlanRG": {
+            "value": ""
         }
     }
 }
