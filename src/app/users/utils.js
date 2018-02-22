@@ -1,6 +1,6 @@
 const users = require('./../../infrastructure/users');
 const logger = require('./../../infrastructure/logger');
-const { getUser } = require('./../../infrastructure/directories');
+const { getUser, getInvitation } = require('./../../infrastructure/directories');
 const { getUserLoginAuditsSince, getUserChangeHistory } = require('./../../infrastructure/audit');
 const moment = require('moment');
 const { mapUserStatus } = require('./../../infrastructure/utils');
@@ -79,26 +79,42 @@ const search = async (req) => {
 
 const getUserDetails = async (req) => {
   const uid = req.params.uid;
-  const user = await getUser(uid);
-  const logins = (await getUserLoginAuditsSince(uid, moment().subtract(1, 'years').toDate())).map(auditDateFixer);
-  const successfulLogins = logins.filter(x => x.success).sort(auditSorter);
+  if (uid.startsWith('inv-')) {
+    const invitation = await getInvitation(uid.substr(4), req.id);
+    return {
+      id: uid,
+      name: `${invitation.firstName} ${invitation.lastName}`,
+      firstName: invitation.firstName,
+      lastName: invitation.lastName,
+      email: invitation.email,
+      lastLogin: null,
+      status: mapUserStatus(-1),
+      loginsInPast12Months: {
+        successful: 0,
+      },
+    };
+  } else {
+    const user = await getUser(uid);
+    const logins = (await getUserLoginAuditsSince(uid, moment().subtract(1, 'years').toDate())).map(auditDateFixer);
+    const successfulLogins = logins.filter(x => x.success).sort(auditSorter);
 
-  const userChangeHistory = await getUserChangeHistory(uid, 1);
-  const statusChanges = userChangeHistory.audits.filter(x => x.editedFields && x.editedFields.find(y => y.name === 'status')).map(auditDateFixer).sort(auditSorter);
-  const statusLastChangedOn = statusChanges && statusChanges.length > 0 ? new Date(statusChanges[0].timestamp) : null;
+    const userChangeHistory = await getUserChangeHistory(uid, 1);
+    const statusChanges = userChangeHistory.audits.filter(x => x.editedFields && x.editedFields.find(y => y.name === 'status')).map(auditDateFixer).sort(auditSorter);
+    const statusLastChangedOn = statusChanges && statusChanges.length > 0 ? new Date(statusChanges[0].timestamp) : null;
 
-  return {
-    id: uid,
-    name: `${user.given_name} ${user.family_name}`,
-    firstName: user.given_name,
-    lastName: user.family_name,
-    email: user.email,
-    lastLogin: successfulLogins && successfulLogins.length > 0 ? successfulLogins[0].timestamp : null,
-    status: mapUserStatus(user.status, statusLastChangedOn),
-    loginsInPast12Months: {
-      successful: successfulLogins ? successfulLogins.length : 0,
-    },
-  };
+    return {
+      id: uid,
+      name: `${user.given_name} ${user.family_name}`,
+      firstName: user.given_name,
+      lastName: user.family_name,
+      email: user.email,
+      lastLogin: successfulLogins && successfulLogins.length > 0 ? successfulLogins[0].timestamp : null,
+      status: mapUserStatus(user.status, statusLastChangedOn),
+      loginsInPast12Months: {
+        successful: successfulLogins ? successfulLogins.length : 0,
+      },
+    };
+  }
 };
 
 module.exports = {

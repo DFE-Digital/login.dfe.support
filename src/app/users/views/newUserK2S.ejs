@@ -1,20 +1,23 @@
 <div class="row">
-    <div class="col-12">
+    <div class="col-8">
         <h1 class="heading-xlarge">
-            Add users details
+            Add user
         </h1>
+        <p>Please provide details of the users you’d like to add so we can check if they’re already registered on DfE Sign-in.</p>
     </div>
+</div>
+<div class="row">
     <div class="col-12">
         <form method="post" id="form-new-user">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <fieldset>
-                <legend class="vh">Please provide the user's details including their email so we can check if they're registered on DfE Sign-in.</legend>
+                <legend class="vh">User details</legend>
                 <div class="form-group <%= (locals.validationMessages.firstName !== undefined) ? 'form-group-error' : '' %>">
                     <label class="form-label" for="firstName">First name</span> </label>
                     <% if (locals.validationMessages.firstName !== undefined) { %>
                     <p class="error-message" id="validation-firstName"><%= locals.validationMessages.firstName %></p>
                     <% } %>
-                    <input class="form-control full-width" id="firstName" name="firstName" type="text"
+                    <input class="form-control" id="firstName" name="firstName" type="text"
                             <% if (locals.validationMessages.firstName !== undefined) { %>
                            aria-invalid="true" aria-describedby="validation-firstName"
                             <% } %>
@@ -25,7 +28,7 @@
                     <% if (locals.validationMessages.lastName !== undefined) { %>
                     <p class="error-message" id="validation-lastName"><%= locals.validationMessages.lastName %></p>
                     <% } %>
-                    <input class="form-control full-width" id="lastName" name="lastName" type="text"
+                    <input class="form-control" id="lastName" name="lastName" type="text"
                            <% if (locals.validationMessages.lastName !== undefined) { %>aria-invalid="true" aria-describedby="validation-lastName"<% } %>
                            value="<%=locals.lastName%>">
                 </div>
@@ -34,7 +37,7 @@
                     <% if (locals.validationMessages.email !== undefined) { %>
                     <p class="error-message" id="validation-lastName"><%= locals.validationMessages.email %></p>
                     <% } %>
-                    <input class="form-control full-width" id="email" name="email" type="email"
+                    <input class="form-control" id="email" name="email" type="email"
                            <% if (locals.validationMessages.email !== undefined) { %>aria-invalid="true" aria-describedby="validation-email"<% } %>
                            value="<%=locals.email%>">
                 </div>
@@ -43,7 +46,7 @@
                     <% if (locals.validationMessages.localAuthority !== undefined) { %>
                     <p class="error-message" id="validation-localAuthority"><%= locals.validationMessages.localAuthority %></p>
                     <% } %>
-                    <select class="form-control full-width" id="localAuthority" name="localAuthority"
+                    <select class="form-control select2" id="localAuthority" name="localAuthority"
                            <% if (locals.validationMessages.localAuthority !== undefined) { %>aria-invalid="true" aria-describedby="validation-localAuthority"<% } %>>
                         <%for(let i = 0; i < locals.localAuthorities.length; i++) {%>
                         <%const la = locals.localAuthorities[i];%>
@@ -56,16 +59,18 @@
                     <% if (locals.validationMessages.k2sId !== undefined) { %>
                     <p class="error-message" id="validation-lastName"><%= locals.validationMessages.k2sId %></p>
                     <% } %>
-                    <input class="form-control full-width" id="k2sId" name="k2sId" type="text"
+                    <input class="form-control char-width-7" id="k2sId" name="k2sId" type="text"
                            <% if (locals.validationMessages.k2sId !== undefined) { %>aria-invalid="true" aria-describedby="validation-k2sId"<% } %>
                            value="<%=locals.k2sId%>">
                 </div>
             </fieldset>
+
             <div class="form-submit submit-buttons">
                 <button type="submit" class="button">Continue</button>
                 <a href="../" name="cancel" class="button button-secondary">Cancel</a>
             </div>
+
         </form>
     </div>
 </div>
-</div>
+

@@ -1,22 +1,19 @@
-const redis = require('redis');
-const { promisify } = require('util');
+const Redis = require('ioredis');
 const config = require('./../config');
 const { chunk } = require('lodash');
 const moment = require('moment');
+const { getUser } = require('./../../infrastructure/directories');
 
 const pageSize = 25;
 
-const client = redis.createClient({
-  url: config.audit.params.connectionString,
-});
-const lrangeAsync = promisify(client.lrange).bind(client); //lrange(indexname, start, stop)
+const client = new Redis(config.audit.params.connectionString);
 
 const getPageOfAudits = async (pageNumber) => {
   const pageSize = 200;
   const start = (pageNumber - 1) * pageSize;
   const stop = start + pageSize - 1;
 
-  const range = await lrangeAsync('winston', start, stop);
+  const range = await client.lrange('winston', start, stop);
   if (!range || range.length === 0) {
     return [];
   }
@@ -76,6 +73,50 @@ const getUserLoginAuditsSince = async (userId, sinceDate) => {
   return loginAudits;
 };
 
+const getUserName = async(userId) => {
+  const user = await getUser(userId);
+
+  return `${user.given_name} ${user.family_name}`;
+};
+
+const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
+  const requiredAudits = pageNumber * pageSize;
+  let loginAudits = [];
+
+  let p = 1;
+  let hasMorePages = true;
+  while (hasMorePages && loginAudits.length < requiredAudits) {
+    const pageOfAudits = await getUserAudit(userId, p);
+     let loginAuditsPage = await Promise.all(pageOfAudits.audits.filter((audit) =>  {
+       return (audit.deviceSerialNumber === serialNumber)}).map(async (audit) => {
+         audit.date = new Date(audit.timestamp);
+         audit.name = audit.userId === userId ? userName : await getUserName(audit.userId);
+         audit.success = audit.success ? 'Success' : 'Failure';
+
+        if(audit.type==='sign-in' && audit.subType==='digipass') {
+          audit.event = 'Login';
+        } else if(audit.type==='support' && audit.subType === 'digipass-resync') {
+          audit.event = 'Resync';
+        } else if(audit.type==='support' && audit.subType === 'digipass-unlock') {
+          audit.event = `Unlock - UnlockType: "${audit.unlockType}"`
+        } else {
+          audit.event = $`Digipass event ${audit.type} - ${audit.subType}`;
+        }
+        return audit;
+    }));
+    loginAudits.push(...loginAuditsPage);
+    p++;
+    hasMorePages = p <= pageOfAudits.numberOfPages;
+  }
+
+  const pages = chunk(loginAudits, pageSize);
+  const page = pageNumber <= pages.length ? pages[pageNumber - 1] : [];
+  return {
+    audits: page,
+    numberOfPages: pages.length,
+  };
+};
+
 const getUserLoginAuditsForService = async (userId, clientId, pageNumber) => {
   const requiredAudits = pageNumber * pageSize;
   const loginAudits = [];
@@ -95,7 +136,7 @@ const getUserLoginAuditsForService = async (userId, clientId, pageNumber) => {
   }
 
   const pages = chunk(loginAudits, pageSize);
-  const page = pageNumber < pages.length ? pages[pageNumber - 1] : [];
+  const page = pageNumber <= pages.length ? pages[pageNumber - 1] : [];
   return {
     audits: page,
     numberOfPages: pages.length, // This will create a moving number of pages. Current use case will work, but may need re-thinking
@@ -133,4 +174,5 @@ module.exports = {
   getUserLoginAuditsSince,
   getUserLoginAuditsForService,
   getUserChangeHistory,
+  getTokenAudits,
 };

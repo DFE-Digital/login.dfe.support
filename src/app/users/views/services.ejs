@@ -1,4 +1,4 @@
-<%- include('summaryPartial', {area: 'services', user: locals.user}); %>
+<%- include('summaryPartial', {area: 'services', user: locals.user, isInvitation: locals.isInvitation}); %>
 
 <% for (let o = 0; o < locals.organisations.length; o++) { %>
 <% const org = locals.organisations[o];%>
@@ -21,12 +21,20 @@
     <tr>
         <td><%=service.name%></td>
         <td><%=service.userType.name%></td>
+        <%if(service.grantedAccessOn) {%>
         <td><%=locals.moment(service.grantedAccessOn).format('DD/MMM/YYYY')%></td>
+        <%} else {%>
+        <td>Pending</td>
+        <%}%>
         <td><%=service.lastLogin ? locals.moment(service.lastLogin).format('DD/MMM/YYYY HH:mm:ss') : 'Never'%></td>
         <td>
             <%for(let a = 0; a < service.approvers.length; a++) {%>
-            <%if(a>0){%>,<%}%>
-                <%=service.approvers[a]%>
+                <%if(a>0){%>,<%}%>
+                <%if(service.approvers[a].id === locals.user.id) {%>
+                <%=service.approvers[a].name%>
+                <%} else {%>
+                <a href="/users/<%=service.approvers[a].id%>"><%=service.approvers[a].name%></a>
+                <%}%>
             <%}%>
         </td>
         <td>

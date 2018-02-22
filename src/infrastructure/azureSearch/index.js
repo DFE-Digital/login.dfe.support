@@ -77,6 +77,24 @@ const getIndexes = async () => {
   });
 };
 
+const getIndexById = async (currentIndexName, userId) => {
+  const response =  await rp({
+    method: 'GET',
+    uri: `${getAzureSearchUri(currentIndexName, '/docs')}&$filter=id+eq+'${userId}'`,
+    headers: {
+      'content-type': 'application/json',
+      'api-key': config.cache.params.apiKey,
+    },
+    json: true,
+  });
+
+  if (response.value.length === 0) {
+    return null;
+  }
+
+  return response.value[0];
+};
+
 const search = async (currentIndexName, criteria, skip, pageSize, orderBy) => {
   return await rp({
     method: 'GET',
@@ -87,7 +105,7 @@ const search = async (currentIndexName, criteria, skip, pageSize, orderBy) => {
     },
     json: true,
   });
-}
+};
 
 module.exports = {
   createIndex,
@@ -95,5 +113,6 @@ module.exports = {
   deleteUnusedIndexes,
   getIndexes,
   search,
+  getIndexById,
 };
 

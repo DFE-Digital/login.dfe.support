@@ -9,7 +9,12 @@ const deviceExists = async (serialNumber, correlationId) => {
   return Promise.resolve(false);
 };
 
+const syncDigipassToken = async(serialNumber, code1, code2) => {
+  return Promise.resolve(true);
+};
+
 module.exports = {
   getDevices,
   deviceExists,
+  syncDigipassToken,
 };

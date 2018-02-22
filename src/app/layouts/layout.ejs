@@ -58,6 +58,25 @@
 
 
     <main id="content" tabindex="-1">
+        <% if (locals.validationMessages !== undefined) { %>
+
+        <% const validationKeys = Object.keys(locals.validationMessages)  %>
+
+        <% if (validationKeys.length > 0) { %>
+
+        <div class="error-summary" role="alert" aria-labelledby="error-summary" tabindex="-1">
+            <h2 class="heading-medium error-summary-heading" id="error-summary">
+                There are errors to fix
+            </h2>
+            <ul class="error-summary-list">
+                <% for (const prop in locals.validationMessages) { %>
+                <li><a href="#<%=prop%>"><%=locals.validationMessages[prop]%></a></li>
+                <% } %>
+            </ul>
+        </div>
+
+        <% } %>
+        <% } %>
         <%- body %>
     </main>
 
@@ -74,6 +93,7 @@
 </footer>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script src="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/javascript/vendors/select2.min.js"></script>
 <script src="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/javascript/app.min.js"></script>
 
 </body>

@@ -29,12 +29,14 @@
         </dl>
     </div>
     <div class="col-4">
+        <%if(!locals.isInvitation) {%>
         <aside>
             <h2 class="heading-medium">Actions</h2>
             <ul class="list">
                 <li><a href="edit-profile">Edit user's details</a> </li>
             </ul>
         </aside>
+        <%}%>
     </div>
 </div>
 
@@ -47,22 +49,18 @@
             <li><a href="services" role="tab">Services</a></li>
         <%}%>
 
-        <%if(locals.area === 'organisations') {%>
-            <li class="active">Organisations</li>
-        <%} else {%>
-            <li><a href="organisations" role="tab">Organisations</a></li>
-        <%}%>
+        <%if(!locals.isInvitation) {%>
+            <%if(locals.area === 'changehistory') {%>
+                <li class="active">Change History</li>
+            <%} else {%>
+                <li><a href="changehistory" role="tab">Change History</a></li>
+            <%}%>
 
-        <%if(locals.area === 'changehistory') {%>
-            <li class="active">Change History</li>
-        <%} else {%>
-            <li><a href="changehistory" role="tab">Change History</a></li>
-        <%}%>
-
-        <%if(locals.area === 'audit') {%>
-            <li class="active">Audit</li>
-        <%} else {%>
-            <li><a href="audit" role="tab">Audit</a></li>
+            <%if(locals.area === 'audit') {%>
+                <li class="active">Audit</li>
+            <%} else {%>
+                <li><a href="audit" role="tab">Audit</a></li>
+            <%}%>
         <%}%>
 
     </ul>
