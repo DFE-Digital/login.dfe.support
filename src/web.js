@@ -3,7 +3,7 @@ const appInsights = require('applicationinsights');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const session = require('express-session');
+const session = require('cookie-session');
 const expressLayouts = require('express-ejs-layouts');
 const csurf = require('csurf');
 const morgan = require('morgan');
@@ -50,6 +50,15 @@ const init = async () => {
   if (config.hostingEnvironment.env !== 'dev') {
     app.set('trust proxy', 1);
   }
+
+  let expiryInMinutes = 30;
+  const sessionExpiry = parseInt(config.hostingEnvironment.sessionCookieExpiryInMinutes);
+  if (!isNaN(sessionExpiry)) {
+    expiryInMinutes = sessionExpiry;
+  }
+
+  const expiryDate = new Date(Date.now() + (60 * expiryInMinutes * 1000));
+
   app.use(session({
     resave: true,
     saveUninitialized: true,
@@ -57,6 +66,7 @@ const init = async () => {
     cookie: {
       httpOnly: true,
       secure: true,
+      expires: expiryDate,
     },
   }));
   app.use(flash());
