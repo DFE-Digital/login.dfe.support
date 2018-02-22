@@ -43,6 +43,13 @@ describe('When syncing users materialised view', function () {
       numberOfPages: 1,
     });
 
+    directories.getPageOfInvitations.mockReset();
+    directories.getPageOfInvitations.mockReturnValue({
+      invitations: [],
+      numberOfPages: 1,
+      page: 1,
+    });
+
     organisations.getUserOrganisations.mockReset();
     organisations.getUserOrganisations.mockReturnValue([{
       userService: {

@@ -1,8 +1,5 @@
-jest.mock('redis', () => {
-  return {
-    createClient: jest.fn(),
-  };
-});
+jest.mock('ioredis', () => jest.fn().mockImplementation(() => {
+}));
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
   cache: {
     params: {
@@ -21,8 +18,6 @@ jest.mock('uuid/v4', () => {
 const rp = require('request-promise');
 
 describe('when searching for a user in azure search', () => {
-  let get;
-  let set;
   let search;
 
   beforeEach(() => {
@@ -47,28 +42,14 @@ describe('when searching for a user in azure search', () => {
       };
     });
 
-    get = jest.fn().mockImplementation((key, callback) => {
-      callback(null, 'test-index');
-    });
-
-    set = jest.fn();
-
-    const redis = require('redis');
-    redis.createClient = jest.fn().mockImplementation(() => {
-      return {
-        get,
-        set,
-      };
-    });
+    jest.doMock('ioredis', () => jest.fn().mockImplementation(() => {
+      const RedisMock = require('ioredis-mock').default;
+      const redisMock = new RedisMock();
+      redisMock.set('CurrentIndex_UserDevices', 'test-index');
+      return redisMock;
+    }));
 
     search = require('./../../../src/infrastructure/userDevices/azureSearch').search;
-  });
-
-  it('then it should lookup current index', async () => {
-    await search('test', 1);
-
-    expect(get.mock.calls).toHaveLength(1);
-    expect(get.mock.calls[0][0]).toBe('CurrentIndex_UserDevices');
   });
 
   it('then it should search the current index for the criteria and page, with a page size of 25 and ordered by serial number if no order specified', async () => {
@@ -78,6 +59,15 @@ describe('when searching for a user in azure search', () => {
     expect(rp.mock.calls[0][0]).toMatchObject({
       method: 'GET',
       uri: 'https://test-search.search.windows.net/indexes/test-index/docs?api-version=2016-09-01&search=test&$count=true&$skip=0&$top=25&$orderby=serialNumber',
+    });
+  });
+  it('then it if the search criteria contains - and is a number the - are stripped out', async () => {
+    await search('00123-456', 1);
+
+    expect(rp.mock.calls).toHaveLength(1);
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      method: 'GET',
+      uri: 'https://test-search.search.windows.net/indexes/test-index/docs?api-version=2016-09-01&search=00123456&$count=true&$skip=0&$top=25&$orderby=serialNumber',
     });
   });
 

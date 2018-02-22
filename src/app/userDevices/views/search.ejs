@@ -70,16 +70,20 @@
             <thead>
                 <tr class="sortable">
                     <th scope="col" class="cwp-20">
-                        <a href="?criteria=<%=criteria%>&page=<%=page%>&sort=serialNumber&sortdir=<%=sort.serialNumber.nextDirection%>"
+                        <a href="?criteria=<%=criteria%>&page=<%=page%>&sort=serialnumber&sortdir=<%=sort.serialNumber.nextDirection%>"
                            class="<% if (sort.serialNumber.applied) { %>sorted dir-<%= (sort.serialNumber.nextDirection === 'desc') ? 'd' : 'a' %><% } %>"
                         >Serial Number</a></th>
                     <th scope="col" class="cwp-10">Status</th>
                     <th scope="col" class="cwp-20">Assignee</th>
                     <th scope="col" class="cwp-35">
-                        <a href="?criteria=<%=criteria%>&page=<%=page%>&sort=lastlogin&sortdir=<%=sort.organisation.nextDirection%>"
+                        <a href="?criteria=<%=criteria%>&page=<%=page%>&sort=organisation&sortdir=<%=sort.organisation.nextDirection%>"
                            class="<% if (sort.organisation.applied) { %>sorted dir-<%= (sort.organisation.nextDirection === 'desc') ? 'd' : 'a' %><% } %>"
                         >Organisation</a></th>
-                    <th scope="col" class="cwp-15">Last login</th>
+                    <th scope="col" class="cwp-15">
+                        <a href="?criteria=<%=criteria%>&page=<%=page%>&sort=lastlogin&sortdir=<%=sort.lastLogin.nextDirection%>"
+                           class="<% if (sort.lastLogin.applied) { %>sorted dir-<%= (sort.lastLogin.nextDirection === 'desc') ? 'd' : 'a' %><% } %>"
+                        >Last login</a>
+                        </th>
                 </tr>
             </thead>
             <tbody>
@@ -90,7 +94,7 @@
             <% } %>
             <% for (let i = 0; i < locals.userDevices.length; i++) { %>
                 <tr>
-                    <td><a href="#"><%= userDevices[i].device.serialNumber %></a></td>
+                    <td><a href="/userDevices/<%=userDevices[i].device.serialNumber%>/<%=userDevices[i].id%>%>"><%= userDevices[i].device.serialNumberFormatted %></a></td>
                     <td><%= userDevices[i].device.status %></td>
                     <td><%= userDevices[i].name %></td>
                     <td>

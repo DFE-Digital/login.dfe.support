@@ -71,9 +71,26 @@ const getUserChangeHistory = async (userId, pageNumber) => {
   })
 };
 
+const getTokenAudits = async (userId,serialNumber, pageNumber) => {
+  return Promise.resolve({
+    audits: [{
+      type: "sign-in",
+      subType: "digipass",
+      success: true,
+      userId: userId,
+      userEmail: "some.user@test.tester",
+      level: "audit",
+      message: "Successful digipass challenge/response for (id: 7a1b077a-d7d4-4b60-83e8-1a1b49849510)",
+      timestamp: "2017-10-24T12:35:51.633Z"
+    }],
+    numberOfPages: 1,
+  });
+};
+
 module.exports = {
   getUserAudit,
   getUserLoginAuditsSince,
   getUserLoginAuditsForService,
   getUserChangeHistory,
+  getTokenAudits,
 };

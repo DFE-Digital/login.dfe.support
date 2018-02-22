@@ -1,14 +1,10 @@
-const redis = require('redis');
-const { promisify } = require('util');
+const Redis = require('ioredis');
 const config = require('./../config');
 
-const client = redis.createClient({
-  url: config.serviceMapping.params.connectionString,
-});
-const getAsync = promisify(client.get).bind(client);
+const client = new Redis(config.serviceMapping.params.connectionString);
 
 const getAll = async () => {
-  const json = await getAsync('SupportServiceMapping');
+  const json = await client.get('SupportServiceMapping');
   if (!json) {
     return [];
   }

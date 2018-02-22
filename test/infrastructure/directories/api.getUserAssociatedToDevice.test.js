@@ -18,6 +18,7 @@ const type = 'digipass';
 const serialNumber = '1234567890';
 const apiResponse = {
   associatedWith: {
+    type: 'user',
     sub: 'user1',
   }
 };
@@ -70,7 +71,10 @@ describe('when getting a page of users from directories api', () => {
   it('then it should return associated user sub if associated', async () => {
     const actual = await getUserAssociatedToDevice(type, serialNumber, correlationId);
 
-    expect(actual).toBe('user1');
+    expect(actual).toEqual({
+      type: 'user',
+      sub: 'user1',
+    });
   });
 
   it('then it should return null if not associated', async () => {

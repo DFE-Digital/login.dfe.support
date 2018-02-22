@@ -1,8 +1,5 @@
-jest.mock('redis', () => {
-  return {
-    createClient: jest.fn(),
-  };
-});
+jest.mock('ioredis', () => jest.fn().mockImplementation(() => {
+}));
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
   cache: {
     params: {
@@ -37,24 +34,10 @@ const users = [
 const rp = require('request-promise');
 
 describe('when updating an index with new data in azure search', () => {
-  let get;
-  let set;
   let updateIndex;
 
   beforeEach(() => {
     rp.mockReset();
-
-    get = jest.fn();
-
-    set = jest.fn();
-
-    const redis = require('redis');
-    redis.createClient = jest.fn().mockImplementation(() => {
-      return {
-        get,
-        set,
-      };
-    });
 
     updateIndex = require('./../../../src/infrastructure/userDevices/azureSearch').updateIndex;
   });

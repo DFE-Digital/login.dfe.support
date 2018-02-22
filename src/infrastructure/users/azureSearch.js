@@ -1,15 +1,10 @@
-const redis = require('redis');
-const { promisify } = require('util');
+const Redis = require('ioredis');
 const rp = require('request-promise');
 const config = require('./../config');
 const uuid = require('uuid/v4');
 const logger = require('./../logger');
 
-const client = redis.createClient({
-  url: config.cache.params.indexPointerConnectionString,
-});
-const getAsync = promisify(client.get).bind(client);
-const setAsync = promisify(client.set).bind(client);
+const client = new Redis(config.cache.params.indexPointerConnectionString);
 
 const pageSize = 25;
 
@@ -23,7 +18,7 @@ const getAzureSearchUri = (indexName, indexResource = '') => {
 
 
 const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => {
-  const currentIndexName = await getAsync('CurrentIndex_Users');
+  const currentIndexName = await client.get('CurrentIndex_Users');
 
   try {
     const skip = (pageNumber - 1) * pageSize;
@@ -83,7 +78,7 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
 };
 
 const getById = async (userId) => {
-  const currentIndexName = await getAsync('CurrentIndex_Users');
+  const currentIndexName = await client.get('CurrentIndex_Users');
 
   try {
     const response = await rp({
@@ -149,7 +144,7 @@ const createIndex = async () => {
 
 const updateIndex = async (users, index) => {
   if (!index) {
-    index = await getAsync('CurrentIndex_Users');
+    index = await client.get('CurrentIndex_Users');
   }
   try {
     await rp({
@@ -180,14 +175,14 @@ const updateIndex = async (users, index) => {
 };
 
 const updateActiveIndex = async (index) => {
-  await setAsync('CurrentIndex_Users', index)
+  await client.set('CurrentIndex_Users', index)
 };
 
 const deleteUnusedIndexes = async () => {
-  const currentIndexName = await getAsync('CurrentIndex_Users');
+  const currentIndexName = await client.get('CurrentIndex_Users');
 
   // Delete any indexes already marked as unused
-  const unusedJson = await getAsync('UnusedIndexes_Users');
+  const unusedJson = await client.get('UnusedIndexes_Users');
   const unusedIndexes = unusedJson ? JSON.parse(unusedJson) : [];
   for (let i = 0; i < unusedIndexes.length; i++) {
     if (unusedIndexes[i] !== currentIndexName) {
@@ -213,7 +208,7 @@ const deleteUnusedIndexes = async () => {
     json: true,
   });
   const indexesAppearingUnused = indexesResponse.value.map(x => x.name).filter(x => x !== currentIndexName && x.toLowerCase().indexOf('users-') !== -1);
-  await setAsync('UnusedIndexes_Users', JSON.stringify(indexesAppearingUnused));
+  await client.set('UnusedIndexes_Users', JSON.stringify(indexesAppearingUnused));
 };
 
 module.exports = {

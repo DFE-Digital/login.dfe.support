@@ -25,7 +25,10 @@ describe('when getting users service details', () => {
       user: {
         sub: 'user1',
         email: 'super.user@unit.test',
-      }
+      },
+      params: {
+        uid: 'user1',
+      },
     };
 
     res = {
@@ -177,12 +180,12 @@ describe('when getting users service details', () => {
     expect(getUserOrganisations.mock.calls).toHaveLength(1);
     expect(getUserOrganisations.mock.calls[0][0]).toBe('user1');
     expect(getUserOrganisations.mock.calls[0][1]).toBe('correlationId');
-    
+
     expect(res.render.mock.calls[0][1].organisations).toHaveLength(2);
     expect(res.render.mock.calls[0][1].organisations[0]).toMatchObject({
       id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
       name: 'Big School',
-      services:[
+      services: [
         {
           id: '83f00ace-f1a0-4338-8784-fa14f5943e5a',
           name: 'Some service',
@@ -208,7 +211,7 @@ describe('when getting users service details', () => {
     expect(res.render.mock.calls[0][1].organisations[1]).toMatchObject({
       id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
       name: 'Small School',
-      services:[
+      services: [
         {
           id: 'ae58ed71-4e0f-48d4-8577-4cf6f1b7d299',
           name: 'Yet another service',
