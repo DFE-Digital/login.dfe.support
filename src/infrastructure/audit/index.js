@@ -5,6 +5,8 @@ if (config.audit.type === 'static') {
   adapter = require('./static');
 } else if (config.audit.type === 'redis') {
   adapter = require('./redis');
+} else if (config.audit.type === 'sequelize') {
+  adapter = require('./sequelize');
 } else {
   throw new Error(`Invalid audit type ${config.audit.type} in config`);
 }
