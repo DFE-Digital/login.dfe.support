@@ -25,6 +25,14 @@
                             <% } %>
                             <input class="form-control full-width" id="lastName" name="lastName" type="text" <% if (locals.validationMessages.lastName !== undefined) { %> aria-invalid="true" aria-describedby="validation-lastName" <% } %> value="<%=locals.user.lastName%>">
                         </div>
+                        <% if (locals.user.orgId && locals.user.serviceId) { %>
+                        <div class="form-group ">
+                            <label class="form-label" for="ktsId">KTS Id</span> </label>
+                            <input class="form-control full-width" id="ktsId" name="ktsId" type="text"  value="<%=locals.user.ktsId%>">
+                        </div>
+                        <% } %>
+                        <input type="hidden" value="<%=locals.user.orgId%>" name="orgId" id="orgId" />
+                        <input type="hidden" value="<%=locals.user.serviceId%>" name="serviceId" id="serviceId" />
                     </fieldset>
                     <div class="form-submit submit-buttons">
                         <button type="submit" class="button">Save</button>
