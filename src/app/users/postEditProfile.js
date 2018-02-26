@@ -2,6 +2,7 @@ const logger = require('./../../infrastructure/logger');
 const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
 const { updateUser } = require('./../../infrastructure/directories');
+const { putSingleServiceIdentifierForUser } = require('./../../infrastructure/organisations');
 const { getById, updateIndex } = require('./../../infrastructure/users');
 
 const validate = (req) => {
@@ -75,6 +76,26 @@ const postEditProfile = async (req, res) => {
   }
 
   const uid = req.params.uid;
+
+  //todo k2s-id set id
+  if(req.body.orgId && req.body.serviceId) {
+    const identifierResult = await putSingleServiceIdentifierForUser(uid,req.body.serviceId, req.body.orgId, req.body.ktsId, req.id)
+
+    if(!identifierResult) {
+      sendResult(req, res, 'users/views/editProfile', {
+        csrfToken: req.csrfToken(),
+        user,
+        validationMessages: {
+          isValid : false,
+          validationMessages : {
+            ktsId: 'Id is already in use',
+          },
+        },
+      });
+      return;
+    }
+  }
+
   await updateUser(uid, req.body.firstName, req.body.lastName, req.id);
   await updateUserIndex(uid, req.body.firstName, req.body.lastName);
 
