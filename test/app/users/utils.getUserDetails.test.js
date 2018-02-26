@@ -1,8 +1,10 @@
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
 jest.mock('./../../../src/infrastructure/directories');
+jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/audit');
 
 const { getUser } = require('./../../../src/infrastructure/directories');
+const { getServicesByUserId } = require('./../../../src/infrastructure/organisations');
 const { getUserLoginAuditsSince, getUserChangeHistory } = require('./../../../src/infrastructure/audit');
 const { getUserDetails } = require('./../../../src/app/users/utils');
 
@@ -10,6 +12,9 @@ describe('When getting user details', () => {
   let req;
 
   beforeEach(() => {
+    getServicesByUserId.mockReset();
+
+
     getUser.mockReset();
     getUser.mockReturnValue({
       sub: 'user1',

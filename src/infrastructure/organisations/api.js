@@ -161,6 +161,64 @@ const addInvitationService = async (invitationId, organisationId, serviceId, rol
   }
 };
 
+const getServicesByUserId = async (id, reqId) => {
+
+  const token = await jwtStrategy(config.organisations.service).getBearerToken();
+
+  try {
+    const response = await rp({
+      method: 'GET',
+      uri: `${config.organisations.service.url}/services/associated-with-user/${id}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': reqId,
+      },
+      json: true,
+    });
+
+    return response;
+  } catch (e) {
+    const status = e.statusCode ? e.statusCode : 500;
+    if (status === 401 || status === 404) {
+      return null;
+    }
+    throw e;
+  }
+
+
+};
+
+const putSingleServiceIdentifierForUser = async(userId, serviceId, orgId, value, reqId) => {
+  const token = await jwtStrategy(config.organisations.service).getBearerToken();
+
+  try {
+    await rp({
+      method: 'PUT',
+      uri: `${config.organisations.service.url}/organisations/${orgId}/services/${serviceId}/identifiers/${userId}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': reqId,
+      },
+      body: {
+        id_key: 'k2s-id',
+        id_value: value
+      },
+      json: true,
+    });
+
+    return true;
+  } catch (e) {
+    const status = e.statusCode ? e.statusCode : 500;
+    if(status === 409) {
+      return false;
+    }
+    if (status === 401 || status === 404) {
+      return null;
+    }
+    throw e;
+  }
+};
+
 module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -169,4 +227,6 @@ module.exports = {
   getAllOrganisations,
   getServiceIdentifierDetails,
   addInvitationService,
+  getServicesByUserId,
+  putSingleServiceIdentifierForUser,
 };
