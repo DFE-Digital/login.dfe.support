@@ -1,9 +1,11 @@
 const users = require('./../../infrastructure/users');
 const logger = require('./../../infrastructure/logger');
 const { getUser, getInvitation } = require('./../../infrastructure/directories');
+const { getServicesByUserId } = require('./../../infrastructure/organisations');
 const { getUserLoginAuditsSince, getUserChangeHistory } = require('./../../infrastructure/audit');
 const moment = require('moment');
 const { mapUserStatus } = require('./../../infrastructure/utils');
+const config = require('./../../infrastructure/config');
 
 const auditSorter = (x, y) => {
   const xTime = x.timestamp.getTime();
@@ -95,6 +97,18 @@ const getUserDetails = async (req) => {
     };
   } else {
     const user = await getUser(uid);
+    const serviceDetails = await getServicesByUserId(uid);
+
+    const ktsDetails = serviceDetails ? serviceDetails.find((c) => c.id.toLowerCase() === config.serviceMapping.key2SuccessServiceId.toLowerCase()) : undefined;
+    let externalIdentifier = '';
+    if(ktsDetails && ktsDetails.externalIdentifiers) {
+      const key = ktsDetails.externalIdentifiers.find((a) => a.key='k2s-id');
+      if(key) {
+        externalIdentifier = key.value;
+      }
+    }
+
+
     const logins = (await getUserLoginAuditsSince(uid, moment().subtract(1, 'years').toDate())).map(auditDateFixer);
     const successfulLogins = logins.filter(x => x.success).sort(auditSorter);
 
@@ -113,6 +127,9 @@ const getUserDetails = async (req) => {
       loginsInPast12Months: {
         successful: successfulLogins ? successfulLogins.length : 0,
       },
+      serviceId: config.serviceMapping.key2SuccessServiceId,
+      orgId: ktsDetails ? ktsDetails.organisation.id : '',
+      ktsId: externalIdentifier,
     };
   }
 };
