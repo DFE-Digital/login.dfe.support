@@ -94,7 +94,7 @@ const syncUserDevicesView = async () => {
         return user !== null;
       });
 
-      if (filteredUsers) {
+      if (filteredUsers && filteredUsers.length > 0) {
         await userDevices.updateIndex(...filteredUsers, newIndexName);
       }
     }
@@ -102,11 +102,15 @@ const syncUserDevicesView = async () => {
     hasMorePages = pageNumber <= pageOfUsers.numberOfPages;
   }
 
-  const devicesWithoutUsers = buildDevicesWithoutUser(allDevices.filter((device) => {
-    return device.isAssigned === undefined;
-  }));
+  if (allDevices && allDevices.length > 0) {
+    const devicesWithoutUsers = buildDevicesWithoutUser(allDevices.filter((device) => {
+      return device.isAssigned === undefined;
+    }));
 
-  await userDevices.updateIndex(devicesWithoutUsers, newIndexName);
+    if (devicesWithoutUsers && devicesWithoutUsers.length > 0) {
+      await userDevices.updateIndex(devicesWithoutUsers, newIndexName);
+    }
+  }
 
   await userDevices.updateActiveIndex(newIndexName);
   logger.info(`Pointed user index to ${newIndexName}`);
