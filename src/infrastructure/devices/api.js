@@ -113,9 +113,40 @@ const getDeviceUnlockCode = async (serialNumber,code, correlationId) => {
   }
 };
 
+const deactivateToken = async (serialNumber, reason, correlationId) => {
+  const token = await jwtStrategy(config.devices.service).getBearerToken();
+
+  try {
+    await rp({
+      method: 'PUT',
+      uri: `${config.devices.service.url}/digipass/${serialNumber}/deactivate`,
+      headers: {
+        authorization: `Bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      body :{
+        reason: reason,
+      },
+      json: true,
+    });
+
+    return true;
+  } catch (e) {
+    const status = e.statusCode ? e.statusCode : 500;
+    if (status === 401) {
+      return null;
+    }
+    if(status === 404) {
+      return false;
+    }
+    throw e;
+  }
+};
+
 module.exports = {
   getDevices,
   deviceExists,
   syncDigipassToken,
   getDeviceUnlockCode,
+  deactivateToken,
 };
