@@ -56,19 +56,17 @@ const init = async () => {
   if (!isNaN(sessionExpiry)) {
     expiryInMinutes = sessionExpiry;
   }
-
-  const expiryDate = new Date(Date.now() + (60 * expiryInMinutes * 1000));
-
   app.use(session({
-    resave: true,
-    saveUninitialized: true,
-    secret: config.hostingEnvironment.sessionSecret,
-    cookie: {
-      httpOnly: true,
-      secure: true,
-      expires: expiryDate,
-    },
+    keys: [config.hostingEnvironment.sessionSecret],
+    maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
+    httpOnly: true,
+    secure: true,
   }));
+  app.use((req, res, next) => {
+    req.session.now = Date.now();
+    next();
+  });
+
   app.use(flash());
 
   app.use(bodyParser.urlencoded({ extended: true }));
