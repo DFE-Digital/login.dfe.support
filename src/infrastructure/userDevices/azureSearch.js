@@ -62,6 +62,11 @@ const deleteUnusedIndexes = async () => {
 };
 
 const mapUser = (user) => {
+
+  if(!user) {
+    return null;
+  }
+
   return {
     id: user.id,
     name: user.name,

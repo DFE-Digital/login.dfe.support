@@ -89,20 +89,35 @@ const getUserTokenDetails = async (req, params) => {
     userEmail: req.user.email,
   });
 
-
+  if(result) {
+    return {
+      uid: uid,
+      name: result.name,
+      serialNumber: result.device.serialNumber,
+      serialNumberFormatted: result.device.serialNumberFormatted,
+      tokenStatus :  result.name ? 'Active' : 'Unassigned',
+      orgName: result.organisation ? result.organisation.name : '',
+      email: result.email,
+      lastLogin: successfulLogins && successfulLogins.length > 0 ? successfulLogins[0].timestamp : null,
+      numberOfSuccessfulLoginAttemptsInTwelveMonths:  successfulLogins ? successfulLogins.length : 0,
+      audit: auditRecords ? auditRecords : {audits: []},
+    };
+  }
 
   return {
     uid: uid,
-    name: result.name,
-    serialNumber: result.device.serialNumber,
-    serialNumberFormatted: result.device.serialNumberFormatted,
-    tokenStatus :  result.name ? 'Active' : 'Unassigned',
-    orgName: result.organisation ? result.organisation.name : '',
-    email: result.email,
-    lastLogin: successfulLogins && successfulLogins.length > 0 ? successfulLogins[0].timestamp : null,
-    numberOfSuccessfulLoginAttemptsInTwelveMonths:  successfulLogins ? successfulLogins.length : 0,
-    audit: auditRecords,
+    name: '',
+    serialNumber: serialNumber,
+    serialNumberFormatted: `${serialNumber.substr(0, 2)}-${serialNumber.substr(2, 7)}-${serialNumber.substr(9, 1)}`,
+    tokenStatus : 'Unassigned',
+    orgName: '',
+    email: '',
+    lastLogin: null,
+    numberOfSuccessfulLoginAttemptsInTwelveMonths: 0,
+    audit: {audits: []},
   };
+
+
 };
 
 const validateResyncCodes = (code1, code2) => {
