@@ -4,24 +4,17 @@
             Confirm token deactivation
         </h1>
         <form method="post" id="form-deactivate">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
             <fieldset>
                 <legend><p>Please confirm you would like to deactivate this token.</p></legend>
-                <div class="form-group <%= (locals.validationMessages.reason !== undefined) ? 'form-group-error' : '' %>">
+                <div class="form-group">
                     <label class="form-label" for="reason">Reason for deactivation of token (optional)</span> </label>
-                    <% if (locals.validationMessages.reason !== undefined) { %>
-                    <p class="error-message" id="validation-reason"><%= locals.validationMessages.reason %></p>
-                    <% } %>
-                    <textarea class="form-control full-width" rows="6" id="reason" name="reason"
-                            <% if (locals.validationMessages.reason !== undefined) { %>
-                              aria-invalid="true" aria-describedby="validation-reason"
-                            <% } %>
-                              value="<%= locals.reason %>"></textarea>
+                    <textarea class="form-control full-width" rows="6" id="reason" name="reason"></textarea>
                 </div>
             </fieldset>
             <div class="form-submit submit-buttons">
                 <button type="submit" class="button">Deactivate</button>
-                <a href="edit-profile" name="cancel" class="button button-secondary">Cancel</a>
+                <a href="/userdevices/<%=locals.serialNumber%>/<%=locals.uid%>" name="cancel" class="button button-secondary">Cancel</a>
             </div>
         </form>
     </div>

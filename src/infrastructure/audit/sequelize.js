@@ -159,7 +159,9 @@ const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
     } else if (audit.type === 'support' && audit.subType === 'digipass-resync') {
       audit.event = 'Resync';
     } else if (audit.type === 'support' && audit.subType === 'digipass-unlock') {
-      audit.event = `Unlock - UnlockType: "${audit.unlockType}"`
+      audit.event = `Unlock - UnlockType: "${audit.unlockType}"`;
+    } else if (audit.type === 'support' && audit.subType === 'digipass-deactivate') {
+      audit.event = `Deactivate`;
     } else {
       audit.event = $`Digipass event ${audit.type} - ${audit.subType}`;
     }

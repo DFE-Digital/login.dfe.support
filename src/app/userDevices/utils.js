@@ -229,9 +229,46 @@ const unlockToken = async (req) => {
 
 };
 
+const deactivateToken = async (req) => {
+  const uid = req.params.uid;
+  const serialNumber = req.params.serialNumber;
+  const reason = req.body.reason;
+  const correlationId = req.id;
+
+  const result = await devices.deactivateToken(serialNumber, reason, correlationId);
+
+  if(!result) {
+    logger.audit(`${req.user.email} (id: ${req.user.sub}) Failed to deactivate token with serial number "${serialNumber}"`, {
+      type: 'support',
+      subType: 'digipass-deactivate',
+      success: false,
+      editedUser: uid,
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      deviceSerialNumber: serialNumber,
+    });
+  }
+  else {
+    logger.audit(`${req.user.email} (id: ${req.user.sub}) Deactivated token with serial number "${serialNumber}"`, {
+      type: 'support',
+      subType: 'digipass-deactivate',
+      success: true,
+      editedUser: uid,
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      deviceSerialNumber: serialNumber,
+    });
+  }
+
+  return {
+    result
+  }
+};
+
 module.exports = {
   search,
   getUserTokenDetails,
   resyncToken,
   unlockToken,
+  deactivateToken,
 };
