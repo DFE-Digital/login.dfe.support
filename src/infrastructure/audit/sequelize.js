@@ -149,6 +149,10 @@ const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
     },
   }, pageNumber);
 
+  if(!rawAudits || !rawAudits.audits || rawAudits.audits.length === 0){
+    return null;
+  }
+
   return Promise.all(rawAudits.map(async (audit) => {
     audit.date = new Date(audit.timestamp);
     audit.name = audit.userId === userId ? userName : await getUserName(audit.userId);
