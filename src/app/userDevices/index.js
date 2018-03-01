@@ -11,6 +11,7 @@ const getUnlockCode = require('./getUnlockToken');
 const getDeactivateToken = require('./getDeactivateToken');
 const postUnlockToken = require('./postUnlockToken');
 const postResyncToken = require('./postResyncToken');
+const postDeactivateToken = require('./postDeactivateToken');
 const postSearch = require('./postSearch');
 
 const router = express.Router({ mergeParams: true });
@@ -28,6 +29,7 @@ const users = (csrf) => {
   router.get('/:serialNumber/deactivate/:uid', csrf, getDeactivateToken);
   router.post('/:serialNumber/resync/:uid', csrf, postResyncToken);
   router.post('/:serialNumber/unlock/:uid', csrf, postUnlockToken);
+  router.post('/:serialNumber/deactivate/:uid', csrf, postDeactivateToken);
   router.post('/', csrf, postSearch);
 
   return router;
