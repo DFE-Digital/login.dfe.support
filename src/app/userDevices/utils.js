@@ -264,6 +264,11 @@ const deactivateToken = async (req) => {
     });
   }
   else {
+
+    const result = await userDevices.getByUserId(serialNumber, 'serialNumber');
+    result.device.status = 'Deactivated';
+    await userDevices.updateIndex([result]);
+
     logger.audit(`${req.user.email} (id: ${req.user.sub}) Deactivated token with serial number "${serialNumber}"`, {
       type: 'support',
       subType: 'digipass-deactivate',
@@ -275,9 +280,8 @@ const deactivateToken = async (req) => {
     });
   }
 
-  return {
-    result
-  }
+  return result;
+
 };
 
 module.exports = {
