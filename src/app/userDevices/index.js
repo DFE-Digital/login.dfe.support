@@ -3,6 +3,7 @@
 const express = require('express');
 const { isLoggedIn, setCurrentArea } = require('../../infrastructure/utils');
 const logger = require('../../infrastructure/logger');
+const { asyncWrapper } = require('login.dfe.express-error-handling');
 
 const getSearch = require('./getSearch');
 const getUserDevice = require('./getUserDevice');
@@ -23,13 +24,13 @@ const users = (csrf) => {
   router.use(setCurrentArea('tokens'));
 
   router.get('/', csrf, getSearch);
-  router.get('/:serialNumber/:uid', csrf, getUserDevice);
-  router.get('/:serialNumber/resync/:uid', csrf, getResyncToken);
-  router.get('/:serialNumber/unlock/:uid', csrf, getUnlockCode);
-  router.get('/:serialNumber/deactivate/:uid', csrf, getDeactivateToken);
-  router.post('/:serialNumber/resync/:uid', csrf, postResyncToken);
-  router.post('/:serialNumber/unlock/:uid', csrf, postUnlockToken);
-  router.post('/:serialNumber/deactivate/:uid', csrf, postDeactivateToken);
+  router.get('/:serialNumber/:uid', csrf, asyncWrapper(getUserDevice));
+  router.get('/:serialNumber/resync/:uid', csrf, asyncWrapper(getResyncToken));
+  router.get('/:serialNumber/unlock/:uid', csrf, asyncWrapper(getUnlockCode));
+  router.get('/:serialNumber/deactivate/:uid', csrf, asyncWrapper(getDeactivateToken));
+  router.post('/:serialNumber/resync/:uid', csrf, asyncWrapper(postResyncToken));
+  router.post('/:serialNumber/unlock/:uid', csrf, asyncWrapper(postUnlockToken));
+  router.post('/:serialNumber/deactivate/:uid', csrf, asyncWrapper(postDeactivateToken));
   router.post('/', csrf, postSearch);
 
   return router;
