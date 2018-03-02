@@ -48,6 +48,14 @@ const search = async (req) => {
         nextDirection: sortBy === 'organisation' ? (sortAsc ? 'desc' : 'asc') : 'asc',
         applied: sortBy === 'organisation',
       },
+      name: {
+        nextDirection: sortBy === 'name' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'name',
+      },
+      status: {
+        nextDirection: sortBy === 'status' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'status',
+      },
       lastLogin: {
         nextDirection: sortBy === 'lastlogin' ? (sortAsc ? 'desc' : 'asc') : 'asc',
         applied: sortBy === 'lastlogin',
