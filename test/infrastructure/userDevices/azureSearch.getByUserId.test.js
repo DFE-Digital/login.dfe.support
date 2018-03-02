@@ -55,7 +55,7 @@ describe('when searching for a user in azure search', () => {
 
 
   it('then it gets the record by user id with the current index', async () => {
-    await getByUserId('test', 1);
+    await getByUserId('test');
 
     expect(rp.mock.calls).toHaveLength(1);
     expect(rp.mock.calls[0][0]).toMatchObject({
@@ -65,7 +65,7 @@ describe('when searching for a user in azure search', () => {
   });
 
   it('then the api key from config is included', async () => {
-    await getByUserId('test', 1);
+    await getByUserId('test');
 
     expect(rp.mock.calls).toHaveLength(1);
     expect(rp.mock.calls[0][0]).toMatchObject({
@@ -76,7 +76,7 @@ describe('when searching for a user in azure search', () => {
   });
 
   it('then it should map results to response', async () => {
-    const actual = await getByUserId('test', 1);
+    const actual = await getByUserId('test');
 
     expect(actual).not.toBeNull();
     expect(actual).toMatchObject({

@@ -26,7 +26,10 @@ const configMockFactory = (customConfig) => {
     },
     devices: {
       type: 'static',
-    }
+    },
+    loggerSettings: {
+
+    },
   }, customConfig);
 };
 

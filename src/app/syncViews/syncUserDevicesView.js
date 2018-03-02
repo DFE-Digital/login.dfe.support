@@ -46,7 +46,7 @@ const buildUser = async (user, allDevices, correlationId) => {
       device: {
         id: device.id,
         serialNumber: device.serialNumber,
-        status: 'Active'
+        status: device.deactivated ? 'Deactivated' : 'Active'
       }
     };
   });
@@ -63,7 +63,7 @@ const buildDevicesWithoutUser = (devices) => {
       device: {
         id: device.id,
         serialNumber: device.serialNumber,
-        status: 'Unassigned'
+        status: device.deactivated ? 'Deactivated' : 'Unassigned'
       }
     }
   });

@@ -89,20 +89,35 @@ const getUserTokenDetails = async (req, params) => {
     userEmail: req.user.email,
   });
 
-
+  if(result) {
+    return {
+      uid: uid,
+      name: result.name,
+      serialNumber: result.device.serialNumber,
+      serialNumberFormatted: result.device.serialNumberFormatted,
+      tokenStatus :  result.name ? 'Active' : 'Unassigned',
+      orgName: result.organisation ? result.organisation.name : '',
+      email: result.email,
+      lastLogin: successfulLogins && successfulLogins.length > 0 ? successfulLogins[0].timestamp : null,
+      numberOfSuccessfulLoginAttemptsInTwelveMonths:  successfulLogins ? successfulLogins.length : 0,
+      audit: auditRecords ? auditRecords : {audits: []},
+    };
+  }
 
   return {
     uid: uid,
-    name: result.name,
-    serialNumber: result.device.serialNumber,
-    serialNumberFormatted: result.device.serialNumberFormatted,
-    tokenStatus :  result.name ? 'Active' : 'Unassigned',
-    orgName: result.organisation ? result.organisation.name : '',
-    email: result.email,
-    lastLogin: successfulLogins && successfulLogins.length > 0 ? successfulLogins[0].timestamp : null,
-    numberOfSuccessfulLoginAttemptsInTwelveMonths:  successfulLogins ? successfulLogins.length : 0,
-    audit: auditRecords,
+    name: '',
+    serialNumber: serialNumber,
+    serialNumberFormatted: `${serialNumber.substr(0, 2)}-${serialNumber.substr(2, 7)}-${serialNumber.substr(9, 1)}`,
+    tokenStatus : 'Unassigned',
+    orgName: '',
+    email: '',
+    lastLogin: null,
+    numberOfSuccessfulLoginAttemptsInTwelveMonths: 0,
+    audit: {audits: []},
   };
+
+
 };
 
 const validateResyncCodes = (code1, code2) => {
@@ -229,9 +244,50 @@ const unlockToken = async (req) => {
 
 };
 
+const deactivateToken = async (req) => {
+  const uid = req.params.uid;
+  const serialNumber = req.params.serialNumber;
+  const reason = req.body.reason;
+  const correlationId = req.id;
+
+  const result = await devices.deactivateToken(serialNumber, reason, correlationId);
+
+  if(!result) {
+    logger.audit(`${req.user.email} (id: ${req.user.sub}) Failed to deactivate token with serial number "${serialNumber}"`, {
+      type: 'support',
+      subType: 'digipass-deactivate',
+      success: false,
+      editedUser: uid,
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      deviceSerialNumber: serialNumber,
+    });
+  }
+  else {
+
+    const result = await userDevices.getByUserId(serialNumber, 'serialNumber');
+    result.device.status = 'Deactivated';
+    await userDevices.updateIndex([result]);
+
+    logger.audit(`${req.user.email} (id: ${req.user.sub}) Deactivated token with serial number "${serialNumber}"`, {
+      type: 'support',
+      subType: 'digipass-deactivate',
+      success: true,
+      editedUser: uid,
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      deviceSerialNumber: serialNumber,
+    });
+  }
+
+  return result;
+
+};
+
 module.exports = {
   search,
   getUserTokenDetails,
   resyncToken,
   unlockToken,
+  deactivateToken,
 };

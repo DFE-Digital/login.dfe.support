@@ -1,6 +1,12 @@
 <div class="row">
+    <% if (locals.flash.info) { %>
+    <div class="notification notification-success">
+        <%=locals.flash.info%>
+    </div>
+    <% } %>
     <div class="col-6">
         <h1 class="heading-xlarge">Tokens</h1>
+
     </div>
 </div>
 

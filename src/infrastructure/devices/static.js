@@ -13,6 +13,10 @@ const syncDigipassToken = async(serialNumber, code1, code2) => {
   return Promise.resolve(true);
 };
 
+const deactivateToken = async () => {
+  return Promise.resolve(true);
+};
+
 module.exports = {
   getDevices,
   deviceExists,

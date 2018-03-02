@@ -77,10 +77,10 @@ const getIndexes = async () => {
   });
 };
 
-const getIndexById = async (currentIndexName, userId) => {
+const getIndexById = async (currentIndexName, userId, filterParam='id') => {
   const response =  await rp({
     method: 'GET',
-    uri: `${getAzureSearchUri(currentIndexName, '/docs')}&$filter=id+eq+'${userId}'`,
+    uri: `${getAzureSearchUri(currentIndexName, '/docs')}&$filter=${filterParam}+eq+'${userId}'`,
     headers: {
       'content-type': 'application/json',
       'api-key': config.cache.params.apiKey,
