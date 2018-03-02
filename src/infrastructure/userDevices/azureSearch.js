@@ -26,6 +26,10 @@ const createIndex = async () => {
 
 const updateIndex = async (userDevices, index) => {
 
+  if(!index) {
+    index = await client.get('CurrentIndex_UserDevices');
+  }
+
   const userDeviceMap = userDevices.map((userDevice) => {
       return {
         '@search.action': 'upload',
@@ -131,10 +135,10 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
   }
 };
 
-const getByUserId = async (userId) => {
+const getByUserId = async (userId, filterParam='id') => {
   try {
     const currentIndexName = await client.get('CurrentIndex_UserDevices');
-    const user = await azureSearch.getIndexById(currentIndexName, userId);
+    const user = await azureSearch.getIndexById(currentIndexName, userId, filterParam);
     return mapUser(user);
   } catch (e) {
     throw e;
