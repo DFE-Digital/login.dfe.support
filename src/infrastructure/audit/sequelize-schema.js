@@ -1,13 +1,30 @@
 const Sequelize = require('sequelize');
 const config = require('./../config');
 
-const db = new Sequelize(config.audit.params.name, config.audit.params.username, config.audit.params.password, {
+const getIntValueOrDefault = (value, defaultValue = 0) => {
+  if (!value) {
+    return defaultValue;
+  }
+  const int = parseInt(value);
+  return isNaN(int) ? defaultValue : int;
+};
+
+const dbOpts = {
   host: config.audit.params.host,
   dialect: config.audit.params.dialect,
   dialectOptions: {
     encrypt: config.audit.params.encrypt || false,
   },
-});
+};
+if (config.audit.params.pool) {
+  dbOpts.pool = {
+    max: getIntValueOrDefault(config.audit.params.pool.max, 5),
+    min: getIntValueOrDefault(config.audit.params.pool.min, 0),
+    acquire: getIntValueOrDefault(config.audit.params.pool.acquire, 10000),
+    idle: getIntValueOrDefault(config.audit.params.pool.idle, 10000),
+  };
+}
+const db = new Sequelize(config.audit.params.name, config.audit.params.username, config.audit.params.password, dbOpts);
 
 const logs = db.define('AuditLogs', {
   id: {
