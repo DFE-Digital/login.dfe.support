@@ -88,7 +88,7 @@ const mapUser = (user) => {
   }
 };
 
-const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => {
+const search = async (criteria, pageNumber, sortBy = 'serialNumber', sortAsc = true) => {
   const currentIndexName = await client.get('CurrentIndex_UserDevices');
 
   try {
@@ -100,6 +100,12 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
         break;
       case 'organisation':
         orderBy = sortAsc ? 'organisationName' : 'organisationName desc';
+        break;
+      case 'name':
+        orderBy = sortAsc ? 'name' : 'name desc';
+        break;
+      case 'status':
+        orderBy = sortAsc ? 'deviceStatus' : 'deviceStatus desc';
         break;
       case 'lastlogin':
         orderBy = sortAsc ? 'lastLogin desc' : 'lastLogin';
