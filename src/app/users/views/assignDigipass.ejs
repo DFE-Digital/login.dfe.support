@@ -6,13 +6,13 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-8">
+    <div class="col-6">
         <form method="post" id="form-assign-digipass">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
             <fieldset>
-                <legend>Please find the serial number found on the back of the token you'd like to add to the user.</legend>
+                <legend><p>Please enter the serial number found on the back of the token you’d like to add to the user account.</p></legend>
                 <div class="form-group <%= (locals.validationMessages.serialNumber !== undefined) ? 'form-group-error' : '' %>">
-                    <label class="form-label" for="firstName">Token serial number</span> </label>
+                    <label class="form-label" for="serialNumber">Token serial number</span> </label>
                     <% if (locals.validationMessages.serialNumber !== undefined) { %>
                     <p class="error-message" id="validation-serialNumber"><%=locals.validationMessages.serialNumber%></p>
                     <% } %>
@@ -22,13 +22,13 @@
                 </div>
             </fieldset>
             <div class="form-submit submit-buttons">
-                <a href="new-k2s-user" class="button button-secondary">&lt;&lt; Go Back</a>
-                <button type="submit" class="button">Continue</button>
+                <a href="new-k2s-user" class="button button-secondary">&#8810; Go back</a>
+                <button type="submit" class="button">Add</button>
                 <a href="../" class="button button-secondary">Cancel</a>
             </div>
         </form>
     </div>
-    <div class="col-4">
-        <img src="/assets/images/digipass-serial.png" alt="Digipass serial number examle">
+    <div class="col-6">
+        <img src="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/images/token-serial.svg" class="responsive spacing" alt="Token">
     </div>
 </div>
