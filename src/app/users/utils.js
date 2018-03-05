@@ -22,6 +22,13 @@ const auditDateFixer = (audit) => {
   audit.timestamp = new Date(audit.timestamp);
   return audit;
 };
+const patchChangeHistory = (changeHistory) => {
+  changeHistory.audits = changeHistory.audits.map((audit) => {
+    if (audit.editedFields && typeof(audit.editedFields) !== 'array') {
+      audit.editedFields = JSON.parse(audit.editedFields);
+    }
+  });
+};
 
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
@@ -101,9 +108,9 @@ const getUserDetails = async (req) => {
 
     const ktsDetails = serviceDetails ? serviceDetails.find((c) => c.id.toLowerCase() === config.serviceMapping.key2SuccessServiceId.toLowerCase()) : undefined;
     let externalIdentifier = '';
-    if(ktsDetails && ktsDetails.externalIdentifiers) {
-      const key = ktsDetails.externalIdentifiers.find((a) => a.key='k2s-id');
-      if(key) {
+    if (ktsDetails && ktsDetails.externalIdentifiers) {
+      const key = ktsDetails.externalIdentifiers.find((a) => a.key = 'k2s-id');
+      if (key) {
         externalIdentifier = key.value;
       }
     }
@@ -113,6 +120,7 @@ const getUserDetails = async (req) => {
     const successfulLogins = logins.filter(x => x.success).sort(auditSorter);
 
     const userChangeHistory = await getUserChangeHistory(uid, 1);
+    patchChangeHistory(userChangeHistory);
     const statusChanges = userChangeHistory.audits.filter(x => x.editedFields && x.editedFields.find(y => y.name === 'status')).map(auditDateFixer).sort(auditSorter);
     const statusLastChangedOn = statusChanges && statusChanges.length > 0 ? new Date(statusChanges[0].timestamp) : null;
 
