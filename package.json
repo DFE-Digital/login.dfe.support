@@ -46,7 +46,7 @@
     "openid-client": "^1.19.0",
     "passport": "^0.4.0",
     "request-promise": "^4.2.2",
-    "sequelize": "^4.33.4",
+    "sequelize": "^4.35.2",
     "tedious": "^2.3.1",
     "uuid": "^3.2.0",
     "winston": "^2.4.0",
