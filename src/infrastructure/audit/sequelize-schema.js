@@ -10,6 +10,22 @@ const getIntValueOrDefault = (value, defaultValue = 0) => {
 };
 
 const dbOpts = {
+  retry: {
+    match: [
+      /SequelizeConnectionError/,
+      /SequelizeConnectionRefusedError/,
+      /SequelizeHostNotFoundError/,
+      /SequelizeHostNotReachableError/,
+      /SequelizeInvalidConnectionError/,
+      /SequelizeConnectionTimedOutError/,
+      /TimeoutError/,
+    ],
+    name: 'query',
+    backoffBase: 100,
+    backoffExponent: 1.1,
+    timeout: 60000,
+    max: 5,
+  },
   host: config.audit.params.host,
   dialect: config.audit.params.dialect,
   dialectOptions: {
