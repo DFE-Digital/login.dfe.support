@@ -94,7 +94,9 @@
                            class="<% if (sort.lastLogin.applied) { %>sorted dir-<%= (sort.lastLogin.nextDirection === 'desc') ? 'd' : 'a' %><% } %>"
                         >Last Login</a></th>
                     <th scope="col" class="cwp-10">
-                        Status</th>
+                        <a href="?criteria=<%=criteria%>&page=<%=page%>&sort=status&sortdir=<%=sort.status.nextDirection%>"
+                           class="<% if (sort.status.applied) { %>sorted dir-<%= (sort.status.nextDirection === 'desc') ? 'd' : 'a' %><% } %>"
+                        >Status</a></th>
                 </tr>
             </thead>
             <tbody>
