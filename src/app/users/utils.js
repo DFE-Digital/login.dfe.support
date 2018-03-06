@@ -83,6 +83,10 @@ const search = async (req) => {
         nextDirection: sortBy === 'lastlogin' ? (sortAsc ? 'desc' : 'asc') : 'asc',
         applied: sortBy === 'lastlogin',
       },
+      status: {
+        nextDirection: sortBy === 'status' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'status',
+      },
     }
   };
 };
