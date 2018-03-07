@@ -79,7 +79,7 @@ describe('when updating users profile details', () => {
     expect(res.render.mock.calls[0][0]).toBe('users/views/editProfile');
     expect(res.render.mock.calls[0][1]).toMatchObject({
       validationMessages: {
-        firstName: 'Must specify a first name',
+        firstName: 'Please specify a first name',
       },
     });
   });
@@ -93,7 +93,7 @@ describe('when updating users profile details', () => {
     expect(res.render.mock.calls[0][0]).toBe('users/views/editProfile');
     expect(res.render.mock.calls[0][1]).toMatchObject({
       validationMessages: {
-        lastName: 'Must specify a last name',
+        lastName: 'Please specify a last name',
       },
     });
   });
