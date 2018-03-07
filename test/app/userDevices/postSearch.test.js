@@ -56,6 +56,8 @@ describe('When processing a post to search for user devices', () => {
       criteria: 'test',
       page: 1,
       numberOfPages: 3,
+      sortBy: 'test',
+      sortOrder: 'desc',
       userDevices: userDevicesSearchResult
     });
   });
@@ -79,6 +81,16 @@ describe('When processing a post to search for user devices', () => {
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       criteria: 'test',
+    });
+  });
+
+
+  test('then it includes the sort order and sort value', async () => {
+    await post(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      sortBy: 'test',
+      sortOrder: 'desc'
     });
   });
 
