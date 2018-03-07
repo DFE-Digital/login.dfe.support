@@ -36,6 +36,8 @@ const search = async (req) => {
   return {
     criteria,
     page,
+    sortBy,
+    sortOrder: sortAsc ? 'asc' : 'desc',
     numberOfPages: results.numberOfPages,
     totalNumberOfResults: results.totalNumberOfResults,
     userDevices: results.userDevices,
