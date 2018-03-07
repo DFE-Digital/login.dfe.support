@@ -189,14 +189,20 @@ const deleteUnusedIndexes = async () => {
   const unusedIndexes = unusedJson ? JSON.parse(unusedJson) : [];
   for (let i = 0; i < unusedIndexes.length; i++) {
     if (unusedIndexes[i] !== currentIndexName) {
-      await rp({
-        method: 'DELETE',
-        uri: getAzureSearchUri(unusedIndexes[i]),
-        headers: {
-          'api-key': config.cache.params.apiKey,
-        },
-        json: true,
-      });
+      try {
+        await rp({
+          method: 'DELETE',
+          uri: getAzureSearchUri(unusedIndexes[i]),
+          headers: {
+            'api-key': config.cache.params.apiKey,
+          },
+          json: true,
+        });
+      } catch (e) {
+        if (e.statusCode !== 404) {
+          throw e;
+        }
+      }
       logger.info(`Deleted index ${unusedIndexes[i]}`);
     }
   }
