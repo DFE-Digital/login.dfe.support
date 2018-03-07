@@ -1,6 +1,7 @@
 const { sendResult, mapUserStatus } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
 const { getUserAudit } = require('./../../infrastructure/audit');
+const logger = require('./../../infrastructure/logger');
 const { getServiceIdForClientId } = require('./../../infrastructure/serviceMapping');
 const { getServiceById } = require('./../../infrastructure/organisations');
 
@@ -65,7 +66,12 @@ const getAudit = async (req, res) => {
     let service = null;
     if (audit.client) {
       const serviceId = await getServiceIdForClientId(audit.client);
-      service = await getServiceById(serviceId, req.id);
+      if(serviceId) {
+        service = await getServiceById(serviceId, req.id);
+      } else {
+        logger.info(`User audit tab - No service mapping for client ${audit.client} using client id`);
+        service = { name: audit.client };
+      }
     }
 
     return {
