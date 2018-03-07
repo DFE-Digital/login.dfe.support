@@ -10,12 +10,12 @@ const validate = (req) => {
   let isValid = true;
 
   if (!req.body.firstName) {
-    validationMessages.firstName = 'Must specify a first name';
+    validationMessages.firstName = 'Please specify a first name';
     isValid = false;
   }
 
   if (!req.body.lastName) {
-    validationMessages.lastName = 'Must specify a last name';
+    validationMessages.lastName = 'Please specify a last name';
     isValid = false;
   }
 
