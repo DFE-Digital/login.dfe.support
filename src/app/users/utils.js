@@ -64,7 +64,7 @@ const search = async (req) => {
     criteria,
     page,
     sortBy,
-    sortOrder: paramsSource.sortdir ? paramsSource.sortdir : 'asc',
+    sortOrder: sortAsc ? 'asc' : 'desc',
     numberOfPages: results.numberOfPages,
     totalNumberOfResults: results.totalNumberOfResults,
     users: results.users,
