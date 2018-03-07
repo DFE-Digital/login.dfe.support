@@ -1,17 +1,21 @@
 <%if(locals.user.status.id === 0) {%>
-<div style="background-color: #c0c0c0; margin-top:20px; padding:15px;">
+
     <div class="row">
-        <div class="col-8">
-            This account was deactivated
-            <%if(locals.user.status.changedOn) {%>
-            on <%=locals.moment(locals.user.status.changedOn).format('DD/MMM/YYYY')%>.
-            <%}%>
+        <div class="col-12">
+            <div class="notification">
+                <p>
+                    This account was deactivated
+                    <%if(locals.user.status.changedOn) {%>
+                        on <%=locals.moment(locals.user.status.changedOn).format('DD MMM YYYY')%>.
+                    <%}%>
+                    <a href="confirm-reactivation" class="action">Reactivate</a>
+                </p>
+            </div>
         </div>
-        <div class="col-4"style="text-align: right;">
-            <a href="confirm-reactivation">Reactivate</a>
-        </div>
+
+
     </div>
-</div>
+
 <%}%>
 <div class="row">
     <div class="col-8">
@@ -21,10 +25,10 @@
         </h1>
         <dl class="inline condensed">
             <dt class="label">Last login:</dt>
-            <dd><%=locals.user.lastLogin ? locals.moment(locals.user.lastLogin).format('DD/MMM/YYYY HH:mm:ss') : 'Never'%></dd>
+            <dd><%=locals.user.lastLogin ? locals.moment(locals.user.lastLogin).format('DD MMM YYYY, HH:mm:ss') : 'Never'%></dd>
             <dt class="label">Account status:</dt>
             <dd><%=user.status.description%></dd>
-            <dt class="label">Successful logins in past 12 months:</dt>
+            <dt class="label">Number of logins in last 12 months:</dt>
             <dd><%=user.loginsInPast12Months.successful%></dd>
         </dl>
     </div>
@@ -51,9 +55,9 @@
 
         <%if(!locals.isInvitation) {%>
             <%if(locals.area === 'changehistory') {%>
-                <li class="active">Change History</li>
+                <li class="active">Change history</li>
             <%} else {%>
-                <li><a href="changehistory" role="tab">Change History</a></li>
+                <li><a href="changehistory" role="tab">Change history</a></li>
             <%}%>
 
             <%if(locals.area === 'audit') {%>
