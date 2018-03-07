@@ -33,6 +33,9 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
       case 'lastlogin':
         orderBy = sortAsc ? 'lastLogin desc' : 'lastLogin';
         break;
+      case 'status':
+        orderBy = sortAsc ? 'statusDescription desc' : 'statusDescription';
+        break;
       default:
         orderBy = sortAsc ? 'name' : 'name desc';
         break;
