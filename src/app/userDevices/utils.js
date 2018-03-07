@@ -105,7 +105,7 @@ const getUserTokenDetails = async (req, params) => {
       name: result.name,
       serialNumber: result.device.serialNumber,
       serialNumberFormatted: result.device.serialNumberFormatted,
-      tokenStatus :  result.name ? 'Active' : 'Unassigned',
+      tokenStatus :  result.device.status,
       orgName: result.organisation ? result.organisation.name : '',
       email: result.email,
       lastLogin: successfulLogins && successfulLogins.length > 0 ? successfulLogins[0].timestamp : null,
