@@ -54,14 +54,20 @@ const updateIndex = async (users, index) => {
 const deleteUnusedIndexes = async (unusedIndexes, currentIndexName) => {
   for (let i = 0; i < unusedIndexes.length; i++) {
     if (unusedIndexes[i] !== currentIndexName) {
-      await rp({
-        method: 'DELETE',
-        uri: getAzureSearchUri(unusedIndexes[i]),
-        headers: {
-          'api-key': config.cache.params.apiKey,
-        },
-        json: true,
-      });
+      try {
+        await rp({
+          method: 'DELETE',
+          uri: getAzureSearchUri(unusedIndexes[i]),
+          headers: {
+            'api-key': config.cache.params.apiKey,
+          },
+          json: true,
+        });
+      } catch (e) {
+        if (e.statusCode !== 404) {
+          throw e;
+        }
+      }
     }
   }
 };
@@ -77,8 +83,8 @@ const getIndexes = async () => {
   });
 };
 
-const getIndexById = async (currentIndexName, userId, filterParam='id') => {
-  const response =  await rp({
+const getIndexById = async (currentIndexName, userId, filterParam = 'id') => {
+  const response = await rp({
     method: 'GET',
     uri: `${getAzureSearchUri(currentIndexName, '/docs')}&$filter=${filterParam}+eq+'${userId}'`,
     headers: {
