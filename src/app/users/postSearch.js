@@ -12,6 +12,8 @@ const action = async (req, res) => {
     totalNumberOfResults: result.totalNumberOfResults,
     users: result.users,
     sort: result.sort,
+    sortBy: result.sortBy,
+    sortOrder: result.sortOrder,
   });
 };
 

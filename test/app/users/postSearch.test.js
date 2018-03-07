@@ -54,6 +54,8 @@ describe('When processing a post to search for users', () => {
       criteria: 'test',
       page: 1,
       numberOfPages: 3,
+      sortBy: 'test',
+      sortOrder: 'desc',
       users: usersSearchResult
     });
   });
@@ -86,6 +88,16 @@ describe('When processing a post to search for users', () => {
     expect(res.render.mock.calls[0][1]).toMatchObject({
       page: 1,
       numberOfPages: 3,
+    });
+  });
+
+
+  test('then it includes the sort order and sort value', async () => {
+    await post(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      sortBy: 'test',
+      sortOrder: 'desc'
     });
   });
 
