@@ -85,12 +85,10 @@ const postEditProfile = async (req, res) => {
       sendResult(req, res, 'users/views/editProfile', {
         csrfToken: req.csrfToken(),
         user,
-        validationMessages: {
           isValid : false,
           validationMessages : {
-            ktsId: 'Id is already in use',
+            ktsId: 'Key to Success ID is already in use',
           },
-        },
       });
       return;
     }
