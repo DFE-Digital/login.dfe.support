@@ -76,6 +76,10 @@ const createInvite = async (givenName, familyName, email, k2sId, digipassSerialN
   return Promise.resolve(uuid());
 };
 
+const createUserDevice = async () => {
+  return Promise.resolve();
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
@@ -87,4 +91,5 @@ module.exports = {
   deactivate,
   reactivate,
   createInvite,
+  createUserDevice,
 };
