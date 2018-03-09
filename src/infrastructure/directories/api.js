@@ -221,6 +221,7 @@ const createInvite = async (givenName, familyName, email, k2sId, digipassSerialN
       email,
       keyToSuccessId: k2sId,
       tokenSerialNumber: digipassSerialNumber,
+      source: 'support',
     },
     json: true,
   });
