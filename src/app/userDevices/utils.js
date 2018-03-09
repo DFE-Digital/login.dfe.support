@@ -88,7 +88,7 @@ const getUserTokenDetails = async (req, params) => {
 
   const result = await userDevices.getByUserId(uid);
   let auditRecords = [];
-  if(result) {
+  if (result) {
     auditRecords = await getTokenAudits(uid, serialNumber, 1, result.name);
   }
 
@@ -99,18 +99,18 @@ const getUserTokenDetails = async (req, params) => {
     userEmail: req.user.email,
   });
 
-  if(result) {
+  if (result) {
     return {
       uid: uid,
       name: result.name,
       serialNumber: result.device.serialNumber,
       serialNumberFormatted: result.device.serialNumberFormatted,
-      tokenStatus :  result.device.status,
+      tokenStatus: result.device.status,
       orgName: result.organisation ? result.organisation.name : '',
       email: result.email,
       lastLogin: successfulLogins && successfulLogins.length > 0 ? successfulLogins[0].timestamp : null,
-      numberOfSuccessfulLoginAttemptsInTwelveMonths:  successfulLogins ? successfulLogins.length : 0,
-      audit: auditRecords ? auditRecords : {audits: []},
+      numberOfSuccessfulLoginAttemptsInTwelveMonths: successfulLogins ? successfulLogins.length : 0,
+      audit: auditRecords ? auditRecords : { audits: [] },
     };
   }
 
@@ -119,12 +119,12 @@ const getUserTokenDetails = async (req, params) => {
     name: '',
     serialNumber: serialNumber,
     serialNumberFormatted: `${serialNumber.substr(0, 2)}-${serialNumber.substr(2, 7)}-${serialNumber.substr(9, 1)}`,
-    tokenStatus : 'Unassigned',
+    tokenStatus: 'Unassigned',
     orgName: '',
     email: '',
     lastLogin: null,
     numberOfSuccessfulLoginAttemptsInTwelveMonths: 0,
-    audit: {audits: []},
+    audit: { audits: [] },
   };
 
 
@@ -167,16 +167,16 @@ const resyncToken = async (req) => {
 
   const validationResult = validateResyncCodes(code1, code2);
 
-  if(validationResult.failed) {
+  if (validationResult.failed) {
     return {
       validationResult,
-      resyncResult:false,
+      resyncResult: false,
     }
   }
 
   const resyncResult = await devices.syncDigipassToken(serialNumber, code1, code2);
 
-  if(!resyncResult) {
+  if (!resyncResult) {
     validationResult.messages.syncError = 'The codes you entered are not correct';
     logger.audit(`${req.user.email} (id: ${req.user.sub}) failed to resync token "${serialNumber}"`, {
       type: 'support',
@@ -210,9 +210,9 @@ const unlockToken = async (req) => {
   const unlockType = req.body.tokenCode;
   const serialNumber = req.body.serialNumber;
 
-  if(!unlockType) {
+  if (!unlockType) {
     return {
-      success:false,
+      success: false,
       validationResult: {
         failed: true,
         messages: {
@@ -223,9 +223,9 @@ const unlockToken = async (req) => {
   }
 
 
-  if(unlockType.toLowerCase() === 'disabled'){
+  if (unlockType.toLowerCase() === 'disabled') {
     return {
-      success:false,
+      success: false,
       validationResult: {
         failed: true,
         messages: {}
@@ -247,11 +247,22 @@ const unlockToken = async (req) => {
     unlockType: unlockType,
   });
 
-  return {
-    success: unlockResult !== undefined ,
-    unlockCode: unlockResult !== undefined ? unlockResult : '',
+  if (unlockResult === undefined) {
+    return {
+      success: false,
+      validationResult: {
+        failed: true,
+        messages: {
+          unlockCode: 'Unabled to get unlock code for device',
+        },
+      },
+    };
   }
 
+  return {
+    success: true,
+    unlockCode: unlockResult,
+  }
 };
 
 const deactivateToken = async (req) => {
@@ -262,7 +273,7 @@ const deactivateToken = async (req) => {
 
   const result = await devices.deactivateToken(serialNumber, reason, correlationId);
 
-  if(!result) {
+  if (!result) {
     logger.audit(`${req.user.email} (id: ${req.user.sub}) Failed to deactivate token with serial number "${serialNumber}"`, {
       type: 'support',
       subType: 'digipass-deactivate',
