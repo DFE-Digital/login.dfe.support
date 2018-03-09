@@ -1,0 +1,52 @@
+<div class="row">
+    <div class="col-12">
+        <h1 class="heading-xlarge">
+            Review invite details
+        </h1>
+        <p>Please review the details below and confirm they're correct before granting this user access to Key to Success. </p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-8">
+        <h2 class="heading-small">Details</h2>
+        <div class="row">
+            <div class="col-4">Name:</div>
+            <div class="col-8"><%=user.firstName%> <%=user.lastName%></div>
+        </div>
+        <div class="row">
+            <div class="col-4">Email address:</div>
+            <div class="col-8"><%=user.email%></div>
+        </div>
+        <div class="row">
+            <div class="col-4">Local authority:</div>
+            <div class="col-8"><%=localAuthority.name%></div>
+        </div>
+        <div class="row">
+            <div class="col-4">Key to Success ID:</div>
+            <div class="col-8"><%=user.k2sId%></div>
+        </div>
+    </div>
+</div>
+<div class="row row-spacer">
+    <div class="col-8">
+        <h2 class="heading-small">Token Details</h2>
+        <div class="row">
+            <div class="col-4">Serial number:</div>
+            <div class="col-8"><%=serialNumber%></div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-8">
+        <form method="post" id="form-assign-digipass">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+            <input type="hidden" name="serialNumber" value="<%=serialNumber%>"/>
+            <input type="hidden" name="userId" value="<%=userId%>"/>
+            <div class="form-submit submit-buttons">
+                <a href="assign-digipass" class="button button-secondary">&#8810; Go back</a>
+                <button type="submit" class="button">Continue</button>
+                <a href="../" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

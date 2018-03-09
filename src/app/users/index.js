@@ -37,6 +37,8 @@ const users = (csrf) => {
   router.post('/new-k2s-user', csrf, asyncWrapper(postNewUserK2S));
   router.get('/assign-digipass', csrf, asyncWrapper(getAssignDigipass));
   router.post('/assign-digipass', csrf, asyncWrapper(postAssignDigipass));
+  router.get('/:uid/assign-digipass', csrf, asyncWrapper(getAssignDigipass));
+  router.post('/:uid/assign-digipass', csrf, asyncWrapper(postAssignDigipass));
   router.get('/confirm-new-k2s-user', csrf, asyncWrapper(getConfirmNewK2sUser));
   router.post('/confirm-new-k2s-user', csrf, asyncWrapper(postConfirmNewK2sUser));
 
