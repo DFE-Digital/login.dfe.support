@@ -153,7 +153,7 @@ const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
     return null;
   }
 
-  return Promise.all(rawAudits.map(async (audit) => {
+  return Promise.all(rawAudits.audits.map(async (audit) => {
     audit.date = new Date(audit.timestamp);
     audit.name = audit.userId === userId ? userName : await getUserName(audit.userId);
     audit.success = audit.success ? 'Success' : 'Failure';
@@ -166,6 +166,8 @@ const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
       audit.event = `Unlock - UnlockType: "${audit.unlockType}"`;
     } else if (audit.type === 'support' && audit.subType === 'digipass-deactivate') {
       audit.event = `Deactivate`;
+    } else if (audit.type === 'support' && audit.subType === 'digipass-assign') {
+      audit.event = `Assigned`;
     } else {
       audit.event = $`Digipass event ${audit.type} - ${audit.subType}`;
     }
