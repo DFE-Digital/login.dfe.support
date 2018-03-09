@@ -94,7 +94,7 @@ const getToken = async (userId, serviceId, correlationId) => {
       nonFormattedSerialNumber: serialNumber,
     };
   } else {
-    const tokens = await getUserDevices(userId, correlationId)
+    const tokens = await getUserDevices(userId, correlationId);
     if (!tokens || tokens.length === 0) {
       return null;
     }

@@ -243,11 +243,10 @@ const createUserDevice = async (id, serialNumber, correlationId) => {
 
       opts.body = { type: 'digipass', serialNumber };
 
-    const result = await rp(opts);
+    await rp(opts);
 
     return {
-      success: true,
-      result,
+      success: true
     };
   } catch (e) {
     return {
