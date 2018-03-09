@@ -91,6 +91,7 @@ const getToken = async (userId, serviceId, correlationId) => {
     return {
       type: 'digipass',
       serialNumber: `${serialNumber.substr(0, 2)}-${serialNumber.substr(2, 7)}-${serialNumber.substr(9, 1)}`,
+      nonFormattedSerialNumber: serialNumber,
     };
   } else {
     const tokens = await getUserDevices(userId, correlationId)
@@ -102,6 +103,7 @@ const getToken = async (userId, serviceId, correlationId) => {
     return {
       type: digipass.type,
       serialNumber: `${digipass.serialNumber.substr(0, 2)}-${digipass.serialNumber.substr(2, 7)}-${digipass.serialNumber.substr(9, 1)}`,
+      nonFormattedSerialNumber: digipass.serialNumber,
     };
   }
 };

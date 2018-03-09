@@ -8,11 +8,11 @@
     <thead>
         <tr>
             <th scope="col" class="cwp-30">Service</th>
-            <th scope="col" class="cwp-10">User type</th>
+            <th scope="col" class="cwp-8">User type</th>
             <th scope="col" class="cwp-10">Activated</th>
             <th scope="col" class="cwp-10">Last active</th>
             <th scope="col" class="cwp-30">Approvers</th>
-            <th scope="col" class="cwp-10">Token</th>
+            <th scope="col" class="cwp-12">Token</th>
         </tr>
     </thead>
     <tbody>
@@ -38,7 +38,13 @@
             <%}%>
         </td>
         <td>
-            <%=service.token ? service.token.serialNumber : ''%>
+            <%if (service.token && service.token.serialNumber) {%>
+                <% if (locals.user.id.startsWith('inv-')) {%>
+                <%=service.token ? service.token.serialNumber : ''%>
+            <% } else {%>
+                <a href="/userDevices/<%=locals.user.id%>/<%=service.token.nonFormattedSerialNumber%>"><%=service.token ? service.token.serialNumber : ''%></a>
+                <% } %>
+            <% } %>%>
         </td>
     </tr>
     <%}%>
