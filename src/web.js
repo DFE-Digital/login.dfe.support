@@ -43,6 +43,9 @@ const init = async () => {
 
   Object.assign(app.locals, {
     moment,
+    urls: {
+        profile: config.hostingEnvironment.profileUrl,
+    },
     app: {
       title: 'DfE Sign-in Support Console',
     },
