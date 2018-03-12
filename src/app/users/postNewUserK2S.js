@@ -52,7 +52,7 @@ const validateInput = async (req, orgs) => {
   if (!model.k2sId) {
     model.isValid = false;
     model.validationMessages.k2sId = 'Please enter a Key to Success ID';
-  } else if (model.k2sId.length !== 7 || isNaN(parseInt(model.k2sId))) {
+  } else if (model.k2sId.length !== 7 || isNaN(model.k2sId)) {
     model.isValid = false;
     model.validationMessages.k2sId = 'Please enter a valid Key to Success ID';
   } else if (await keyToSuccessIdentifierAlreadyUsed(model.k2sId, req.id)) {
