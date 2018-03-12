@@ -1,9 +1,25 @@
 const schedule = require('node-schedule');
 const logger = require('./infrastructure/logger');
 const config = require('./infrastructure/config');
+const http = require('http');
+const https = require('https');
+const KeepAliveAgent = require('agentkeepalive');
 
 const { syncUsersView, syncUserDevicesView } = require('./app/syncViews');
 const { tidyIndexes } = require('./app/tidyIndexes');
+
+http.GlobalAgent = new KeepAliveAgent({
+  maxSockets: 10,
+  maxFreeSockets: 2,
+  timeout: 60000,
+  keepAliveTimeout: 300000,
+});
+https.GlobalAgent = new KeepAliveAgent({
+  maxSockets: 10,
+  maxFreeSockets: 2,
+  timeout: 60000,
+  keepAliveTimeout: 300000,
+});
 
 const userSchedule = schedule.scheduleJob(config.schedules.users, syncUsersView);
 logger.info(`first invocation of user schedule will be ${userSchedule.nextInvocation()}`);
