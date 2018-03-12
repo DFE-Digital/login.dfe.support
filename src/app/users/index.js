@@ -19,6 +19,8 @@ const getNewUserK2S = require('./getNewUserK2S');
 const postNewUserK2S = require('./postNewUserK2S');
 const getAssignDigipass = require('./getAssignDigipass');
 const postAssignDigipass = require('./postAssignDigipass');
+const getConfirmAssignToken = require('./getConfirmAssignToken');
+const postConfirmAssignToken = require('./postConfirmAssignToken');
 const getConfirmNewK2sUser = require('./getConfirmNewK2sUser');
 const postConfirmNewK2sUser = require('./postConfirmNewK2sUser');
 
@@ -37,8 +39,10 @@ const users = (csrf) => {
   router.post('/new-k2s-user', csrf, asyncWrapper(postNewUserK2S));
   router.get('/assign-digipass', csrf, asyncWrapper(getAssignDigipass));
   router.post('/assign-digipass', csrf, asyncWrapper(postAssignDigipass));
-  router.get('/:uid/assign-digipass', csrf, asyncWrapper(getAssignDigipass));
-  router.post('/:uid/assign-digipass', csrf, asyncWrapper(postAssignDigipass));
+  router.get('/:uid/assign-digipass/:serviceId', csrf, asyncWrapper(getAssignDigipass));
+  router.post('/:uid/assign-digipass/:serviceId', csrf, asyncWrapper(postAssignDigipass));
+  router.get('/:uid/assign-digipass/:serviceId/confirm', csrf, asyncWrapper(getConfirmAssignToken));
+  router.post('/:uid/assign-digipass/:serviceId/confirm', csrf, asyncWrapper(postConfirmAssignToken));
   router.get('/confirm-new-k2s-user', csrf, asyncWrapper(getConfirmNewK2sUser));
   router.post('/confirm-new-k2s-user', csrf, asyncWrapper(postConfirmNewK2sUser));
 
