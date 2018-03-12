@@ -4,6 +4,11 @@
         <h1 class="heading-xlarge">
             Edit a profile
         </h1>
+        <% if (locals.flash.info) { %>
+        <div class="notification notification-success">
+            <%=locals.flash.info%>
+        </div>
+        <% } %>
     </div>
     <div class="col-4">
         <aside>
