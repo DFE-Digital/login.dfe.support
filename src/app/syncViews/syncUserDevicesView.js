@@ -5,7 +5,7 @@ const organisations = require('./../../infrastructure/organisations');
 const audit = require('./../../infrastructure/audit');
 const uuid = require('uuid/v4');
 const devices = require('./../../infrastructure/devices');
-const { flatten } = require('lodash');
+const { flatten, chunk } = require('lodash');
 
 const buildUser = async (user, allDevices, correlationId) => {
 
@@ -109,7 +109,10 @@ const syncUserDevicesView = async () => {
     }));
 
     if (devicesWithoutUsers && devicesWithoutUsers.length > 0) {
-      await userDevices.updateIndex(devicesWithoutUsers, newIndexName);
+      const unassignedDeviceBatches = chunk(devicesWithoutUsers, 500);
+      for(let i = 0; i < unassignedDeviceBatches.length; i += 1) {
+        await userDevices.updateIndex(unassignedDeviceBatches[i], newIndexName);
+      }
     }
   }
 

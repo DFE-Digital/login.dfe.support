@@ -307,6 +307,7 @@ describe('When syncing userDevices materialised view', function () {
 
     expect(devices.getDevices.mock.calls[0][0]).toBe('new-uuid');
   });
+
   it('then all devices not assigned are added to the index', async () => {
     await syncUserDevicesView();
 
@@ -322,5 +323,19 @@ describe('When syncing userDevices materialised view', function () {
         serialNumber: '2234567890'
       }
     }]);
+  });
+  it('then unassigned devices are batched when updating indexes', async () => {
+    const devicesResult = [];
+    for(let i = 0; i < 501; i++) {
+      devicesResult[i] = {
+        "serialNumber": `00000${i}`
+      };
+    }
+    devices.getDevices.mockReturnValue(devicesResult);
+    directories.getUserDevices.mockReset()
+
+    await syncUserDevicesView();
+
+    expect(userDevices.updateIndex.mock.calls).toHaveLength(2);
   });
 });
