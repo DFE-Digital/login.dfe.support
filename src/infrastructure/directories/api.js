@@ -229,6 +229,35 @@ const createInvite = async (givenName, familyName, email, k2sId, digipassSerialN
   return invitation.id;
 };
 
+const createUserDevice = async (id, serialNumber, correlationId) => {
+  const token = await jwtStrategy(config.directories.service).getBearerToken();
+  try {
+    const opts = {
+      method : 'POST',
+      uri: `${config.directories.service.url}/users/${id}/devices`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    };
+
+      opts.body = { type: 'digipass', serialNumber };
+
+    await rp(opts);
+
+    return {
+      success: true
+    };
+  } catch (e) {
+    return {
+      success: false,
+      statusCode: e.statusCode,
+      errorMessage: e.message,
+    };
+  }
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
@@ -240,4 +269,5 @@ module.exports = {
   deactivate,
   reactivate,
   createInvite,
+  createUserDevice
 };

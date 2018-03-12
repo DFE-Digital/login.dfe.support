@@ -1,6 +1,6 @@
 const users = require('./../../infrastructure/users');
 const logger = require('./../../infrastructure/logger');
-const { getUser, getInvitation } = require('./../../infrastructure/directories');
+const { getUser, getInvitation, createUserDevice } = require('./../../infrastructure/directories');
 const { getServicesByUserId } = require('./../../infrastructure/organisations');
 const { getUserLoginAuditsSince, getUserChangeHistory } = require('./../../infrastructure/audit');
 const moment = require('moment');
@@ -149,7 +149,40 @@ const getUserDetails = async (req) => {
   }
 };
 
+const createDevice = async (req) => {
+
+  const userId = req.body.userId;
+  const userEmail = req.body.email;
+  const serialNumber = req.body.serialNumber;
+
+  const result = await createUserDevice(userId, serialNumber, req.id);
+
+  if(result.success) {
+    logger.audit(`Support user ${req.user.email} (id: ${req.user.sub}) linked ${userEmail} (id: ${userId}) linked to token ${serialNumber} "${serialNumber}"`, {
+      type: 'support',
+      subType: 'digipass-assign',
+      success: true,
+      editedUser: userId,
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      deviceSerialNumber: serialNumber,
+    });
+  } else {
+    logger.audit(`Support user ${req.user.email} (id: ${req.user.sub}) failed to link ${userEmail} (id: ${userId}) to token ${serialNumber} "${serialNumber}"`, {
+      type: 'support',
+      subType: 'digipass-assign',
+      success: false,
+      editedUser: userId,
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      deviceSerialNumber: serialNumber,
+    });
+  }
+  return result.success;
+};
+
 module.exports = {
   search,
   getUserDetails,
+  createDevice,
 };

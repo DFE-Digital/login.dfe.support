@@ -250,14 +250,17 @@ describe('when getting users service details', () => {
     expect(res.render.mock.calls[0][1].organisations[0].services[0].token).toMatchObject({
       type: 'digipass',
       serialNumber: '99-9999999-9',
+      nonFormattedSerialNumber: '9999999999'
     });
     expect(res.render.mock.calls[0][1].organisations[0].services[1].token).toMatchObject({
       type: 'digipass',
       serialNumber: '99-9999999-9',
+      nonFormattedSerialNumber: '9999999999'
     });
     expect(res.render.mock.calls[0][1].organisations[1].services[0].token).toMatchObject({
       type: 'digipass',
       serialNumber: '99-9999999-9',
+      nonFormattedSerialNumber: '9999999999'
     });
   });
 });
