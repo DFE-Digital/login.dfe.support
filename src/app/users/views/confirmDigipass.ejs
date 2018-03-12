@@ -1,9 +1,9 @@
 <div class="row">
     <div class="col-12">
         <h1 class="heading-xlarge">
-            Review invite details
+            Confirm token assignment
         </h1>
-        <p>Please review the details below and confirm they're correct before granting this user access to Key to Success. </p>
+        <p>Please confirm you would like to assign this token to the user. </p>
     </div>
 </div>
 <div class="row">
@@ -16,14 +16,6 @@
         <div class="row">
             <div class="col-4">Email address:</div>
             <div class="col-8"><%=user.email%></div>
-        </div>
-        <div class="row">
-            <div class="col-4">Local authority:</div>
-            <div class="col-8"><%=localAuthority.name%></div>
-        </div>
-        <div class="row">
-            <div class="col-4">Key to Success ID:</div>
-            <div class="col-8"><%=user.k2sId%></div>
         </div>
     </div>
 </div>
@@ -42,6 +34,7 @@
             <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
             <input type="hidden" name="serialNumber" value="<%=serialNumber%>"/>
             <input type="hidden" name="userId" value="<%=userId%>"/>
+            <input type="hidden" name="email" value="<%=email%>"/>
             <div class="form-submit submit-buttons">
                 <a href="assign-digipass" class="button button-secondary">&#8810; Go back</a>
                 <button type="submit" class="button">Continue</button>

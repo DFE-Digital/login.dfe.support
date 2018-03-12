@@ -45,7 +45,7 @@
                     <a href="/userDevices/<%=service.token.nonFormattedSerialNumber%>/<%=locals.user.id%>"><%=service.token.serialNumber%></a>
                 <% } %>
             <% } else { %>
-                <a href="/users/<%=locals.user.id%>/assign-digipass">Assign</a>
+                <a href="/users/<%=locals.user.id%>/assign-digipass/<%=service.id%>">Assign</a>
             <% } %>
         </td>
     </tr>
