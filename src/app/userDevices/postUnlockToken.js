@@ -5,7 +5,7 @@ const action = async (req, res) => {
 
   const unlockTokenResult = await unlockToken(req);
 
-  if(unlockTokenResult.success) {
+  if (unlockTokenResult.success) {
     sendResult(req, res, 'userDevices/views/unlockTokenCode', {
       csrfToken: req.csrfToken(),
       unlockCode: unlockTokenResult.unlockCode,

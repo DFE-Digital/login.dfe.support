@@ -5,6 +5,7 @@ const organisations = require('./../../infrastructure/organisations');
 const audit = require('./../../infrastructure/audit');
 const uuid = require('uuid/v4');
 const devices = require('./../../infrastructure/devices');
+const { flatten } = require('lodash');
 
 const buildUser = async (user, allDevices, correlationId) => {
 
@@ -95,7 +96,7 @@ const syncUserDevicesView = async () => {
       });
 
       if (filteredUsers && filteredUsers.length > 0) {
-        await userDevices.updateIndex(...filteredUsers, newIndexName);
+        await userDevices.updateIndex(flatten(filteredUsers), newIndexName);
       }
     }
     pageNumber++;
