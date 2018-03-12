@@ -48,7 +48,7 @@
     <div class="main-nav">
         <nav>
             <ul>
-                <li><a href="/my-profile" class="<%= locals.area ==='profile' ? 'current' : '' %> ">My Profile</a></li>
+                <li><a href="<%= locals.urls.profile %>" class="<%= locals.area ==='profile' ? 'current' : '' %> " target="_blank">My Profile</a></li>
                 <li><a href="/userDevices" class="<%= locals.area ==='tokens' ? 'current' : '' %> ">Tokens</a></li>
                 <li><a href="/users" class="<%= locals.area ==='users' ? 'current' : '' %> ">Users</a></li>
             </ul>
