@@ -6,7 +6,7 @@ const postConfirmAssignToken = async (req, res) => {
     return res.redirect('../');
   }
 
-  const result = createDevice(req);
+  const result = await createDevice(req);
 
   if(!result) {
     sendResult(req, res, 'users/views/assignDigipass', {
