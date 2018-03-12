@@ -36,8 +36,9 @@ describe('When assigning digipass to user', () => {
     getUserAssociatedToDevice.mockReturnValue(null);
   });
 
-  it('then it should redirect to user list if no k2suser in session', async () => {
+  it('then it should redirect to user list if no user in session', async () => {
     req.session.k2sUser = undefined;
+    req.session.user = undefined;
 
     await postAssignDigipass(req, res);
 
@@ -154,4 +155,21 @@ describe('When assigning digipass to user', () => {
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe('confirm-new-k2s-user');
   });
+  it('then it redirects to assign digipass confirm for existing user', async () => {
+    req.session.user = {
+      firstName: 'Eddie',
+      lastName: 'Brock',
+      email: 'eddie.brock@daily-bugle.test',
+      localAuthority: 'nyc1',
+      k2sId: '1234567',
+      id: '77665544',
+      serviceId: '987654'
+    };
+    req.session.k2sUser = undefined;
+
+    await postAssignDigipass(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe(`/users/77665544/assign-digipass/987654/confirm`);
+  })
 });
