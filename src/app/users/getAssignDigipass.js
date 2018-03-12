@@ -12,6 +12,7 @@ const getAssignDigipass = async (req, res) => {
   if(req.params.uid) {
     user = await getUserDetails(req);
     req.session.user = user;
+    req.session.digipassSerialNumberToAssign = '';
   }
 
   if(!user) {
