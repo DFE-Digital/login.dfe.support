@@ -29,18 +29,33 @@ const validateInput = async (req) => {
 };
 
 const postAssignDigipass = async (req, res) => {
-  if (!req.session.k2sUser) {
+
+  let user;
+  let isExistingUser = false;
+  if (req.session.k2sUser) {
+    user = req.session.k2sUser;
+  }
+  if(req.session.user) {
+    user = req.session.user;
+    isExistingUser = true;
+  }
+
+  if(!user) {
     return res.redirect('../');
   }
 
   const validationResult = await validateInput(req);
   if (!validationResult.isValid) {
     validationResult.csrfToken = req.csrfToken();
-    validationResult.user = req.session.k2sUser;
+    validationResult.user = user;
     return sendResult(req, res, 'users/views/assignDigipass', validationResult);
   }
 
   req.session.digipassSerialNumberToAssign = validationResult.cleanSerialNumber;
+
+  if(isExistingUser) {
+    return res.redirect(`/users/${user.id}/assign-digipass/${user.serviceId}/confirm`)
+  }
   return res.redirect('confirm-new-k2s-user');
 };
 
