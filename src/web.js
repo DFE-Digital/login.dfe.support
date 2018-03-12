@@ -7,6 +7,7 @@ const session = require('cookie-session');
 const expressLayouts = require('express-ejs-layouts');
 const csurf = require('csurf');
 const morgan = require('morgan');
+const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
@@ -15,14 +16,27 @@ const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
 const oidc = require('./infrastructure/oidc');
 const moment = require('moment');
-var flash = require('express-flash-2');
+const flash = require('express-flash-2');
 const setCorrelationId = require('express-mw-correlation-id');
 const registerRoutes = require('./routes');
 const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
+const KeepAliveAgent = require('agentkeepalive');
 
 if (config.hostingEnvironment.applicationInsights) {
   appInsights.setup(config.hostingEnvironment.applicationInsights).start();
 }
+http.GlobalAgent = new KeepAliveAgent({
+  maxSockets: 10,
+  maxFreeSockets: 2,
+  timeout: 60000,
+  keepAliveTimeout: 300000,
+});
+https.GlobalAgent = new KeepAliveAgent({
+  maxSockets: 10,
+  maxFreeSockets: 2,
+  timeout: 60000,
+  keepAliveTimeout: 300000,
+});
 
 const init = async () => {
   const csrf = csurf({
