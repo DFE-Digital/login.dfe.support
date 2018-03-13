@@ -14,12 +14,17 @@ const action = async (req, res) => {
     });
   }
   else {
-    sendResult(req, res, 'userDevices/views/unlockToken', {
-      csrfToken: req.csrfToken(),
-      validationMessages: unlockTokenResult.validationResult.messages,
-      uid: req.body.uid,
-      serialNumber: req.body.serialNumber,
-    });
+
+    if(unlockTokenResult.redirectToDeactivate) {
+      res.redirect(`/userDevices/${req.body.serialNumber}/deactivate/${req.body.uid}`)
+    } else {
+      sendResult(req, res, 'userDevices/views/unlockToken', {
+        csrfToken: req.csrfToken(),
+        validationMessages: unlockTokenResult.validationResult.messages,
+        uid: req.body.uid,
+        serialNumber: req.body.serialNumber,
+      });
+    }
   }
 
 };
