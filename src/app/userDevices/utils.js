@@ -3,6 +3,7 @@ const devices = require('./../../infrastructure/devices');
 const logger = require('./../../infrastructure/logger');
 const { getUserLoginAuditsSince, getTokenAudits } = require('./../../infrastructure/audit');
 const moment = require('moment');
+const { deleteUserDevice} = require('./../../infrastructure/directories')
 
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
@@ -274,7 +275,9 @@ const deactivateToken = async (req) => {
 
   const result = await devices.deactivateToken(serialNumber, reason, correlationId);
 
-  if (!result) {
+  const removeresult = await deleteUserDevice(uid, serialNumber, correlationId);
+
+  if (!result && removeresult.success) {
     logger.audit(`${req.user.email} (id: ${req.user.sub}) Failed to deactivate token with serial number "${serialNumber}"`, {
       type: 'support',
       subType: 'digipass-deactivate',
