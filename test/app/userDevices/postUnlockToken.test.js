@@ -83,4 +83,22 @@ describe('When processing a post to unlock a user device', () => {
     expect(res.render.mock.calls[0][0]).toBe('userDevices/views/unlockToken');
   });
 
+  it('then it redirects to the deactivate flow if the option is selected', async () => {
+    utils.unlockToken.mockReturnValue(
+      {
+        success: false,
+        redirectToDeactivate: true,
+        code: '123457',
+        validationResult:{
+          messages:{
+          }
+        }
+      }
+    );
+
+    await post(req,res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe('/userDevices/123456/deactivate/test');
+  })
 });
