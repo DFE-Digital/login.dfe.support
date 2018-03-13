@@ -227,6 +227,7 @@ const unlockToken = async (req) => {
   if (unlockType.toLowerCase() === 'disabled') {
     return {
       success: false,
+      redirectToDeactivate: true,
       validationResult: {
         failed: true,
         messages: {}
