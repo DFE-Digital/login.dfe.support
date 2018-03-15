@@ -26,14 +26,14 @@ if (config.hostingEnvironment.applicationInsights) {
   appInsights.setup(config.hostingEnvironment.applicationInsights).start();
 }
 http.GlobalAgent = new KeepAliveAgent({
-  maxSockets: 10,
-  maxFreeSockets: 2,
+  maxSockets: 160,
+  maxFreeSockets: 10,
   timeout: 60000,
   keepAliveTimeout: 300000,
 });
 https.GlobalAgent = new KeepAliveAgent({
-  maxSockets: 20,
-  maxFreeSockets: 5,
+  maxSockets: 160,
+  maxFreeSockets: 10,
   timeout: 60000,
   keepAliveTimeout: 300000,
 });
