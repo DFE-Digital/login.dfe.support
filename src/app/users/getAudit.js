@@ -5,6 +5,9 @@ const logger = require('./../../infrastructure/logger');
 const { getServiceIdForClientId } = require('./../../infrastructure/serviceMapping');
 const { getServiceById } = require('./../../infrastructure/organisations');
 
+let cachedServiceIds = {};
+let cachedServices  = {};
+
 const describeAuditEvent = async (audit) => {
   if (audit.type === 'sign-in') {
     let description = 'Sign-in';
@@ -53,7 +56,24 @@ const describeAuditEvent = async (audit) => {
   return `${audit.type} / ${audit.subType}`;
 };
 
+const getCachedServiceIdForClientId = async (client) => {
+  if (!(client in cachedServiceIds)){
+    cachedServiceIds[client] = await getServiceIdForClientId(client);
+  }
+  return cachedServiceIds[client]
+}
+
+const getCachedServiceById = async (serviceId, reqId) => {
+  let key = `${serviceId}:${reqId}`;
+  if (!(key in cachedServices)){
+    const service = getServiceById(serviceId, reqId);
+    cachedServices[key] = service;
+  }
+  return cachedServices[key]
+}
 const getAudit = async (req, res) => {
+  cachedServiceIds = {};
+  cachedServices  = {};
   const user = await getUserDetails(req);
 
   const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
@@ -62,19 +82,22 @@ const getAudit = async (req, res) => {
   }
   const pageOfAudits = await getUserAudit(user.id, pageNumber);
 
-  const audits = await Promise.all(pageOfAudits.audits.map(async (audit) => {
+  let audits = [];
+
+  for (let i = 0; i < pageOfAudits.audits.length; i++) {
+    let audit = pageOfAudits.audits[i];
     let service = null;
     if (audit.client) {
-      const serviceId = await getServiceIdForClientId(audit.client);
+      const serviceId = await getCachedServiceIdForClientId(audit.client);
       if(serviceId) {
-        service = await getServiceById(serviceId, req.id);
+        service = await getCachedServiceById(serviceId, req.id);
       } else {
         logger.info(`User audit tab - No service mapping for client ${audit.client} using client id`);
         service = { name: audit.client };
       }
     }
 
-    return {
+    audits.push({
       timestamp: new Date(audit.timestamp),
       event: {
         type: audit.type,
@@ -83,9 +106,10 @@ const getAudit = async (req, res) => {
       },
       service,
       result: audit.success === undefined ? true : audit.success,
-      user: audit.userId === user.id ? user : await getUserDetails({ params: { uid: audit.userId } }),
-    }
-  }));
+      user: audit.userId.toLowerCase() === user.id.toLowerCase() ? user : await getUserDetails({ params: { uid: audit.userId } }),
+    });
+  };
+
 
   sendResult(req, res, 'users/views/audit', {
     csrfToken: req.csrfToken(),
