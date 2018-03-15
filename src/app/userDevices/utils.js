@@ -255,7 +255,7 @@ const unlockToken = async (req) => {
       validationResult: {
         failed: true,
         messages: {
-          unlockCode: 'Unabled to get unlock code for device',
+          unlockCode: 'Unable to get unlock code for device',
         },
       },
     };
