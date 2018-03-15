@@ -81,6 +81,11 @@ describe('When syncing users materialised view', function () {
       },
     ]);
 
+    audit.getUserChangeHistory.mockReset();
+    audit.getUserChangeHistory.mockReturnValue({
+      audits: [],
+    });
+
     uuid.mockImplementation(() => {
       return 'new-uuid';
     });
@@ -124,6 +129,8 @@ describe('When syncing users materialised view', function () {
     expect(users.updateIndex.mock.calls[0][0][0]).toEqual({
       id: 'user1',
       name: 'User One',
+      firstName: 'User',
+      lastName: 'One',
       email: 'user.one@unit.test',
       organisation: {
         id: 'org1',
@@ -140,6 +147,8 @@ describe('When syncing users materialised view', function () {
     expect(users.updateIndex.mock.calls[0][0][1]).toEqual({
       id: 'user2',
       name: 'User Two',
+      firstName: 'User',
+      lastName: 'Two',
       email: 'user.two@unit.test',
       organisation: {
         id: 'org1',
