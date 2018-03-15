@@ -23,7 +23,7 @@ const describeAuditEvent = async (audit) => {
   }
 
   if (audit.type === 'support' && audit.subType === 'user-edit') {
-    const editedStatusTo = audit.editedFields.find(x => x.name === 'status');
+    const editedStatusTo = audit.editedFields && audit.editedFields.find(x => x.name === 'status');
     if (editedStatusTo && editedStatusTo.newValue === 0) {
       const newStatus = mapUserStatus(editedStatusTo.newValue);
       const reason = audit.reason ? audit.reason : 'no reason given';

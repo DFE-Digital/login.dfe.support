@@ -16,6 +16,26 @@ const getAzureSearchUri = (indexName, indexResource = '') => {
   return `https://${config.cache.params.serviceName}.search.windows.net/indexes${indexUriSegments}?api-version=2016-09-01`
 };
 
+const mapSearchIndexUser = (user) => {
+  return {
+    id: user.id,
+    name: user.name,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    organisation: user.organisationName ? {
+      name: user.organisationName
+    } : null,
+    lastLogin: user.lastLogin ? new Date(user.lastLogin) : null,
+    successfulLoginsInPast12Months: user.successfulLoginsInPast12Months,
+    status: {
+      id: user.statusId,
+      description: user.statusDescription,
+      changedOn: user.statusLastChangedOn,
+    },
+  };
+};
+
 
 const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => {
   const currentIndexName = await client.get('CurrentIndex_Users');
@@ -58,20 +78,7 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
     }
 
     return {
-      users: response.value.map((user) => {
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          organisation: user.organisationName ? {
-            name: user.organisationName
-          } : null,
-          lastLogin: user.lastLogin ? new Date(user.lastLogin) : null,
-          status: {
-            description: user.statusDescription
-          }
-        }
-      }),
+      users: response.value.map(mapSearchIndexUser),
       numberOfPages,
       totalNumberOfResults,
     };
@@ -98,19 +105,7 @@ const getById = async (userId) => {
       return null;
     }
 
-    const user = response.value[0];
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      organisation: user.organisationName ? {
-        name: user.organisationName
-      } : null,
-      lastLogin: user.lastLogin ? new Date(user.lastLogin) : null,
-      status: {
-        description: user.statusDescription
-      }
-    };
+    return mapSearchIndexUser(response.value[0]);
   } catch (e) {
     throw e;
   }
