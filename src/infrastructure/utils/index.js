@@ -4,6 +4,7 @@ const sendResult = require('./sendResult');
 const mapUserStatus = require('./mapUserStatus');
 const auditDateFixer = require('./auditDateFixer');
 const auditSorter = require('./auditSorter');
+const patchChangeHistory = require('./patchChangeHistory');
 
 module.exports = {
   isLoggedIn,
@@ -12,4 +13,5 @@ module.exports = {
   mapUserStatus,
   auditDateFixer,
   auditSorter,
+  patchChangeHistory,
 };
