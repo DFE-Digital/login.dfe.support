@@ -2,9 +2,7 @@ const users = require('./../../infrastructure/users');
 const logger = require('./../../infrastructure/logger');
 const { getUser, getInvitation, createUserDevice } = require('./../../infrastructure/directories');
 const { getServicesByUserId } = require('./../../infrastructure/organisations');
-const { getUserLoginAuditsSince, getUserChangeHistory } = require('./../../infrastructure/audit');
-const moment = require('moment');
-const { mapUserStatus, auditSorter, auditDateFixer, patchChangeHistory } = require('./../../infrastructure/utils');
+const { mapUserStatus } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
 
 const search = async (req) => {
