@@ -1,12 +1,9 @@
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
 jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/organisations');
-jest.mock('./../../../src/infrastructure/audit');
 jest.mock('./../../../src/infrastructure/users');
 
-const { getUser } = require('./../../../src/infrastructure/directories');
 const { getServicesByUserId } = require('./../../../src/infrastructure/organisations');
-const { getUserLoginAuditsSince, getUserChangeHistory } = require('./../../../src/infrastructure/audit');
 const users = require('./../../../src/infrastructure/users');
 const { getUserDetails } = require('./../../../src/app/users/utils');
 
