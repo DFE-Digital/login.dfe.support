@@ -4,24 +4,9 @@ const { getUser, getInvitation, createUserDevice } = require('./../../infrastruc
 const { getServicesByUserId } = require('./../../infrastructure/organisations');
 const { getUserLoginAuditsSince, getUserChangeHistory } = require('./../../infrastructure/audit');
 const moment = require('moment');
-const { mapUserStatus } = require('./../../infrastructure/utils');
+const { mapUserStatus, auditSorter, auditDateFixer } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
 
-const auditSorter = (x, y) => {
-  const xTime = x.timestamp.getTime();
-  const yTime = y.timestamp.getTime();
-  if (xTime > yTime) {
-    return -1;
-  }
-  if (xTime < yTime) {
-    return 1;
-  }
-  return 0;
-};
-const auditDateFixer = (audit) => {
-  audit.timestamp = new Date(audit.timestamp);
-  return audit;
-};
 const patchChangeHistory = (changeHistory) => {
   changeHistory.audits = changeHistory.audits.map((audit) => {
     if (audit.editedFields && !(audit.editedFields instanceof Array)) {
