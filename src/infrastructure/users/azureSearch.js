@@ -129,11 +129,12 @@ const createIndex = async () => {
       body: {
         name: indexName,
         fields: [
-          { name: 'id', type: 'Edm.String', key: true, searchable: false },
+          { name: 'id', type: 'Edm.String', key: true, searchable: false, filterable: true },
           { name: 'name', type: 'Edm.String', sortable: true, filterable: true },
           { name: 'email', type: 'Edm.String', sortable: true, filterable: true },
           { name: 'organisationName', type: 'Edm.String', sortable: true, filterable: true },
           { name: 'lastLogin', type: 'Edm.Int64', sortable: true, filterable: true },
+          { name: 'successfulLoginsInPast12Months', type: 'Edm.Int64', sortable: true, filterable: true },
           { name: 'statusDescription', type: 'Edm.String', sortable: true, filterable: true },
         ]
       },
@@ -166,6 +167,7 @@ const updateIndex = async (users, index) => {
             email: user.email,
             organisationName: user.organisation ? user.organisation.name : '',
             lastLogin: user.lastLogin,
+            successfulLoginsInPast12Months: user.successfulLoginsInPast12Months,
             statusDescription: user.status.description,
           };
         }),
