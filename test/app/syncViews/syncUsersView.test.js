@@ -67,9 +67,9 @@ describe('When syncing users materialised view', function () {
       }
     }]);
 
-    audit.getUserAudit.mockReset();
-    audit.getUserAudit.mockReturnValue({
-      audits: [{
+    audit.getUserLoginAuditsSince.mockReset();
+    audit.getUserLoginAuditsSince.mockReturnValue([
+      {
         type: 'sign-in',
         subType: 'username-password',
         success: true,
@@ -78,8 +78,12 @@ describe('When syncing users materialised view', function () {
         level: 'audit',
         message: 'Successful login attempt for user.one@unit.test (id: user1)',
         timestamp: '2017-10-24T12:35:51.633Z',
-      }],
-      numberOfPages: 1,
+      },
+    ]);
+
+    audit.getUserChangeHistory.mockReset();
+    audit.getUserChangeHistory.mockReturnValue({
+      audits: [],
     });
 
     uuid.mockImplementation(() => {
@@ -117,121 +121,6 @@ describe('When syncing users materialised view', function () {
     expect(organisations.getUserOrganisations.mock.calls[1][0]).toBe(user2.sub);
   });
 
-  it('then it should get audits for user until a successful login is found', async () => {
-    directories.getPageOfUsers.mockReset();
-    directories.getPageOfUsers.mockReturnValue({
-      users: [user1],
-      numberOfPages: 1,
-    });
-
-    audit.getUserAudit.mockReset();
-    audit.getUserAudit.mockImplementation((userId, pageNumber) => {
-      if (pageNumber === 1) {
-        return {
-          audits: [{
-            'type': 'change-password',
-            'success': true,
-            'userId': 'user1',
-            'level': 'audit',
-            'message': 'Successfully changed password for user.one@unit.test (id: user1)',
-            'timestamp': '2017-11-02T07:30:18.987Z'
-          }],
-          numberOfPages: 3,
-        };
-      }
-      if (pageNumber === 2) {
-        return {
-          audits: [{
-            type: 'sign-in',
-            subType: 'username-password',
-            success: true,
-            userId: 'user1',
-            userEmail: 'user.one@unit.test',
-            level: 'audit',
-            message: 'Successful login attempt for user.one@unit.test (id: user1)',
-            timestamp: '2017-10-24T12:35:51.633Z'
-          }],
-          numberOfPages: 3,
-        };
-      }
-      return {
-        audits: [{
-          'type': 'change-password',
-          'success': true,
-          'userId': 'user1',
-          'level': 'audit',
-          'message': 'Successfully changed password for user.one@unit.test (id: user1)',
-          'timestamp': '2017-11-02T07:30:18.987Z'
-        }],
-        numberOfPages: 3,
-      };
-    });
-
-    await syncUsersView();
-
-    expect(audit.getUserAudit.mock.calls).toHaveLength(2);
-    expect(audit.getUserAudit.mock.calls[0][1]).toBe(1);
-    expect(audit.getUserAudit.mock.calls[1][1]).toBe(2);
-  });
-
-  it('then it should get audits for user until no more pages are available if not successful login found', async () => {
-    directories.getPageOfUsers.mockReset();
-    directories.getPageOfUsers.mockReturnValue({
-      users: [user1],
-      numberOfPages: 1,
-    });
-
-    audit.getUserAudit.mockReset();
-    audit.getUserAudit.mockImplementation((userId, pageNumber) => {
-      if (pageNumber === 1) {
-        return {
-          audits: [{
-            'type': 'change-password',
-            'success': true,
-            'userId': 'user1',
-            'level': 'audit',
-            'message': 'Successfully changed password for user.one@unit.test (id: user1)',
-            'timestamp': '2017-11-02T07:30:18.987Z'
-          }],
-          numberOfPages: 3,
-        };
-      }
-      if (pageNumber === 2) {
-        return {
-          audits: [{
-            type: 'sign-in',
-            subType: 'username-password',
-            success: false,
-            userId: 'user1',
-            userEmail: 'user.one@unit.test',
-            level: 'audit',
-            message: 'Successful login attempt for user.one@unit.test (id: user1)',
-            timestamp: '2017-10-24T12:35:51.633Z'
-          }],
-          numberOfPages: 3,
-        };
-      }
-      return {
-        audits: [{
-          'type': 'change-password',
-          'success': true,
-          'userId': 'user1',
-          'level': 'audit',
-          'message': 'Successfully changed password for user.one@unit.test (id: user1)',
-          'timestamp': '2017-11-02T07:30:18.987Z'
-        }],
-        numberOfPages: 3,
-      };
-    });
-
-    await syncUsersView();
-
-    expect(audit.getUserAudit.mock.calls).toHaveLength(3);
-    expect(audit.getUserAudit.mock.calls[0][1]).toBe(1);
-    expect(audit.getUserAudit.mock.calls[1][1]).toBe(2);
-    expect(audit.getUserAudit.mock.calls[2][1]).toBe(3);
-  });
-
   it('then it should update the new index with users', async () => {
     await syncUsersView();
 
@@ -240,12 +129,15 @@ describe('When syncing users materialised view', function () {
     expect(users.updateIndex.mock.calls[0][0][0]).toEqual({
       id: 'user1',
       name: 'User One',
+      firstName: 'User',
+      lastName: 'One',
       email: 'user.one@unit.test',
       organisation: {
         id: 'org1',
         name: 'Test Org'
       },
       lastLogin: 1508848551633,
+      successfulLoginsInPast12Months: 1,
       status: {
         id: 1,
         description: 'Active',
@@ -255,12 +147,15 @@ describe('When syncing users materialised view', function () {
     expect(users.updateIndex.mock.calls[0][0][1]).toEqual({
       id: 'user2',
       name: 'User Two',
+      firstName: 'User',
+      lastName: 'Two',
       email: 'user.two@unit.test',
       organisation: {
         id: 'org1',
         name: 'Test Org'
       },
       lastLogin: 1508848551633,
+      successfulLoginsInPast12Months: 1,
       status: {
         id: 1,
         description: 'Active',

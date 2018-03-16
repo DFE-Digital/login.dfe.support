@@ -2,33 +2,35 @@ const logger = require('./../../infrastructure/logger');
 const users = require('./../../infrastructure/users');
 const directories = require('./../../infrastructure/directories');
 const organisations = require('./../../infrastructure/organisations');
-const audit = require('./../../infrastructure/audit');
+const { getUserLoginAuditsSince, getUserChangeHistory } = require('./../../infrastructure/audit');
+const moment = require('moment');
 const uuid = require('uuid/v4');
-const { mapUserStatus } = require('./../../infrastructure/utils');
+const { mapUserStatus, auditSorter, auditDateFixer, patchChangeHistory } = require('./../../infrastructure/utils');
 
 const buildUser = async (user, correlationId) => {
   // Update with orgs
   const orgServiceMapping = await organisations.getUserOrganisations(user.sub, correlationId);
 
   // Update with last login
-  let successfulLoginAudit = null;
-  let hasMoreAuditPages = true;
-  let pageNumber = 1;
-  while (hasMoreAuditPages && !successfulLoginAudit) {
-    const pageOfAudit = await  audit.getUserAudit(user.sub, pageNumber);
-    successfulLoginAudit = pageOfAudit.audits.find(a => a.type === 'sign-in' && a.subType === 'username-password' && a.success);
+  const logins = (await getUserLoginAuditsSince(user.sub, moment().subtract(1, 'years').toDate())).map(auditDateFixer);
+  const successfulLogins = logins.filter(x => x.success).sort(auditSorter);
 
-    pageNumber++;
-    hasMoreAuditPages = pageNumber <= pageOfAudit.numberOfPages;
-  }
+  // change history
+  const userChangeHistory = await getUserChangeHistory(user.sub, 1);
+  patchChangeHistory(userChangeHistory);
+  const statusChanges = userChangeHistory.audits.filter(x => x.editedFields && x.editedFields.find(y => y.name === 'status')).map(auditDateFixer).sort(auditSorter);
+  const statusLastChangedOn = statusChanges && statusChanges.length > 0 ? statusChanges[0].timestamp.getTime() : null;
 
   return {
     id: user.sub,
     name: `${user.given_name} ${user.family_name}`,
+    firstName: user.given_name,
+    lastName: user.family_name,
     email: user.email,
     organisation: orgServiceMapping && orgServiceMapping.length > 0 ? orgServiceMapping[0].organisation : null,
-    lastLogin: successfulLoginAudit ? new Date(successfulLoginAudit.timestamp).getTime() : null,
-    status: mapUserStatus(user.status),
+    lastLogin: successfulLogins && successfulLogins.length > 0 ? successfulLogins[0].timestamp.getTime() : null,
+    successfulLoginsInPast12Months: successfulLogins ? successfulLogins.length : 0,
+    status: mapUserStatus(user.status, statusLastChangedOn),
   };
 };
 

@@ -18,7 +18,8 @@ const mapAuditEntity = (auditEntity) => {
   auditEntity.metaData.forEach((meta) => {
     const key = meta.getDataValue('key');
     const value = meta.getDataValue('value');
-    audit[key] = value;
+    const isJson = key === 'editedFields';
+    audit[key] = isJson ? JSON.parse(value) : value;
   });
 
   return audit;
@@ -149,7 +150,7 @@ const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
     },
   }, pageNumber);
 
-  if(!rawAudits || !rawAudits.audits || rawAudits.audits.length === 0){
+  if (!rawAudits || !rawAudits.audits || rawAudits.audits.length === 0) {
     return null;
   }
 
