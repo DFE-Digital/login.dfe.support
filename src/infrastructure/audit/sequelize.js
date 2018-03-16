@@ -98,7 +98,7 @@ const getUserLoginAuditsForService = async (userId, clientId, pageNumber) => {
       [Op.eq]: userId,
     },
     id: {
-      $in: [Sequelize.literal(metaSubQuery)],
+      [Op.in]: [Sequelize.literal(metaSubQuery)],
     },
   }, pageNumber);
 };
@@ -124,7 +124,6 @@ const getUserChangeHistory = async (userId, pageNumber) => {
       [Op.eq]: 'user-edit',
     },
     id: {
-      $in: [Sequelize.literal(metaSubQuery)],
     },
   }, pageNumber);
 };
