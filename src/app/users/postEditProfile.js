@@ -28,6 +28,8 @@ const validate = (req) => {
 const updateUserIndex = async (uid, firstName, lastName) => {
   const user = await getById(uid);
   user.name = `${firstName} ${lastName}`;
+  user.firstName = firstName;
+  user.lastName = lastName;
   if (user.lastLogin) {
     user.lastLogin = user.lastLogin.getTime();
   }
