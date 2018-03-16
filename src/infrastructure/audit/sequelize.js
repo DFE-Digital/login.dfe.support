@@ -9,7 +9,7 @@ const mapAuditEntity = (auditEntity) => {
   const audit = {
     type: auditEntity.getDataValue('type'),
     subType: auditEntity.getDataValue('subType'),
-    userId: auditEntity.getDataValue('userId').toLowerCase(),
+    userId: auditEntity.getDataValue('userId') ? auditEntity.getDataValue('userId').toLowerCase() : '',
     level: auditEntity.getDataValue('level'),
     message: auditEntity.getDataValue('message'),
     timestamp: auditEntity.getDataValue('createdAt'),
@@ -98,7 +98,7 @@ const getUserLoginAuditsForService = async (userId, clientId, pageNumber) => {
       [Op.eq]: userId,
     },
     id: {
-      $in: [Sequelize.literal(metaSubQuery)],
+      [Op.in]: [Sequelize.literal(metaSubQuery)],
     },
   }, pageNumber);
 };
@@ -124,7 +124,7 @@ const getUserChangeHistory = async (userId, pageNumber) => {
       [Op.eq]: 'user-edit',
     },
     id: {
-      $in: [Sequelize.literal(metaSubQuery)],
+      [Op.in]: [Sequelize.literal(metaSubQuery)],
     },
   }, pageNumber);
 };
@@ -141,14 +141,13 @@ const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
       },
     },
   }).slice(0, -1);
+
   const rawAudits = await getPageOfAudits({
-    userId: {
-      [Op.eq]: userId,
-    },
     id: {
-      $in: [Sequelize.literal(metaSubQuery)],
+      [Op.in]: [Sequelize.literal(metaSubQuery)],
     },
   }, pageNumber);
+
 
   if (!rawAudits || !rawAudits.audits || rawAudits.audits.length === 0) {
     return null;
@@ -156,13 +155,13 @@ const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
 
   return Promise.all(rawAudits.audits.map(async (audit) => {
     audit.date = new Date(audit.timestamp);
-    audit.name = audit.userId === userId ? userName : await getUserName(audit.userId);
-    audit.success = audit.success ? 'Success' : 'Failure';
+    audit.name = audit.userId ?  (audit.userId === userId ? userName : await getUserName(audit.userId)) : audit.userEmail;
+    audit.success = audit.success === "0" ? 'Failure' : 'Success';
 
     if (audit.type === 'sign-in' && audit.subType === 'digipass') {
       audit.event = 'Login';
-    } else if (audit.type === 'support' && audit.subType === 'digipass-resync') {
-      audit.event = 'Resync';
+    } else if (audit.subType === 'digipass-resync') {
+      audit.event = `${audit.type} - Resync`;
     } else if (audit.type === 'support' && audit.subType === 'digipass-unlock') {
       audit.event = `Unlock - UnlockType: "${audit.unlockType}"`;
     } else if (audit.type === 'support' && audit.subType === 'digipass-deactivate') {
@@ -170,7 +169,7 @@ const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
     } else if (audit.type === 'support' && audit.subType === 'digipass-assign') {
       audit.event = `Assigned`;
     } else {
-      audit.event = $`Digipass event ${audit.type} - ${audit.subType}`;
+      audit.event = `Digipass event ${audit.type} - ${audit.subType}`;
     }
     return audit;
   }));
