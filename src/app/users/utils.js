@@ -2,34 +2,8 @@ const users = require('./../../infrastructure/users');
 const logger = require('./../../infrastructure/logger');
 const { getUser, getInvitation, createUserDevice } = require('./../../infrastructure/directories');
 const { getServicesByUserId } = require('./../../infrastructure/organisations');
-const { getUserLoginAuditsSince, getUserChangeHistory } = require('./../../infrastructure/audit');
-const moment = require('moment');
 const { mapUserStatus } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
-
-const auditSorter = (x, y) => {
-  const xTime = x.timestamp.getTime();
-  const yTime = y.timestamp.getTime();
-  if (xTime > yTime) {
-    return -1;
-  }
-  if (xTime < yTime) {
-    return 1;
-  }
-  return 0;
-};
-const auditDateFixer = (audit) => {
-  audit.timestamp = new Date(audit.timestamp);
-  return audit;
-};
-const patchChangeHistory = (changeHistory) => {
-  changeHistory.audits = changeHistory.audits.map((audit) => {
-    if (audit.editedFields && !(audit.editedFields instanceof Array)) {
-      audit.editedFields = JSON.parse(audit.editedFields);
-    }
-    return audit;
-  });
-};
 
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
@@ -110,7 +84,8 @@ const getUserDetails = async (req) => {
       },
     };
   } else {
-    const user = await getUser(uid);
+    const user = await users.getById(uid);
+    getUser(uid);
     const serviceDetails = await getServicesByUserId(uid);
 
     const ktsDetails = serviceDetails ? serviceDetails.find((c) => c.id.toLowerCase() === config.serviceMapping.key2SuccessServiceId.toLowerCase()) : undefined;
@@ -122,25 +97,16 @@ const getUserDetails = async (req) => {
       }
     }
 
-
-    const logins = (await getUserLoginAuditsSince(uid, moment().subtract(1, 'years').toDate())).map(auditDateFixer);
-    const successfulLogins = logins.filter(x => x.success).sort(auditSorter);
-
-    const userChangeHistory = await getUserChangeHistory(uid, 1);
-    patchChangeHistory(userChangeHistory);
-    const statusChanges = userChangeHistory.audits.filter(x => x.editedFields && x.editedFields.find(y => y.name === 'status')).map(auditDateFixer).sort(auditSorter);
-    const statusLastChangedOn = statusChanges && statusChanges.length > 0 ? new Date(statusChanges[0].timestamp) : null;
-
     return {
       id: uid,
-      name: `${user.given_name} ${user.family_name}`,
-      firstName: user.given_name,
-      lastName: user.family_name,
+      name: user.name,
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
-      lastLogin: successfulLogins && successfulLogins.length > 0 ? successfulLogins[0].timestamp : null,
-      status: mapUserStatus(user.status, statusLastChangedOn),
+      lastLogin: user.lastLogin,
+      status: user.status,
       loginsInPast12Months: {
-        successful: successfulLogins ? successfulLogins.length : 0,
+        successful: user.successfulLoginsInPast12Months,
       },
       serviceId: config.serviceMapping.key2SuccessServiceId,
       orgId: ktsDetails ? ktsDetails.organisation.id : '',
@@ -157,7 +123,7 @@ const createDevice = async (req) => {
 
   const result = await createUserDevice(userId, serialNumber, req.id);
 
-  if(result.success) {
+  if (result.success) {
     logger.audit(`Support user ${req.user.email} (id: ${req.user.sub}) linked ${userEmail} (id: ${userId}) linked to token ${serialNumber} "${serialNumber}"`, {
       type: 'support',
       subType: 'digipass-assign',

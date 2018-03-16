@@ -59,10 +59,15 @@ describe('when creating an index in azure search', () => {
         fields: [
           { name: 'id', type: 'Edm.String', key: true, searchable: false },
           { name: 'name', type: 'Edm.String', sortable: true, filterable: true },
+          { name: 'firstName', type: 'Edm.String' },
+          { name: 'lastName', type: 'Edm.String' },
           { name: 'email', type: 'Edm.String', sortable: true, filterable: true },
           { name: 'organisationName', type: 'Edm.String', sortable: true, filterable: true },
           { name: 'lastLogin', type: 'Edm.Int64', sortable: true, filterable: true },
+          { name: 'successfulLoginsInPast12Months', type: 'Edm.Int64' },
+          { name: 'statusLastChangedOn', type: 'Edm.Int64' },
           { name: 'statusDescription', type: 'Edm.String', sortable: true, filterable: true },
+          { name: 'statusId', type: 'Edm.Int64' },
         ]
       }
     });
