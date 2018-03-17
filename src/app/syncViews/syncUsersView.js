@@ -59,8 +59,11 @@ const loadInvitations = async (newIndexName, correlationId) => {
     logger.info(`Syncing page ${pageNumber} of invitations`);
     const pageOfInvitations = await directories.getPageOfInvitations(pageNumber, correlationId);
     if (pageOfInvitations.invitations && pageOfInvitations.invitations.length > 0) {
-      const mappedInvitations = await Promise.all(pageOfInvitations.invitations.map(async (invitation) => {
+      const mappedInvitations = (await Promise.all(pageOfInvitations.invitations.map(async (invitation) => {
         logger.info(`Building invitation ${invitation.email} (id:${invitation.id}) for syncing`);
+        if (invitation.isCompleted) {
+          return null;
+        }
         const orgServiceMapping = await organisations.getInvitationOrganisations(invitation.id, correlationId);
         return {
           id: `inv-${invitation.id}`,
@@ -70,7 +73,7 @@ const loadInvitations = async (newIndexName, correlationId) => {
           lastLogin: null,
           status: mapUserStatus(-1),
         };
-      }));
+      }))).filter(x => x !== null);
       await users.updateIndex(mappedInvitations, newIndexName);
     }
     pageNumber++;
