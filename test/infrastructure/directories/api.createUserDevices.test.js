@@ -8,8 +8,10 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
     },
   },
 }));
+const rp = jest.fn();
+const requestPromise = require('request-promise');
+requestPromise.defaults.mockReturnValue(rp);
 
-const rp = require('request-promise');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { createUserDevice } = require('./../../../src/infrastructure/directories/api');
 
