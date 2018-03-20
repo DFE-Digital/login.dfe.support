@@ -18,7 +18,10 @@ jest.mock('uuid/v4', () => {
 });
 
 
-const rp = require('request-promise');
+const rp = jest.fn();
+const requestPromise = require('request-promise');
+requestPromise.defaults.mockReturnValue(rp);
+
 
 describe('when creating an index in azure search', () => {
   let createIndex;
