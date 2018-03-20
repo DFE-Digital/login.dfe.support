@@ -31,7 +31,10 @@ const users = [
   },
 ];
 
-const rp = require('request-promise');
+const rp = jest.fn();
+const requestPromise = require('request-promise');
+requestPromise.defaults.mockReturnValue(rp);
+
 
 describe('when updating an index with new data in azure search', () => {
   let updateIndex;
