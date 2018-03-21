@@ -11,53 +11,46 @@ const upperEndUsers = lowerEndUsers == 0 ? 0 : lowerEndUsers + usersOnPage - 1
     </div>
     <div class="col-6">
         <% if (locals.numberOfPages > 1) { %>
-        <ul class="pagination">
-
-            <% if(locals.page > 1) { %>
-            <li><a href="?&page=<%= locals.page-1 %>">Previous</a></li>
-            <% } %>
-
-            <% for (let p = 1; p <= locals.numberOfPages; p++) { %>
-            <% if(p === locals.page) { %>
-            <li><span class="current"> <%= p %> </span></li>
-            <% } else { %>
-            <li><a href="?page=<%= p %>"><%= p %></a></li>
-            <% } %>
-            <% } %>
-
-            <% if(locals.page !== locals.numberOfPages) { %>
-            <li><a href="?page=<%= locals.page+1 %>">Next</a></li>
-            <% } %>
-
-        </ul>
+        <div class="pagination" data-current="<%=locals.page%>" data-total="<%=locals.numberOfPages%>"></div>
         <% } %>
     </div>
 </div>
 
 <div class="row">
     <div class="col-12">
-        <table>
+        <table class="data">
             <thead>
-            <tr>
-                <th>Date</th>
-                <th>Event</th>
-                <th>Service</th>
-                <th>Result</th>
-                <th>User</th>
-            </tr>
+                <tr>
+                    <th scope="col" class="cwp-20">Date</th>
+                    <th scope="col" class="cwp-30">Event</th>
+                    <th scope="col" class="cwp-15">Service</th>
+                    <th scope="col" class="cwp-15">Result</th>
+                    <th scope="col" class="cwp-20">User</th>
+                </tr>
             </thead>
             <tbody>
             <% for(let a = 0;a < locals.audits.length; a++) { %>
             <% const audit = locals.audits[a]; %>
-            <tr>
-                <td><%= locals.moment(audit.timestamp).format('DD/MMM/YYYY HH:mm:ss') %></td>
-                <td><%= audit.event.description %></td>
-                <td><%= audit.service ? audit.service.name : '' %></td>
-                <td><%= audit.result ? 'Success' : 'Failure' %></td>
-                <td><%= audit.user ? audit.user.name : '' %></td>
-            </tr>
+                <tr>
+                    <td><%= locals.moment(audit.timestamp).format('DD/MMM/YYYY HH:mm:ss') %></td>
+                    <td><%= audit.event.description %></td>
+                    <td><%= audit.service ? audit.service.name : '' %></td>
+                    <td><%= audit.result ? 'Success' : 'Failure' %></td>
+                    <td><%= audit.user ? audit.user.name : '' %></td>
+                </tr>
             <% } %>
             </tbody>
         </table>
+    </div>
+</div>
+
+<div class="row meta">
+    <div class="col-6">
+        <p>Showing <%= lowerEndUsers %> - <%= upperEndUsers %> of <b><%=locals.totalNumberOfResults%></b> audits for user</p>
+    </div>
+    <div class="col-6">
+        <% if (locals.numberOfPages > 1) { %>
+        <div class="pagination" data-current="<%=locals.page%>" data-total="<%=locals.numberOfPages%>"></div>
+        <% } %>
     </div>
 </div>
