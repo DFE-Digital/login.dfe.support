@@ -1,6 +1,5 @@
 'use strict';
 
-require('winston-redis').Redis;
 const winston = require('winston');
 const config = require('./../config');
 const WinstonSequelizeTransport = require('login.dfe.audit.winston-sequelize-transport');
@@ -27,15 +26,6 @@ const loggerConfig = {
 };
 
 loggerConfig.transports.push(new (winston.transports.Console)({level: logLevel, colorize: true}));
-if (config && config.loggerSettings && config.loggerSettings.redis && config.loggerSettings.redis.enabled) {
-  loggerConfig.transports.push(new (winston.transports.Redis)({
-    level: 'audit',
-    length: 4294967295,
-    host: config.loggerSettings.redis.host,
-    port: config.loggerSettings.redis.port,
-    auth: config.loggerSettings.redis.auth,
-  }));
-}
 
 const sequelizeTransport = WinstonSequelizeTransport(config);
 
