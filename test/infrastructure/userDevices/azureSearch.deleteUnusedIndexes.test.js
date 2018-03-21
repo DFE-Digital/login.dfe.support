@@ -14,15 +14,17 @@ jest.mock('uuid/v4', () => {
   return 'some-uuid';
 });
 
+const rp = jest.fn();
+const requestPromise = require('request-promise');
+requestPromise.defaults.mockReturnValue(rp);
 
 
 
 describe('When deleting unused indexes from Azure Search', () => {
   let deleteUnusedIndexes;
-  let rp;
 
   beforeEach(() => {
-    jest.resetModules();
+    // jest.resetModules();
     jest.doMock('ioredis', () => jest.fn().mockImplementation(() => {
       const RedisMock = require('ioredis-mock').default;
       const redisMock = new RedisMock();
@@ -31,7 +33,6 @@ describe('When deleting unused indexes from Azure Search', () => {
       return redisMock;
     }));
 
-    rp = require('request-promise');
     rp.mockReset();
     rp.mockImplementation((opts) => {
       if (opts.method === 'GET') {
