@@ -47,25 +47,9 @@
     </div>
     <div class="col-6">
         <% if (locals.numberOfPages > 1) { %>
-        <ul class="pagination">
-
-            <% if(locals.page > 1) { %>
-                <li><a href="?criteria=<%= criteria %>&page=<%= locals.page-1 %>&sort=<%= locals.sortBy %>&sortdir=<%= locals.sortOrder %>">Previous</a></li>
-            <% } %>
-
-            <% for (let p = 1; p <= locals.numberOfPages; p++) { %>
-                <% if(p === locals.page) { %>
-                    <li><span class="current"> <%= p %> </span></li>
-                <% } else { %>
-                    <li><a href="?criteria=<%= criteria %>&page=<%= p %>&sort=<%= locals.sortBy %>&sortdir=<%= locals.sortOrder %>"><%= p %></a></li>
-                <% } %>
-            <% } %>
-
-            <% if(locals.page !== locals.numberOfPages) { %>
-                <li><a href="?criteria=<%= criteria %>&page=<%= locals.page+1 %>&sort=<%= locals.sortBy %>&sortdir=<%= locals.sortOrder %>">Next</a></li>
-            <% } %>
-
-        </ul>
+        <div class="pagination" data-criteria="<%= criteria %>" data-sort="<%= locals.sortBy %>" data-sortdir="<%= locals.sortOrder %>"
+             data-current="<%=locals.page%>" data-total="<%=locals.numberOfPages%>">
+        </div>
         <% } %>
     </div>
 </div>
@@ -131,27 +115,14 @@
 </div>
 
 <div class="row meta">
-    <div class="col-12">
+    <div class="col-6">
+        <p>Showing <%= lowerEndUsers %> - <%= upperEndUsers %> of <b><%=locals.totalNumberOfResults%></b> tokens</p>
+    </div>
+    <div class="col-6">
         <% if (locals.numberOfPages > 1) { %>
-        <ul class="pagination">
-
-            <% if(locals.page > 1) { %>
-            <li><a href="?criteria=<%= criteria %>&page=<%= locals.page-1 %>&sort=<%= locals.sortBy %>&sortdir=<%= locals.sortOrder %>">Previous</a></li>
-            <% } %>
-
-            <% for (let p = 1; p <= locals.numberOfPages; p++) { %>
-            <% if(p === locals.page) { %>
-            <li><span class="current"> <%= p %> </span></li>
-            <% } else { %>
-            <li><a href="?criteria=<%= criteria %>&page=<%= p %>&sort=<%= locals.sortBy %>&sortdir=<%= locals.sortOrder %>"><%= p %></a></li>
-            <% } %>
-            <% } %>
-
-            <% if(locals.page !== locals.numberOfPages) { %>
-            <li><a href="?criteria=<%= criteria %>&page=<%= locals.page+1 %>&sort=<%= locals.sortBy %>&sortdir=<%= locals.sortOrder %>">Next</a></li>
-            <% } %>
-
-        </ul>
+        <div class="pagination" data-criteria="<%= criteria %>" data-sort="<%= locals.sortBy %>" data-sortdir="<%= locals.sortOrder %>"
+             data-current="<%=locals.page%>" data-total="<%=locals.numberOfPages%>">
+        </div>
         <% } %>
     </div>
 </div>
