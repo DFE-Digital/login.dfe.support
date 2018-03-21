@@ -25,7 +25,10 @@ jest.mock('login.dfe.jwt-strategies', () => {
   });
 });
 
-const rp = require('request-promise');
+const rp = jest.fn();
+const requestPromise = require('request-promise');
+requestPromise.defaults.mockReturnValue(rp);
+
 const { updateUser } = require('./../../../src/infrastructure/directories/api');
 
 describe('When updating a user using the api', () => {

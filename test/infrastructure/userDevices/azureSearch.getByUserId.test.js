@@ -15,7 +15,10 @@ jest.mock('uuid/v4', () => {
 });
 
 
-const rp = require('request-promise');
+const rp = jest.fn();
+const requestPromise = require('request-promise');
+requestPromise.defaults.mockReturnValue(rp);
+
 
 describe('when searching for a user in azure search', () => {
   let getByUserId;

@@ -22,7 +22,7 @@
         },
         "nodeVersion": {
             "type": "string",
-            "defaultValue": "8.9.0",
+            "defaultValue": "8.9.4",
             "metadata": {
                 "description": "The default NodeJS version that the App Service will run"
             }
@@ -44,6 +44,7 @@
             "apiVersion": "2016-08-01",
             "location": "[resourceGroup().location]",
             "properties": {
+                "clientAffinityEnabled": false,
                 "serverFarmId": "[variables('appServicePlanId')]",
                 "siteConfig": {
                     "appSettings": [
