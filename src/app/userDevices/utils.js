@@ -87,10 +87,15 @@ const getUserTokenDetails = async (req, params) => {
     return 0;
   });
 
+  const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
+  if (isNaN(pageNumber)) {
+    return null;
+  }
+
   const result = await userDevices.getByUserId(uid);
   let auditRecords = [];
   if (result) {
-    auditRecords = await getTokenAudits(uid, serialNumber, 1, result.name);
+    auditRecords = await getTokenAudits(uid, serialNumber, pageNumber, result.name);
   }
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) viewed users device userId:${uid} ${req.user.email} in support`, {
@@ -112,6 +117,9 @@ const getUserTokenDetails = async (req, params) => {
       lastLogin: successfulLogins && successfulLogins.length > 0 ? successfulLogins[0].timestamp : null,
       numberOfSuccessfulLoginAttemptsInTwelveMonths: successfulLogins ? successfulLogins.length : 0,
       audit: auditRecords ? auditRecords : { audits: [] },
+      page: pageNumber,
+      totalNumberOfResults: auditRecords.numberOfRecords,
+      numberOfPages: auditRecords.numberOfPages,
     };
   }
 
@@ -126,9 +134,10 @@ const getUserTokenDetails = async (req, params) => {
     lastLogin: null,
     numberOfSuccessfulLoginAttemptsInTwelveMonths: 0,
     audit: { audits: [] },
+    page: 1,
+    totalNumberOfResults: 0,
+    numberOfPages: 0,
   };
-
-
 };
 
 const validateResyncCodes = (code1, code2) => {

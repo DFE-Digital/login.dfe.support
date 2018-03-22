@@ -9,12 +9,12 @@ jest.mock('./../../../src/app/userDevices/utils', () => {
       lastLogin: '16:00:00  06/10/2017',
       numberOfSuccessfulLoginAttemptsInTwelveMonths: '25',
       tokenStatus: 'Active',
-      audit: [{
+      audit:{audits: [{
         date:  '16:10:00  07/10/2017',
         event:'Login',
         result:'Success',
         user: 'Testing Tester',
-      }],
+      }]},
     }),
   };
 });
