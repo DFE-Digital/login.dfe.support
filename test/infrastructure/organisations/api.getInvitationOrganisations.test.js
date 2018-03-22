@@ -9,7 +9,10 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
   },
 }));
 
-const rp = require('request-promise');
+const rp = jest.fn();
+const requestPromise = require('request-promise');
+requestPromise.defaults.mockReturnValue(rp);
+
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { getInvitationOrganisations } = require('./../../../src/infrastructure/organisations/api');
 

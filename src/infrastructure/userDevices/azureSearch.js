@@ -115,7 +115,7 @@ const search = async (criteria, pageNumber, sortBy = 'serialNumber', sortAsc = t
         break;
     }
 
-    const formattedCriteria = criteria.replace('-','');
+    const formattedCriteria = criteria.replace(/-/g,'');
     const serialNumber = parseInt(formattedCriteria);
     if(!isNaN(serialNumber)) {
       criteria = formattedCriteria;

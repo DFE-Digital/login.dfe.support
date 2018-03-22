@@ -1,6 +1,9 @@
 'use strict';
 
-const rp = require('request-promise');
+const rp = require('request-promise').defaults({
+  forever: true,
+  keepAlive: true,
+});
 const config = require('./../config');
 
 const getAzureSearchUri = (indexName, indexResource = '') => {
