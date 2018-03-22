@@ -109,13 +109,13 @@
             rangeWithDots = [],
             l;
 
-        for (let i = 1; i <= last; i++) {
+        for (var i = 1; i <= last; i++) {
             if (i == 1 || i == last || i >= left && i < right) {
                 range.push(i);
             }
         }
 
-        for (let i of range) {
+        $.each(range, function( index, i ) {
             if (l) {
                 if (i - l === 2) {
                     rangeWithDots.push(l + 1);
@@ -125,7 +125,7 @@
             }
             rangeWithDots.push(i);
             l = i;
-        }
+        });
 
         return rangeWithDots;
     }
