@@ -16,16 +16,19 @@ jest.mock('login.dfe.jwt-strategies', () => {
   });
 });
 
+const rp = jest.fn();
+const requestPromise = require('request-promise');
+requestPromise.defaults.mockReturnValue(rp);
+
+
 const { deactivateToken } = require('./../../../src/infrastructure/devices/api');
 
 const serialNumber = '1234509876';
 const reason = 'Token lost';
 
 describe('when deactivating a digipass token', () => {
-  let rp;
 
   beforeEach(() => {
-    rp = require('request-promise');
     rp.mockReturnValue({ valid: true });
   });
 

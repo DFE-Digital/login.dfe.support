@@ -1,5 +1,8 @@
 const Redis = require('ioredis');
-const rp = require('request-promise');
+const rp = require('request-promise').defaults({
+  forever: true,
+  keepAlive: true,
+});
 const config = require('./../config');
 const uuid = require('uuid/v4');
 const logger = require('./../logger');
