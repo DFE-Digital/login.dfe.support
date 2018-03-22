@@ -8,11 +8,10 @@
     <thead>
         <tr>
             <th scope="col" class="cwp-30">Service</th>
-            <th scope="col" class="cwp-8">User type</th>
-            <th scope="col" class="cwp-10">Activated</th>
-            <th scope="col" class="cwp-10">Last active</th>
-            <th scope="col" class="cwp-30">Approvers</th>
-            <th scope="col" class="cwp-12">Token</th>
+            <th scope="col" class="cwp-25">User type</th>
+            <th scope="col" class="cwp-15">Activated</th>
+            <th scope="col" class="cwp-15">Last active</th>
+            <th scope="col" class="cwp-15">Token</th>
         </tr>
     </thead>
     <tbody>
@@ -27,16 +26,6 @@
         <td>Pending</td>
         <%}%>
         <td><%=service.lastLogin ? locals.moment(service.lastLogin).format('DD MMM YYYY, HH:mm:ss') : 'Never'%></td>
-        <td>
-            <%for(let a = 0; a < service.approvers.length; a++) {%>
-                <%if(a>0){%>,<%}%>
-                <%if(service.approvers[a].id === locals.user.id) {%>
-                <%=service.approvers[a].name%>
-                <%} else {%>
-                <a href="/users/<%=service.approvers[a].id%>"><%=service.approvers[a].name%></a>
-                <%}%>
-            <%}%>
-        </td>
         <td>
             <%if (service.token && service.token.serialNumber) {%>
                 <% if (locals.user.id.startsWith('inv-')) {%>
