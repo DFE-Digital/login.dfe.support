@@ -19,9 +19,10 @@ const action = async (req, res) => {
     lastLogin: tokenDetails.lastLogin,
     numberOfSuccessfulLoginAttemptsInTwelveMonths: tokenDetails.numberOfSuccessfulLoginAttemptsInTwelveMonths,
     tokenStatus: tokenDetails.tokenStatus,
-    audit: tokenDetails.audit,
+    audit: tokenDetails.audit.audits,
     page: tokenDetails.page,
-    totalNumberOfResults: tokenDetails.totalNumberOfResults
+    totalNumberOfResults: tokenDetails.totalNumberOfResults,
+    numberOfPages: tokenDetails.numberOfPages,
   });
 };
 

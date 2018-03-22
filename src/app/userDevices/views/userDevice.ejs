@@ -40,6 +40,11 @@
     <div class="col-6">
         <p>Showing <b><%=locals.audit.length%></b> audits of <%=locals.totalNumberOfResults%></p>
     </div>
+    <div class="col-6">
+        <% if (locals.numberOfPages > 1) { %>
+        <div class="pagination" data-current="<%=locals.page%>" data-total="<%=locals.numberOfPages%>"></div>
+        <% } %>
+    </div>
 </div>
 
 <div class="row">
@@ -69,5 +74,16 @@
             <% } %>
             </tbody>
         </table>
+    </div>
+</div>
+
+<div class="row meta">
+    <div class="col-6">
+        <p>Showing <b><%=locals.audit.length%></b> audits of <%=locals.totalNumberOfResults%></p>
+    </div>
+    <div class="col-6">
+        <% if (locals.numberOfPages > 1) { %>
+        <div class="pagination" data-current="<%=locals.page%>" data-total="<%=locals.numberOfPages%>"></div>
+        <% } %>
     </div>
 </div>

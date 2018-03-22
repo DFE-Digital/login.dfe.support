@@ -119,6 +119,7 @@ const getUserTokenDetails = async (req, params) => {
       audit: auditRecords ? auditRecords : { audits: [] },
       page: pageNumber,
       totalNumberOfResults: auditRecords.numberOfRecords,
+      numberOfPages: auditRecords.numberOfPages,
     };
   }
 
@@ -134,10 +135,9 @@ const getUserTokenDetails = async (req, params) => {
     numberOfSuccessfulLoginAttemptsInTwelveMonths: 0,
     audit: { audits: [] },
     page: 1,
-    totalNumberOfResults: 0
+    totalNumberOfResults: 0,
+    numberOfPages: 0,
   };
-
-
 };
 
 const validateResyncCodes = (code1, code2) => {
