@@ -129,6 +129,23 @@ const getUserChangeHistory = async (userId, pageNumber) => {
   }, pageNumber);
 };
 
+const getAuditEvent = (type, subType, unlockType) => {
+  let event = `Digipass event ${type} - ${subType}`;
+
+  if (type === 'sign-in' && subType === 'digipass') {
+    event = 'Login';
+  } else if (subType === 'digipass-resync') {
+    event = `${type} - Resync`;
+  } else if (type === 'support' && subType === 'digipass-unlock') {
+    event = `Unlock - UnlockType: "${unlockType}"`;
+  } else if (type === 'support' && subType === 'digipass-deactivate') {
+    event = `Deactivate`;
+  } else if (type === 'support' && subType === 'digipass-assign') {
+    event = `Assigned`;
+  }
+  return event;
+};
+
 const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
 
   const where =  {
@@ -164,21 +181,8 @@ const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
       date: new Date(audit.timestamp),
       name: audit.userId ? (audit.userId === userId ? userName : await getUserName(audit.userId)) : audit.userEmail,
       success: audit.success === "0" ? 'Failure' : 'Success',
-      event: getAuditEvent(audit.type,adu)
-      if (audit.type === 'sign-in' && audit.subType === 'digipass') {
-        audit.event = 'Login';
-      } else if (audit.subType === 'digipass-resync') {
-        audit.event = `${audit.type} - Resync`;
-      } else if (audit.type === 'support' && audit.subType === 'digipass-unlock') {
-        audit.event = `Unlock - UnlockType: "${audit.unlockType}"`;
-      } else if (audit.type === 'support' && audit.subType === 'digipass-deactivate') {
-        audit.event = `Deactivate`;
-      } else if (audit.type === 'support' && audit.subType === 'digipass-assign') {
-        audit.event = `Assigned`;
-      } else {
-        audit.event = `Digipass event ${audit.type} - ${audit.subType}`;
-      }
-    })
+      event: getAuditEvent(audit.type,audit.subType,audit.unlockType),
+    });
   }
 
   return {
