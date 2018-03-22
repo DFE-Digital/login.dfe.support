@@ -5,13 +5,17 @@ const rp = require('request-promise').defaults({
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const config = require('./../config');
 
-const getPageOfUsers = async (pageNumber, correlationId) => {
+const getPageOfUsers = async (pageNumber, includeDevices, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
+    let uri = `${config.directories.service.url}/users?page=${pageNumber}`;
+    if (includeDevices) {
+      uri += '&include=devices';
+    }
     const pageOfUsers = await rp({
       method: 'GET',
-      uri: `${config.directories.service.url}/users?page=${pageNumber}`,
+      uri: uri,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
@@ -236,7 +240,7 @@ const createUserDevice = async (id, serialNumber, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
   try {
     const opts = {
-      method : 'POST',
+      method: 'POST',
       uri: `${config.directories.service.url}/users/${id}/devices`,
       headers: {
         authorization: `bearer ${token}`,
@@ -245,7 +249,7 @@ const createUserDevice = async (id, serialNumber, correlationId) => {
       json: true,
     };
 
-      opts.body = { type: 'digipass', serialNumber };
+    opts.body = { type: 'digipass', serialNumber };
 
     await rp(opts);
 
@@ -265,7 +269,7 @@ const deleteUserDevice = async (id, serialNumber, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
   try {
     const opts = {
-      method : 'DELETE',
+      method: 'DELETE',
       uri: `${config.directories.service.url}/users/${id}/devices`,
       headers: {
         authorization: `bearer ${token}`,

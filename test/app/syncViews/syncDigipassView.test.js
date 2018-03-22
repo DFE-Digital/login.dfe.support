@@ -22,6 +22,13 @@ const user1 = {
   email: 'user.one@unit.test',
   password: '0dqy81MVA9lqs2+xinvOXbbGMhd18X4pq5aRfiE65pIKxcWB0OtAffY9NdJy0/ksjhBG9EOYywti2WYmtqwxypRil+x0/nBeBlJUfN7/Q9l8tRiDcqq8NghC8wqSEuyzLKXoE/+VDPkW35Vo8czsOp5PT0xN3IQ31vlld/4PqsqQWYE4WBTBO/PO6SoAfNapDxb4M9C8TiReek43pfVL3wTst8Bv4wkeFcLy7NMGVyM48LmjlyvYPIY5NTz8RGOSCAyB7kIxYEsf9SB0Sp0IMGhHIoM8/Yhso3cJNTKTLod0Uz3Htc0JAStugt6RCrnar3Yc7yUzSGDNZcvM31HsP74i5TifaJiavHOiZxjaHYn/KsLFi5/zqNRcYkzN+dYzWY1hjCSY47za9HMh89ZHxGkmrknQY4YKRp/uvg2driXwZDaIm7NUt90mXim4PGM0kYejp9SUwlIGmc5F4QO5F3tBoRb/AYsf3f6mDw7SXAMnO/OVfglvf/x3ICE7UCLkuMXZAECe8MJoJnpP+LVrNQfJjSrjmBYrVRVkS2QFrte0g2WO1SprE9KH8kkmNEmkC6Z3orDczx5jW7LSl37ZHzq1dvMYAJrEoWH21e6ug5usMSl1X6S5uBIsSrj8kOlTYgr4huPjN54aBTVYazCn6UFVrt83E81nbuyZTadrnA4=',
   salt: 'PasswordIs-password-',
+  devices: [
+    {
+      id: '6eebc499-e69e-4556-95e5-dc0300c12748',
+      status: 'Active',
+      serialNumber: '1234567890'
+    }
+  ]
 };
 const user2 = {
   sub: 'user2',
@@ -131,8 +138,14 @@ describe('When syncing userDevices materialised view', function () {
     expect(devices.getDevices.mock.calls).toHaveLength(1);
   });
   it('then it will not get information if there is no digipass associated to the user', async () => {
-    directories.getUserDevices.mockReset();
-    directories.getUserDevices.mockReturnValue(null);
+    const u1 = Object.assign({}, user1);
+    const u2 = Object.assign({}, user2);
+    u1.devices = undefined;
+    u2.devices = undefined;
+    directories.getPageOfUsers.mockReturnValue({
+      users: [u1, u2],
+      numberOfPages: 1,
+    });
 
     await syncUserDevicesView();
 
@@ -279,7 +292,6 @@ describe('When syncing userDevices materialised view', function () {
         status: 'Active',
         serialNumber: '1234567890'
       }
-
     });
     expect(userDevices.updateIndex.mock.calls[0][1]).toBe('test-index');
   });
@@ -294,7 +306,7 @@ describe('When syncing userDevices materialised view', function () {
   it('then it should pass correlationId to directories', async () => {
     await syncUserDevicesView();
 
-    expect(directories.getPageOfUsers.mock.calls[0][1]).toBe('new-uuid');
+    expect(directories.getPageOfUsers.mock.calls[0][2]).toBe('new-uuid');
   });
 
   it('then it should pass correlationId to organisations', async () => {
@@ -326,13 +338,20 @@ describe('When syncing userDevices materialised view', function () {
   });
   it('then unassigned devices are batched when updating indexes', async () => {
     const devicesResult = [];
-    for(let i = 0; i < 501; i++) {
+    for (let i = 0; i < 501; i++) {
       devicesResult[i] = {
         "serialNumber": `00000${i}`
       };
     }
     devices.getDevices.mockReturnValue(devicesResult);
-    directories.getUserDevices.mockReset()
+    const u1 = Object.assign({}, user1);
+    const u2 = Object.assign({}, user2);
+    u1.devices = undefined;
+    u2.devices = undefined;
+    directories.getPageOfUsers.mockReturnValue({
+      users: [u1, u2],
+      numberOfPages: 1,
+    });
 
     await syncUserDevicesView();
 
