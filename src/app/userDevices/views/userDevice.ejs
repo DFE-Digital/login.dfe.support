@@ -36,9 +36,25 @@
     </div>
 </div>
 
+<%
+const pages = locals.numberOfPages, page = locals.page
+const auditsOnPage = locals.audit.length, auditsAll = locals.totalNumberOfResults
+let lowerEndAudits = page === pages ? auditsAll - auditsOnPage + 1 : auditsOnPage * (page-1) + 1
+const upperEndAudits = lowerEndAudits + auditsOnPage - 1
+
+if (locals.totalNumberOfResults === 0) {
+    lowerEndAudits = 0;
+}
+%>
+
 <div class="row meta">
     <div class="col-6">
-        <p>Showing <b><%=locals.audit.length%></b> audits</p>
+        <p>Showing <%= lowerEndAudits %> - <%= upperEndAudits %> of <b><%=locals.totalNumberOfResults%></b> users</p>
+    </div>
+    <div class="col-6">
+        <% if (locals.numberOfPages > 1) { %>
+        <div class="pagination" data-current="<%=locals.page%>" data-total="<%=locals.numberOfPages%>"></div>
+        <% } %>
     </div>
 </div>
 
@@ -69,5 +85,16 @@
             <% } %>
             </tbody>
         </table>
+    </div>
+</div>
+
+<div class="row meta">
+    <div class="col-6">
+        <p>Showing <b><%=locals.audit.length%></b> audits of <%=locals.totalNumberOfResults%></p>
+    </div>
+    <div class="col-6">
+        <% if (locals.numberOfPages > 1) { %>
+        <div class="pagination" data-current="<%=locals.page%>" data-total="<%=locals.numberOfPages%>"></div>
+        <% } %>
     </div>
 </div>
