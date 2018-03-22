@@ -1,6 +1,6 @@
 const logger = require('./../../infrastructure/logger');
 const userDevices = require('./../../infrastructure/userDevices');
-const { getPageOfUsers, getUserDevices } = require('./../../infrastructure/directories');
+const { getPageOfUsers } = require('./../../infrastructure/directories');
 const organisations = require('./../../infrastructure/organisations');
 const audit = require('./../../infrastructure/audit');
 const uuid = require('uuid/v4');
@@ -9,7 +9,7 @@ const { flatten, chunk } = require('lodash');
 
 const buildUser = async (user, allDevices, correlationId) => {
 
-  const userDevices = await getUserDevices(user.sub, correlationId);
+  const userDevices = user.devices;
 
   if (!userDevices || userDevices.length === 0) {
     return null;
@@ -85,7 +85,7 @@ const syncUserDevicesView = async () => {
   let pageNumber = 1;
   while (hasMorePages) {
     logger.info(`Syncing page ${pageNumber} of userDevices`);
-    const pageOfUsers = await getPageOfUsers(pageNumber, correlationId);
+    const pageOfUsers = await getPageOfUsers(pageNumber, true, correlationId);
     if (pageOfUsers.users) {
       const mappedUsers = await Promise.all(pageOfUsers.users.map(async (user) => {
         return await buildUser(user, allDevices, correlationId);
