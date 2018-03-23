@@ -20,7 +20,7 @@ const postConfirmAssignToken = async (req, res) => {
   }
 
   res.flash('info', `New token assigned Token ${req.session.digipassSerialNumberToAssign} has been assigned to this user.`);
-  return res.redirect(`/users/${req.body.userId}`);
+  return res.redirect(`/users/${req.body.userId}/services`);
 };
 
 module.exports = postConfirmAssignToken;
