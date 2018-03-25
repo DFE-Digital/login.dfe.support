@@ -124,6 +124,6 @@ describe('When reactivating an user account', () => {
 
     expect(res.flash.mock.calls).toHaveLength(1);
     expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe('Reactivate complete - The account has been reactivated')
+    expect(res.flash.mock.calls[0][1]).toBe('The account has been reactivated')
   });
 });
