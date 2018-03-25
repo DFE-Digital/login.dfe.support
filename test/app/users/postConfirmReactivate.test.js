@@ -31,6 +31,7 @@ describe('When reactivating an user account', () => {
 
     res = {
       redirect: jest.fn(),
+      flash: jest.fn(),
     };
 
     logger.audit.mockReset();
@@ -116,5 +117,13 @@ describe('When reactivating an user account', () => {
         }
       ],
     });
+  });
+
+  it('then a flash message is shown to the user', async () => {
+    await postConfirmReactivate(req, res);
+
+    expect(res.flash.mock.calls).toHaveLength(1);
+    expect(res.flash.mock.calls[0][0]).toBe('info');
+    expect(res.flash.mock.calls[0][1]).toBe('Reactivate complete - The account has been reactivated')
   });
 });
