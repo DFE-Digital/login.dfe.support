@@ -88,10 +88,15 @@ const update = async (updates) => {
 
   return Promise.resolve();
 };
+const getStatsForUser = async (userId) => {
+  let stats = userStats.find(u => u.userId.toLowerCase() === userId.toLowerCase());
+  return Promise.resolve(stats);
+};
 
 module.exports = {
   init,
   getDateOfLastAuditRecord,
   setDateOfLastAuditRecord,
   update,
+  getStatsForUser,
 };
