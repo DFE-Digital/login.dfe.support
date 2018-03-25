@@ -14,6 +14,14 @@ describe('when syncing audit cache', () => {
 
     audit.cache.setDateOfLastAuditRecord.mockReset();
 
+    audit.cache.getStatsForUser.mockReset().mockReturnValue({
+      userId: 'user1',
+      loginsInPast12Months: [
+        { timestamp: new Date(2018, 3, 18) },
+      ],
+      lastLogin: new Date(2018, 3, 18),
+    });
+
     audit.getAllAuditsSince.mockReset().mockReturnValue([]);
   });
 
@@ -62,7 +70,10 @@ describe('when syncing audit cache', () => {
     expect(audit.cache.update.mock.calls[0][0]).toHaveLength(1);
     expect(audit.cache.update.mock.calls[0][0][0]).toEqual({
       userId: 'user1',
-      loginsInPast12Months: [{ timestamp: new Date(2018, 3, 24) }],
+      loginsInPast12Months: [
+        { timestamp: new Date(2018, 3, 18) },
+        { timestamp: new Date(2018, 3, 24) },
+      ],
       lastLogin: new Date(2018, 3, 24),
     });
   });
@@ -89,6 +100,7 @@ describe('when syncing audit cache', () => {
     expect(audit.cache.update.mock.calls[0][0][0]).toEqual({
       userId: 'user1',
       loginsInPast12Months: [
+        { timestamp: new Date(2018, 3, 18) },
         { timestamp: new Date(2018, 3, 24) },
         { timestamp: new Date(2018, 3, 25) },
       ],
@@ -120,5 +132,51 @@ describe('when syncing audit cache', () => {
 
     expect(audit.cache.setDateOfLastAuditRecord.mock.calls).toHaveLength(1);
     expect(audit.cache.setDateOfLastAuditRecord.mock.calls[0][0]).toEqual(new Date(2018, 3, 26));
+  });
+
+  it('then it should get current stat of user for first update', async () => {
+    const batch1 = [{
+      userId: 'user1',
+      type: 'sign-in',
+      subType: 'username-password',
+      timestamp: new Date(2018, 3, 24)
+    }];
+    audit.getAllAuditsSince.mockImplementationOnce(() => batch1)
+      .mockImplementation(() => []);
+
+    await syncAuditCache();
+
+    expect(audit.cache.getStatsForUser.mock.calls).toHaveLength(1);
+    expect(audit.cache.getStatsForUser.mock.calls[0][0]).toBe('user1');
+  });
+
+  it('then it should create clean update for user if none in cache', async () => {
+    const batch1 = [{
+      userId: 'user1',
+      type: 'sign-in',
+      subType: 'username-password',
+      timestamp: new Date(2018, 3, 24)
+    }, {
+      userId: 'user1',
+      type: 'sign-in',
+      subType: 'username-password',
+      timestamp: new Date(2018, 3, 25)
+    }];
+    audit.getAllAuditsSince.mockImplementationOnce(() => batch1)
+      .mockImplementation(() => []);
+    audit.cache.getStatsForUser.mockReturnValue(null);
+
+    await syncAuditCache();
+
+    expect(audit.cache.update.mock.calls).toHaveLength(1);
+    expect(audit.cache.update.mock.calls[0][0]).toHaveLength(1);
+    expect(audit.cache.update.mock.calls[0][0][0]).toEqual({
+      userId: 'user1',
+      loginsInPast12Months: [
+        { timestamp: new Date(2018, 3, 24) },
+        { timestamp: new Date(2018, 3, 25) },
+      ],
+      lastLogin: new Date(2018, 3, 25),
+    });
   });
 });

@@ -1,7 +1,7 @@
 const logger = require('./../../infrastructure/logger');
 const { getAllAuditsSince, cache } = require('./../../infrastructure/audit');
 
-const addOrUpdateForBatch = (auditRecord, updates) => {
+const addOrUpdateForBatch = async (auditRecord, updates) => {
   if (!auditRecord.userId) {
     return;
   }
@@ -9,11 +9,14 @@ const addOrUpdateForBatch = (auditRecord, updates) => {
   let update = updates.find(u => u.userId.toLowerCase() === auditRecord.userId.toLowerCase());
   let requiresAdding = false;
   if (!update) {
-    update = {
-      userId: auditRecord.userId,
-      loginsInPast12Months: [],
-      lastLogin: undefined,
-    };
+    update = await cache.getStatsForUser(auditRecord.userId);
+    if (!update) {
+      update = {
+        userId: auditRecord.userId,
+        loginsInPast12Months: [],
+        lastLogin: undefined,
+      };
+    }
     requiresAdding = true;
   }
 
@@ -55,9 +58,10 @@ const syncAuditCache = async () => {
     if (batch.length > 0) {
       logger.info(`Parsing batch of ${batch.length} for updates`);
       const updates = [];
-      batch.forEach((auditRecord) => {
-        addOrUpdateForBatch(auditRecord, updates);
-      });
+      for (let i = 0; i < batch.length; i += 1) {
+        const auditRecord = batch[i];
+        await addOrUpdateForBatch(auditRecord, updates);
+      }
       await cache.update(updates);
       logger.info(`Updated cache with ${updates.length} updates`);
 
