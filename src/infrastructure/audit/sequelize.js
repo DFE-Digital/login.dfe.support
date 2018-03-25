@@ -52,6 +52,21 @@ const getUserName = async (userId) => {
 };
 
 
+const getAllAuditsSince = async (sinceDate) => {
+  const auditLogs = await logs.findAll({
+    where: {
+      createdAt: {
+        [Op.gt]: sinceDate,
+      },
+    },
+    limit: 1000,
+    order: [['createdAt', 'ASC']],
+    include: ['metaData'],
+  });
+
+  return auditLogs.map(mapAuditEntity);
+};
+
 const getUserAudit = async (userId, pageNumber) => {
   return getPageOfAudits({
     userId: {
@@ -193,6 +208,7 @@ const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
 };
 
 module.exports = {
+  getAllAuditsSince,
   getUserAudit,
   getUserLoginAuditsSince,
   getUserLoginAuditsForService,

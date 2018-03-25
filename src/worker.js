@@ -5,7 +5,8 @@ const http = require('http');
 const https = require('https');
 const KeepAliveAgent = require('agentkeepalive');
 
-const { syncUsersView, syncUserDevicesView } = require('./app/syncViews');
+const audit = require('./infrastructure/audit');
+const { syncUsersView, syncUserDevicesView, syncAuditCache } = require('./app/syncViews');
 const { tidyIndexes } = require('./app/tidyIndexes');
 
 http.GlobalAgent = new KeepAliveAgent({
@@ -21,11 +22,20 @@ https.GlobalAgent = new KeepAliveAgent({
   keepAliveTimeout: config.hostingEnvironment.agentKeepAlive.keepAliveTimeout,
 });
 
-const userSchedule = schedule.scheduleJob(config.schedules.users, syncUsersView);
-logger.info(`first invocation of user schedule will be ${userSchedule.nextInvocation()}`);
+logger.info('Initialising audit');
+audit.cache.init().then(() => {
+  const auditCacheSchedule = schedule.scheduleJob(config.schedules.auditCache, syncAuditCache);
+  logger.info(`first invocation of audit cache schedule will be ${auditCacheSchedule.nextInvocation()}`);
 
-const userDeviceSchedule = schedule.scheduleJob(config.schedules.userDevices, syncUserDevicesView);
-logger.info(`first invocation of userDevice schedule will be ${userDeviceSchedule.nextInvocation()}`);
+  const userSchedule = schedule.scheduleJob(config.schedules.users, syncUsersView);
+  logger.info(`first invocation of user schedule will be ${userSchedule.nextInvocation()}`);
 
-const indexTidySchedule = schedule.scheduleJob(config.schedules.indexTidy, tidyIndexes);
-logger.info(`first invocation of index tidy schedule will be ${indexTidySchedule.nextInvocation()}`);
+  const userDeviceSchedule = schedule.scheduleJob(config.schedules.userDevices, syncUserDevicesView);
+  logger.info(`first invocation of userDevice schedule will be ${userDeviceSchedule.nextInvocation()}`);
+
+  const indexTidySchedule = schedule.scheduleJob(config.schedules.indexTidy, tidyIndexes);
+  logger.info(`first invocation of index tidy schedule will be ${indexTidySchedule.nextInvocation()}`);
+}).catch((e) => {
+  logger.error(`Error initialising audit cache - ${e.message}. Exiting`);
+  process.exit(1);
+});

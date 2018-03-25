@@ -9,4 +9,6 @@ if (config.audit.type === 'static') {
   throw new Error(`Invalid audit type ${config.audit.type} in config`);
 }
 
+adapter.cache = require('./cache');
+
 module.exports = adapter;
