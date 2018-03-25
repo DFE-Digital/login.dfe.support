@@ -37,7 +37,7 @@ const postConfirmReactivate = async (req, res) => {
     ],
   });
 
-  res.flash('info', 'Reactivate complete - The account has been reactivated');
+  res.flash('info', 'The account has been reactivated');
   res.redirect('services');
 };
 
