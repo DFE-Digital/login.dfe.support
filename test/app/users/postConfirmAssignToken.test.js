@@ -41,7 +41,7 @@ describe('When confirming assign digipass to user', () => {
     await postConfirmAssignToken(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('/users/123EDC');
+    expect(res.redirect.mock.calls[0][0]).toBe('/users/123EDC/services');
     expect(res.flash.mock.calls).toHaveLength(1);
     expect(res.flash.mock.calls[0][0]).toBe('info');
   });
