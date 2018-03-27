@@ -3,6 +3,7 @@ jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/users');
 
+const { getUser } = require('./../../../src/infrastructure/directories');
 const { getServicesByUserId } = require('./../../../src/infrastructure/organisations');
 const users = require('./../../../src/infrastructure/users');
 const { getUserDetails } = require('./../../../src/app/users/utils');
@@ -30,6 +31,15 @@ describe('When getting user details', () => {
       },
     });
 
+    getUser.mockReset();
+    getUser.mockReturnValue({
+      id: 'user1',
+      given_name: 'Albus',
+      family_name: 'Dumbledore',
+      email: 'headmaster@hogwarts.com',
+      status: 1
+    });
+
     req = {
       params: {
         uid: 'user1',
@@ -54,6 +64,7 @@ describe('When getting user details', () => {
       email: 'headmaster@hogwarts.com',
       lastLogin: new Date('2017-10-24T12:35:51.633Z'),
       status: {
+        id: 1,
         description: 'Active',
         changedOn: new Date("2017-10-24T12:35:51.633Z"),
       },
