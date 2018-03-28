@@ -3,6 +3,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/users');
 jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/organisations');
+jest.mock('./../../../src/infrastructure/audit/cache');
 jest.mock('./../../../src/infrastructure/audit');
 jest.mock('uuid/v4');
 
@@ -67,23 +68,12 @@ describe('When syncing users materialised view', function () {
       }
     }]);
 
-    audit.getUserLoginAuditsSince.mockReset();
-    audit.getUserLoginAuditsSince.mockReturnValue([
-      {
-        type: 'sign-in',
-        subType: 'username-password',
-        success: true,
-        userId: 'user1',
-        userEmail: 'user.one@unit.test',
-        level: 'audit',
-        message: 'Successful login attempt for user.one@unit.test (id: user1)',
-        timestamp: '2017-10-24T12:35:51.633Z',
-      },
-    ]);
-
-    audit.getUserChangeHistory.mockReset();
-    audit.getUserChangeHistory.mockReturnValue({
-      audits: [],
+    audit.cache.getStatsForUser.mockReset().mockReturnValue({
+      lastLogin: new Date('2017-10-24T12:35:51.633Z'),
+      loginsInPast12Months: [
+        { timestamp: new Date('2017-10-24T12:35:51.633Z') },
+      ],
+      lastStatusChange: undefined,
     });
 
     uuid.mockImplementation(() => {

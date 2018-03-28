@@ -2,7 +2,7 @@ const logger = require('./../../infrastructure/logger');
 const userDevices = require('./../../infrastructure/userDevices');
 const { getPageOfUsers } = require('./../../infrastructure/directories');
 const organisations = require('./../../infrastructure/organisations');
-const audit = require('./../../infrastructure/audit');
+const { cache: auditCache } = require('./../../infrastructure/audit');
 const uuid = require('uuid/v4');
 const devices = require('./../../infrastructure/devices');
 const { flatten, chunk } = require('lodash');
@@ -22,19 +22,16 @@ const buildUser = async (user, allDevices, correlationId) => {
 
   // Update with last login
   let successfulLoginAudit = null;
-  let hasMoreAuditPages = true;
-  let pageNumber = 1;
-  while (hasMoreAuditPages && !successfulLoginAudit) {
-    const pageOfAudit = await  audit.getUserAudit(user.sub, pageNumber);
-    successfulLoginAudit = pageOfAudit.audits.find(a => a.type === 'sign-in' && a.subType === 'username-password' && a.success);
-
-    pageNumber++;
-    hasMoreAuditPages = pageNumber <= pageOfAudit.numberOfPages;
+  const userAuditDetails = await auditCache.getStatsForUser(user.sub);
+  if (userAuditDetails && userAuditDetails.lastLogin) {
+    successfulLoginAudit = userAuditDetails.lastLogin
   }
 
   return userDevices.map((device) => {
 
-    if(allDevices.find((aDevice) => {return aDevice.serialNumber === device.serialNumber })) {
+    if (allDevices.find((aDevice) => {
+      return aDevice.serialNumber === device.serialNumber
+    })) {
       allDevices.find((aDevice) => {
         return aDevice.serialNumber === device.serialNumber
       }).isAssigned = true;
@@ -45,7 +42,7 @@ const buildUser = async (user, allDevices, correlationId) => {
       name: `${user.given_name} ${user.family_name}`,
       email: user.email,
       organisation: orgServiceMapping && orgServiceMapping.length > 0 ? orgServiceMapping[0].organisation : null,
-      lastLogin: successfulLoginAudit ? new Date(successfulLoginAudit.timestamp).getTime() : null,
+      lastLogin: successfulLoginAudit ? successfulLoginAudit.getTime() : null,
       device: {
         id: device.id,
         serialNumber: device.serialNumber,
@@ -112,7 +109,7 @@ const syncUserDevicesView = async () => {
 
     if (devicesWithoutUsers && devicesWithoutUsers.length > 0) {
       const unassignedDeviceBatches = chunk(devicesWithoutUsers, 500);
-      for(let i = 0; i < unassignedDeviceBatches.length; i += 1) {
+      for (let i = 0; i < unassignedDeviceBatches.length; i += 1) {
         await userDevices.updateIndex(unassignedDeviceBatches[i], newIndexName);
       }
     }

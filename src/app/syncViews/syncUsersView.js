@@ -2,24 +2,26 @@ const logger = require('./../../infrastructure/logger');
 const users = require('./../../infrastructure/users');
 const directories = require('./../../infrastructure/directories');
 const organisations = require('./../../infrastructure/organisations');
-const { getUserLoginAuditsSince, getUserChangeHistory } = require('./../../infrastructure/audit');
-const moment = require('moment');
+const { cache: auditCache } = require('./../../infrastructure/audit');
 const uuid = require('uuid/v4');
-const { mapUserStatus, auditSorter, auditDateFixer, patchChangeHistory } = require('./../../infrastructure/utils');
+const { mapUserStatus } = require('./../../infrastructure/utils');
 
 const buildUser = async (user, correlationId) => {
   // Update with orgs
   const orgServiceMapping = await organisations.getUserOrganisations(user.sub, correlationId);
 
-  // Update with last login
-  const logins = (await getUserLoginAuditsSince(user.sub, moment().subtract(1, 'years').toDate())).map(auditDateFixer);
-  const successfulLogins = logins.filter(x => x.success).sort(auditSorter);
+  let successfulLogins;
+  let statusLastChangedOn;
+  let lastLogin;
+  const userAuditDetails = await auditCache.getStatsForUser(user.sub);
+  if (userAuditDetails) {
+    const now = new Date();
+    const twelveMonthsAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
 
-  // change history
-  const userChangeHistory = await getUserChangeHistory(user.sub, 1);
-  patchChangeHistory(userChangeHistory);
-  const statusChanges = userChangeHistory.audits.filter(x => x.editedFields && x.editedFields.find(y => y.name === 'status')).map(auditDateFixer).sort(auditSorter);
-  const statusLastChangedOn = statusChanges && statusChanges.length > 0 ? statusChanges[0].timestamp.getTime() : null;
+    lastLogin = userAuditDetails.lastLogin ? userAuditDetails.lastLogin.getTime() : null;
+    statusLastChangedOn = userAuditDetails.lastStatusChange ? userAuditDetails.lastStatusChange.getTime() : null;
+    successfulLogins = userAuditDetails.loginsInPast12Months.filter(x => x.timestamp.getTime() >= twelveMonthsAgo.getTime())
+  }
 
   return {
     id: user.sub,
@@ -28,7 +30,7 @@ const buildUser = async (user, correlationId) => {
     lastName: user.family_name,
     email: user.email,
     organisation: orgServiceMapping && orgServiceMapping.length > 0 ? orgServiceMapping[0].organisation : null,
-    lastLogin: successfulLogins && successfulLogins.length > 0 ? successfulLogins[0].timestamp.getTime() : null,
+    lastLogin: lastLogin,
     successfulLoginsInPast12Months: successfulLogins ? successfulLogins.length : 0,
     status: mapUserStatus(user.status, statusLastChangedOn),
   };
