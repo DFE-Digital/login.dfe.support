@@ -85,7 +85,6 @@ const getUserDetails = async (req) => {
     };
   } else {
     const user = await users.getById(uid);
-    getUser(uid);
     const serviceDetails = await getServicesByUserId(uid);
 
     const ktsDetails = serviceDetails ? serviceDetails.find((c) => c.id.toLowerCase() === config.serviceMapping.key2SuccessServiceId.toLowerCase()) : undefined;
