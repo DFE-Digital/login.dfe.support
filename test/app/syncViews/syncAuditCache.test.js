@@ -179,4 +179,37 @@ describe('when syncing audit cache', () => {
       lastLogin: new Date(2018, 3, 25),
     });
   });
+
+  it('then it should create updates for any audits that are status updates', async () => {
+    const batch1 = [{
+      userId: 'user1',
+      type: 'sign-in',
+      subType: 'username-password',
+      timestamp: new Date(2018, 3, 24)
+    },{
+      editedUser: 'user1',
+      type: 'support',
+      subType: 'user-edit',
+      timestamp: new Date(2018, 3, 20),
+      editedFields: [
+        { name: 'status' }
+      ]
+    }];
+    audit.getAllAuditsSince.mockImplementationOnce(() => batch1)
+      .mockImplementation(() => []);
+
+    await syncAuditCache();
+
+    expect(audit.cache.update.mock.calls).toHaveLength(1);
+    expect(audit.cache.update.mock.calls[0][0]).toHaveLength(1);
+    expect(audit.cache.update.mock.calls[0][0][0]).toEqual({
+      userId: 'user1',
+      loginsInPast12Months: [
+        { timestamp: new Date(2018, 3, 18) },
+        { timestamp: new Date(2018, 3, 24) },
+      ],
+      lastLogin: new Date(2018, 3, 24),
+      lastStatusChange: new Date(2018, 3, 20),
+    });
+  });
 });

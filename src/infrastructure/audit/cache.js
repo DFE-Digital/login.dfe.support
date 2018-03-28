@@ -11,12 +11,13 @@ const readUserStatsFromStore = async () => {
     const q = queue(async (key) => {
       const hash = await redis.hgetall(key);
       const user = {
-        lastLogin: new Date(parseInt(hash.lastLogin)),
+        lastLogin: hash.lastLogin > 0 ? new Date(parseInt(hash.lastLogin)) : undefined,
         loginsInPast12Months: JSON.parse(hash.loginsInPast12Months).map((login) => {
           const mapped = Object.assign({}, login);
           mapped.timestamp = new Date(login.timestamp);
           return mapped;
         }),
+        lastStatusChange: hash.lastStatusChange > 0 ? new Date(parseInt(hash.lastStatusChange)) : undefined
       };
       userStats.push(user);
     }, 1);
@@ -73,7 +74,8 @@ const update = async (updates) => {
     await redis.hmset(`User_${update.userId.toLowerCase()}`, {
       userId: update.userId,
       loginsInPast12Months: JSON.stringify(loginsInPast12Months),
-      lastLogin: update.lastLogin.getTime(),
+      lastLogin: update.lastLogin ? update.lastLogin.getTime() : 0,
+      lastStatusChange: update.lastStatusChange ? update.lastStatusChange.getTime() : 0,
     });
 
     // Update in memory
@@ -84,6 +86,7 @@ const update = async (updates) => {
     }
     stats.loginsInPast12Months = update.loginsInPast12Months;
     stats.lastLogin = update.lastLogin;
+    stats.lastStatusChange = update.lastStatusChange;
   }
 
   return Promise.resolve();

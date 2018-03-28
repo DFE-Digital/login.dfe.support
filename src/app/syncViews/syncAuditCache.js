@@ -1,52 +1,64 @@
 const logger = require('./../../infrastructure/logger');
 const { getAllAuditsSince, cache } = require('./../../infrastructure/audit');
 
-const addOrUpdateForBatch = async (auditRecord, updates) => {
-  if (!auditRecord.userId) {
+const getOrAddUpdate = async (userId, updates) => {
+  let update = updates.find(u => u.userId.toLowerCase() === userId.toLowerCase());
+  if (!update) {
+    update = await cache.getStatsForUser(userId);
+    if (!update) {
+      update = {
+        userId: userId,
+        loginsInPast12Months: [],
+        lastLogin: undefined,
+        lastStatusChange: undefined,
+      };
+    }
+    updates.push(update);
+  }
+  return update;
+};
+const addOrUpdateSigninDetails = async (auditRecord, updates) => {
+  if (!auditRecord.userId || auditRecord.type !== 'sign-in' || auditRecord.subType !== 'username-password') {
     return;
   }
 
-  let update = updates.find(u => u.userId.toLowerCase() === auditRecord.userId.toLowerCase());
-  let requiresAdding = false;
-  if (!update) {
-    update = await cache.getStatsForUser(auditRecord.userId);
-    if (!update) {
-      update = {
-        userId: auditRecord.userId,
-        loginsInPast12Months: [],
-        lastLogin: undefined,
-      };
-    }
-    requiresAdding = true;
+  const update = await getOrAddUpdate(auditRecord.userId, updates);
+
+  if (!update.lastLogin || auditRecord.timestamp.getTime() > update.lastLogin.getTime()) {
+    update.lastLogin = auditRecord.timestamp;
   }
 
-  let hasBeenUpdated = false;
-
-  // Update with login details
-  if (auditRecord.type === 'sign-in' && auditRecord.subType === 'username-password') {
-    if (!update.lastLogin || auditRecord.timestamp.getTime() > update.lastLogin.getTime()) {
-      update.lastLogin = auditRecord.timestamp;
-    }
-
-    update.loginsInPast12Months.push({
-      timestamp: auditRecord.timestamp,
-    });
-
-    hasBeenUpdated = true;
+  update.loginsInPast12Months.push({
+    timestamp: auditRecord.timestamp,
+  });
+};
+const addOrUpdateChangeDetails = async (auditRecord, updates) => {
+  if (auditRecord.type !== 'support' || auditRecord.subType !== 'user-edit'
+    || !auditRecord.editedUser || ! auditRecord.editedFields.find(y => y.name === 'status')) {
+    return;
   }
 
-  // Tidy record of old data
+  const update = await getOrAddUpdate(auditRecord.editedUser, updates);
+
+  if (!update.lastStatusChange || auditRecord.timestamp.getTime() > update.lastStatusChange.getTime()) {
+    update.lastStatusChange = auditRecord.timestamp;
+  }
+};
+const addOrUpdateForBatch = async (auditRecord, updates) => {
+  await addOrUpdateSigninDetails(auditRecord, updates);
+  await addOrUpdateChangeDetails(auditRecord, updates);
+};
+const tidyUpdatesOfOldData = (updates) => {
+  if (!updates || updates.length === 0) {
+    return;
+  }
+
   const now = new Date();
   const twelveMonthsAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
-  const loginsInPast12Months = update.loginsInPast12Months.filter(x => x.timestamp.getTime() >= twelveMonthsAgo.getTime());
-  if (loginsInPast12Months.length !== update.loginsInPast12Months.length) {
+  updates.forEach((update) => {
+    const loginsInPast12Months = update.loginsInPast12Months.filter(x => x.timestamp.getTime() >= twelveMonthsAgo.getTime());
     update.loginsInPast12Months = loginsInPast12Months;
-    hasBeenUpdated = true;
-  }
-
-  if (hasBeenUpdated && requiresAdding) {
-    updates.push(update);
-  }
+  });
 };
 
 const syncAuditCache = async () => {
@@ -62,11 +74,12 @@ const syncAuditCache = async () => {
         const auditRecord = batch[i];
         await addOrUpdateForBatch(auditRecord, updates);
       }
+      tidyUpdatesOfOldData(updates);
       await cache.update(updates);
       logger.info(`Updated cache with ${updates.length} updates`);
 
       dateOfLastAuditRecord = batch[batch.length - 1].timestamp;
-      cache.setDateOfLastAuditRecord(dateOfLastAuditRecord);
+      await cache.setDateOfLastAuditRecord(dateOfLastAuditRecord);
       logger.info(`Updated cache with last audit date of ${dateOfLastAuditRecord}`);
     } else {
       hasMoreAuditRecords = false;
