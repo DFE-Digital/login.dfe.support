@@ -9,6 +9,8 @@ const loggerMockFactory = () => {
 
 const configMockFactory = (customConfig) => {
   return Object.assign({
+    hostingEnvironment: {
+    },
     cache: {
       type: 'static',
     },
