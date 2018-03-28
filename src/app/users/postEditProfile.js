@@ -1,6 +1,6 @@
 const logger = require('./../../infrastructure/logger');
 const { sendResult } = require('./../../infrastructure/utils');
-const { getUserDetails } = require('./utils');
+const { getUserDetails, waitForIndexToUpdate } = require('./utils');
 const { updateUser } = require('./../../infrastructure/directories');
 const { putSingleServiceIdentifierForUser } = require('./../../infrastructure/organisations');
 const { getById, updateIndex } = require('./../../infrastructure/users');
@@ -34,6 +34,8 @@ const updateUserIndex = async (uid, firstName, lastName) => {
     user.lastLogin = user.lastLogin.getTime();
   }
   await updateIndex([user]);
+
+  await waitForIndexToUpdate(uid, (updated) => updated.firstName === firstName && updated.lastName === lastName);
 };
 
 const auditEdit = (req, user) => {
@@ -80,17 +82,17 @@ const postEditProfile = async (req, res) => {
   const uid = req.params.uid;
 
   //todo k2s-id set id
-  if(req.body.orgId && req.body.serviceId) {
-    const identifierResult = await putSingleServiceIdentifierForUser(uid,req.body.serviceId, req.body.orgId, req.body.ktsId, req.id)
+  if (req.body.orgId && req.body.serviceId) {
+    const identifierResult = await putSingleServiceIdentifierForUser(uid, req.body.serviceId, req.body.orgId, req.body.ktsId, req.id)
 
-    if(!identifierResult) {
+    if (!identifierResult) {
       sendResult(req, res, 'users/views/editProfile', {
         csrfToken: req.csrfToken(),
         user,
-          isValid : false,
-          validationMessages : {
-            ktsId: 'Key to Success ID is already in use',
-          },
+        isValid: false,
+        validationMessages: {
+          ktsId: 'Key to Success ID is already in use',
+        },
       });
       return;
     }
