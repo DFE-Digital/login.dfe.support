@@ -3,6 +3,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/userDevices');
 jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/organisations');
+jest.mock('./../../../src/infrastructure/audit/cache');
 jest.mock('./../../../src/infrastructure/audit');
 jest.mock('./../../../src/infrastructure/devices');
 jest.mock('uuid/v4');
@@ -79,19 +80,12 @@ describe('When syncing userDevices materialised view', function () {
       }
     }]);
 
-    audit.getUserAudit.mockReset();
-    audit.getUserAudit.mockReturnValue({
-      audits: [{
-        type: 'sign-in',
-        subType: 'username-password',
-        success: true,
-        userId: 'user1',
-        userEmail: 'user.one@unit.test',
-        level: 'audit',
-        message: 'Successful login attempt for user.one@unit.test (id: user1)',
-        timestamp: '2017-10-24T12:35:51.633Z',
-      }],
-      numberOfPages: 1,
+    audit.cache.getStatsForUser.mockReset().mockReturnValue({
+      lastLogin: new Date('2017-10-24T12:35:51.633Z'),
+      loginsInPast12Months: [
+        { timestamp: new Date('2017-10-24T12:35:51.633Z') },
+      ],
+      lastStatusChange: undefined,
     });
 
     devices.getDevices.mockReset();
@@ -156,121 +150,6 @@ describe('When syncing userDevices materialised view', function () {
 
     expect(organisations.getUserOrganisations.mock.calls).toHaveLength(1);
     expect(organisations.getUserOrganisations.mock.calls[0][0]).toBe(user1.sub);
-  });
-
-  it('then it should get audits for user until a successful login is found', async () => {
-    directories.getPageOfUsers.mockReset();
-    directories.getPageOfUsers.mockReturnValue({
-      users: [user1],
-      numberOfPages: 1,
-    });
-
-    audit.getUserAudit.mockReset();
-    audit.getUserAudit.mockImplementation((userId, pageNumber) => {
-      if (pageNumber === 1) {
-        return {
-          audits: [{
-            'type': 'change-password',
-            'success': true,
-            'userId': 'user1',
-            'level': 'audit',
-            'message': 'Successfully changed password for user.one@unit.test (id: user1)',
-            'timestamp': '2017-11-02T07:30:18.987Z'
-          }],
-          numberOfPages: 3,
-        };
-      }
-      if (pageNumber === 2) {
-        return {
-          audits: [{
-            type: 'sign-in',
-            subType: 'username-password',
-            success: true,
-            userId: 'user1',
-            userEmail: 'user.one@unit.test',
-            level: 'audit',
-            message: 'Successful login attempt for user.one@unit.test (id: user1)',
-            timestamp: '2017-10-24T12:35:51.633Z'
-          }],
-          numberOfPages: 3,
-        };
-      }
-      return {
-        audits: [{
-          'type': 'change-password',
-          'success': true,
-          'userId': 'user1',
-          'level': 'audit',
-          'message': 'Successfully changed password for user.one@unit.test (id: user1)',
-          'timestamp': '2017-11-02T07:30:18.987Z'
-        }],
-        numberOfPages: 3,
-      };
-    });
-
-    await syncUserDevicesView();
-
-    expect(audit.getUserAudit.mock.calls).toHaveLength(2);
-    expect(audit.getUserAudit.mock.calls[0][1]).toBe(1);
-    expect(audit.getUserAudit.mock.calls[1][1]).toBe(2);
-  });
-
-  it('then it should get audits for user until no more pages are available if not successful login found', async () => {
-    directories.getPageOfUsers.mockReset();
-    directories.getPageOfUsers.mockReturnValue({
-      users: [user1],
-      numberOfPages: 1,
-    });
-
-    audit.getUserAudit.mockReset();
-    audit.getUserAudit.mockImplementation((userId, pageNumber) => {
-      if (pageNumber === 1) {
-        return {
-          audits: [{
-            'type': 'change-password',
-            'success': true,
-            'userId': 'user1',
-            'level': 'audit',
-            'message': 'Successfully changed password for user.one@unit.test (id: user1)',
-            'timestamp': '2017-11-02T07:30:18.987Z'
-          }],
-          numberOfPages: 3,
-        };
-      }
-      if (pageNumber === 2) {
-        return {
-          audits: [{
-            type: 'sign-in',
-            subType: 'username-password',
-            success: false,
-            userId: 'user1',
-            userEmail: 'user.one@unit.test',
-            level: 'audit',
-            message: 'Successful login attempt for user.one@unit.test (id: user1)',
-            timestamp: '2017-10-24T12:35:51.633Z'
-          }],
-          numberOfPages: 3,
-        };
-      }
-      return {
-        audits: [{
-          'type': 'change-password',
-          'success': true,
-          'userId': 'user1',
-          'level': 'audit',
-          'message': 'Successfully changed password for user.one@unit.test (id: user1)',
-          'timestamp': '2017-11-02T07:30:18.987Z'
-        }],
-        numberOfPages: 3,
-      };
-    });
-
-    await syncUserDevicesView();
-
-    expect(audit.getUserAudit.mock.calls).toHaveLength(3);
-    expect(audit.getUserAudit.mock.calls[0][1]).toBe(1);
-    expect(audit.getUserAudit.mock.calls[1][1]).toBe(2);
-    expect(audit.getUserAudit.mock.calls[2][1]).toBe(3);
   });
 
   it('then it should update the new index with users', async () => {
