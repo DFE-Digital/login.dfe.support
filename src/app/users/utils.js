@@ -104,11 +104,7 @@ const getUserDetails = async (req) => {
       lastName: user.family_name,
       email: user.email,
       lastLogin: userAuditDetails.lastLogin,
-      status: {
-        id: user.status,
-        changedOn: userAuditDetails.status.changedOn,
-        description: userAuditDetails.status.description,
-      },
+      status: mapUserStatus(user.status, userAuditDetails.status.changedOn),
       loginsInPast12Months: {
         successful: userAuditDetails.successfulLoginsInPast12Months,
       },
