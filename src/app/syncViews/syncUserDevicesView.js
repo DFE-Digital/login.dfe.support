@@ -34,9 +34,11 @@ const buildUser = async (user, allDevices, correlationId) => {
 
   return userDevices.map((device) => {
 
-    allDevices.find((aDevice) => {
-      return aDevice.serialNumber === device.serialNumber
-    }).isAssigned = true;
+    if(allDevices.find((aDevice) => {return aDevice.serialNumber === device.serialNumber })) {
+      allDevices.find((aDevice) => {
+        return aDevice.serialNumber === device.serialNumber
+      }).isAssigned = true;
+    }
 
     return {
       id: user.sub,
@@ -119,7 +121,7 @@ const syncUserDevicesView = async () => {
   await userDevices.updateActiveIndex(newIndexName);
   logger.info(`Pointed user index to ${newIndexName}`);
 
-  logger.info('Finished syncing users view');
+  logger.info('Finished syncing userdevice view');
 };
 
 
