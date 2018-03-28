@@ -1,26 +1,18 @@
+<% if (locals.flash.info) { %>
+<div class="row">
+    <div class="col-12">
+        <div class="notification notification-success">
+            <%=locals.flash.info%>
+        </div>
+    </div>
+</div>
+<% } %>
 
 <div class="row">
     <div class="col-8">
         <h1 class="heading-xlarge">
             Edit a profile
         </h1>
-        <% if (locals.flash.info) { %>
-        <div class="notification notification-success">
-            <%=locals.flash.info%>
-        </div>
-        <% } %>
-    </div>
-    <div class="col-4">
-        <aside>
-            <h2 class="heading-medium">Actions</h2>
-            <ul class="list">
-                <%if(locals.user.status.id === 0) {%>
-                <li><a href="confirm-reactivation">Reactivate user</a></li>
-                <%} else {%>
-                <li><a href="confirm-deactivation">Deactivate user</a></li>
-                <%}%>
-            </ul>
-        </aside>
     </div>
 </div>
 <div class="row">
