@@ -5,6 +5,12 @@ const { getServicesByUserId } = require('./../../infrastructure/organisations');
 const { mapUserStatus } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
 
+const delay = async (milliseconds) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+};
+
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
 
@@ -146,8 +152,21 @@ const createDevice = async (req) => {
   return result.success;
 };
 
+const waitForIndexToUpdate = async (uid, updatedCheck) => {
+  const abadonTime = Date.now() + 2000;
+  let hasBeenUpdated = false;
+  while (!hasBeenUpdated && Date.now() < abadonTime) {
+    const updated = await users.getById(uid);
+    hasBeenUpdated = updatedCheck(updated);
+    if (!hasBeenUpdated) {
+      delay(200);
+    }
+  }
+};
+
 module.exports = {
   search,
   getUserDetails,
   createDevice,
+  waitForIndexToUpdate,
 };
