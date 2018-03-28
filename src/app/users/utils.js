@@ -84,8 +84,7 @@ const getUserDetails = async (req) => {
       },
     };
   } else {
-    const user = await getUser(uid);
-    const userAuditDetails = await users.getById(uid);
+    const user = await users.getById(uid);
     const serviceDetails = await getServicesByUserId(uid);
 
     const ktsDetails = serviceDetails ? serviceDetails.find((c) => c.id.toLowerCase() === config.serviceMapping.key2SuccessServiceId.toLowerCase()) : undefined;
@@ -99,14 +98,14 @@ const getUserDetails = async (req) => {
 
     return {
       id: uid,
-      name: `${user.given_name} ${user.family_name}`,
-      firstName: user.given_name,
-      lastName: user.family_name,
+      name: user.name,
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
-      lastLogin: userAuditDetails.lastLogin,
-      status: mapUserStatus(user.status, userAuditDetails.status.changedOn),
+      lastLogin: user.lastLogin,
+      status: user.status,
       loginsInPast12Months: {
-        successful: userAuditDetails.successfulLoginsInPast12Months,
+        successful: user.successfulLoginsInPast12Months,
       },
       serviceId: config.serviceMapping.key2SuccessServiceId,
       orgId: ktsDetails ? ktsDetails.organisation.id : '',
