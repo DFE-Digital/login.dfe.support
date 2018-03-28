@@ -1,5 +1,5 @@
 const logger = require('./../../infrastructure/logger');
-const { getUserDetails } = require('./utils');
+const { getUserDetails, waitForIndexToUpdate } = require('./utils');
 const { deactivate } = require('./../../infrastructure/directories');
 const { getById, updateIndex } = require('./../../infrastructure/users');
 
@@ -13,6 +13,8 @@ const updateUserIndex = async (uid) => {
     user.lastLogin = user.lastLogin.getTime();
   }
   await updateIndex([user]);
+
+  await waitForIndexToUpdate(uid, (updated) => updated.status.id === 0);
 };
 
 const postConfirmDeactivate = async (req, res) => {
