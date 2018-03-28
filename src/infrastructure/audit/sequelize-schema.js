@@ -33,6 +33,7 @@ const dbOpts = {
   dialectOptions: {
     encrypt: config.audit.params.encrypt || false,
   },
+  logging: false,
 };
 if (config.audit.params.pool) {
   dbOpts.pool = {

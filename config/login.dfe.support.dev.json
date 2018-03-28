@@ -53,7 +53,8 @@
     "type": "redis",
     "params": {
       "connectionString": "redis://localhost:6379"
-    }
+    },
+    "cacheConnectionString": "redis://localhost:6379"
   },
   "serviceMapping": {
     "type": "redis",
@@ -63,6 +64,7 @@
     "key2SuccessServiceId": ""
   },
   "schedules": {
+    "auditCache": "*/5 * * * *",
     "users": "*/5 * * * *",
     "userDevices": "*/5 * * * *",
     "indexTidy": "*/15 * * * *"
