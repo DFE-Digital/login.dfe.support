@@ -7,12 +7,12 @@
     <div class="col-12">
         <form method="post" id="form-reactivate">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <fieldset>
-                <legend>Please confirm you would like to reactivate the user.</legend>
-            </fieldset>
+
+            <p>Please confirm you would like to reactivate the user.</p>
+
             <div class="form-submit submit-buttons">
                 <button type="submit" class="button">Reactivate</button>
-                <a href="edit-profile" name="cancel" class="button button-secondary">Cancel</a>
+                <a href="services" name="cancel" class="button button-secondary">Cancel</a>
             </div>
         </form>
     </div>
