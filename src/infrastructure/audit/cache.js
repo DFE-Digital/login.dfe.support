@@ -11,6 +11,7 @@ const readUserStatsFromStore = async () => {
     const q = queue(async (key) => {
       const hash = await redis.hgetall(key);
       const user = {
+        userId: hash.userId,
         lastLogin: hash.lastLogin > 0 ? new Date(parseInt(hash.lastLogin)) : undefined,
         loginsInPast12Months: JSON.parse(hash.loginsInPast12Months).map((login) => {
           const mapped = Object.assign({}, login);
