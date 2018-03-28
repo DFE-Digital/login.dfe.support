@@ -31,15 +31,6 @@ describe('When getting user details', () => {
       },
     });
 
-    getUser.mockReset();
-    getUser.mockReturnValue({
-      id: 'user1',
-      given_name: 'Albus',
-      family_name: 'Dumbledore',
-      email: 'headmaster@hogwarts.com',
-      status: 1
-    });
-
     req = {
       params: {
         uid: 'user1',
