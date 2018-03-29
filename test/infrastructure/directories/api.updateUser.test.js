@@ -13,7 +13,15 @@ jest.mock('./../../../src/infrastructure/config', () => {
           resource: 'service-id'
         }
       }
-    }
+    },
+    hostingEnvironment: {
+      agentKeepAlive: {}
+    },
+  }
+});
+jest.mock('agentkeepalive', () => {
+  return {
+    HttpsAgent : jest.fn()
   }
 });
 jest.mock('request-promise');
