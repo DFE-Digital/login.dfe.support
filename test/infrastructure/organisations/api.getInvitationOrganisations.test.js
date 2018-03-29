@@ -1,4 +1,9 @@
 jest.mock('request-promise');
+jest.mock('agentkeepalive', () => {
+  return {
+    HttpsAgent : jest.fn()
+  }
+});
 jest.mock('login.dfe.jwt-strategies');
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
   organisations: {
