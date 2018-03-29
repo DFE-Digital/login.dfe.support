@@ -36,10 +36,17 @@
             <input type="hidden" name="userId" value="<%=userId%>"/>
             <input type="hidden" name="email" value="<%=email%>"/>
             <div class="form-submit submit-buttons">
-                <a href="assign-digipass" class="button button-secondary">&#8810; Go back</a>
-                <button type="submit" class="button">Continue</button>
-                <a href="../" class="button button-secondary">Cancel</a>
+                <% if (locals.isExistingUser) { %>
+                    <a href="/users/<%=locals.userId%>/assign-digipass/<%=locals.user.orgId%>" class="button button-secondary">&#8810; Go back</a>
+                    <button type="submit" class="button">Continue</button>
+                    <a href="/users/<%=locals.userId%>" class="button button-secondary">Cancel</a>
+                <% } else {%>
+                    <a href="assign-digipass" class="button button-secondary">&#8810; Go back</a>
+                    <button type="submit" class="button">Continue</button>
+                    <a href="/users" class="button button-secondary">Cancel</a>
+                <% } %>
             </div>
         </form>
     </div>
 </div>
+
