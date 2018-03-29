@@ -2,6 +2,11 @@ const {getUserOrganisations} = require('./../../infrastructure/organisations');
 
 const getConfirmAssignDigipass = async (req, res) => {
 
+  let isExistingUser = true;
+  if(req.session.k2sUser) {
+    isExistingUser = false;
+  }
+
   const userOrgs = await getUserOrganisations(req.params.uid, req.id);
 
   const org = userOrgs.find(org => org.organisation.id.toLowerCase() === req.session.user.orgId.toLowerCase());
@@ -14,6 +19,7 @@ const getConfirmAssignDigipass = async (req, res) => {
     orgName: org.organisation.name,
     serialNumber: req.session.digipassSerialNumberToAssign,
     validationMessages: {},
+    isExistingUser: isExistingUser
   })
 };
 
