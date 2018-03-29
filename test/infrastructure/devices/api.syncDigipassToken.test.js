@@ -1,10 +1,18 @@
 jest.mock('request-promise');
+jest.mock('agentkeepalive', () => {
+  return {
+    HttpsAgent : jest.fn()
+  }
+});
 jest.mock('./../../../src/infrastructure/config', () => {
   return {
     devices: {
       service: {
         url: 'https://device.login.dfe.test',
       },
+    },
+    hostingEnvironment: {
+      agentKeepAlive: {}
     },
   };
 });
