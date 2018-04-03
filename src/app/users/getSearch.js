@@ -8,6 +8,9 @@ const action = async (req, res) => {
   if (req.session.k2sUser) {
     req.session.k2sUser = undefined;
   }
+  if(req.session.user){
+    req.session.user = undefined;
+  }
   if (req.session.digipassSerialNumberToAssign) {
     req.session.digipassSerialNumberToAssign = undefined;
   }
