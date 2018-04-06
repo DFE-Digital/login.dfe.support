@@ -88,11 +88,10 @@ describe('when confirming the details of a new K2S user', () => {
     expect(createInvite.mock.calls[0][0]).toBe('Eddie');
     expect(createInvite.mock.calls[0][1]).toBe('Brock');
     expect(createInvite.mock.calls[0][2]).toBe('eddie.brock@daily-bugle.test');
-    expect(createInvite.mock.calls[0][3]).toBe('1928371');
-    expect(createInvite.mock.calls[0][4]).toBe('1234567890');
-    expect(createInvite.mock.calls[0][5]).toBe('kts-rp');
-    expect(createInvite.mock.calls[0][6]).toBe('https://key.to.success.test');
-    expect(createInvite.mock.calls[0][7]).toBe('correlationId');
+    expect(createInvite.mock.calls[0][3]).toBe('1234567890');
+    expect(createInvite.mock.calls[0][4]).toBe('kts-rp');
+    expect(createInvite.mock.calls[0][5]).toBe('https://key.to.success.test');
+    expect(createInvite.mock.calls[0][6]).toBe('correlationId');
   });
 
   it('then it should create invite service mapping for invite in organisations', async () => {
@@ -103,7 +102,8 @@ describe('when confirming the details of a new K2S user', () => {
     expect(addInvitationService.mock.calls[0][1]).toBe('LA-1');
     expect(addInvitationService.mock.calls[0][2]).toBe('1234567');
     expect(addInvitationService.mock.calls[0][3]).toBe(0);
-    expect(addInvitationService.mock.calls[0][4]).toBe('correlationId');
+    expect(addInvitationService.mock.calls[0][4]).toEqual([{ key: 'k2s-id', value: '1928371' }]);
+    expect(addInvitationService.mock.calls[0][5]).toBe('correlationId');
   });
 
   it('then it should set a flash message that user has been invited and redirect to user list', async () => {

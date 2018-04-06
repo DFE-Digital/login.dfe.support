@@ -22,8 +22,12 @@ const postConfirmNewK2sUser = async (req, res) => {
 
   const keyToSuccessOrigin = await getKeyToSuccessOriginForInvite();
   const invitationId = await createInvite(req.session.k2sUser.firstName, req.session.k2sUser.lastName, req.session.k2sUser.email,
-    req.session.k2sUser.k2sId, req.session.digipassSerialNumberToAssign, keyToSuccessOrigin.clientId, keyToSuccessOrigin.redirectUri, req.id);
-  await addInvitationService(invitationId, req.session.k2sUser.localAuthority, config.serviceMapping.key2SuccessServiceId, 0, req.id);
+    req.session.digipassSerialNumberToAssign, keyToSuccessOrigin.clientId, keyToSuccessOrigin.redirectUri, req.id);
+
+  const externalIdentifiers = [
+    { key: 'k2s-id', value: req.session.k2sUser.k2sId },
+  ];
+  await addInvitationService(invitationId, req.session.k2sUser.localAuthority, config.serviceMapping.key2SuccessServiceId, 0, externalIdentifiers, req.id);
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) invited ${req.session.k2sUser.email} to user key-to-success. Key-to-Success id: ${req.session.k2sUser.k2sId}, Digipass: ${req.session.digipassSerialNumberToAssign}`,
     {
