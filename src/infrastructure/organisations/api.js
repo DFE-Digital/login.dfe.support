@@ -149,7 +149,7 @@ const getServiceIdentifierDetails = async (serviceId, identifierKey, identifierV
   }
 };
 
-const addInvitationService = async (invitationId, organisationId, serviceId, roleId, correlationId) => {
+const addInvitationService = async (invitationId, organisationId, serviceId, roleId, externalIdentifiers, correlationId) => {
   const token = await jwtStrategy(config.organisations.service).getBearerToken();
 
   try {
@@ -162,6 +162,7 @@ const addInvitationService = async (invitationId, organisationId, serviceId, rol
       },
       body: {
         roleId,
+        externalIdentifiers,
       },
       json: true,
     });
