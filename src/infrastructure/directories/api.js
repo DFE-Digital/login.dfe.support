@@ -218,7 +218,7 @@ const reactivate = async (uid, correlationId) => {
   });
 };
 
-const createInvite = async (givenName, familyName, email, k2sId, digipassSerialNumber, correlationId) => {
+const createInvite = async (givenName, familyName, email, k2sId, digipassSerialNumber, clientId, redirectUri, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   const invitation = await rp({
@@ -233,8 +233,15 @@ const createInvite = async (givenName, familyName, email, k2sId, digipassSerialN
       lastName: familyName,
       email,
       keyToSuccessId: k2sId,
-      tokenSerialNumber: digipassSerialNumber,
-      source: 'support',
+      device: {
+        type: 'digipass',
+        serialNumber: digipassSerialNumber,
+      },
+      origin: {
+        clientId,
+        redirectUri,
+      },
+      selfStarted: false,
     },
     json: true,
   });
