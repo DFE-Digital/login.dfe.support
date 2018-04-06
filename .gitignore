@@ -65,3 +65,9 @@ typings/
 .idea/watcherTasks.xml
 access.log
 .DS_Store
+
+\.idea/markdown-exported-files\.xml
+
+\.idea/markdown-navigator\.xml
+
+\.idea/markdown-navigator/profiles_settings\.xml

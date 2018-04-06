@@ -1,6 +1,7 @@
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
 jest.mock('./../../../src/infrastructure/devices');
 jest.mock('./../../../src/infrastructure/directories');
+jest.mock('./../../../src/infrastructure/serviceMapping');
 jest.mock('./../../../src/app/users/utils');
 
 const { getRequestMock, getResponseMock } = require('./../../utils');

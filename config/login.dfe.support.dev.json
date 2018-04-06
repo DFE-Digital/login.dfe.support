@@ -63,6 +63,9 @@
     },
     "key2SuccessServiceId": ""
   },
+  "hotConfig": {
+    "type":"static",
+  },
   "schedules": {
     "auditCache": "*/5 * * * *",
     "users": "*/5 * * * *",
