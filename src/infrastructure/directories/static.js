@@ -79,7 +79,7 @@ const reactivate = async (uid, correlationId) => {
   return Promise.resolve();
 };
 
-const createInvite = async (givenName, familyName, email, k2sId, digipassSerialNumber, clientId, redirectUri, correlationId) => {
+const createInvite = async (givenName, familyName, email, digipassSerialNumber, clientId, redirectUri, correlationId) => {
   return Promise.resolve(uuid());
 };
 
