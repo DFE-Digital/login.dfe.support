@@ -306,6 +306,35 @@ const deleteUserDevice = async (id, serialNumber, correlationId) => {
   }
 };
 
+const createChangeEmailCode = async (userId, newEmailAddress, clientId, redirectUri, correlationId) => {
+  const token = await jwtStrategy(config.directories.service).getBearerToken();
+  try {
+    return await rp({
+      method: 'PUT',
+      uri: `${config.directories.service.url}/usercodes/upsert`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      body: {
+        uid: userId,
+        clientId,
+        redirectUri,
+        codeType: 'changeemail',
+        email: newEmailAddress,
+        selfInvoked: false,
+      },
+      json: true,
+    });
+  } catch (e) {
+    return {
+      success: false,
+      statusCode: e.statusCode,
+      errorMessage: e.message,
+    };
+  }
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
@@ -318,5 +347,6 @@ module.exports = {
   reactivate,
   createInvite,
   createUserDevice,
-  deleteUserDevice
+  deleteUserDevice,
+  createChangeEmailCode,
 };
