@@ -1,0 +1,40 @@
+<% if (locals.flash.info) { %>
+<div class="row">
+    <div class="col-12">
+        <div class="notification notification-success">
+            <%=locals.flash.info%>
+        </div>
+    </div>
+</div>
+<% } %>
+
+<div class="row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Edit <%=user.name%>&apos;s email address
+        </h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <form method="post" id="form-edit-user">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+            <fieldset>
+                <legend class="vh">Edit <%=user.name%>&apos;s email address</legend>
+                <div class="form-group <%= (locals.validationMessages.email !== undefined) ? 'form-group-error' : '' %>">
+                    <label class="form-label" for="email">Email address</span> </label>
+                    <% if (locals.validationMessages.email !== undefined) { %>
+                    <p class="error-message" id="validation-email"><%=locals.validationMessages.email %></p>
+                    <% } %>
+                    <input class="form-control" id="email" name="email" type="text" <% if (locals.validationMessages.email !== undefined) { %> aria-invalid="true" aria-describedby="validation-email" <% } %> value="<%=email%>">
+                </div>
+            </fieldset>
+            <div class="form-submit submit-buttons">
+                <button type="submit" class="button">Save</button>
+                <a href="services" name="cancel" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
