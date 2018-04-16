@@ -282,11 +282,16 @@ const deactivateToken = async (req) => {
   const reason = req.body.reason;
   const correlationId = req.id;
 
+  let removeResult = {
+    success: false
+  };
   const result = await devices.deactivateToken(serialNumber, reason, correlationId);
 
-  const removeresult = await deleteUserDevice(uid, serialNumber, correlationId);
+  if(result) {
+    removeResult = await deleteUserDevice(uid, serialNumber, correlationId);
+  }
 
-  if (!result && removeresult.success) {
+  if (!result && !removeResult.success) {
     logger.audit(`${req.user.email} (id: ${req.user.sub}) Failed to deactivate token with serial number "${serialNumber}"`, {
       type: 'support',
       subType: 'digipass-deactivate',
