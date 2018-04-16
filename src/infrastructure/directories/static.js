@@ -87,6 +87,10 @@ const createUserDevice = async () => {
   return Promise.resolve();
 };
 
+const createChangeEmailCode = async (userId, newEmailAddress, clientId, redirectUri, correlationId) => {
+  return Promise.resolve({});
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
@@ -99,4 +103,5 @@ module.exports = {
   reactivate,
   createInvite,
   createUserDevice,
+  createChangeEmailCode,
 };

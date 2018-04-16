@@ -11,6 +11,8 @@ const getServices = require('./getServices');
 const getAudit = require('./getAudit');
 const getEditProfile = require('./getEditProfile');
 const postEditProfile = require('./postEditProfile');
+const getEditEmail = require('./getEditEmail');
+const postEditEmail = require('./postEditEmail');
 const getConfirmDeactivate = require('./getConfirmDeactivate');
 const postConfirmDeactivate = require('./postConfirmDeactivate');
 const getConfirmReactivate = require('./getConfirmReactivate');
@@ -54,6 +56,9 @@ const users = (csrf) => {
 
   router.get('/:uid/edit-profile', csrf, asyncWrapper(getEditProfile));
   router.post('/:uid/edit-profile', csrf, asyncWrapper(postEditProfile));
+
+  router.get('/:uid/edit-email', csrf, asyncWrapper(getEditEmail));
+  router.post('/:uid/edit-email', csrf, asyncWrapper(postEditEmail));
 
   router.get('/:uid/confirm-deactivation', csrf, asyncWrapper(getConfirmDeactivate));
   router.post('/:uid/confirm-deactivation', csrf, asyncWrapper(postConfirmDeactivate));
