@@ -91,8 +91,12 @@ const createChangeEmailCode = async (userId, newEmailAddress, clientId, redirect
   return Promise.resolve({});
 };
 
-const getChangeEmailCode = async (userId) => {
+const getChangeEmailCode = async (userId, correlationId) => {
   return Promise.resolve(null);
+};
+
+const deleteChangeEmailCode = async (userId, correlationId) => {
+  return Promise.resolve();
 };
 
 module.exports = {
@@ -109,4 +113,5 @@ module.exports = {
   createUserDevice,
   createChangeEmailCode,
   getChangeEmailCode,
+  deleteChangeEmailCode,
 };

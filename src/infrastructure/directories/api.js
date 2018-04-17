@@ -351,6 +351,23 @@ const getChangeEmailCode = async (userId, correlationId) => {
   }
 };
 
+const deleteChangeEmailCode = async (userId, correlationId) => {
+  const token = await jwtStrategy(config.directories.service).getBearerToken();
+  try {
+    return await rp({
+      method: 'DELETE',
+      uri: `${config.directories.service.url}/usercodes/${userId}/changeemail`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+  } catch (e) {
+    throw e;
+  }
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
@@ -366,4 +383,5 @@ module.exports = {
   deleteUserDevice,
   createChangeEmailCode,
   getChangeEmailCode,
+  deleteChangeEmailCode,
 };
