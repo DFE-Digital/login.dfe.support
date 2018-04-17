@@ -25,6 +25,7 @@ const getConfirmAssignToken = require('./getConfirmAssignToken');
 const postConfirmAssignToken = require('./postConfirmAssignToken');
 const getConfirmNewK2sUser = require('./getConfirmNewK2sUser');
 const postConfirmNewK2sUser = require('./postConfirmNewK2sUser');
+const postCancelChangeEmail = require('./postCancelChangeEmail');
 
 const router = express.Router({ mergeParams: true });
 
@@ -65,6 +66,8 @@ const users = (csrf) => {
 
   router.get('/:uid/confirm-reactivation', csrf, asyncWrapper(getConfirmReactivate));
   router.post('/:uid/confirm-reactivation', csrf, asyncWrapper(postConfirmReactivate));
+
+  router.post('/:uid/cancel-change-email', csrf, asyncWrapper(postCancelChangeEmail));
 
   return router;
 };
