@@ -71,6 +71,7 @@ describe('when creating an index in azure search', () => {
           { name: 'statusLastChangedOn', type: 'Edm.Int64' },
           { name: 'statusDescription', type: 'Edm.String', sortable: true, filterable: true },
           { name: 'statusId', type: 'Edm.Int64' },
+          { name: 'pendingEmail', type: 'Edm.String' },
         ]
       }
     });

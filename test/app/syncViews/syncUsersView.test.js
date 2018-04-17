@@ -51,6 +51,9 @@ describe('When syncing users materialised view', function () {
       page: 1,
     });
 
+    directories.getChangeEmailCode.mockReset();
+    directories.getChangeEmailCode.mockReturnValueOnce({ email: 'user1@unit.test' });
+
     organisations.getUserOrganisations.mockReset();
     organisations.getUserOrganisations.mockReturnValue([{
       userService: {
@@ -133,6 +136,7 @@ describe('When syncing users materialised view', function () {
         description: 'Active',
         changedOn: null,
       },
+      pendingEmail: 'user1@unit.test',
     });
     expect(users.updateIndex.mock.calls[0][0][1]).toEqual({
       id: 'user2',
@@ -151,6 +155,7 @@ describe('When syncing users materialised view', function () {
         description: 'Active',
         changedOn: null,
       },
+      pendingEmail: undefined,
     });
     expect(users.updateIndex.mock.calls[0][1]).toBe('test-index');
   });
