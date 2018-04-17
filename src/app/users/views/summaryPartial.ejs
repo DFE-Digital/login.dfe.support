@@ -13,6 +13,13 @@
     </div>
 </div>
 <%}%>
+<%if(locals.user.pendingEmail) {%>
+<div class="notification notification-information" tabindex="0">
+    <h2>Pending email address change</h2>
+    <p>Waiting for <%=user.name%> to confirm the new email address of <%=user.pendingEmail%>.</p>
+    <p><a href="cancel-change-email">Cancel change email</a></p>
+</div>
+<%}%>
 
 <% if (locals.flash.info) { %>
 <div class="row">
