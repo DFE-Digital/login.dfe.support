@@ -43,6 +43,7 @@ const mapSearchIndexUser = (user) => {
       description: user.statusDescription,
       changedOn: user.statusLastChangedOn,
     },
+    pendingEmail: user.pendingEmail,
   };
 };
 
@@ -145,6 +146,7 @@ const createIndex = async () => {
           { name: 'statusLastChangedOn', type: 'Edm.Int64' },
           { name: 'statusDescription', type: 'Edm.String', sortable: true, filterable: true },
           { name: 'statusId', type: 'Edm.Int64' },
+          { name: 'pendingEmail', type: 'Edm.String' },
         ]
       },
       json: true,
@@ -182,6 +184,7 @@ const updateIndex = async (users, index) => {
             statusLastChangedOn: user.status.changedOn ? user.status.changedOn : 0,
             statusDescription: user.status.description,
             statusId: user.status.id,
+            pendingEmail: user.pendingEmail,
           };
         }),
       },

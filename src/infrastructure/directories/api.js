@@ -327,11 +327,27 @@ const createChangeEmailCode = async (userId, newEmailAddress, clientId, redirect
       json: true,
     });
   } catch (e) {
-    return {
-      success: false,
-      statusCode: e.statusCode,
-      errorMessage: e.message,
-    };
+    throw e;
+  }
+};
+
+const getChangeEmailCode = async (userId, correlationId) => {
+  const token = await jwtStrategy(config.directories.service).getBearerToken();
+  try {
+    return await rp({
+      method: 'GET',
+      uri: `${config.directories.service.url}/usercodes/${userId}/changeemail`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+  } catch (e) {
+    if (e.statusCode === 404) {
+      return null;
+    }
+    throw e;
   }
 };
 
@@ -349,4 +365,5 @@ module.exports = {
   createUserDevice,
   deleteUserDevice,
   createChangeEmailCode,
+  getChangeEmailCode,
 };
