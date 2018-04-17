@@ -7,9 +7,10 @@ const uuid = require('uuid/v4');
 const { mapUserStatus } = require('./../../infrastructure/utils');
 
 const buildUser = async (user, correlationId) => {
-  // Update with orgs
+  // Get organisation details
   const orgServiceMapping = await organisations.getUserOrganisations(user.sub, correlationId);
 
+  // Get audit details
   let successfulLogins;
   let statusLastChangedOn;
   let lastLogin;
@@ -23,6 +24,14 @@ const buildUser = async (user, correlationId) => {
     successfulLogins = userAuditDetails.loginsInPast12Months.filter(x => x.timestamp.getTime() >= twelveMonthsAgo.getTime())
   }
 
+  // Check for change of email
+  let pendingEmail;
+  const changeEmailCode = await directories.getChangeEmailCode(user.sub, correlationId);
+  if (changeEmailCode) {
+    pendingEmail = changeEmailCode.email;
+  }
+
+  // Consolidate
   return {
     id: user.sub,
     name: `${user.given_name} ${user.family_name}`,
@@ -33,6 +42,7 @@ const buildUser = async (user, correlationId) => {
     lastLogin: lastLogin,
     successfulLoginsInPast12Months: successfulLogins ? successfulLogins.length : 0,
     status: mapUserStatus(user.status, statusLastChangedOn),
+    pendingEmail,
   };
 };
 

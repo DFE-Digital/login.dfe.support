@@ -91,6 +91,10 @@ const createChangeEmailCode = async (userId, newEmailAddress, clientId, redirect
   return Promise.resolve({});
 };
 
+const getChangeEmailCode = async (userId) => {
+  return Promise.resolve(null);
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
@@ -104,4 +108,5 @@ module.exports = {
   createInvite,
   createUserDevice,
   createChangeEmailCode,
+  getChangeEmailCode,
 };
