@@ -171,6 +171,10 @@ const updateIndex = async (users, index) => {
       },
       body: {
         value: users.map((user) => {
+          let lastLogin = user.lastLogin;
+          if (lastLogin && lastLogin instanceof Date) {
+            lastLogin = lastLogin.getTime();
+          }
           return {
             '@search.action': 'upload',
             id: user.id,
@@ -179,7 +183,7 @@ const updateIndex = async (users, index) => {
             lastName: user.lastName,
             email: user.email,
             organisationName: user.organisation ? user.organisation.name : '',
-            lastLogin: user.lastLogin,
+            lastLogin,
             successfulLoginsInPast12Months: user.successfulLoginsInPast12Months,
             statusLastChangedOn: user.status.changedOn ? user.status.changedOn : 0,
             statusDescription: user.status.description,
