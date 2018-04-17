@@ -116,6 +116,7 @@ const getUserDetails = async (req) => {
       serviceId: config.serviceMapping.key2SuccessServiceId,
       orgId: ktsDetails ? ktsDetails.organisation.id : '',
       ktsId: externalIdentifier,
+      pendingEmail: user.pendingEmail,
     };
   }
 };
