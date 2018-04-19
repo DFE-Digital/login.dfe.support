@@ -17,6 +17,8 @@ const getConfirmDeactivate = require('./getConfirmDeactivate');
 const postConfirmDeactivate = require('./postConfirmDeactivate');
 const getConfirmReactivate = require('./getConfirmReactivate');
 const postConfirmReactivate = require('./postConfirmReactivate');
+const getNewUser = require('./getNewUser');
+const postNewUser = require('./postNewUser');
 const getNewUserK2S = require('./getNewUserK2S');
 const postNewUserK2S = require('./postNewUserK2S');
 const getAssignDigipass = require('./getAssignDigipass');
@@ -38,6 +40,8 @@ const users = (csrf) => {
   router.get('/', csrf, asyncWrapper(getSearch));
   router.post('/', csrf, asyncWrapper(postSearch));
 
+  router.get('/new-user', csrf, asyncWrapper(getNewUser));
+  router.post('/new-user', csrf, asyncWrapper(postNewUser));
   router.get('/new-k2s-user', csrf, asyncWrapper(getNewUserK2S));
   router.post('/new-k2s-user', csrf, asyncWrapper(postNewUserK2S));
   router.get('/assign-digipass', csrf, asyncWrapper(getAssignDigipass));

@@ -33,9 +33,8 @@ const configMockFactory = (customConfig) => {
     hotConfig: {
       type: 'static',
     },
-    loggerSettings: {
-
-    },
+    loggerSettings: {},
+    toggles: {},
   }, customConfig);
 };
 
@@ -62,13 +61,15 @@ const getResponseMock = () => {
     contentType: jest.fn(),
     send: jest.fn(),
     flash: jest.fn(),
+    mockResetAll: function () {
+      this.render.mockReturnValue(res);
+      this.redirect.mockReturnValue(res);
+      this.status.mockReturnValue(res);
+      this.contentType.mockReturnValue(res);
+    }
   };
 
-  res.render.mockReturnValue(res);
-  res.redirect.mockReturnValue(res);
-  res.status.mockReturnValue(res);
-  res.contentType.mockReturnValue(res);
-
+  res.mockResetAll();
   return res;
 };
 
