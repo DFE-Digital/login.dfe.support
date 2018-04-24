@@ -31,6 +31,10 @@ const updateIndex = async (userDevices, index) => {
   }
 
   const userDeviceMap = userDevices.map((userDevice) => {
+      let lastLogin = userDevice.lastLogin;
+      if (lastLogin && lastLogin instanceof Date) {
+        lastLogin = lastLogin.getTime();
+      }
       return {
         '@search.action': 'upload',
         id: userDevice.id,
@@ -40,7 +44,7 @@ const updateIndex = async (userDevices, index) => {
         name: userDevice.name,
         email: userDevice.email,
         organisationName: userDevice.organisation ? userDevice.organisation.name : '',
-        lastLogin: userDevice.lastLogin,
+        lastLogin,
       };
     });
 
