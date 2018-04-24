@@ -1,6 +1,4 @@
-<div class="js-back-link"></div>
-
-
+<a href="new-user" class="link-back">Back</a>
 <div class="grid-row">
     <div class="col-8">
         <h1 class="heading-xlarge">
@@ -15,7 +13,6 @@
             <form method="post">
                 <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
                 <input type="hidden" name="page" value="1" />
-
                 <fieldset class="search-input">
                     <label for="criteria" class="vh">Search by name, email or organisation</label>
                     <input type="text" id="criteria" name="criteria" class="form-control" value="<%=criteria%>">
@@ -95,23 +92,3 @@
     </div>
 </div>
 <%}%>
-
-<style>
-    .button-link {
-        border: none;
-        background: none;
-        color: #005ea5;
-        text-decoration: underline;
-        padding: 0;
-        margin: 0;
-    }
-    .button-link:hover {
-        color: #2b8cc4;
-        cursor: pointer;
-    }
-    .heading-medium .button-link {
-        font-size: 24px;
-        line-height: 1.25;
-        font-weight: bold;
-    }
-</style>
