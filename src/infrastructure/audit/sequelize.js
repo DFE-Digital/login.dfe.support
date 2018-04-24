@@ -184,7 +184,11 @@ const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
 
 
   if (!rawAudits || !rawAudits.audits || rawAudits.audits.length === 0) {
-    return null;
+    return {
+      audits: [],
+      numberOfPages: 0,
+      numberOfRecords: 0,
+    };
   }
 
   let auditRecords = [];
