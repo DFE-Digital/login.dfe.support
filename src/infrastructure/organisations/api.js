@@ -2,12 +2,12 @@ const jwtStrategy = require('login.dfe.jwt-strategies');
 const config = require('./../config');
 const KeepAliveAgent = require('agentkeepalive').HttpsAgent;
 const rp = require('request-promise').defaults({
-   agent: new KeepAliveAgent({
-     maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
-     maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
-     timeout: config.hostingEnvironment.agentKeepAlive.timeout,
-     keepAliveTimeout: config.hostingEnvironment.agentKeepAlive.keepAliveTimeout,
-   }),
+  agent: new KeepAliveAgent({
+    maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
+    maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
+    timeout: config.hostingEnvironment.agentKeepAlive.timeout,
+    keepAliveTimeout: config.hostingEnvironment.agentKeepAlive.keepAliveTimeout,
+  }),
 });
 
 
@@ -198,7 +198,7 @@ const getServicesByUserId = async (id, reqId) => {
 
 };
 
-const putSingleServiceIdentifierForUser = async(userId, serviceId, orgId, value, reqId) => {
+const putSingleServiceIdentifierForUser = async (userId, serviceId, orgId, value, reqId) => {
   const token = await jwtStrategy(config.organisations.service).getBearerToken();
 
   try {
@@ -219,9 +219,33 @@ const putSingleServiceIdentifierForUser = async(userId, serviceId, orgId, value,
     return true;
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
-    if(status === 409) {
+    if (status === 409) {
       return false;
     }
+    if (status === 401 || status === 404) {
+      return null;
+    }
+    throw e;
+  }
+};
+
+const searchOrganisations = async (criteria, pageNumber, correlationId) => {
+  const token = await jwtStrategy(config.organisations.service).getBearerToken();
+
+  try {
+    const pageOfOrgs = await rp({
+      method: 'GET',
+      uri: `${config.organisations.service.url}/organisations?search=${criteria}&page=${pageNumber}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+
+    return pageOfOrgs;
+  } catch (e) {
+    const status = e.statusCode ? e.statusCode : 500;
     if (status === 401 || status === 404) {
       return null;
     }
@@ -239,4 +263,5 @@ module.exports = {
   addInvitationService,
   getServicesByUserId,
   putSingleServiceIdentifierForUser,
+  searchOrganisations,
 };
