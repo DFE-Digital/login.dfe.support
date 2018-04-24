@@ -81,6 +81,10 @@ const putSingleServiceIdentifierForUser = async() => {
   return Promise.resolve(null);
 };
 
+const searchOrganisations = async (criteria, pageNumber, correlationId) => {
+  return getPageOfOrganisations(pageNumber, correlationId);
+};
+
 module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -91,4 +95,5 @@ module.exports = {
   addInvitationService,
   getServicesByUserId,
   putSingleServiceIdentifierForUser,
+  searchOrganisations,
 };
