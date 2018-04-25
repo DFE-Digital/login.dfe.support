@@ -23,6 +23,8 @@ const getAssociateOrganisation = require('./getAssociateOrganisation');
 const postAssociateOrganisation = require('./postAssociateOrganisation');
 const getOrganisationPermissions = require('./getOrganisationPermissions');
 const postOrganisationPermissions = require('./postOrganisationPermissions');
+const getConfirmNewUser = require('./getConfirmNewUser');
+const postConfirmNewUser = require('./postConfirmNewUser');
 const getNewUserK2S = require('./getNewUserK2S');
 const postNewUserK2S = require('./postNewUserK2S');
 const getAssignDigipass = require('./getAssignDigipass');
@@ -50,6 +52,8 @@ const users = (csrf) => {
   router.post('/associate-organisation', csrf, asyncWrapper(postAssociateOrganisation));
   router.get('/organisation-permissions', csrf, asyncWrapper(getOrganisationPermissions));
   router.post('/organisation-permissions', csrf, asyncWrapper(postOrganisationPermissions));
+  router.get('/confirm-new-user', csrf, asyncWrapper(getConfirmNewUser));
+  router.post('/confirm-new-user', csrf, asyncWrapper(postConfirmNewUser));
   router.get('/new-k2s-user', csrf, asyncWrapper(getNewUserK2S));
   router.post('/new-k2s-user', csrf, asyncWrapper(postNewUserK2S));
   router.get('/assign-digipass', csrf, asyncWrapper(getAssignDigipass));

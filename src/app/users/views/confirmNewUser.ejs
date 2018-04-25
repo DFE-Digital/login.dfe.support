@@ -1,0 +1,43 @@
+<div class="js-back-link"></div>
+<div class="grid-row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Review invite details
+        </h1>
+        <p>Please review these details before sending out an invite.  The user will have to confirm their email address and create a password before their account is active.</p>
+        <h2 class="heading-medium">Personal details </h2>
+        <dl class="rows">
+            <dt>First name</dt>
+            <dd><%=user.firstName%></dd>
+
+            <dt>Last name</dt>
+            <dd><%=user.lastName%></dd>
+
+            <dt>Email address</dt>
+            <dd><%=user.email%></dd>
+
+        </dl>
+
+        <h2 class="heading-medium">Organisation </h2>
+
+        <%if (organisation) {%>
+        <dl class="rows spacer">
+            <dt>Organisation</dt>
+            <dd>Bishop Ullathorne Catholic School</dd>
+
+            <dt>Permission level</dt>
+            <dd>End user</dd>
+
+        </dl>
+        <%} else {%>
+        <p><em>No organisation added</em></p>
+        <%}%>
+
+        <div class="form-submit">
+            <form method="post">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+                <button class="button">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
