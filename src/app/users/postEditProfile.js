@@ -4,6 +4,7 @@ const { getUserDetails, waitForIndexToUpdate } = require('./utils');
 const { updateUser } = require('./../../infrastructure/directories');
 const { putSingleServiceIdentifierForUser } = require('./../../infrastructure/organisations');
 const { getById, updateIndex } = require('./../../infrastructure/users');
+const userDevices = require('./../../infrastructure/userDevices');
 
 const validate = (req) => {
   const validationMessages = {};
@@ -36,6 +37,14 @@ const updateUserIndex = async (uid, firstName, lastName) => {
   await updateIndex([user]);
 
   await waitForIndexToUpdate(uid, (updated) => updated.firstName === firstName && updated.lastName === lastName);
+};
+
+const updateUserDeviceIndex = async (uid, firstName, lastName) => {
+  const userDevice = await userDevices.getByUserId(uid);
+
+  userDevice.name = `${firstName} ${lastName}`;
+
+  await userDevices.updateIndex([userDevice]);
 };
 
 const auditEdit = (req, user) => {
@@ -100,6 +109,7 @@ const postEditProfile = async (req, res) => {
 
   await updateUser(uid, req.body.firstName, req.body.lastName, req.id);
   await updateUserIndex(uid, req.body.firstName, req.body.lastName);
+  await updateUserDeviceIndex(uid, req.body.firstName, req.body.lastName);
 
   auditEdit(req, user);
 
