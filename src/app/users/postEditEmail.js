@@ -27,6 +27,7 @@ const postEditEmail = async (req, res) => {
   const model = await validate(req);
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
+    model.user = user;
     sendResult(req, res, 'users/views/editEmail', model);
   }
 
