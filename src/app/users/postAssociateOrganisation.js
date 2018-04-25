@@ -1,11 +1,13 @@
-const { searchOrganisations } = require('./../../infrastructure/organisations');
+const { searchOrganisations, getOrganisationById } = require('./../../infrastructure/organisations');
 const { sendResult } = require('./../../infrastructure/utils');
 
 const postAssociateOrganisation = async (req, res) => {
-  const selectedOrganisation = req.body.selectedOrganisation;
+  const selectedOrganisationId = req.body.selectedOrganisation;
+  const selectedOrganisation = selectedOrganisationId ? await getOrganisationById(selectedOrganisationId, req.id) : undefined;
   if (selectedOrganisation) {
-    req.session.newUser.organisationId = selectedOrganisation;
-    return res.redirect('/organisation-permissions');
+    req.session.newUser.organisationId = selectedOrganisation.id;
+    req.session.newUser.organisationName = selectedOrganisation.name;
+    return res.redirect('organisation-permissions');
   }
 
   const criteria = req.body.criteria;

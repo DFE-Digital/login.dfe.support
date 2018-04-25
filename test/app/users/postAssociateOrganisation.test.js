@@ -2,7 +2,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/organisations');
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
-const { searchOrganisations } = require('./../../../src/infrastructure/organisations');
+const { searchOrganisations, getOrganisationById } = require('./../../../src/infrastructure/organisations');
 const postAssociateOrganisation = require('./../../../src/app/users/postAssociateOrganisation');
 
 const res = getResponseMock();
@@ -33,7 +33,12 @@ describe('when associating user to organisations', () => {
       ],
       totalNumberOfPages: 2,
       totalNumberOfRecords: 49,
-    })
+    });
+
+    getOrganisationById.mockReset().mockReturnValue({
+      id: 'org1',
+      name: 'Organisation One',
+    });
   });
 
   it('then it should return search results for organisations', async () => {
@@ -68,6 +73,7 @@ describe('when associating user to organisations', () => {
     await postAssociateOrganisation(req, res);
 
     expect(req.session.newUser.organisationId).toBe('org1');
+    expect(req.session.newUser.organisationName).toBe('Organisation One');
   });
 
   it('then it should redirect to organisation permissions if organisation is selected', async () => {
@@ -78,7 +84,7 @@ describe('when associating user to organisations', () => {
     await postAssociateOrganisation(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('/organisation-permissions');
+    expect(res.redirect.mock.calls[0][0]).toBe('organisation-permissions');
 
     expect(searchOrganisations.mock.calls).toHaveLength(0);
     expect(res.render.mock.calls).toHaveLength(0);
