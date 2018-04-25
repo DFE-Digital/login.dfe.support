@@ -9,6 +9,22 @@ const { getUserDetails } = require('./../../../src/app/users/utils');
 const { getUser, createChangeEmailCode } = require('./../../../src/infrastructure/directories');
 const postEditEmail = require('./../../../src/app/users/postEditEmail');
 
+const userDetails = {
+  id: '915a7382-576b-4699-ad07-a9fd329d3867',
+  name: 'Bobby Grint',
+  firstName: 'Bobby',
+  lastName: 'Grint',
+  email: 'rupert.grint@hogwarts.test',
+  lastLogin: null,
+  status: {
+    id: 1,
+    description: 'Active'
+  },
+  loginsInPast12Months: {
+    successful: 0,
+  },
+};
+
 describe('when changing a users email address', () => {
   let req;
   let res;
@@ -38,21 +54,7 @@ describe('when changing a users email address', () => {
     logger.audit.mockReset();
 
     getUserDetails.mockReset();
-    getUserDetails.mockReturnValue({
-      id: '915a7382-576b-4699-ad07-a9fd329d3867',
-      name: 'Bobby Grint',
-      firstName: 'Bobby',
-      lastName: 'Grint',
-      email: 'rupert.grint@hogwarts.test',
-      lastLogin: null,
-      status: {
-        id: 1,
-        description: 'Active'
-      },
-      loginsInPast12Months: {
-        successful: 0,
-      },
-    });
+    getUserDetails.mockReturnValue(userDetails);
 
     getUser.mockReset();
 
@@ -69,6 +71,7 @@ describe('when changing a users email address', () => {
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: 'token',
       email: '',
+      user: userDetails,
       validationMessages: {
         email: 'Please enter email address'
       },
@@ -85,6 +88,7 @@ describe('when changing a users email address', () => {
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: 'token',
       email: 'not-an-email-address',
+      user: userDetails,
       validationMessages: {
         email: 'Please enter a valid email address'
       },
@@ -101,6 +105,7 @@ describe('when changing a users email address', () => {
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: 'token',
       email: 'rupert.grint@hogwarts.school.test',
+      user: userDetails,
       validationMessages: {
         email: 'A DfE Sign-in user already exists with that email address'
       },
