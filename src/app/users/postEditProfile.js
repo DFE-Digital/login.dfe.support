@@ -42,9 +42,11 @@ const updateUserIndex = async (uid, firstName, lastName) => {
 const updateUserDeviceIndex = async (uid, firstName, lastName) => {
   const userDevice = await userDevices.getByUserId(uid);
 
-  userDevice.name = `${firstName} ${lastName}`;
+  if(userDevice) {
+    userDevice.name = `${firstName} ${lastName}`;
 
-  await userDevices.updateIndex([userDevice]);
+    await userDevices.updateIndex([userDevice]);
+  }
 };
 
 const auditEdit = (req, user) => {
