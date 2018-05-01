@@ -82,17 +82,27 @@ const getToken = async (userId, serviceId, correlationId) => {
   if (userId.startsWith('inv-')) {
     const invitation = await getInvitation(userId.substr(4), correlationId);
     let serialNumber = invitation.tokenSerialNumber;
-    if (!serialNumber && invitation.oldCredentials.tokenSerialNumber) {
+    if (!serialNumber && invitation.oldCredentials && invitation.oldCredentials.tokenSerialNumber) {
       serialNumber = invitation.oldCredentials.tokenSerialNumber;
     }
-    if (!serialNumber) {
-      return null;
+    if (serialNumber) {
+      return {
+        type: 'digipass',
+        serialNumber: `${serialNumber.substr(0, 2)}-${serialNumber.substr(2, 7)}-${serialNumber.substr(9, 1)}`,
+        nonFormattedSerialNumber: serialNumber,
+      };
     }
-    return {
-      type: 'digipass',
-      serialNumber: `${serialNumber.substr(0, 2)}-${serialNumber.substr(2, 7)}-${serialNumber.substr(9, 1)}`,
-      nonFormattedSerialNumber: serialNumber,
-    };
+
+    if (invitation && invitation.device) {
+      serialNumber = invitation.device.serialNumber;
+      return {
+        type: invitation.device.type,
+        serialNumber: `${serialNumber.substr(0, 2)}-${serialNumber.substr(2, 7)}-${serialNumber.substr(9, 1)}`,
+        nonFormattedSerialNumber: serialNumber,
+      };
+    }
+
+    return null;
   } else {
     const tokens = await getUserDevices(userId, correlationId);
     if (!tokens || tokens.length === 0) {
