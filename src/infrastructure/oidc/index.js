@@ -69,9 +69,12 @@ const init = async (app) => {
 
       const supportClaims = await getUserSupportClaims(user.sub);
       if (!supportClaims || !supportClaims.isSupportUser) {
-        return res.redirect('/not-authorised');
+        if(!req.session.redirectUrl.toLowerCase().endsWith('signout')) {
+          return res.redirect('/not-authorised');
+        }
+      } else {
+        Object.assign(user, supportClaims);
       }
-      Object.assign(user, supportClaims);
 
       if (req.session.redirectUrl) {
         redirectUrl = req.session.redirectUrl;
