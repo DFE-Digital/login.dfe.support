@@ -1,0 +1,36 @@
+<div class="js-back-link"></div>
+
+<div class="grid-row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Permission level
+        </h1>
+        <p class="lede">Select the permission level for <b><%=userFullName%></b> at <b><%=organisationName%></b></p>
+
+    </div>
+</div>
+<div class="grid-row">
+    <div class="col-6">
+        <form method="post">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+            <div class="form-group <%= (locals.validationMessages.selectedLevel !== undefined) ? 'form-group-error' : '' %>">
+                <fieldset>
+                    <% if (locals.validationMessages.selectedLevel !== undefined) { %>
+                    <p class="error-message" id="validation-permission-level"><%=locals.validationMessages.selectedLevel %></p>
+                    <% } %>
+                    <div class="multiple-choice">
+                        <input id="level-user" type="radio" name="selectedLevel" value="0">
+                        <label for="level-user">End user</label>
+                    </div>
+                    <div class="multiple-choice">
+                        <input id="level-approver" type="radio" name="selectedLevel" value="10000">
+                        <label for="level-approver">Approver</label>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="form-submit">
+                <button class="button">Continue</button>
+            </div>
+        </form>
+    </div>
+</div>
