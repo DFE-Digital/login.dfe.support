@@ -23,10 +23,10 @@
         <%if (organisation) {%>
         <dl class="rows spacer">
             <dt>Organisation</dt>
-            <dd>Bishop Ullathorne Catholic School</dd>
+            <dd><%=organisation.name%></dd>
 
             <dt>Permission level</dt>
-            <dd>End user</dd>
+            <dd><%=role.name%></dd>
 
         </dl>
         <%} else {%>
