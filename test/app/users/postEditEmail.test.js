@@ -7,6 +7,7 @@ jest.mock('./../../../src/infrastructure/users');
 const logger = require('./../../../src/infrastructure/logger');
 const { getUserDetails } = require('./../../../src/app/users/utils');
 const { getUser, createChangeEmailCode } = require('./../../../src/infrastructure/directories');
+const { getById, updateIndex } = require('./../../../src/infrastructure/users');
 const postEditEmail = require('./../../../src/app/users/postEditEmail');
 
 const userDetails = {
@@ -59,6 +60,17 @@ describe('when changing a users email address', () => {
     getUser.mockReset();
 
     createChangeEmailCode.mockReset();
+
+    getById.mockReset().mockReturnValue({
+      id: '915a7382-576b-4699-ad07-a9fd329d3867',
+      name: 'Bobby Grint',
+      email: 'rupert.grint@hogwarts.test',
+      organisationName: 'Hogwarts School of Witchcraft and Wizardry',
+      lastLogin: null,
+      statusDescription: 'Active'
+    });
+
+    updateIndex.mockReset();
   });
 
   it('then it should render view if email is not entered', async () => {
@@ -147,5 +159,16 @@ describe('when changing a users email address', () => {
 
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe('services');
+  });
+
+  it('then it should update user in search index', async () => {
+    await postEditEmail(req, res);
+
+    expect(updateIndex.mock.calls).toHaveLength(1);
+    expect(updateIndex.mock.calls[0][0]).toHaveLength(1);
+    expect(updateIndex.mock.calls[0][0][0]).toMatchObject({
+      id: '915a7382-576b-4699-ad07-a9fd329d3867',
+      pendingEmail: "rupert.grint@hogwarts.school.test",
+    })
   });
 });

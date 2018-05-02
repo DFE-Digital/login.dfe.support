@@ -1,8 +1,9 @@
 const logger = require('./../../infrastructure/logger');
 const { sendResult } = require('./../../infrastructure/utils');
-const { getUserDetails } = require('./utils');
+const { getUserDetails, waitForIndexToUpdate } = require('./utils');
 const { getUser, createChangeEmailCode } = require('./../../infrastructure/directories');
 const { emailPolicy } = require('login.dfe.validation');
+const { getById, updateIndex } = require('./../../infrastructure/users');
 
 const validate = async (req) => {
   const model = {
@@ -21,6 +22,15 @@ const validate = async (req) => {
   return model;
 };
 
+const updateUserIndex = async (uid, pendingEmail) => {
+  const user = await getById(uid);
+  user.pendingEmail = pendingEmail;
+
+  await updateIndex([user]);
+
+  await waitForIndexToUpdate(uid, (updated) => updated.pendingEmail === pendingEmail);
+};
+
 const postEditEmail = async (req, res) => {
   const user = await getUserDetails(req);
 
@@ -32,6 +42,8 @@ const postEditEmail = async (req, res) => {
   }
 
   await createChangeEmailCode(user.id, model.email, 'support', 'na', req.id);
+
+  await updateUserIndex(user.id, model.email);
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) initiated a change of email for ${user.email} (id: ${user.id}) to ${model.email}`, {
     type: 'support',
