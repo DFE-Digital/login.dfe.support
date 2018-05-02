@@ -38,7 +38,11 @@
     </div>
     <div class="col-6">
         <div class="pull-right">
+            <%if(useGenericAddUser) {%>
+            <a href="/users/new-user" class="button button-secondary">Add User</a>
+            <%} else {%>
             <a href="/users/new-k2s-user" class="button button-secondary">Add User</a>
+            <%}%>
         </div>
     </div>
 </div>

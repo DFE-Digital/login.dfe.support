@@ -71,5 +71,8 @@
     "users": "*/5 * * * *",
     "userDevices": "*/5 * * * *",
     "indexTidy": "*/15 * * * *"
+  },
+  "toggles": {
+    "useGenericAddUser": true
   }
 }

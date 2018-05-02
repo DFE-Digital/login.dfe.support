@@ -1,5 +1,6 @@
 const { search } = require('./utils');
 const { sendResult } = require('./../../infrastructure/utils');
+const config = require('./../../infrastructure/config');
 
 const action = async (req, res) => {
   const result = await search(req);
@@ -14,6 +15,7 @@ const action = async (req, res) => {
     sort: result.sort,
     sortBy: result.sortBy,
     sortOrder: result.sortOrder,
+    useGenericAddUser: config.toggles.useGenericAddUser,
   });
 };
 

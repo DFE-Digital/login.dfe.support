@@ -1,0 +1,96 @@
+<a href="new-user" class="link-back">Back</a>
+<div class="grid-row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Add organisation
+        </h1>
+        <p class="lede">Search for the organisation the user is associated with. </p>
+    </div>
+</div>
+<div class="grid-row">
+    <div class="col-6">
+        <div class="search-field">
+            <form method="post">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+                <input type="hidden" name="page" value="1" />
+                <fieldset class="search-input">
+                    <label for="criteria" class="vh">Search by name, email or organisation</label>
+                    <input type="text" id="criteria" name="criteria" class="form-control" value="<%=criteria%>">
+                </fieldset>
+                <fieldset class="search-submit">
+                    <button type="submit" class="button">Search</button>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%if(results && results.length > 0) {%>
+
+<%if (numberOfPages > 1) {%>
+<div class="row meta">
+    <div class="col-5">
+        <p>Showing <%=firstRecordNumber%> - <%=lastRecordNumber%> of <b><%=numberOfResults%></b> organisations</p>
+    </div>
+    <div class="col-4">
+
+        <div class="pagination" data-criteria="" data-sort="name" data-sortdir="asc"
+             data-current="<%=currentPage%>" data-total="<%=numberOfPages%>">
+        </div>
+
+    </div>
+</div>
+<%}%>
+
+<div class="grid-row">
+    <div class="col-3">
+
+    </div>
+    <div class="col-9">
+        <ol class="search-results">
+            <%for (let i = 0; i < results.length; i += 1) {%>
+            <%const org = results[i];%>
+            <li>
+                <article>
+                    <h2 class="heading-medium">
+                        <form method="post">
+                            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+                            <input type="hidden" name="selectedOrganisation" value="<%=org.id%>" />
+                            <button class="button-link"><%=org.name%></button>
+                        </form>
+                    </h2>
+                    <dl class="inline">
+                        <%if(org.urn) {%>
+                        <dt>URN</dt>
+                        <dd><%=org.urn%></dd>
+                        <%} else if(org.uid) {%>
+                        <dt>UID</dt>
+                        <dd><%=org.uid%></dd>
+                        <%}%>
+
+                        <dt>Address</dt>
+                        <dd><%=org.address%></dd>
+
+                        <%if(org.type || org.category) {%>
+                        <dt>Type</dt>
+                        <dd><%=(org.type ? org.type.name : org.category.name)%></dd>
+                        <%}%>
+                    </dl>
+                </article>
+            </li>
+            <%}%>
+        </ol>
+    </div>
+</div>
+<%} else if (results) {%>
+<div class="grid-row">
+    <div class="col-3">
+
+    </div>
+    <div class="col-9">
+        <div>No organisations found matching search criteria</div>
+    </div>
+</div>
+<%} else {%>
+<div>You can <a href="confirm-new-user">skip this step</a> if you do not want to associated the user with an organisation at this time.</div>
+<%}%>
