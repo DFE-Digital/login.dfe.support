@@ -195,6 +195,27 @@ const addInvitationService = async (invitationId, organisationId, serviceId, rol
   }
 };
 
+const addInvitationOrganisation = async (invitationId, organisationId, roleId, correlationId) => {
+  const token = await jwtStrategy(config.organisations.service).getBearerToken();
+
+  try {
+    await rp({
+      method: 'PUT',
+      uri: `${config.organisations.service.url}/organisations/${organisationId}/invitations/${invitationId}`,
+      headers: {
+        authorization: `Bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      body: {
+        roleId,
+      },
+      json: true,
+    });
+  } catch (e) {
+    throw e;
+  }
+};
+
 const getServicesByUserId = async (id, reqId) => {
 
   const token = await jwtStrategy(config.organisations.service).getBearerToken();
@@ -286,6 +307,7 @@ module.exports = {
   getOrganisationById,
   getServiceIdentifierDetails,
   addInvitationService,
+  addInvitationOrganisation,
   getServicesByUserId,
   putSingleServiceIdentifierForUser,
   searchOrganisations,
