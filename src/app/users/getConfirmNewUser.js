@@ -13,17 +13,17 @@ const getConfirmNewUser = (req, res) => {
   return res.render('users/views/confirmNewUser', {
     csrfToken: req.csrfToken(),
     user: {
-      firstName: req.session.newUser.firstName,
-      lastName: req.session.newUser.lastName,
-      email: req.session.newUser.email,
+      firstName: req.session.user.firstName,
+      lastName: req.session.user.lastName,
+      email: req.session.user.email,
     },
-    organisation: req.session.newUser.organisationId ? {
-      id: req.session.newUser.organisationId,
-      name: req.session.newUser.organisationName,
+    organisation: req.session.user.organisationId ? {
+      id: req.session.user.organisationId,
+      name: req.session.user.organisationName,
     } : undefined,
     role: {
-      id: req.session.newUser.permission,
-      name: getRoleName(req.session.newUser.permission),
+      id: req.session.user.permission,
+      name: getRoleName(req.session.user.permission),
     },
   });
 };

@@ -7,10 +7,10 @@ const getNewUser = (req, res) => {
     validationMessages: {},
   };
 
-  if (req.session.newUser) {
-    model.firstName = req.session.newUser.firstName;
-    model.lastName = req.session.newUser.lastName;
-    model.email = req.session.newUser.email;
+  if (req.session.user) {
+    model.firstName = req.session.user.firstName;
+    model.lastName = req.session.user.lastName;
+    model.email = req.session.user.email;
   }
 
   res.render('users/views/newUser', model);

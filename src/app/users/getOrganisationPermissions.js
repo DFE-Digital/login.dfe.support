@@ -1,8 +1,8 @@
 const getOrganisationPermissions = async (req, res) => {
   return res.render('users/views/organisationPermissions', {
     csrfToken: req.csrfToken(),
-    userFullName: `${req.session.newUser.firstName} ${req.session.newUser.lastName}`,
-    organisationName: req.session.newUser.organisationName,
+    userFullName: `${req.session.user.firstName} ${req.session.user.lastName}`,
+    organisationName: req.session.user.organisationName,
     selectedLevel: null,
     validationMessages: {},
   });
