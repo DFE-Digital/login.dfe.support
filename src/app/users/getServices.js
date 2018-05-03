@@ -117,14 +117,18 @@ const getToken = async (userId, serviceId, correlationId) => {
 const action = async (req, res) => {
   const user = await getUserDetails(req);
   const organisationDetails = await getOrganisations(user.id, req.id);
-  const organisations = await Promise.all(organisationDetails.map(async (org) => {
-    org.services = await Promise.all(org.services.map(async (svc) => {
+
+  const organisations = [];
+  for (let i = 0; i < organisationDetails.length; i++) {
+    const org = Object.assign(Object.assign({}, organisationDetails[i]), { services: [] });
+    for (let j = 0; j < organisationDetails[i].services.length; j++) {
+      const svc = Object.assign({}, organisationDetails[i].services[j]);
       svc.lastLogin = await getLastLoginForService(user.id, svc.id, req.id);
       svc.token = await getToken(user.id, svc.id, req.id);
-      return svc;
-    }));
-    return org;
-  }));
+      org.services.push(svc);
+    }
+    organisations.push(org);
+  }
 
   req.session.user = {
     firstName: user.firstName,
