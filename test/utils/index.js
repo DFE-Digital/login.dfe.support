@@ -10,7 +10,8 @@ const loggerMockFactory = () => {
 const configMockFactory = (customConfig) => {
   return Object.assign({
     hostingEnvironment: {
-      agentKeepAlive: {}
+      agentKeepAlive: {},
+      env: 'test-run',
     },
     cache: {
       type: 'static',
