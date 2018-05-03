@@ -1,5 +1,5 @@
 const logger = require('./../../infrastructure/logger');
-const { addInvitationOrganisation } = require('./../../infrastructure/organisations');
+const { addInvitationOrganisation, setUserAccessToOrganisation } = require('./../../infrastructure/organisations');
 
 const addOrganisationToInvitation = async (uid, req) => {
   const invitationId = uid.substr(4);
@@ -19,9 +19,24 @@ const addOrganisationToInvitation = async (uid, req) => {
   });
 };
 const addOrganisationToUser = async (uid, req) => {
-  // TODO: Add org to user
+  const organisationId = req.session.user.organisationId;
+  const organisationName = req.session.user.organisationName;
+  const permissionId = req.session.user.permission;
 
-  // TODO: Audit
+  await setUserAccessToOrganisation(uid, organisationId, permissionId, req.id);
+
+  logger.audit(`${req.user.email} (id: ${req.user.sub}) added organisation ${organisationName} (id: ${organisationId}) to user for ${req.session.user.email} (id: ${uid})`, {
+    type: 'support',
+    subType: 'user-org',
+    userId: req.user.sub,
+    userEmail: req.user.email,
+    editedUser: uid,
+    editedFields: [{
+      name: 'new_organisation',
+      oldValue: undefined,
+      newValue: organisationId,
+    }],
+  });
 };
 
 const getConfirmAssociateOrganisation = async (req, res) => {
