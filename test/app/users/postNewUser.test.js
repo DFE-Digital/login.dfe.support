@@ -27,27 +27,27 @@ describe('When adding new users personal details', () => {
   it('then it should add user details to session', async () => {
     await postNewUser(req, res);
 
-    expect(req.session.newUser).not.toBeNull();
-    expect(req.session.newUser.firstName).toBe('James');
-    expect(req.session.newUser.lastName).toBe('Howlett');
-    expect(req.session.newUser.email).toBe('logan@x-men.test');
+    expect(req.session.user).not.toBeNull();
+    expect(req.session.user.firstName).toBe('James');
+    expect(req.session.user.lastName).toBe('Howlett');
+    expect(req.session.user.email).toBe('logan@x-men.test');
   });
 
   it('then it should overwrite user personal details and leave other user details if already there', async () => {
     const organisation = {
       id: 'org1',
     };
-    req.session.newUser = {
+    req.session.user = {
       organisation,
     };
 
     await postNewUser(req, res);
 
-    expect(req.session.newUser).not.toBeNull();
-    expect(req.session.newUser.firstName).toBe('James');
-    expect(req.session.newUser.lastName).toBe('Howlett');
-    expect(req.session.newUser.email).toBe('logan@x-men.test');
-    expect(req.session.newUser.organisation).toBe(organisation);
+    expect(req.session.user).not.toBeNull();
+    expect(req.session.user.firstName).toBe('James');
+    expect(req.session.user.lastName).toBe('Howlett');
+    expect(req.session.user.email).toBe('logan@x-men.test');
+    expect(req.session.user.organisation).toBe(organisation);
   });
 
   it('then it should redirect to associate organisations view', async () => {

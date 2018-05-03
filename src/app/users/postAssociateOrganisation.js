@@ -5,8 +5,8 @@ const postAssociateOrganisation = async (req, res) => {
   const selectedOrganisationId = req.body.selectedOrganisation;
   const selectedOrganisation = selectedOrganisationId ? await getOrganisationById(selectedOrganisationId, req.id) : undefined;
   if (selectedOrganisation) {
-    req.session.newUser.organisationId = selectedOrganisation.id;
-    req.session.newUser.organisationName = selectedOrganisation.name;
+    req.session.user.organisationId = selectedOrganisation.id;
+    req.session.user.organisationName = selectedOrganisation.name;
     return res.redirect('organisation-permissions');
   }
 

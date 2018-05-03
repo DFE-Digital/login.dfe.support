@@ -3,8 +3,8 @@ const validate = (req) => {
 
   const level = parseInt(req.body.selectedLevel);
   const model = {
-    userFullName: `${req.session.newUser.firstName} ${req.session.newUser.lastName}`,
-    organisationName: req.session.newUser.organisationName,
+    userFullName: `${req.session.user.firstName} ${req.session.user.lastName}`,
+    organisationName: req.session.user.organisationName,
     selectedLevel: isNaN(level) ? undefined : level,
     validationMessages: {},
   };
@@ -26,7 +26,7 @@ const postOrganisationPermissions = (req, res) => {
     return res.render('users/views/organisationPermissions', model);
   }
 
-  req.session.newUser.permission = model.selectedLevel;
+  req.session.user.permission = model.selectedLevel;
   return res.redirect('confirm-new-user');
 };
 
