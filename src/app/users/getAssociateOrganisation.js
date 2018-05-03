@@ -8,6 +8,7 @@ const getAssociateOrganisation = async (req, res) => {
     numberOfResults: 1,
     firstRecordNumber: 1,
     lastRecordNumber: 1,
+    canSkip: req.params.uid ? false : true,
   });
 };
 

@@ -13,43 +13,42 @@ const getOrganisations = async (userId, correlationId) => {
   }
 
   const userMap = [];
-  const organisations = [];
-  // orgServiceMapping.forEach((orgSvcMap) => {
-  for (let i = 0; i < orgServiceMapping.length; i += 1) {
-    const orgSvcMap = orgServiceMapping[i];
-    let org = organisations.find(o => o.id === orgSvcMap.organisation.id);
-    if (!org) {
-      org = {
-        id: orgSvcMap.organisation.id,
-        name: orgSvcMap.organisation.name,
-        services: [],
+
+  const organisations = await Promise.all(orgServiceMapping.map(async (invitation) => {
+    const services = await Promise.all(invitation.services.map(async (service) => {
+      const approvers = await Promise.all(invitation.approvers.map(async (approverId) => {
+        let approver = userMap.find(u => u.id === approverId);
+        if (!approver) {
+          const user = await getUser(approverId, correlationId);
+          if (!user) {
+            return null;
+          }
+          approver = {
+            id: approverId,
+            name: `${user.given_name} ${user.family_name}`,
+          };
+        }
+
+        return approver;
+      }));
+
+      return {
+        id: service.id,
+        name: service.name,
+        userType: invitation.role,
+        grantedAccessOn: service.requestDate ? new Date(service.requestDate) : null,
+        lastLogin: null,
+        approvers: approvers.filter(x => x !== null),
+        token: null,
       };
-      organisations.push(org);
-    }
+    }));
 
-    const approvers = orgSvcMap.approvers ? await Promise.all(orgSvcMap.approvers.map(async (approverId) => {
-      let approver = userMap.find(u => u.id === approverId);
-      if (!approver) {
-        const user = await getUser(approverId, correlationId);
-        approver = {
-          id: approverId,
-          name: `${user.given_name} ${user.family_name}`,
-        };
-      }
-
-      return approver;
-    })) : [];
-
-    org.services.push({
-      id: orgSvcMap.service ? orgSvcMap.service.id : orgSvcMap.id,
-      name: orgSvcMap.service ? orgSvcMap.service.name : orgSvcMap.name,
-      userType: orgSvcMap.role,
-      grantedAccessOn: orgSvcMap.requestDate ? new Date(orgSvcMap.requestDate) : null,
-      lastLogin: null,
-      approvers,
-      token: null,
-    });
-  }
+    return {
+      id: invitation.organisation.id,
+      name: invitation.organisation.name,
+      services,
+    };
+  }));
 
   return organisations;
 };
@@ -121,14 +120,24 @@ const getToken = async (userId, serviceId, correlationId) => {
 const action = async (req, res) => {
   const user = await getUserDetails(req);
   const organisationDetails = await getOrganisations(user.id, req.id);
-  const organisations = await Promise.all(organisationDetails.map(async (org) => {
-    org.services = await Promise.all(org.services.map(async (svc) => {
+
+  const organisations = [];
+  for (let i = 0; i < organisationDetails.length; i++) {
+    const org = Object.assign(Object.assign({}, organisationDetails[i]), { services: [] });
+    for (let j = 0; j < organisationDetails[i].services.length; j++) {
+      const svc = Object.assign({}, organisationDetails[i].services[j]);
       svc.lastLogin = await getLastLoginForService(user.id, svc.id, req.id);
       svc.token = await getToken(user.id, svc.id, req.id);
-      return svc;
-    }));
-    return org;
-  }));
+      org.services.push(svc);
+    }
+    organisations.push(org);
+  }
+
+  req.session.user = {
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+  };
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) viewed user ${user.email} (id: ${user.id})`, {
     type: 'support',

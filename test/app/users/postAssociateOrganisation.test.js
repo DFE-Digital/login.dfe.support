@@ -17,7 +17,7 @@ describe('when associating user to organisations', () => {
         page: 1,
       },
       session: {
-        newUser: {
+        user: {
           firstName: 'James',
           lastName: 'Howlett',
           email: 'logan@x-men.test',
@@ -61,7 +61,8 @@ describe('when associating user to organisations', () => {
       numberOfPages: 2,
       numberOfResults: 49,
       firstRecordNumber: 1,
-      lastRecordNumber: 25
+      lastRecordNumber: 25,
+      canSkip: true,
     });
   });
 
@@ -72,8 +73,8 @@ describe('when associating user to organisations', () => {
 
     await postAssociateOrganisation(req, res);
 
-    expect(req.session.newUser.organisationId).toBe('org1');
-    expect(req.session.newUser.organisationName).toBe('Organisation One');
+    expect(req.session.user.organisationId).toBe('org1');
+    expect(req.session.user.organisationName).toBe('Organisation One');
   });
 
   it('then it should redirect to organisation permissions if organisation is selected', async () => {

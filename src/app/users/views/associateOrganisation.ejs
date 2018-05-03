@@ -1,4 +1,4 @@
-<a href="new-user" class="link-back">Back</a>
+<div class="js-back-link"></div>
 <div class="grid-row">
     <div class="col-8">
         <h1 class="heading-xlarge">
@@ -34,8 +34,8 @@
     </div>
     <div class="col-4">
 
-        <div class="pagination" data-criteria="" data-sort="name" data-sortdir="asc"
-             data-current="<%=currentPage%>" data-total="<%=numberOfPages%>">
+        <div class="pagination" data-criteria="<%=criteria%>" data-sort="name" data-sortdir="asc"
+             data-current="<%=currentPage%>" data-total="<%=numberOfPages%>" data-method="form" data-csrf="<%=csrfToken%>">
         </div>
 
     </div>
@@ -43,9 +43,6 @@
 <%}%>
 
 <div class="grid-row">
-    <div class="col-3">
-
-    </div>
     <div class="col-9">
         <ol class="search-results">
             <%for (let i = 0; i < results.length; i += 1) {%>
@@ -82,15 +79,31 @@
         </ol>
     </div>
 </div>
-<%} else if (results) {%>
-<div class="grid-row">
-    <div class="col-3">
+<%if(results && results.length > 0) {%>
+<%if (numberOfPages > 1) {%>
+<div class="row meta">
+    <div class="col-5">
+        <p>Showing <%=firstRecordNumber%> - <%=lastRecordNumber%> of <b><%=numberOfResults%></b> organisations</p>
+    </div>
+    <div class="col-4">
+
+        <div class="pagination" data-criteria="<%=criteria%>" data-sort="name" data-sortdir="asc"
+             data-current="<%=currentPage%>" data-total="<%=numberOfPages%>" data-method="form" data-csrf="<%=csrfToken%>">
+        </div>
 
     </div>
+</div>
+<%}%>
+<%}%>
+
+<%} else if (results) {%>
+<div class="grid-row">
     <div class="col-9">
-        <div>No organisations found matching search criteria</div>
+        <div class="empty-state">
+            <p>No organisations found matching search criteria</p>
+        </div>
     </div>
 </div>
-<%} else {%>
+<%} else if (canSkip) {%>
 <div>You can <a href="confirm-new-user">skip this step</a> if you do not want to associated the user with an organisation at this time.</div>
 <%}%>

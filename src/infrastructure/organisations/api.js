@@ -43,7 +43,7 @@ const callOrganisationsApi = async (endpoint, method, body, correlationId) => {
         }
         throw e;
       }
-    },{factor: retryFactor}
+    }, { factor: retryFactor }
   );
 
 
@@ -54,7 +54,7 @@ const getUserOrganisations = async (userId, correlationId) => {
 };
 
 const getInvitationOrganisations = async (invitationId, correlationId) => {
-  return await callOrganisationsApi(`invitations/${invitationId}`, 'GET', undefined, correlationId);
+  return await callOrganisationsApi(`invitations/v2/${invitationId}`, 'GET', undefined, correlationId);
 };
 
 const getServiceById = async (serviceId, correlationId) => {
@@ -124,6 +124,11 @@ const searchOrganisations = async (criteria, pageNumber, correlationId) => {
   return await callOrganisationsApi(`organisations?search=${criteria}&page=${pageNumber}`, 'GET', undefined, correlationId);
 };
 
+const setUserAccessToOrganisation = async (userId, organisationId, roleId, correlationId) => {
+  const body = { roleId };
+  return await callOrganisationsApi(`organisations/${organisationId}/users/${userId}`, 'PUT', body, correlationId);
+};
+
 module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -137,4 +142,5 @@ module.exports = {
   getServicesByUserId,
   putSingleServiceIdentifierForUser,
   searchOrganisations,
+  setUserAccessToOrganisation,
 };
