@@ -20,6 +20,9 @@ const getOrganisations = async (userId, correlationId) => {
         let approver = userMap.find(u => u.id === approverId);
         if (!approver) {
           const user = await getUser(approverId, correlationId);
+          if (!user) {
+            return null;
+          }
           approver = {
             id: approverId,
             name: `${user.given_name} ${user.family_name}`,
@@ -35,7 +38,7 @@ const getOrganisations = async (userId, correlationId) => {
         userType: invitation.role,
         grantedAccessOn: service.requestDate ? new Date(service.requestDate) : null,
         lastLogin: null,
-        approvers,
+        approvers: approvers.filter(x => x !== null),
         token: null,
       };
     }));
