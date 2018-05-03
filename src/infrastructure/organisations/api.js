@@ -9,102 +9,60 @@ const rp = require('request-promise').defaults({
     keepAliveTimeout: config.hostingEnvironment.agentKeepAlive.keepAliveTimeout,
   }),
 });
+const promiseRetry = require('promise-retry');
 
-
-const getUserOrganisations = async (userId, correlationId) => {
+const callOrganisationsApi = async (endpoint, method, body, correlationId) => {
   const token = await jwtStrategy(config.organisations.service).getBearerToken();
 
-  try {
-    const userServiceMapping = await rp({
-      method: 'GET',
-      uri: `${config.organisations.service.url}/organisations/associated-with-user/${userId}`,
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-      json: true,
-    });
+  const numberOfRetires = config.organisations.service.numberOfRetries || 3;
+  const retryFactor = config.organisations.service.retryFactor || 2;
 
-    return userServiceMapping;
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 401 || status === 404) {
-      return null;
-    }
-    throw e;
-  }
+  return promiseRetry(async (retry, number) => {
+      try {
+        return await rp({
+          method: method,
+          uri: `${config.organisations.service.url}/${endpoint}`,
+          headers: {
+            authorization: `bearer ${token}`,
+            'x-correlation-id': correlationId,
+          },
+          body: body,
+          json: true,
+          strictSSL: config.hostingEnvironment.env.toLowerCase() !== 'dev',
+        });
+      } catch (e) {
+        const status = e.statusCode ? e.statusCode : 500;
+        if (status === 401 || status === 404) {
+          return null;
+        }
+        if (status === 409) {
+          return false;
+        }
+        if ((status === 500 || status === 503) && number < numberOfRetires) {
+          retry();
+        }
+        throw e;
+      }
+    },{factor: retryFactor}
+  );
+
+
+};
+
+const getUserOrganisations = async (userId, correlationId) => {
+  return await callOrganisationsApi(`organisations/associated-with-user/${userId}`, 'GET', undefined, correlationId);
 };
 
 const getInvitationOrganisations = async (invitationId, correlationId) => {
-  const token = await jwtStrategy(config.organisations.service).getBearerToken();
-
-  try {
-    const invitationServiceMapping = await rp({
-      method: 'GET',
-      uri: `${config.organisations.service.url}/invitations/${invitationId}`,
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-      json: true,
-    });
-
-    return invitationServiceMapping;
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 401 || status === 404) {
-      return null;
-    }
-    throw e;
-  }
+  return await callOrganisationsApi(`invitations/${invitationId}`, 'GET', undefined, correlationId);
 };
 
 const getServiceById = async (serviceId, correlationId) => {
-  const token = await jwtStrategy(config.organisations.service).getBearerToken();
-
-  try {
-    const service = await rp({
-      method: 'GET',
-      uri: `${config.organisations.service.url}/services/${serviceId}`,
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-      json: true,
-    });
-
-    return service;
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 401 || status === 404) {
-      return null;
-    }
-    throw e;
-  }
+  return await callOrganisationsApi(`services/${serviceId}`, 'GET', undefined, correlationId);
 };
 
 const getPageOfOrganisations = async (pageNumber, correlationId) => {
-  const token = await jwtStrategy(config.organisations.service).getBearerToken();
-
-  try {
-    const pageOfOrgs = await rp({
-      method: 'GET',
-      uri: `${config.organisations.service.url}/organisations?page=${pageNumber}`,
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-      json: true,
-    });
-
-    return pageOfOrgs;
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 401 || status === 404) {
-      return null;
-    }
-    throw e;
-  }
+  return await callOrganisationsApi(`organisations?page=${pageNumber}`, 'GET', undefined, correlationId);
 };
 
 const getAllOrganisations = async () => {
@@ -126,176 +84,44 @@ const getAllOrganisations = async () => {
 };
 
 const getOrganisationById = async (id, correlationId) => {
-  const token = await jwtStrategy(config.organisations.service).getBearerToken();
-
-  try {
-    const organisation = await rp({
-      method: 'GET',
-      uri: `${config.organisations.service.url}/organisations/${id}`,
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-      json: true,
-    });
-
-    return organisation;
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 404) {
-      return null;
-    }
-    throw e;
-  }
+  return await callOrganisationsApi(`organisations/${id}`, 'GET', undefined, correlationId);
 };
 
 const getServiceIdentifierDetails = async (serviceId, identifierKey, identifierValue, correlationId) => {
-  const token = await jwtStrategy(config.organisations.service).getBearerToken();
-
-  try {
-    const service = await rp({
-      method: 'GET',
-      uri: `${config.organisations.service.url}/services/${serviceId}/identifiers/${identifierKey}/${identifierValue}`,
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-      json: true,
-    });
-
-    return service;
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 404) {
-      return null;
-    }
-    throw e;
-  }
+  return await callOrganisationsApi(`services/${serviceId}/identifiers/${identifierKey}/${identifierValue}`, 'GET', undefined, correlationId);
 };
 
 const addInvitationService = async (invitationId, organisationId, serviceId, roleId, externalIdentifiers, correlationId) => {
-  const token = await jwtStrategy(config.organisations.service).getBearerToken();
+  const body = {
+    roleId,
+    externalIdentifiers,
+  };
 
-  try {
-    await rp({
-      method: 'PUT',
-      uri: `${config.organisations.service.url}/organisations/${organisationId}/services/${serviceId}/invitations/${invitationId}`,
-      headers: {
-        authorization: `Bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-      body: {
-        roleId,
-        externalIdentifiers,
-      },
-      json: true,
-    });
-  } catch (e) {
-    throw e;
-  }
+  return await callOrganisationsApi(`organisations/${organisationId}/services/${serviceId}/invitations/${invitationId}`, 'PUT', body, correlationId);
+
 };
 
 const addInvitationOrganisation = async (invitationId, organisationId, roleId, correlationId) => {
-  const token = await jwtStrategy(config.organisations.service).getBearerToken();
-
-  try {
-    await rp({
-      method: 'PUT',
-      uri: `${config.organisations.service.url}/organisations/${organisationId}/invitations/${invitationId}`,
-      headers: {
-        authorization: `Bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-      body: {
-        roleId,
-      },
-      json: true,
-    });
-  } catch (e) {
-    throw e;
-  }
+  const body = {
+    roleId,
+  };
+  return await callOrganisationsApi(`organisations/${organisationId}/invitations/${invitationId}`, 'PUT', body, correlationId);
 };
 
 const getServicesByUserId = async (id, reqId) => {
-
-  const token = await jwtStrategy(config.organisations.service).getBearerToken();
-
-  try {
-    const response = await rp({
-      method: 'GET',
-      uri: `${config.organisations.service.url}/services/associated-with-user/${id}`,
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': reqId,
-      },
-      json: true,
-    });
-
-    return response;
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 401 || status === 404) {
-      return null;
-    }
-    throw e;
-  }
-
-
+  return await callOrganisationsApi(`services/associated-with-user/${id}`, 'GET', undefined, reqId);
 };
 
 const putSingleServiceIdentifierForUser = async (userId, serviceId, orgId, value, reqId) => {
-  const token = await jwtStrategy(config.organisations.service).getBearerToken();
-
-  try {
-    await rp({
-      method: 'PUT',
-      uri: `${config.organisations.service.url}/organisations/${orgId}/services/${serviceId}/identifiers/${userId}`,
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': reqId,
-      },
-      body: {
-        id_key: 'k2s-id',
-        id_value: value
-      },
-      json: true,
-    });
-
-    return true;
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 409) {
-      return false;
-    }
-    if (status === 401 || status === 404) {
-      return null;
-    }
-    throw e;
-  }
+  const body = {
+    id_key: 'k2s-id',
+    id_value: value
+  };
+  return await callOrganisationsApi(`organisations/${orgId}/services/${serviceId}/identifiers/${userId}`, 'PUT', body, reqId);
 };
 
 const searchOrganisations = async (criteria, pageNumber, correlationId) => {
-  const token = await jwtStrategy(config.organisations.service).getBearerToken();
-
-  try {
-    const pageOfOrgs = await rp({
-      method: 'GET',
-      uri: `${config.organisations.service.url}/organisations?search=${criteria}&page=${pageNumber}`,
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-      json: true,
-    });
-
-    return pageOfOrgs;
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 401 || status === 404) {
-      return null;
-    }
-    throw e;
-  }
+  return await callOrganisationsApi(`organisations?search=${criteria}&page=${pageNumber}`, 'GET', undefined, correlationId);
 };
 
 module.exports = {
