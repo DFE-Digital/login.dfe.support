@@ -3,46 +3,57 @@
 <% for (let o = 0; o < locals.organisations.length; o++) { %>
 <% const org = locals.organisations[o];%>
 
-<h3 class="heading-small spacer-heading"><%=org.name%> <%=org.urn%></h3>
-<% if (org.services.length > 0) {%>
-<table class="data no-borders">
-    <thead>
-        <tr>
-            <th scope="col" class="cwp-30">Service</th>
-            <th scope="col" class="cwp-25">User type</th>
-            <th scope="col" class="cwp-15">Activated</th>
-            <th scope="col" class="cwp-15">Last active</th>
-            <th scope="col" class="cwp-15">Token</th>
-        </tr>
-    </thead>
-    <tbody>
-    <%for(let s = 0; s < org.services.length; s++) {%>
-    <%const service = org.services[s];%>
-    <tr>
-        <td><%=service.name%></td>
-        <td><%=service.userType.name%></td>
-        <%if(service.grantedAccessOn) {%>
-        <td><%=locals.moment(service.grantedAccessOn).format('DD MMM YYYY')%></td>
-        <%} else {%>
-        <td>Pending</td>
-        <%}%>
-        <td><%=service.lastLogin ? locals.moment(service.lastLogin).format('DD MMM YYYY, HH:mm:ss') : 'Never'%></td>
-        <td>
-            <%if (service.token && service.token.serialNumber) {%>
-                <% if (locals.user.id.startsWith('inv-')) {%>
-                    <%=service.token ? service.token.serialNumber : ''%>
-                <% } else {%>
-                    <a href="/userDevices/<%=service.token.nonFormattedSerialNumber%>/<%=locals.user.id%>"><%=service.token.serialNumber%></a>
-                <% } %>
-            <% } else { %>
-                <a href="/users/<%=locals.user.id%>/assign-digipass/<%=service.id%>">Assign</a>
-            <% } %>
-        </td>
-    </tr>
-    <%}%>
-    </tbody>
-</table>
-<%} else {%>
-<div><%=user.firstName%> <%=user.lastName%> does not have any services for <%=org.name%></div>
-<%}%>
+    <article class="organisation-services">
+        <section class="organisation">
+            <header>
+                <h3 class="heading-small spacer-heading"><%=org.name%> <%=org.urn%></h3>
+            </header>
+        </section>
+        <section class="services">
+            <% if (org.services.length > 0) {%>
+            <table class="data no-borders">
+                <thead>
+                <tr>
+                    <th scope="col" class="cwp-30">Service</th>
+                    <th scope="col" class="cwp-25">User type</th>
+                    <th scope="col" class="cwp-15">Activated</th>
+                    <th scope="col" class="cwp-15">Last active</th>
+                    <th scope="col" class="cwp-15">Token</th>
+                </tr>
+                </thead>
+                <tbody>
+                <%for(let s = 0; s < org.services.length; s++) {%>
+                <%const service = org.services[s];%>
+                <tr>
+                    <td><%=service.name%></td>
+                    <td><%=service.userType.name%></td>
+                    <%if(service.grantedAccessOn) {%>
+                    <td><%=locals.moment(service.grantedAccessOn).format('DD MMM YYYY')%></td>
+                    <%} else {%>
+                    <td>Pending</td>
+                    <%}%>
+                    <td><%=service.lastLogin ? locals.moment(service.lastLogin).format('DD MMM YYYY, HH:mm:ss') : 'Never'%></td>
+                    <td>
+                        <%if (service.token && service.token.serialNumber) {%>
+                        <% if (locals.user.id.startsWith('inv-')) {%>
+                        <%=service.token ? service.token.serialNumber : ''%>
+                        <% } else {%>
+                        <a href="/userDevices/<%=service.token.nonFormattedSerialNumber%>/<%=locals.user.id%>"><%=service.token.serialNumber%></a>
+                        <% } %>
+                        <% } else { %>
+                        <a href="/users/<%=locals.user.id%>/assign-digipass/<%=service.id%>">Assign</a>
+                        <% } %>
+                    </td>
+                </tr>
+                <%}%>
+                </tbody>
+            </table>
+            <%} else {%>
+            <div class="empty-state">
+                <p><%=user.firstName%> <%=user.lastName%> does not have any services at <%=org.name%></p>
+            </div>
+            <%}%>
+        </section>
+    </article>
+
 <%}%>
