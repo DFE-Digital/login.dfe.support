@@ -27,7 +27,7 @@ const postOrganisationPermissions = (req, res) => {
   }
 
   req.session.user.permission = model.selectedLevel;
-  return res.redirect('confirm-new-user');
+  return res.redirect(req.params.uid ? 'confirm-associate-organisation' : 'confirm-new-user');
 };
 
 module.exports = postOrganisationPermissions;

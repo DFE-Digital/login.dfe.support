@@ -61,7 +61,8 @@ describe('when associating user to organisations', () => {
       numberOfPages: 2,
       numberOfResults: 49,
       firstRecordNumber: 1,
-      lastRecordNumber: 25
+      lastRecordNumber: 25,
+      canSkip: true,
     });
   });
 

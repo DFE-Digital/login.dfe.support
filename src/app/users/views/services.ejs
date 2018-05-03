@@ -1,5 +1,7 @@
 <%- include('summaryPartial', {area: 'services', user: locals.user, isInvitation: locals.isInvitation}); %>
 
+<div><a href="associate-organisation">Add Organisation</a></div>
+
 <% for (let o = 0; o < locals.organisations.length; o++) { %>
 <% const org = locals.organisations[o];%>
 
