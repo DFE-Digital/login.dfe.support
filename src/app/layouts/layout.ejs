@@ -187,10 +187,6 @@
               .text(value)
             $li.html($span);
           } else {
-
-            // var $a = $('<a/>')
-            //   .attr('href', '?criteria=' + criteria + '&page=' + value + '&sort=' + sort + '&sortdir=' + sortdir)
-            //   .text(value);
             var $elem = paginationPage(criteria, value, sort, sortdir, method, csrf);
             $li.html($elem);
           }
