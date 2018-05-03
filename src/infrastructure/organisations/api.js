@@ -41,7 +41,7 @@ const getInvitationOrganisations = async (invitationId, correlationId) => {
   try {
     const invitationServiceMapping = await rp({
       method: 'GET',
-      uri: `${config.organisations.service.url}/invitations/${invitationId}`,
+      uri: `${config.organisations.service.url}/invitations/v2/${invitationId}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
@@ -239,8 +239,6 @@ const getServicesByUserId = async (id, reqId) => {
     }
     throw e;
   }
-
-
 };
 
 const putSingleServiceIdentifierForUser = async (userId, serviceId, orgId, value, reqId) => {

@@ -43,13 +43,6 @@ describe('when getting users service details', () => {
     getUserOrganisations.mockReset();
     getUserOrganisations.mockReturnValue([
       {
-        id: '83f00ace-f1a0-4338-8784-fa14f5943e5a',
-        name: 'Some service',
-        description: 'Some service that does some stuff',
-        status: 1,
-        userId: '7a1b077a-d7d4-4b60-83e8-1a1b49849510',
-        requestDate: '2018-01-18T10:46:59.385Z',
-        approvers: [],
         organisation: {
           id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
           name: 'Big School'
@@ -58,32 +51,24 @@ describe('when getting users service details', () => {
           id: 0,
           name: 'End user'
         },
+        approvers: [],
+        services: [
+          {
+            id: '83f00ace-f1a0-4338-8784-fa14f5943e5a',
+            name: 'Some service',
+            requestDate: '2018-01-18T10:46:59.385Z',
+            status: 1,
+          },
+          {
+
+            id: '3ff78432-fb20-4ef7-83de-35b3fbb95159',
+            name: 'Some other service',
+            requestDate: '2018-01-18T10:56:59.385Z',
+            status: 1,
+          }
+        ]
       },
       {
-        id: '3ff78432-fb20-4ef7-83de-35b3fbb95159',
-        name: 'Some other service',
-        description: 'Some service that does some stuff',
-        status: 1,
-        userId: '7a1b077a-d7d4-4b60-83e8-1a1b49849510',
-        requestDate: '2018-01-18T10:56:59.385Z',
-        approvers: [],
-        organisation: {
-          id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
-          name: 'Big School'
-        },
-        role: {
-          id: 0,
-          name: 'End user'
-        },
-      },
-      {
-        id: 'ae58ed71-4e0f-48d4-8577-4cf6f1b7d299',
-        name: 'Yet another service',
-        description: 'Some service that does some stuff',
-        status: 1,
-        userId: '7a1b077a-d7d4-4b60-83e8-1a1b49849510',
-        requestDate: '2018-01-19T10:46:59.385Z',
-        approvers: [],
         organisation: {
           id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
           name: 'Small School'
@@ -92,6 +77,15 @@ describe('when getting users service details', () => {
           id: 10000,
           name: 'Approver'
         },
+        approvers: [],
+        services: [
+          {
+            id: 'ae58ed71-4e0f-48d4-8577-4cf6f1b7d299',
+            name: 'Yet another service',
+            requestDate: '2018-01-19T10:46:59.385Z',
+            status: 1,
+          },
+        ],
       },
     ]);
 

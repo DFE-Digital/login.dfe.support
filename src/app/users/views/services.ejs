@@ -4,6 +4,7 @@
 <% const org = locals.organisations[o];%>
 
 <h3 class="heading-small spacer-heading"><%=org.name%> <%=org.urn%></h3>
+<% if (org.services.length > 0) {%>
 <table class="data no-borders">
     <thead>
         <tr>
@@ -41,4 +42,7 @@
     <%}%>
     </tbody>
 </table>
+<%} else {%>
+<div><%=user.firstName%> <%=user.lastName%> does not have any services for <%=org.name%></div>
+<%}%>
 <%}%>
