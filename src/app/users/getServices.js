@@ -13,43 +13,39 @@ const getOrganisations = async (userId, correlationId) => {
   }
 
   const userMap = [];
-  const organisations = [];
-  // orgServiceMapping.forEach((orgSvcMap) => {
-  for (let i = 0; i < orgServiceMapping.length; i += 1) {
-    const orgSvcMap = orgServiceMapping[i];
-    let org = organisations.find(o => o.id === orgSvcMap.organisation.id);
-    if (!org) {
-      org = {
-        id: orgSvcMap.organisation.id,
-        name: orgSvcMap.organisation.name,
-        services: [],
+
+  const organisations = await Promise.all(orgServiceMapping.map(async (invitation) => {
+    const services = await Promise.all(invitation.services.map(async (service) => {
+      const approvers = await Promise.all(invitation.approvers.map(async (approverId) => {
+        let approver = userMap.find(u => u.id === approverId);
+        if (!approver) {
+          const user = await getUser(approverId, correlationId);
+          approver = {
+            id: approverId,
+            name: `${user.given_name} ${user.family_name}`,
+          };
+        }
+
+        return approver;
+      }));
+
+      return {
+        id: service.id,
+        name: service.name,
+        userType: invitation.role,
+        grantedAccessOn: service.requestDate ? new Date(service.requestDate) : null,
+        lastLogin: null,
+        approvers,
+        token: null,
       };
-      organisations.push(org);
-    }
+    }));
 
-    const approvers = orgSvcMap.approvers ? await Promise.all(orgSvcMap.approvers.map(async (approverId) => {
-      let approver = userMap.find(u => u.id === approverId);
-      if (!approver) {
-        const user = await getUser(approverId, correlationId);
-        approver = {
-          id: approverId,
-          name: `${user.given_name} ${user.family_name}`,
-        };
-      }
-
-      return approver;
-    })) : [];
-
-    org.services.push({
-      id: orgSvcMap.service ? orgSvcMap.service.id : orgSvcMap.id,
-      name: orgSvcMap.service ? orgSvcMap.service.name : orgSvcMap.name,
-      userType: orgSvcMap.role,
-      grantedAccessOn: orgSvcMap.requestDate ? new Date(orgSvcMap.requestDate) : null,
-      lastLogin: null,
-      approvers,
-      token: null,
-    });
-  }
+    return {
+      id: invitation.organisation.id,
+      name: invitation.organisation.name,
+      services,
+    };
+  }));
 
   return organisations;
 };
