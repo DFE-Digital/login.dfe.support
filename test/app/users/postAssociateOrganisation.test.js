@@ -17,7 +17,7 @@ describe('when associating user to organisations', () => {
         page: 1,
       },
       session: {
-        newUser: {
+        user: {
           firstName: 'James',
           lastName: 'Howlett',
           email: 'logan@x-men.test',

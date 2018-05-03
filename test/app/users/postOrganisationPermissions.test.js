@@ -12,7 +12,7 @@ describe('when associating user to organisations', () => {
         selectedLevel: 0,
       },
       session: {
-        newUser: {
+        user: {
           firstName: 'James',
           lastName: 'Howlett',
           email: 'logan@x-men.test',
