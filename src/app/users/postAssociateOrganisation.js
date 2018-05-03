@@ -29,6 +29,7 @@ const postAssociateOrganisation = async (req, res) => {
     numberOfResults,
     firstRecordNumber,
     lastRecordNumber,
+    canSkip: req.params.uid ? false : true,
   });
 };
 

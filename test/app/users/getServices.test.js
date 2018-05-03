@@ -29,6 +29,7 @@ describe('when getting users service details', () => {
       params: {
         uid: 'user1',
       },
+      session: {},
     };
 
     res = {

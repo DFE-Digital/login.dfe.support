@@ -126,6 +126,12 @@ const action = async (req, res) => {
     return org;
   }));
 
+  req.session.user = {
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+  };
+
   logger.audit(`${req.user.email} (id: ${req.user.sub}) viewed user ${user.email} (id: ${user.id})`, {
     type: 'support',
     subType: 'user-view',
