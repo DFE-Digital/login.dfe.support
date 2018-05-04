@@ -15,6 +15,8 @@ const getEditEmail = require('./getEditEmail');
 const postEditEmail = require('./postEditEmail');
 const getConfirmDeactivate = require('./getConfirmDeactivate');
 const postConfirmDeactivate = require('./postConfirmDeactivate');
+const getConfirmInvitationDeactivate = require('./getConfirmInvitationDeactivate');
+const postConfirmInvitationDeactivate = require('./postConfirmInvitationDeactivate');
 const getConfirmReactivate = require('./getConfirmReactivate');
 const postConfirmReactivate = require('./postConfirmReactivate');
 const getNewUser = require('./getNewUser');
@@ -79,6 +81,9 @@ const users = (csrf) => {
 
   router.get('/:uid/confirm-deactivation', csrf, asyncWrapper(getConfirmDeactivate));
   router.post('/:uid/confirm-deactivation', csrf, asyncWrapper(postConfirmDeactivate));
+
+  router.get('/:uid/confirm-invitation-deactivation', csrf, asyncWrapper(getConfirmInvitationDeactivate));
+  router.post('/:uid/confirm-invitation-deactivation', csrf, asyncWrapper(postConfirmInvitationDeactivate));
 
   router.get('/:uid/confirm-reactivation', csrf, asyncWrapper(getConfirmReactivate));
   router.post('/:uid/confirm-reactivation', csrf, asyncWrapper(postConfirmReactivate));
