@@ -48,6 +48,8 @@ const getConfirmAssociateOrganisation = async (req, res) => {
     await addOrganisationToUser(uid, req);
   }
 
+  const permissionName = req.session.user.permission === 10000 ? 'approver' : 'end user';
+  res.flash('info', `${req.session.user.firstName} ${req.session.user.lastName} now has ${permissionName} access to ${req.session.user.organisationName}`);
   return res.redirect(`/users/${uid}/services`);
 };
 
