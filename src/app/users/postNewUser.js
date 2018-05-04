@@ -36,12 +36,12 @@ const postNewUser = async (req, res) => {
     return sendResult(req, res, 'users/views/newUser', model);
   }
 
-  if (!req.session.newUser) {
-    req.session.newUser = {};
+  if (!req.session.user) {
+    req.session.user = {};
   }
-  req.session.newUser.firstName = model.firstName;
-  req.session.newUser.lastName = model.lastName;
-  req.session.newUser.email = model.email;
+  req.session.user.firstName = model.firstName;
+  req.session.user.lastName = model.lastName;
+  req.session.user.email = model.email;
 
   return res.redirect('associate-organisation');
 };

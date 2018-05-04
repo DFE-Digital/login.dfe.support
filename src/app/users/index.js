@@ -36,6 +36,7 @@ const postConfirmAssignToken = require('./postConfirmAssignToken');
 const getConfirmNewK2sUser = require('./getConfirmNewK2sUser');
 const postConfirmNewK2sUser = require('./postConfirmNewK2sUser');
 const postCancelChangeEmail = require('./postCancelChangeEmail');
+const getConfirmAssociateOrganisation = require('./getConfirmAssociateOrganisation');
 
 const router = express.Router({ mergeParams: true });
 
@@ -89,6 +90,12 @@ const users = (csrf) => {
   router.post('/:uid/confirm-reactivation', csrf, asyncWrapper(postConfirmReactivate));
 
   router.post('/:uid/cancel-change-email', csrf, asyncWrapper(postCancelChangeEmail));
+
+  router.get('/:uid/associate-organisation', csrf, asyncWrapper(getAssociateOrganisation));
+  router.post('/:uid/associate-organisation', csrf, asyncWrapper(postAssociateOrganisation));
+  router.get('/:uid/organisation-permissions', csrf, asyncWrapper(getOrganisationPermissions));
+  router.post('/:uid/organisation-permissions', csrf, asyncWrapper(postOrganisationPermissions));
+  router.get('/:uid/confirm-associate-organisation', csrf, asyncWrapper(getConfirmAssociateOrganisation));
 
   return router;
 };

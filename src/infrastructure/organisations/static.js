@@ -93,6 +93,10 @@ const searchOrganisations = async (criteria, pageNumber, correlationId) => {
   return getPageOfOrganisations(pageNumber, correlationId);
 };
 
+const setUserAccessToOrganisation = async (userId, organisationId, roleId, correlationId) => {
+  return Promise.resolve(null);
+};
+
 module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -106,4 +110,5 @@ module.exports = {
   getServicesByUserId,
   putSingleServiceIdentifierForUser,
   searchOrganisations,
+  setUserAccessToOrganisation,
 };

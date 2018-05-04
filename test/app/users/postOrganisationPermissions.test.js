@@ -12,7 +12,7 @@ describe('when associating user to organisations', () => {
         selectedLevel: 0,
       },
       session: {
-        newUser: {
+        user: {
           firstName: 'James',
           lastName: 'Howlett',
           email: 'logan@x-men.test',
@@ -28,7 +28,7 @@ describe('when associating user to organisations', () => {
   it('then it should add user permissions to session', async () => {
     await postOrganisationPermissions(req, res);
 
-    expect(req.session.newUser.permission).toBe(0);
+    expect(req.session.user.permission).toBe(0);
   });
 
   it('then it should redirect to confirm new user', async () => {
