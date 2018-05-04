@@ -84,10 +84,11 @@ const getUserDetails = async (req) => {
       lastName: invitation.lastName,
       email: invitation.email,
       lastLogin: null,
-      status: mapUserStatus(-1),
+      status: invitation.deactivated ? mapUserStatus(-2) : mapUserStatus(-1),
       loginsInPast12Months: {
         successful: 0,
       },
+      deactivated: invitation.deactivated
     };
   } else {
     const user = await users.getById(uid);
