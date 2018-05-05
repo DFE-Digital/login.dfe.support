@@ -83,7 +83,7 @@ const loadInvitations = async (newIndexName, correlationId) => {
           email: invitation.email,
           organisation: orgServiceMapping && orgServiceMapping.length > 0 ? orgServiceMapping[0].organisation : null,
           lastLogin: null,
-          status: mapUserStatus(-1),
+          status: invitation.deactivated ? mapUserStatus(-2) : mapUserStatus(-1),
         };
       }))).filter(x => x !== null);
       await users.updateIndex(mappedInvitations, newIndexName);
