@@ -6,7 +6,7 @@ jest.mock('./../../../src/infrastructure/users');
 
 const logger = require('./../../../src/infrastructure/logger');
 const { getUserDetails } = require('./../../../src/app/users/utils');
-const { getUser, createChangeEmailCode } = require('./../../../src/infrastructure/directories');
+const { getUser, createChangeEmailCode, updateInvite } = require('./../../../src/infrastructure/directories');
 const { getById, updateIndex } = require('./../../../src/infrastructure/users');
 const postEditEmail = require('./../../../src/app/users/postEditEmail');
 
@@ -25,8 +25,23 @@ const userDetails = {
     successful: 0,
   },
 };
+const inviteDetails = {
+  id: '35f60ab3-e169-41ec-bc88-d80e1beef937',
+  name: 'Bobby Grint',
+  firstName: 'Bobby',
+  lastName: 'Grint',
+  email: 'rupert.grint@hogwarts.test',
+  lastLogin: null,
+  status: {
+    id: 1,
+    description: 'Active'
+  },
+  loginsInPast12Months: {
+    successful: 0,
+  },
+};
 
-describe('when changing a users email address', () => {
+describe('when changing email address', () => {
   let req;
   let res;
 
@@ -61,6 +76,8 @@ describe('when changing a users email address', () => {
 
     createChangeEmailCode.mockReset();
 
+    updateInvite.mockReset();
+
     getById.mockReset().mockReturnValue({
       id: '915a7382-576b-4699-ad07-a9fd329d3867',
       name: 'Bobby Grint',
@@ -72,6 +89,7 @@ describe('when changing a users email address', () => {
 
     updateIndex.mockReset();
   });
+
 
   it('then it should render view if email is not entered', async () => {
     req.body.email = undefined;
@@ -124,36 +142,6 @@ describe('when changing a users email address', () => {
     });
   });
 
-  it('then it should create a change email code for user', async () => {
-    await  postEditEmail(req, res);
-
-    expect(createChangeEmailCode.mock.calls).toHaveLength(1);
-    expect(createChangeEmailCode.mock.calls[0][0]).toBe('915a7382-576b-4699-ad07-a9fd329d3867');
-    expect(createChangeEmailCode.mock.calls[0][1]).toBe('rupert.grint@hogwarts.school.test');
-    expect(createChangeEmailCode.mock.calls[0][2]).toBe('support');
-    expect(createChangeEmailCode.mock.calls[0][3]).toBe('na');
-    expect(createChangeEmailCode.mock.calls[0][4]).toBe('correlationId');
-  });
-
-  it('then it should audit change', async () => {
-    await  postEditEmail(req, res);
-
-    expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe('super.user@unit.test (id: suser1) initiated a change of email for rupert.grint@hogwarts.test (id: 915a7382-576b-4699-ad07-a9fd329d3867) to rupert.grint@hogwarts.school.test')
-    expect(logger.audit.mock.calls[0][1]).toEqual({
-      type: 'support',
-      subType: 'user-editemail',
-      userId: 'suser1',
-      userEmail: 'super.user@unit.test',
-      editedUser: '915a7382-576b-4699-ad07-a9fd329d3867',
-      editedFields: [{
-        name: 'new_email',
-        oldValue: 'rupert.grint@hogwarts.test',
-        newValue: 'rupert.grint@hogwarts.school.test',
-      }],
-    })
-  });
-
   it('then it should redirect to users service tab', async () => {
     await  postEditEmail(req, res);
 
@@ -161,14 +149,101 @@ describe('when changing a users email address', () => {
     expect(res.redirect.mock.calls[0][0]).toBe('services');
   });
 
-  it('then it should update user in search index', async () => {
-    await postEditEmail(req, res);
 
-    expect(updateIndex.mock.calls).toHaveLength(1);
-    expect(updateIndex.mock.calls[0][0]).toHaveLength(1);
-    expect(updateIndex.mock.calls[0][0][0]).toMatchObject({
-      id: '915a7382-576b-4699-ad07-a9fd329d3867',
-      pendingEmail: "rupert.grint@hogwarts.school.test",
-    })
+  describe('for a user', () => {
+    it('then it should create a change email code for user', async () => {
+      await  postEditEmail(req, res);
+
+      expect(createChangeEmailCode.mock.calls).toHaveLength(1);
+      expect(createChangeEmailCode.mock.calls[0][0]).toBe('915a7382-576b-4699-ad07-a9fd329d3867');
+      expect(createChangeEmailCode.mock.calls[0][1]).toBe('rupert.grint@hogwarts.school.test');
+      expect(createChangeEmailCode.mock.calls[0][2]).toBe('support');
+      expect(createChangeEmailCode.mock.calls[0][3]).toBe('na');
+      expect(createChangeEmailCode.mock.calls[0][4]).toBe('correlationId');
+    });
+
+    it('then it should update user in search index', async () => {
+      await postEditEmail(req, res);
+
+      expect(updateIndex.mock.calls).toHaveLength(1);
+      expect(updateIndex.mock.calls[0][0]).toHaveLength(1);
+      expect(updateIndex.mock.calls[0][0][0]).toMatchObject({
+        id: '915a7382-576b-4699-ad07-a9fd329d3867',
+        pendingEmail: "rupert.grint@hogwarts.school.test",
+      })
+    });
+
+    it('then it should audit change', async () => {
+      await  postEditEmail(req, res);
+
+      expect(logger.audit.mock.calls).toHaveLength(1);
+      expect(logger.audit.mock.calls[0][0]).toBe('super.user@unit.test (id: suser1) initiated a change of email for rupert.grint@hogwarts.test (id: 915a7382-576b-4699-ad07-a9fd329d3867) to rupert.grint@hogwarts.school.test')
+      expect(logger.audit.mock.calls[0][1]).toEqual({
+        type: 'support',
+        subType: 'user-editemail',
+        userId: 'suser1',
+        userEmail: 'super.user@unit.test',
+        editedUser: '915a7382-576b-4699-ad07-a9fd329d3867',
+        editedFields: [{
+          name: 'new_email',
+          oldValue: 'rupert.grint@hogwarts.test',
+          newValue: 'rupert.grint@hogwarts.school.test',
+        }],
+      })
+    });
+  });
+
+  describe('for an invitation', async () => {
+    beforeEach(() => {
+      req.params.uid = 'inv-35f60ab3-e169-41ec-bc88-d80e1beef937';
+
+      getUserDetails.mockReturnValue(inviteDetails);
+
+      getById.mockReset().mockReturnValue({
+        id: 'inv-35f60ab3-e169-41ec-bc88-d80e1beef937',
+        name: 'Bobby Grint',
+        email: 'rupert.grint@hogwarts.test',
+        organisationName: 'Hogwarts School of Witchcraft and Wizardry',
+        lastLogin: null,
+        statusDescription: 'Active'
+      });
+    });
+
+    it('then it should update invitation with new email', async () => {
+      await postEditEmail(req, res);
+
+      expect(updateInvite.mock.calls).toHaveLength(1);
+      expect(updateInvite.mock.calls[0][0]).toBe('35f60ab3-e169-41ec-bc88-d80e1beef937');
+    });
+
+    it('then it should update invitation in search index', async () => {
+      await postEditEmail(req, res);
+
+      expect(updateIndex.mock.calls).toHaveLength(1);
+      expect(updateIndex.mock.calls[0][0]).toHaveLength(1);
+      expect(updateIndex.mock.calls[0][0][0]).toMatchObject({
+        id: 'inv-35f60ab3-e169-41ec-bc88-d80e1beef937',
+        email: "rupert.grint@hogwarts.school.test",
+      })
+    });
+
+    it('then it should audit change', async () => {
+      await  postEditEmail(req, res);
+
+      expect(logger.audit.mock.calls).toHaveLength(1);
+      expect(logger.audit.mock.calls[0][0]).toBe('super.user@unit.test (id: suser1) changed email on invitation for rupert.grint@hogwarts.test (id: 35f60ab3-e169-41ec-bc88-d80e1beef937) to rupert.grint@hogwarts.school.test')
+      expect(logger.audit.mock.calls[0][1]).toEqual({
+        type: 'support',
+        subType: 'user-invite-editemail',
+        userId: 'suser1',
+        userEmail: 'super.user@unit.test',
+        editedUser: '35f60ab3-e169-41ec-bc88-d80e1beef937',
+        editedFields: [{
+          name: 'new_email',
+          oldValue: 'rupert.grint@hogwarts.test',
+          newValue: 'rupert.grint@hogwarts.school.test',
+        }],
+      })
+    });
   });
 });
