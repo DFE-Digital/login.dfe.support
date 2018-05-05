@@ -237,7 +237,6 @@ const deactivateInvite = async(id, reason, correlationId) => {
   } catch(e) {
     console.log(e);
   }
-
 };
 
 const createInvite = async (givenName, familyName, email, digipassSerialNumber, clientId, redirectUri, correlationId) => {
@@ -268,6 +267,26 @@ const createInvite = async (givenName, familyName, email, digipassSerialNumber, 
   });
 
   return invitation.id;
+};
+
+const updateInvite = async (id, email, correlationId) => {
+  try {
+    const token = await jwtStrategy(config.directories.service).getBearerToken();
+    await rp({
+      method: 'PATCH',
+      uri: `${config.directories.service.url}/invitations/${id}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      body: {
+        email,
+      },
+      json: true,
+    });
+  } catch(e) {
+    console.log(e);
+  }
 };
 
 const createUserDevice = async (id, serialNumber, correlationId) => {
@@ -401,6 +420,7 @@ module.exports = {
   deactivate,
   reactivate,
   createInvite,
+  updateInvite,
   deactivateInvite,
   createUserDevice,
   deleteUserDevice,
