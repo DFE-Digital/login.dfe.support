@@ -1,4 +1,7 @@
 const mapUserStatus = (status, changedOn = null) => {
+  if (status === -2) {
+    return { id: -2, description: 'Deactivated Invitation', changedOn };
+  }
   if (status === -1) {
     return { id: -1, description: 'Invited', changedOn };
   }

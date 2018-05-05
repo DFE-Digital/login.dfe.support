@@ -64,6 +64,13 @@
                 <% } %>
             </ul>
         </aside>
+        <% } else if (locals.isInvitation && !locals.user.deactivated) { %>
+        <aside>
+            <h2 class="heading-medium">Actions</h2>
+            <ul class="list">
+                <li><a href="confirm-invitation-deactivation">Deactivate user</a></li>
+            </ul>
+        </aside>
         <% } %>
     </div>
 </div>
