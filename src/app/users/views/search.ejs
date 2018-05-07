@@ -23,17 +23,28 @@
 
 <div class="row row-spacer">
     <div class="col-6">
-        <form method="POST">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+        <form method="post">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+            <input type="hidden" name="showFilters" value="<%=showFilters%>"/>
             <div class="search-field">
                 <fieldset class="search-input">
                     <label for="criteria" class="vh">Search by name, email or organisation</label>
-                    <input type="text" id="criteria" name="criteria" value="<%= criteria %>" class="form-control" placeholder="Search by name, email or organisation">
+                    <input type="text" id="criteria" name="criteria" value="<%=criteria%>" class="form-control" placeholder="Search by name, email or organisation">
                 </fieldset>
                 <fieldset class="search-submit">
                     <button type="submit" class="button">Search</button>
                 </fieldset>
             </div>
+        </form>
+        <form method="post">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+            <input type="hidden" name="criteria" value="<%=criteria%>"/>
+            <input type="hidden" name="page" value="<%=page%>"/>
+            <input type="hidden" name="sort" value="<%=sortBy%>"/>
+            <input type="hidden" name="sortDir" value="<%=sortOrder%>"/>
+            <input type="hidden" name="showFilters" value="<%=!showFilters%>"/>
+
+            <button type="submit" class="button-link"><%=(showFilters ? 'Hide' : 'Show')%> filters</button>
         </form>
     </div>
     <div class="col-6">
@@ -54,14 +65,89 @@
     <div class="col-6">
         <% if (locals.numberOfPages > 1) { %>
         <div class="pagination" data-criteria="<%= criteria %>" data-sort="<%= locals.sortBy %>" data-sortdir="<%= locals.sortOrder %>"
-             data-current="<%=locals.page%>" data-total="<%=locals.numberOfPages%>">
+             data-current="<%=locals.page%>" data-total="<%=locals.numberOfPages%>" data-showfilters="<%=showFilters%>" data-method="form" data-csrf="<%=csrfToken%>">
         </div>
         <% } %>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-12">
+    <% if (showFilters) { %>
+    <div class="col-4">
+        <form method="post">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+            <input type="hidden" name="criteria" value="<%=criteria%>"/>
+            <input type="hidden" name="page" value="<%=page%>"/>
+            <input type="hidden" name="sort" value="<%=sortBy%>"/>
+            <input type="hidden" name="sortDir" value="<%=sortOrder%>"/>
+            <input type="hidden" name="showFilters" value="true"/>
+
+            <div class="filter-box">
+                <div class="container-head js-container-head">
+                    <div class="option-select-label">
+                        Organisation
+                    </div>
+                </div>
+                <div role="group" aria-labelledby="option-select-title-organisation" class="options-container" id="organisations">
+                    <div class="js-auto-height-inner">
+                        <label>
+                            <input value="1" type="checkbox">
+                            Org One
+                        </label>
+                        <label>
+                            <input value="1" type="checkbox">
+                            Org Two
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-box">
+                <div class="container-head js-container-head">
+                    <div class="option-select-label">
+                        Account status
+                    </div>
+                </div>
+                <div role="group" aria-labelledby="option-select-title-account-status" class="options-container" id="account-status">
+                    <div class="js-auto-height-inner">
+                        <label>
+                            <input value="1" type="checkbox">
+                            Active
+                        </label>
+                        <label>
+                            <input value="1" type="checkbox">
+                            Invited
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-box">
+                <div class="container-head js-container-head">
+                    <div class="option-select-label">
+                        Service
+                    </div>
+                </div>
+                <div role="group" aria-labelledby="option-select-title-service" class="options-container" id="services">
+                    <div class="js-auto-height-inner">
+                        <label>
+                            <input value="1" type="checkbox">
+                            Service One
+                        </label>
+                        <label>
+                            <input value="1" type="checkbox">
+                            Service Two
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button class="button-secondary">Apply filter</button>
+
+        </form>
+    </div>
+    <% } %>
+    <div class="col-<%=(showFilters ? 8 : 12)%>">
         <table class="data">
             <thead>
                 <tr class="sortable">

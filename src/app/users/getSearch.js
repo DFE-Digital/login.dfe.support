@@ -3,7 +3,13 @@ const { sendResult } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
 
 const action = async (req, res) => {
+  const paramsSource = req.method === 'POST' ? req.body : req.query;
   const result = await search(req);
+
+  let showFilters = false;
+  if (paramsSource.showFilters !== undefined && paramsSource.showFilters.toLowerCase() === 'true') {
+    showFilters = true;
+  }
 
   // Just encase we are back from creating user
   if (req.session.k2sUser) {
@@ -27,6 +33,8 @@ const action = async (req, res) => {
     sortBy: result.sortBy,
     sortOrder: result.sortOrder,
     useGenericAddUser: config.toggles.useGenericAddUser,
+
+    showFilters,
   });
 };
 

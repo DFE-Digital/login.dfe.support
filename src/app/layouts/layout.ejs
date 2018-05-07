@@ -138,7 +138,7 @@
     return rangeWithDots;
   }
 
-  function paginationPage(criteria, page, sort, sortdir, method, csrf) {
+  function paginationPage(criteria, page, sort, sortdir, method, csrf, showFilters) {
     if (method && method.toLowerCase() === 'form') {
       var $form = $('<form/>')
         .attr('method', 'post');
@@ -147,11 +147,18 @@
       $form.append($('<input/>').attr('name', 'page').attr('type', 'hidden').attr('value', page));
       $form.append($('<input/>').attr('name', 'sort').attr('type', 'hidden').attr('value', sort));
       $form.append($('<input/>').attr('name', 'sortDir').attr('type', 'hidden').attr('value', sortdir));
+      if (showFilters !== undefined) {
+        $form.append($('<input/>').attr('name', 'showFilters').attr('type', 'hidden').attr('value', showFilters));
+      }
       $form.append($('<button/>').attr('type', 'submit').attr('class', 'button-link').text(page));
       return $form;
     } else {
+      var href = '?criteria=' + criteria + '&page=' + page + '&sort=' + sort + '&sortdir=' + sortdir;
+      if (showFilters !== undefined) {
+        href += '&showFilters=' + showFilters;
+      }
       return $('<a/>')
-        .attr('href', '?criteria=' + criteria + '&page=' + page + '&sort=' + sort + '&sortdir=' + sortdir)
+        .attr('href', href)
         .text(page);
     }
   }
@@ -169,6 +176,7 @@
       var criteria = p.data('criteria');
       var method = p.data('method');
       var csrf = p.data('csrf');
+      var showFilters = p.data('showfilters');
 
       var pg = pagination(c, t);
       var $ul = $('<ul/>')
@@ -187,7 +195,7 @@
               .text(value)
             $li.html($span);
           } else {
-            var $elem = paginationPage(criteria, value, sort, sortdir, method, csrf);
+            var $elem = paginationPage(criteria, value, sort, sortdir, method, csrf, showFilters);
             $li.html($elem);
           }
 
