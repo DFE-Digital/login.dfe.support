@@ -12,7 +12,7 @@ jest.mock('./../../../src/app/users/utils', () => {
 
 const utils = require('./../../../src/app/users/utils');
 const { getRequestMock, getResponseMock } = require('./../../utils');
-const get = require('./../../../src/app/users/getSearch');
+const { get } = require('./../../../src/app/users/search');
 
 describe('When processing a get to search for users', () => {
   let req;

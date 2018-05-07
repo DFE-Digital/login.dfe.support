@@ -2,16 +2,7 @@ const { search } = require('./utils');
 const { sendResult } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
 
-const action = async (req, res) => {
-  const paramsSource = req.method === 'POST' ? req.body : req.query;
-  const result = await search(req);
-
-  let showFilters = false;
-  if (paramsSource.showFilters !== undefined && paramsSource.showFilters.toLowerCase() === 'true') {
-    showFilters = true;
-  }
-
-  // Just encase we are back from creating user
+const clearNewUserSessionData = (req) => {
   if (req.session.k2sUser) {
     req.session.k2sUser = undefined;
   }
@@ -21,8 +12,19 @@ const action = async (req, res) => {
   if (req.session.digipassSerialNumberToAssign) {
     req.session.digipassSerialNumberToAssign = undefined;
   }
+};
 
-  sendResult(req, res, 'users/views/search', {
+const doSearchAndBuildModel = async (req) => {
+  const result = await search(req);
+
+
+  const paramsSource = req.method === 'POST' ? req.body : req.query;
+  let showFilters = false;
+  if (paramsSource.showFilters !== undefined && paramsSource.showFilters.toLowerCase() === 'true') {
+    showFilters = true;
+  }
+
+  return {
     csrfToken: req.csrfToken(),
     criteria: result.criteria,
     page: result.page,
@@ -35,7 +37,22 @@ const action = async (req, res) => {
     useGenericAddUser: config.toggles.useGenericAddUser,
 
     showFilters,
-  });
+  };
 };
 
-module.exports = action;
+const get = async (req, res) => {
+  clearNewUserSessionData(req);
+
+  const model = await doSearchAndBuildModel(req);
+  sendResult(req, res, 'users/views/search', model);
+};
+
+const post = async (req, res) => {
+  const model = await doSearchAndBuildModel(req);
+  sendResult(req, res, 'users/views/search', model);
+};
+
+module.exports = {
+  get,
+  post,
+};

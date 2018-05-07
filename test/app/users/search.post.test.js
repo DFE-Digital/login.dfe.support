@@ -11,7 +11,7 @@ jest.mock('./../../../src/app/users/utils', () => {
 });
 
 const utils = require('./../../../src/app/users/utils');
-const post = require('./../../../src/app/users/postSearch');
+const { post } = require('./../../../src/app/users/search');
 
 describe('When processing a post to search for users', () => {
   let req;
