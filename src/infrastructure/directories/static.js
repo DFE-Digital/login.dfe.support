@@ -83,6 +83,10 @@ const createInvite = async (givenName, familyName, email, digipassSerialNumber, 
   return Promise.resolve(uuid());
 };
 
+const updateInvite = async (id, email, correlationId) => {
+  return Promise.resolve(null);
+};
+
 const deactivateInvite = async (inviteId, reason, correlationId) => {
   return Promise.resolve(uuid());
 };
@@ -114,6 +118,7 @@ module.exports = {
   deactivate,
   reactivate,
   createInvite,
+  updateInvite,
   deactivateInvite,
   createUserDevice,
   createChangeEmailCode,
