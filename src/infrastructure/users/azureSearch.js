@@ -158,6 +158,9 @@ const createIndex = async () => {
 };
 
 const updateIndex = async (users, index) => {
+  if(!users || users.length === 0) {
+    return;
+  }
   if (!index) {
     index = await client.get('CurrentIndex_Users');
   }
