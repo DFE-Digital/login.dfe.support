@@ -9,8 +9,10 @@ jest.mock('./../../../src/app/users/utils', () => {
     }),
   };
 });
+jest.mock('./../../../src/infrastructure/organisations');
 
 const utils = require('./../../../src/app/users/utils');
+const { getAllServices, getOrganisationCategories } = require('./../../../src/infrastructure/organisations');
 const { post } = require('./../../../src/app/users/search');
 
 describe('When processing a post to search for users', () => {
@@ -59,6 +61,15 @@ describe('When processing a post to search for users', () => {
       sortOrder: 'desc',
       users: usersSearchResult
     });
+
+    getAllServices.mockReset().mockReturnValue([
+      { id: 'svc1', name: 'Service one' },
+      { id: 'svc2', name: 'Service two' },]);
+
+    getOrganisationCategories.mockReset().mockReturnValue([
+      { id: 'org1', name: 'Organisation one' },
+      { id: 'org2', name: 'Organisation two' },
+    ])
   });
 
   test('then it should render the search view', async () => {
@@ -92,7 +103,6 @@ describe('When processing a post to search for users', () => {
     });
   });
 
-
   test('then it includes the sort order and sort value', async () => {
     await post(req, res);
 
@@ -107,6 +117,55 @@ describe('When processing a post to search for users', () => {
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       users: usersSearchResult,
+    });
+  });
+
+  test('then it should load filter data if showing filters', async () => {
+    req.body.showFilters = 'true';
+
+    await post(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      organisationTypes: [
+        { id: 'org1', name: 'Organisation one', isSelected: false },
+        { id: 'org2', name: 'Organisation two', isSelected: false },
+      ],
+      accountStatuses: [
+        { id: -2, name: 'Deactivated Invitation', isSelected: false },
+        { id: -1, name: 'Invited', isSelected: false },
+        { id: 0, name: 'Deactivated', isSelected: false },
+        { id: 1, name: 'Active', isSelected: false },
+      ],
+      services: [
+        { id: 'svc1', name: 'Service one', isSelected: false },
+        { id: 'svc2', name: 'Service two', isSelected: false },
+      ],
+    });
+  });
+
+  test('then it should persist selected filters', async () => {
+    req.body.showFilters = 'true';
+    req.body.organisationType = 'org1';
+    req.body.accountStatus = ['-1', '1']
+    req.body.service = 'svc2';
+
+    await post(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      organisationTypes: [
+        { id: 'org1', name: 'Organisation one', isSelected: true },
+        { id: 'org2', name: 'Organisation two', isSelected: false },
+      ],
+      accountStatuses: [
+        { id: -2, name: 'Deactivated Invitation', isSelected: false },
+        { id: -1, name: 'Invited', isSelected: true },
+        { id: 0, name: 'Deactivated', isSelected: false },
+        { id: 1, name: 'Active', isSelected: true },
+      ],
+      services: [
+        { id: 'svc1', name: 'Service one', isSelected: false },
+        { id: 'svc2', name: 'Service two', isSelected: true },
+      ],
     });
   });
 });
