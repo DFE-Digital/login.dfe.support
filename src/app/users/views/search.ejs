@@ -85,19 +85,17 @@
             <div class="filter-box">
                 <div class="container-head js-container-head">
                     <div class="option-select-label">
-                        Organisation
+                        Organisation type
                     </div>
                 </div>
-                <div role="group" aria-labelledby="option-select-title-organisation" class="options-container" id="organisations">
+                <div role="group" aria-labelledby="option-select-title-organisationtype" class="options-container" id="organisationtypes">
                     <div class="js-auto-height-inner">
+                        <% for (let i = 0; i < organisationTypes.length; i+=1) { %>
                         <label>
-                            <input value="1" type="checkbox">
-                            Org One
+                            <input name="organisationType" value="<%=organisationTypes[i].id%>" type="checkbox" <%=(organisationTypes[i].isSelected ? 'checked="checked"' : '')%>>
+                            <%=organisationTypes[i].name%>
                         </label>
-                        <label>
-                            <input value="1" type="checkbox">
-                            Org Two
-                        </label>
+                        <% } %>
                     </div>
                 </div>
             </div>
@@ -110,14 +108,12 @@
                 </div>
                 <div role="group" aria-labelledby="option-select-title-account-status" class="options-container" id="account-status">
                     <div class="js-auto-height-inner">
+                        <% for (let i = 0; i < accountStatuses.length; i+=1) { %>
                         <label>
-                            <input value="1" type="checkbox">
-                            Active
+                            <input name="accountStatus" value="<%=accountStatuses[i].id%>" type="checkbox" <%=(accountStatuses[i].isSelected ? 'checked="checked"' : '')%>>
+                            <%=accountStatuses[i].name%>
                         </label>
-                        <label>
-                            <input value="1" type="checkbox">
-                            Invited
-                        </label>
+                        <% } %>
                     </div>
                 </div>
             </div>
@@ -130,14 +126,12 @@
                 </div>
                 <div role="group" aria-labelledby="option-select-title-service" class="options-container" id="services">
                     <div class="js-auto-height-inner">
+                        <% for (let i = 0; i < services.length; i+=1) { %>
                         <label>
-                            <input value="1" type="checkbox">
-                            Service One
+                            <input name="service" value="<%=services[i].id%>" type="checkbox" <%=(services[i].isSelected ? 'checked="checked"' : '')%>>
+                            <%=services[i].name%>
                         </label>
-                        <label>
-                            <input value="1" type="checkbox">
-                            Service Two
-                        </label>
+                        <% } %>
                     </div>
                 </div>
             </div>
