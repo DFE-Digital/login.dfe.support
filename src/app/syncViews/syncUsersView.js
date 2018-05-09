@@ -5,10 +5,38 @@ const organisations = require('./../../infrastructure/organisations');
 const { cache: auditCache } = require('./../../infrastructure/audit');
 const uuid = require('uuid/v4');
 const { mapUserStatus } = require('./../../infrastructure/utils');
+const flatten = require('lodash/flatten');
 
 const buildUser = async (user, correlationId) => {
-  // Get organisation details
+  // Get organisation & service details
   const orgServiceMapping = await organisations.getUserOrganisations(user.sub, correlationId);
+  let organisation = null;
+  let organisationCategories = [];
+  let services = [];
+  if (orgServiceMapping && orgServiceMapping.length > 0) {
+    const temp = flatten(orgServiceMapping.map((org) => {
+      return org.services.map(svc => ({
+        id: svc.id,
+        organisation: org.organisation,
+        requestDate: svc.requestDate,
+      }));
+    })).sort((x, y) => {
+      if (x.requestDate < y.requestDate) {
+        return -1;
+      }
+      if (x.requestDate > y.requestDate) {
+        return 1;
+      }
+      return 0;
+    });
+    if (temp && temp.length > 0) {
+      organisation = temp[0].organisation;
+      services = temp.map(s => s.id);
+    } else {
+      organisation = orgServiceMapping[0].organisation;
+    }
+    organisationCategories = orgServiceMapping.map((org) => org.organisation.category.id);
+  }
 
   // Get audit details
   let successfulLogins;
@@ -38,7 +66,12 @@ const buildUser = async (user, correlationId) => {
     firstName: user.given_name,
     lastName: user.family_name,
     email: user.email,
-    organisation: orgServiceMapping && orgServiceMapping.length > 0 ? orgServiceMapping[0].organisation : null,
+    organisation: {
+      id: organisation.id,
+      name: organisation.name,
+    },
+    organisationCategories,
+    services,
     lastLogin: lastLogin,
     successfulLoginsInPast12Months: successfulLogins ? successfulLogins.length : 0,
     status: mapUserStatus(user.status, statusLastChangedOn),
