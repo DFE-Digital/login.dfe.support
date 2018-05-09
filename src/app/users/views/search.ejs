@@ -1,8 +1,8 @@
-<%if(locals.flash.info) {%>
+<% if(locals.flash.info) { %>
 <div class="notification notification-success">
-    <%=locals.flash.info%>
+    <%= locals.flash.info %>
 </div>
-<%}%>
+<% } %>
 
 <div class="row">
     <div class="col-6">
@@ -11,25 +11,45 @@
 </div>
 
 <%
-    const pages = locals.numberOfPages, page = locals.page
-    const usersOnPage = locals.users.length, usersAll = locals.totalNumberOfResults
-    let lowerEndUsers = page === pages ? usersAll - usersOnPage + 1 : usersOnPage * (page-1) + 1
-    const upperEndUsers = lowerEndUsers + usersOnPage - 1
+const pages = locals.numberOfPages, page = locals.page
+const usersOnPage = locals.users.length, usersAll = locals.totalNumberOfResults
+let lowerEndUsers = page === pages ? usersAll - usersOnPage + 1 : usersOnPage * (page - 1) + 1
+const upperEndUsers = lowerEndUsers + usersOnPage - 1
 
-    if (locals.totalNumberOfResults === 0) {
-        lowerEndUsers = 0;
-    }
+if (locals.totalNumberOfResults === 0) {
+    lowerEndUsers = 0;
+}
 %>
 
 <div class="row row-spacer">
     <div class="col-6">
         <form method="post">
-            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
-            <input type="hidden" name="showFilters" value="<%=showFilters%>"/>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <input type="hidden" name="showFilters" value="<%= showFilters %>"/>
+
+            <% for (let i = 0; i < organisationTypes.length; i += 1) { %>
+            <% if (organisationTypes[i].isSelected) { %>
+            <input name="organisationType" value="<%= organisationTypes[i].id %>" type="hidden">
+            <% } %>
+            <% } %>
+
+            <% for (let i = 0; i < accountStatuses.length; i += 1) { %>
+            <% if (accountStatuses[i].isSelected) { %>
+            <input name="accountStatus" value="<%= accountStatuses[i].id %>" type="hidden">
+            <% } %>
+            <% } %>
+
+            <% for (let i = 0; i < services.length; i += 1) { %>
+            <% if (services[i].isSelected) { %>
+            <input name="service" value="<%= services[i].id %>" type="hidden">
+            <% } %>
+            <% } %>
+
             <div class="search-field">
                 <fieldset class="search-input">
                     <label for="criteria" class="vh">Search by name, email or organisation</label>
-                    <input type="text" id="criteria" name="criteria" value="<%=criteria%>" class="form-control" placeholder="Search by name, email or organisation">
+                    <input type="text" id="criteria" name="criteria" value="<%= criteria %>" class="form-control"
+                           placeholder="Search by name, email or organisation">
                 </fieldset>
                 <fieldset class="search-submit">
                     <button type="submit" class="button">Search</button>
@@ -37,35 +57,37 @@
             </div>
         </form>
         <form method="post">
-            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
-            <input type="hidden" name="criteria" value="<%=criteria%>"/>
-            <input type="hidden" name="page" value="<%=page%>"/>
-            <input type="hidden" name="sort" value="<%=sortBy%>"/>
-            <input type="hidden" name="sortDir" value="<%=sortOrder%>"/>
-            <input type="hidden" name="showFilters" value="<%=!showFilters%>"/>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <input type="hidden" name="criteria" value="<%= criteria %>"/>
+            <input type="hidden" name="page" value="<%= page %>"/>
+            <input type="hidden" name="sort" value="<%= sortBy %>"/>
+            <input type="hidden" name="sortDir" value="<%= sortOrder %>"/>
+            <input type="hidden" name="showFilters" value="<%= !showFilters %>"/>
 
-            <button type="submit" class="button-link"><%=(showFilters ? 'Hide' : 'Show')%> filters</button>
+            <button type="submit" class="button-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
         </form>
     </div>
     <div class="col-6">
         <div class="pull-right">
-            <%if(useGenericAddUser) {%>
+            <% if(useGenericAddUser) { %>
             <a href="/users/new-user" class="button button-secondary">Add User</a>
-            <%} else {%>
+            <% } else { %>
             <a href="/users/new-k2s-user" class="button button-secondary">Add User</a>
-            <%}%>
+            <% } %>
         </div>
     </div>
 </div>
 
 <div class="row meta">
     <div class="col-6">
-        <p>Showing <%= lowerEndUsers %> - <%= upperEndUsers %> of <b><%=locals.totalNumberOfResults%></b> users</p>
+        <p>Showing <%= lowerEndUsers %> - <%= upperEndUsers %> of <b><%= locals.totalNumberOfResults %></b> users</p>
     </div>
     <div class="col-6">
         <% if (locals.numberOfPages > 1) { %>
-        <div class="pagination" data-criteria="<%= criteria %>" data-sort="<%= locals.sortBy %>" data-sortdir="<%= locals.sortOrder %>"
-             data-current="<%=locals.page%>" data-total="<%=locals.numberOfPages%>" data-showfilters="<%=showFilters%>" data-method="form" data-csrf="<%=csrfToken%>">
+        <div class="pagination" data-criteria="<%= criteria %>" data-sort="<%= locals.sortBy %>"
+             data-sortdir="<%= locals.sortOrder %>"
+             data-current="<%= locals.page %>" data-total="<%= locals.numberOfPages %>"
+             data-showfilters="<%= showFilters %>" data-method="form" data-csrf="<%= csrfToken %>">
         </div>
         <% } %>
     </div>
@@ -75,11 +97,11 @@
     <% if (showFilters) { %>
     <div class="col-4">
         <form method="post">
-            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
-            <input type="hidden" name="criteria" value="<%=criteria%>"/>
-            <input type="hidden" name="page" value="<%=page%>"/>
-            <input type="hidden" name="sort" value="<%=sortBy%>"/>
-            <input type="hidden" name="sortDir" value="<%=sortOrder%>"/>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <input type="hidden" name="criteria" value="<%= criteria %>"/>
+            <input type="hidden" name="page" value="<%= page %>"/>
+            <input type="hidden" name="sort" value="<%= sortBy %>"/>
+            <input type="hidden" name="sortDir" value="<%= sortOrder %>"/>
             <input type="hidden" name="showFilters" value="true"/>
 
             <div class="filter-box">
@@ -88,12 +110,14 @@
                         Organisation type
                     </div>
                 </div>
-                <div role="group" aria-labelledby="option-select-title-organisationtype" class="options-container" id="organisationtypes">
+                <div role="group" aria-labelledby="option-select-title-organisationtype" class="options-container"
+                     id="organisationtypes">
                     <div class="js-auto-height-inner">
-                        <% for (let i = 0; i < organisationTypes.length; i+=1) { %>
+                        <% for (let i = 0; i < organisationTypes.length; i += 1) { %>
                         <label>
-                            <input name="organisationType" value="<%=organisationTypes[i].id%>" type="checkbox" <%=(organisationTypes[i].isSelected ? 'checked="checked"' : '')%>>
-                            <%=organisationTypes[i].name%>
+                            <input name="organisationType" value="<%= organisationTypes[i].id %>"
+                                   type="checkbox" <%= (organisationTypes[i].isSelected ? 'checked="checked"' : '') %>>
+                            <%= organisationTypes[i].name %>
                         </label>
                         <% } %>
                     </div>
@@ -106,12 +130,14 @@
                         Account status
                     </div>
                 </div>
-                <div role="group" aria-labelledby="option-select-title-account-status" class="options-container" id="account-status">
+                <div role="group" aria-labelledby="option-select-title-account-status" class="options-container"
+                     id="account-status">
                     <div class="js-auto-height-inner">
-                        <% for (let i = 0; i < accountStatuses.length; i+=1) { %>
+                        <% for (let i = 0; i < accountStatuses.length; i += 1) { %>
                         <label>
-                            <input name="accountStatus" value="<%=accountStatuses[i].id%>" type="checkbox" <%=(accountStatuses[i].isSelected ? 'checked="checked"' : '')%>>
-                            <%=accountStatuses[i].name%>
+                            <input name="accountStatus" value="<%= accountStatuses[i].id %>"
+                                   type="checkbox" <%= (accountStatuses[i].isSelected ? 'checked="checked"' : '') %>>
+                            <%= accountStatuses[i].name %>
                         </label>
                         <% } %>
                     </div>
@@ -126,10 +152,11 @@
                 </div>
                 <div role="group" aria-labelledby="option-select-title-service" class="options-container" id="services">
                     <div class="js-auto-height-inner">
-                        <% for (let i = 0; i < services.length; i+=1) { %>
+                        <% for (let i = 0; i < services.length; i += 1) { %>
                         <label>
-                            <input name="service" value="<%=services[i].id%>" type="checkbox" <%=(services[i].isSelected ? 'checked="checked"' : '')%>>
-                            <%=services[i].name%>
+                            <input name="service" value="<%= services[i].id %>"
+                                   type="checkbox" <%= (services[i].isSelected ? 'checked="checked"' : '') %>>
+                            <%= services[i].name %>
                         </label>
                         <% } %>
                     </div>
@@ -141,59 +168,59 @@
         </form>
     </div>
     <% } %>
-    <div class="col-<%=(showFilters ? 8 : 12)%>">
+    <div class="col-<%= (showFilters ? 8 : 12) %>">
         <table class="data">
             <thead>
-                <tr class="sortable">
-                    <th scope="col" class="cwp-15">
-                        <a href="?criteria=<%=criteria%>&page=<%=page%>&sort=name&sortdir=<%=sort.name.nextDirection%>"
-                           class="<% if (sort.name.applied) { %>sorted dir-<%= (sort.name.nextDirection === 'desc') ? 'd' : 'a' %><% } %>"
-                        >Name</a></th>
-                    <th scope="col" class="cwp-35">
-                        <a href="?criteria=<%=criteria%>&page=<%=page%>&sort=email&sortdir=<%=sort.email.nextDirection%>"
-                           class="<% if (sort.email.applied) { %>sorted dir-<%= (sort.email.nextDirection === 'desc') ? 'd' : 'a' %><% } %>"
-                        >Email</a></th>
-                    <th scope="col" class="cwp-25">
-                        <a href="?criteria=<%=criteria%>&page=<%=page%>&sort=organisation&sortdir=<%=sort.organisation.nextDirection%>"
-                           class="<% if (sort.organisation.applied) { %>sorted dir-<%= (sort.organisation.nextDirection === 'desc') ? 'd' : 'a' %><% } %>"
-                        >Organisation</a></th>
-                    <th scope="col" class="cwp-15">
-                        <a href="?criteria=<%=criteria%>&page=<%=page%>&sort=lastlogin&sortdir=<%=sort.lastLogin.nextDirection%>"
-                           class="<% if (sort.lastLogin.applied) { %>sorted dir-<%= (sort.lastLogin.nextDirection === 'desc') ? 'd' : 'a' %><% } %>"
-                        >Last Login</a></th>
-                    <th scope="col" class="cwp-10">
-                        <a href="?criteria=<%=criteria%>&page=<%=page%>&sort=status&sortdir=<%=sort.status.nextDirection%>"
-                           class="<% if (sort.status.applied) { %>sorted dir-<%= (sort.status.nextDirection === 'desc') ? 'd' : 'a' %><% } %>"
-                        >Status</a></th>
-                </tr>
+            <tr class="sortable">
+                <th scope="col" class="cwp-15">
+                    <a href="?criteria=<%= criteria %>&page=<%= page %>&sort=name&sortdir=<%= sort.name.nextDirection %>"
+                       class="<% if (sort.name.applied) { %>sorted dir-<%= (sort.name.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
+                    >Name</a></th>
+                <th scope="col" class="cwp-35">
+                    <a href="?criteria=<%= criteria %>&page=<%= page %>&sort=email&sortdir=<%= sort.email.nextDirection %>"
+                       class="<% if (sort.email.applied) { %>sorted dir-<%= (sort.email.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
+                    >Email</a></th>
+                <th scope="col" class="cwp-25">
+                    <a href="?criteria=<%= criteria %>&page=<%= page %>&sort=organisation&sortdir=<%= sort.organisation.nextDirection %>"
+                       class="<% if (sort.organisation.applied) { %>sorted dir-<%= (sort.organisation.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
+                    >Organisation</a></th>
+                <th scope="col" class="cwp-15">
+                    <a href="?criteria=<%= criteria %>&page=<%= page %>&sort=lastlogin&sortdir=<%= sort.lastLogin.nextDirection %>"
+                       class="<% if (sort.lastLogin.applied) { %>sorted dir-<%= (sort.lastLogin.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
+                    >Last Login</a></th>
+                <th scope="col" class="cwp-10">
+                    <a href="?criteria=<%= criteria %>&page=<%= page %>&sort=status&sortdir=<%= sort.status.nextDirection %>"
+                       class="<% if (sort.status.applied) { %>sorted dir-<%= (sort.status.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
+                    >Status</a></th>
+            </tr>
             </thead>
             <tbody>
             <% if(locals.users.length === 0 && locals.criteria) { %>
-                <tr>
-                    <td colspan="5"><span class="empty-state">No users found</span></td>
-                </tr>
+            <tr>
+                <td colspan="5"><span class="empty-state">No users found</span></td>
+            </tr>
             <% } %>
             <% for (let i = 0; i < locals.users.length; i++) { %>
-                <tr>
-                    <td><a href="/users/<%=users[i].id%>/"><%= users[i].name %></a></td>
+            <tr>
+                <td><a href="/users/<%= users[i].id %>/"><%= users[i].name %></a></td>
 
-                    <td><span class="breakable"><%= users[i].email %></span></td>
-                    <td>
+                <td><span class="breakable"><%= users[i].email %></span></td>
+                <td>
                     <% if(users[i].organisation) { %>
-                        <%= users[i].organisation.name %>
+                    <%= users[i].organisation.name %>
                     <% }else { %>
-                        Unknown
+                    Unknown
                     <% } %>
-                    </td>
-                    <td>
+                </td>
+                <td>
                     <% if(locals.users[i].lastLogin) { %>
-                        <%= locals.moment(locals.users[i].lastLogin).fromNow() %>
+                    <%= locals.moment(locals.users[i].lastLogin).fromNow() %>
                     <% } else { %>
-                        Never
+                    Never
                     <% } %>
-                    </td>
-                    <td><%= users[i].status.description %></td>
-                </tr>
+                </td>
+                <td><%= users[i].status.description %></td>
+            </tr>
             <% } %>
             </tbody>
         </table>
@@ -202,12 +229,13 @@
 
 <div class="row meta">
     <div class="col-6">
-        <p>Showing <%= lowerEndUsers %> - <%= upperEndUsers %> of <b><%=locals.totalNumberOfResults%></b> users</p>
+        <p>Showing <%= lowerEndUsers %> - <%= upperEndUsers %> of <b><%= locals.totalNumberOfResults %></b> users</p>
     </div>
     <div class="col-6">
         <% if (locals.numberOfPages > 1) { %>
-        <div class="pagination" data-criteria="<%= criteria %>" data-sort="<%= locals.sortBy %>" data-sortdir="<%= locals.sortOrder %>"
-             data-current="<%=locals.page%>" data-total="<%=locals.numberOfPages%>">
+        <div class="pagination" data-criteria="<%= criteria %>" data-sort="<%= locals.sortBy %>"
+             data-sortdir="<%= locals.sortOrder %>"
+             data-current="<%= locals.page %>" data-total="<%= locals.numberOfPages %>">
         </div>
         <% } %>
     </div>
