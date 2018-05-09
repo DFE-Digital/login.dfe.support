@@ -48,7 +48,7 @@ const mapSearchIndexUser = (user) => {
 };
 
 
-const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => {
+const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true, filters = undefined) => {
   const currentIndexName = await client.get('CurrentIndex_Users');
 
   try {
@@ -72,9 +72,38 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
         break;
     }
 
+    let filterParam = '';
+    if (filters) {
+      if (filters.organisationType && filters.organisationType.length > 0) {
+        if (filterParam.length > 0) {
+          filterParam += ' and ';
+        }
+        filterParam += `organisationCategories/any(x: search.in(x, '${filters.organisationType.join(', ')}'))`
+      }
+
+      if (filters.accountStatus && filters.accountStatus.length > 0) {
+        if (filterParam.length > 0) {
+          filterParam += ' and ';
+        }
+        filterParam += `(statusId eq ${filters.accountStatus.join(' or statusId eq ')})`
+      }
+
+      if (filters.service && filters.service.length > 0) {
+        if (filterParam.length > 0) {
+          filterParam += ' and ';
+        }
+        filterParam += `services/any(x: search.in(x, '${filters.service.join(', ')}'))`
+      }
+    }
+
+    let uri = `${getAzureSearchUri(currentIndexName, '/docs')}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`;
+    if (filterParam.length > 0) {
+      uri += `&$filter=${filterParam}`;
+    }
+
     const response = await rp({
       method: 'GET',
-      uri: `${getAzureSearchUri(currentIndexName, '/docs')}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`,
+      uri,
       headers: {
         'content-type': 'application/json',
         'api-key': config.cache.params.apiKey,
