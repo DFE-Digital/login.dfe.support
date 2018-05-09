@@ -35,7 +35,7 @@ const buildUser = async (user, correlationId) => {
     } else {
       organisation = orgServiceMapping[0].organisation;
     }
-    organisationCategories = orgServiceMapping.map((org) => org.organisation.category.id);
+    organisationCategories = orgServiceMapping.map((org) => org.organisation.category ? org.organisation.category.id : undefined).filter(x => x !== undefined);
   }
 
   // Get audit details
@@ -66,10 +66,10 @@ const buildUser = async (user, correlationId) => {
     firstName: user.given_name,
     lastName: user.family_name,
     email: user.email,
-    organisation: {
+    organisation: organisation ? {
       id: organisation.id,
       name: organisation.name,
-    },
+    } : null,
     organisationCategories,
     services,
     lastLogin: lastLogin,
