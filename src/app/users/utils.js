@@ -10,6 +10,35 @@ const delay = async (milliseconds) => {
     setTimeout(resolve, milliseconds);
   });
 };
+const unpackMultiSelect = (parameter) => {
+  if (!parameter) {
+    return [];
+  }
+  if (!(parameter instanceof Array)) {
+    return [parameter];
+  }
+  return parameter;
+};
+const buildFilters = (paramsSource) => {
+  let filter = {};
+
+  const selectedOrganisationTypes = unpackMultiSelect(paramsSource.organisationType);
+  if (selectedOrganisationTypes) {
+    filter.organisationType = selectedOrganisationTypes
+  }
+
+  const selectedAccountStatuses = unpackMultiSelect(paramsSource.accountStatus);
+  if (selectedAccountStatuses) {
+    filter.accountStatus = selectedAccountStatuses
+  }
+
+  const selectedServices = unpackMultiSelect(paramsSource.service);
+  if (selectedServices) {
+    filter.service = selectedServices
+  }
+
+  return Object.keys(filter).length > 0 ? filter : undefined;
+};
 
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
@@ -27,7 +56,9 @@ const search = async (req) => {
   let sortBy = paramsSource.sort ? paramsSource.sort.toLowerCase() : 'name';
   let sortAsc = (paramsSource.sortdir ? paramsSource.sortdir : 'asc').toLowerCase() === 'asc';
 
-  const results = await users.search(criteria + '*', page, sortBy, sortAsc);
+  const filter = buildFilters(paramsSource);
+
+  const results = await users.search(criteria + '*', page, sortBy, sortAsc, filter);
   logger.audit(`${req.user.email} (id: ${req.user.sub}) searched for users in support using criteria "${criteria}"`, {
     type: 'support',
     subType: 'user-search',
