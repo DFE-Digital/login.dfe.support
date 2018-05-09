@@ -54,22 +54,25 @@ describe('When syncing users materialised view', function () {
     directories.getChangeEmailCode.mockReset();
     directories.getChangeEmailCode.mockReturnValueOnce({ email: 'user1@unit.test' });
 
-    organisations.getUserOrganisations.mockReset();
-    organisations.getUserOrganisations.mockReturnValue([{
-      userService: {
-        id: 'userservice1',
-        userId: 'user1',
-        status: 0
+    organisations.getUserOrganisations.mockReset().mockReturnValue([
+      {
+        organisation: {
+          id: 'org1',
+          name: 'Test Org',
+          category: {
+            id: '001',
+            name: 'Establishment'
+          },
+        },
+        services: [
+          {
+            id: 'service1',
+            name: 'Test Service',
+            requestDate: new Date(2018, 5, 1),
+          }
+        ]
       },
-      organisation: {
-        id: 'org1',
-        name: 'Test Org'
-      },
-      service: {
-        id: 'service1',
-        name: 'Test Service'
-      }
-    }]);
+    ]);
 
     audit.cache.getStatsForUser.mockReset().mockReturnValue({
       lastLogin: new Date('2017-10-24T12:35:51.633Z'),
@@ -129,6 +132,8 @@ describe('When syncing users materialised view', function () {
         id: 'org1',
         name: 'Test Org'
       },
+      organisationCategories: ['001'],
+      services: ['service1'],
       lastLogin: 1508848551633,
       successfulLoginsInPast12Months: 1,
       status: {
@@ -148,6 +153,8 @@ describe('When syncing users materialised view', function () {
         id: 'org1',
         name: 'Test Org'
       },
+      organisationCategories: ['001'],
+      services: ['service1'],
       lastLogin: 1508848551633,
       successfulLoginsInPast12Months: 1,
       status: {

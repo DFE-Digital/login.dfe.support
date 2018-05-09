@@ -7,7 +7,7 @@ jest.mock('./../../../src/infrastructure/users', () => {
 jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
 
 const logger = require('./../../../src/infrastructure/logger');
-const {search} = require('./../../../src/app/users/utils');
+const { search } = require('./../../../src/app/users/utils');
 
 describe('When processing a user search request', () => {
   let usersSearchResult;
@@ -117,6 +117,39 @@ describe('When processing a user search request', () => {
       expect(actual.sort.name.applied).toBe(true);
       expect(users.search.mock.calls[0][2]).toBe('name');
       expect(users.search.mock.calls[0][3]).toBe(true);
+    });
+
+    test('then it should filter by organisation types if specified', async () => {
+      req.body.organisationType = ['org1', 'org2'];
+
+      await search(req);
+
+      expect(users.search.mock.calls).toHaveLength(1);
+      expect(users.search.mock.calls[0][4]).toMatchObject({
+        organisationType: ['org1', 'org2'],
+      });
+    });
+
+    test('then it should filter by account status if specified', async () => {
+      req.body.accountStatus = ['-1', '1'];
+
+      await search(req);
+
+      expect(users.search.mock.calls).toHaveLength(1);
+      expect(users.search.mock.calls[0][4]).toMatchObject({
+        accountStatus: ['-1', '1'],
+      });
+    });
+
+    test('then it should filter by service if specified', async () => {
+      req.body.service = ['svc1', 'svc2'];
+
+      await search(req);
+
+      expect(users.search.mock.calls).toHaveLength(1);
+      expect(users.search.mock.calls[0][4]).toMatchObject({
+        service: ['svc1', 'svc2'],
+      });
     });
   });
 
