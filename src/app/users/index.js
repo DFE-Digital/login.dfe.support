@@ -6,8 +6,6 @@ const logger = require('../../infrastructure/logger');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
 
 const search = require('./search');
-// const getSearch = require('./getSearch');
-// const postSearch = require('./postSearch');
 const getServices = require('./getServices');
 const getAudit = require('./getAudit');
 const getEditProfile = require('./getEditProfile');
