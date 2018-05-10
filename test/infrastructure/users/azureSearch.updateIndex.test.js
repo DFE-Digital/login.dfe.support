@@ -78,6 +78,7 @@ describe('when updating an index with new data in azure search', () => {
             email: 'user.one@unit.test',
             emailSearch: 'user.one%40unit.test',
             organisationName: 'Hogwarts School of Witchcraft and Wizardry',
+            organisationNameSearch: 'hogwartsschoolofwitchcraftandwizardry',
             lastLogin: null,
             statusDescription: 'Active',
           }
