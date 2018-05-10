@@ -95,8 +95,10 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true, fil
         filterParam += `services/any(x: search.in(x, '${filters.service.join(', ')}'))`
       }
     }
-
-    let uri = `${getAzureSearchUri(currentIndexName, '/docs')}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`;
+    
+    criteria = criteria.replace(' ','').toLowerCase();
+    
+    let uri = `${getAzureSearchUri(currentIndexName, '/docs')}&search=${encodeURIComponent(criteria)}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`;
     if (filterParam.length > 0) {
       uri += `&$filter=${filterParam}`;
     }
@@ -166,9 +168,11 @@ const createIndex = async () => {
         fields: [
           { name: 'id', type: 'Edm.String', key: true, searchable: false, filterable: true },
           { name: 'name', type: 'Edm.String', sortable: true, filterable: true },
+          { name: 'nameSearch', type: 'Edm.String', searchable: true },
           { name: 'firstName', type: 'Edm.String' },
           { name: 'lastName', type: 'Edm.String' },
           { name: 'email', type: 'Edm.String', sortable: true, filterable: true },
+          { name: 'emailSearch', type: 'Edm.String', searchable: true },
           { name: 'organisationName', type: 'Edm.String', sortable: true, filterable: true },
           { name: 'organisationCategories', type: 'Collection(Edm.String)', searchable: false, filterable: true },
           { name: 'services', type: 'Collection(Edm.String)', searchable: false, filterable: true },
@@ -213,9 +217,11 @@ const updateIndex = async (users, index) => {
             '@search.action': 'upload',
             id: user.id,
             name: user.name,
+            nameSearch: user.name.replace(' ','').toLowerCase(),
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
+            emailSearch: encodeURIComponent(user.email).toLowerCase(),
             organisationName: user.organisation ? user.organisation.name : '',
             organisationCategories: user.organisationCategories || [],
             services: user.services || [],
