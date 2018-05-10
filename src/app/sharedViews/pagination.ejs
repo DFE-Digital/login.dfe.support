@@ -1,0 +1,91 @@
+<%
+const pages = locals.numberOfPages;
+const page = locals.page;
+const numberOfResultsOnPagePage = locals.numberOfResultsOnPage;
+const totalNumberOfResults = locals.totalNumberOfResults
+let lowerEndRecords = page === pages ? totalNumberOfResults - numberOfResultsOnPagePage + 1 : numberOfResultsOnPagePage * (page - 1) + 1
+const upperEndRecords = lowerEndRecords + numberOfResultsOnPagePage - 1
+
+if (locals.totalNumberOfResults === 0) {
+    lowerEndRecords = 0;
+}
+
+const pageBracketLeft = [];
+const pageBracketMiddle = [];
+const pageBracketRight = [];
+const pagesEitherSideOfCurrent = 4;
+
+let lowerWindowBound = page - pagesEitherSideOfCurrent;
+const upperWindowBound = page + pagesEitherSideOfCurrent;
+if (lowerWindowBound < 1) {
+    lowerWindowBound = 1;
+}
+
+if (lowerWindowBound > 1) {
+    pageBracketLeft.push(1);
+}
+for (let i = lowerWindowBound; i <= upperWindowBound && i <= pages; i++) {
+    pageBracketMiddle.push(i);
+}
+if (upperWindowBound < pages) {
+    pageBracketRight.push(pages);
+}
+%>
+
+<div class="row meta">
+    <div class="col-6">
+        <p>Showing <%= lowerEndRecords %> - <%= upperEndRecords %> of <b><%= locals.totalNumberOfResults %></b> users
+        </p>
+    </div>
+    <div class="col-6">
+        <% if (locals.numberOfPages > 1) { %>
+        <div class="pagination">
+            <ul>
+                <% for (let i = 0; i < pageBracketLeft.length; i++) { %>
+                <li>
+                    <% if (locals.currentPage === pageBracketLeft[i]) { %>
+                    <span class="current"><%= pageBracketLeft[i] %></span>
+                    <% } else if (locals.method === 'post') { %>
+                    <%- include('pageForm', {page: pageBracketLeft[i], csrfToken: locals.csrfToken, data: locals.data}); %>
+                    <% } else { %>
+                    <%- include('pageLink', {page: pageBracketLeft[i], csrfToken: locals.csrfToken, data: locals.data}); %>
+                    <% } %>
+                </li>
+                <% } %>
+
+                <% if (pageBracketLeft.length > 0) { %>
+                <li><span>...</span></li>
+                <% } %>
+
+                <% for (let i = 0; i < pageBracketMiddle.length; i++) { %>
+                <li>
+                    <% if (locals.currentPage === pageBracketMiddle[i]) { %>
+                    <span class="current"><%= pageBracketMiddle[i] %></span>
+                    <% } else if (locals.method === 'post') { %>
+                    <%- include('pageForm', {page: pageBracketMiddle[i], csrfToken: locals.csrfToken, data: locals.data}); %>
+                    <% } else { %>
+                    <%- include('pageLink', {page: pageBracketMiddle[i], csrfToken: locals.csrfToken, data: locals.data}); %>
+                    <% } %>
+                </li>
+                <% } %>
+
+                <% if (pageBracketRight.length > 0) { %>
+                <li><span>...</span></li>
+                <% } %>
+
+                <% for (let i = 0; i < pageBracketRight.length; i++) { %>
+                <li>
+                    <% if (locals.currentPage === pageBracketRight[i]) { %>
+                    <span class="current"><%= pageBracketRight[i] %></span>
+                    <% } else if (locals.method === 'post') { %>
+                    <%- include('pageForm', {page: pageBracketRight[i], csrfToken: locals.csrfToken, data: locals.data}); %>
+                    <% } else { %>
+                    <%- include('pageLink', {page: pageBracketRight[i], csrfToken: locals.csrfToken, data: locals.data}); %>
+                    <% } %>
+                </li>
+                <% } %>
+            </ul>
+        </div>
+        <% } %>
+    </div>
+</div>
