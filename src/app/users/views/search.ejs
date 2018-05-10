@@ -11,13 +11,37 @@
 </div>
 
 <%
-const pages = locals.numberOfPages, page = locals.page
-const usersOnPage = locals.users.length, usersAll = locals.totalNumberOfResults
-let lowerEndUsers = page === pages ? usersAll - usersOnPage + 1 : usersOnPage * (page - 1) + 1
-const upperEndUsers = lowerEndUsers + usersOnPage - 1
-
-if (locals.totalNumberOfResults === 0) {
-    lowerEndUsers = 0;
+const paginationModel = {
+    method: 'post',
+    csrfToken,
+    currentPage: locals.page,
+    numberOfPages: locals.numberOfPages,
+    totalNumberOfResults: locals.totalNumberOfResults,
+    numberOfResultsOnPage: locals.users.length,
+    data: [
+        { key: 'criteria', value: locals.criteria },
+        { key: 'sort', value: locals.sortBy },
+        { key: 'sortDir', value: locals.sortOrder },
+        { key: 'showFilters', value: locals.showFilters }
+    ]
+}
+if (organisationTypes && organisationTypes.length > 0) {
+    const selected = organisationTypes.filter(x => x.isSelected);
+    selected.forEach((item) => {
+      paginationModel.data.push({ key: 'organisationType', value: item.id });
+    });
+}
+if (accountStatuses && accountStatuses.length > 0) {
+    const selected = accountStatuses.filter(x => x.isSelected);
+    selected.forEach((item) => {
+        paginationModel.data.push({ key: 'accountStatus', value: item.id });
+    });
+}
+if (services && services.length > 0) {
+    const selected = services.filter(x => x.isSelected);
+    selected.forEach((item) => {
+        paginationModel.data.push({ key: 'service', value: item.id });
+    });
 }
 %>
 
@@ -78,20 +102,7 @@ if (locals.totalNumberOfResults === 0) {
     </div>
 </div>
 
-<div class="row meta">
-    <div class="col-6">
-        <p>Showing <%= lowerEndUsers %> - <%= upperEndUsers %> of <b><%= locals.totalNumberOfResults %></b> users</p>
-    </div>
-    <div class="col-6">
-        <% if (locals.numberOfPages > 1) { %>
-        <div class="pagination" data-criteria="<%= criteria %>" data-sort="<%= locals.sortBy %>"
-             data-sortdir="<%= locals.sortOrder %>"
-             data-current="<%= locals.page %>" data-total="<%= locals.numberOfPages %>"
-             data-showfilters="<%= showFilters %>" data-method="form" data-csrf="<%= csrfToken %>">
-        </div>
-        <% } %>
-    </div>
-</div>
+<%- include('../../sharedViews/pagination', paginationModel); %>
 
 <div class="row">
     <% if (showFilters) { %>
@@ -171,25 +182,47 @@ if (locals.totalNumberOfResults === 0) {
     <div class="col-<%= (showFilters ? 8 : 12) %>">
         <table class="data">
             <thead>
+            <%
+            let baseSortUri = `?criteria=${criteria}&page=${page}&showFilters=${showFilters}`;
+
+            if (organisationTypes && organisationTypes.length > 0) {
+                const selected = organisationTypes.filter(x => x.isSelected);
+                selected.forEach((item) => {
+                    baseSortUri += `&organisationType=${item.id}`;
+                });
+            }
+            if (accountStatuses && accountStatuses.length > 0) {
+                const selected = accountStatuses.filter(x => x.isSelected);
+                selected.forEach((item) => {
+                    baseSortUri += `&accountStatus=${item.id}`;
+                });
+            }
+            if (services && services.length > 0) {
+                const selected = services.filter(x => x.isSelected);
+                selected.forEach((item) => {
+                    baseSortUri += `&service=${item.id}`;
+                });
+            }
+            %>
             <tr class="sortable">
                 <th scope="col" class="cwp-15">
-                    <a href="?criteria=<%= criteria %>&page=<%= page %>&sort=name&sortdir=<%= sort.name.nextDirection %>"
+                    <a href="<%=baseSortUri%>&sort=name&sortdir=<%= sort.name.nextDirection %>"
                        class="<% if (sort.name.applied) { %>sorted dir-<%= (sort.name.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
                     >Name</a></th>
                 <th scope="col" class="cwp-35">
-                    <a href="?criteria=<%= criteria %>&page=<%= page %>&sort=email&sortdir=<%= sort.email.nextDirection %>"
+                    <a href="<%=baseSortUri%>&sort=email&sortdir=<%= sort.email.nextDirection %>"
                        class="<% if (sort.email.applied) { %>sorted dir-<%= (sort.email.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
                     >Email</a></th>
                 <th scope="col" class="cwp-25">
-                    <a href="?criteria=<%= criteria %>&page=<%= page %>&sort=organisation&sortdir=<%= sort.organisation.nextDirection %>"
+                    <a href="<%=baseSortUri%>&sort=organisation&sortdir=<%= sort.organisation.nextDirection %>"
                        class="<% if (sort.organisation.applied) { %>sorted dir-<%= (sort.organisation.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
                     >Organisation</a></th>
                 <th scope="col" class="cwp-15">
-                    <a href="?criteria=<%= criteria %>&page=<%= page %>&sort=lastlogin&sortdir=<%= sort.lastLogin.nextDirection %>"
+                    <a href="<%=baseSortUri%>&sort=lastlogin&sortdir=<%= sort.lastLogin.nextDirection %>"
                        class="<% if (sort.lastLogin.applied) { %>sorted dir-<%= (sort.lastLogin.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
                     >Last Login</a></th>
                 <th scope="col" class="cwp-10">
-                    <a href="?criteria=<%= criteria %>&page=<%= page %>&sort=status&sortdir=<%= sort.status.nextDirection %>"
+                    <a href="<%=baseSortUri%>&sort=status&sortdir=<%= sort.status.nextDirection %>"
                        class="<% if (sort.status.applied) { %>sorted dir-<%= (sort.status.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
                     >Status</a></th>
             </tr>
@@ -227,16 +260,4 @@ if (locals.totalNumberOfResults === 0) {
     </div>
 </div>
 
-<div class="row meta">
-    <div class="col-6">
-        <p>Showing <%= lowerEndUsers %> - <%= upperEndUsers %> of <b><%= locals.totalNumberOfResults %></b> users</p>
-    </div>
-    <div class="col-6">
-        <% if (locals.numberOfPages > 1) { %>
-        <div class="pagination" data-criteria="<%= criteria %>" data-sort="<%= locals.sortBy %>"
-             data-sortdir="<%= locals.sortOrder %>"
-             data-current="<%= locals.page %>" data-total="<%= locals.numberOfPages %>">
-        </div>
-        <% } %>
-    </div>
-</div>
+<%- include('../../sharedViews/pagination', paginationModel); %>
