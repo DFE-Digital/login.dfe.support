@@ -16,7 +16,9 @@ const createIndex = async () => {
     { name: 'deviceStatus', type: 'Edm.String', searchable: false, filterable: true },
     { name: 'serialNumber', type: 'Edm.String', sortable: true, searchable: true },
     { name: 'name', type: 'Edm.String', sortable: true, filterable: true, searchable: true },
+    { name: 'nameSearch', type: 'Edm.String', searchable: true },
     { name: 'email', type: 'Edm.String', sortable: true, filterable: true, searchable: true },
+    { name: 'emailSearch', type: 'Edm.String', searchable: true },
     { name: 'organisationName', type: 'Edm.String', sortable: true, filterable: true, searchable: true },
     { name: 'lastLogin', type: 'Edm.Int64', sortable: true, filterable: true },
   ];
@@ -46,7 +48,9 @@ const updateIndex = async (userDevices, index) => {
         deviceStatus: userDevice.device.status,
         serialNumber: userDevice.device.serialNumber,
         name: userDevice.name,
+        nameSearch: userDevice.name.replace(' ','').toLowerCase(),
         email: userDevice.email,
+        emailSearch: encodeURIComponent(userDevice.email).toLowerCase(),
         organisationName: userDevice.organisation ? userDevice.organisation.name : '',
         lastLogin,
       };
@@ -122,7 +126,7 @@ const search = async (criteria, pageNumber, sortBy = 'serialNumber', sortAsc = t
         orderBy = sortAsc ? 'serialNumber' : 'serialNumber desc';
         break;
     }
-
+    criteria = criteria.replace(' ','').toLowerCase();
     const formattedCriteria = criteria.replace(/-/g,'');
     const serialNumber = parseInt(formattedCriteria);
     if(!isNaN(serialNumber)) {
