@@ -16,7 +16,9 @@ const createIndex = async () => {
     { name: 'deviceStatus', type: 'Edm.String', searchable: false, filterable: true },
     { name: 'serialNumber', type: 'Edm.String', sortable: true, searchable: true },
     { name: 'name', type: 'Edm.String', sortable: true, filterable: true, searchable: true },
+    { name: 'nameSearch', type: 'Edm.String', searchable: true },
     { name: 'email', type: 'Edm.String', sortable: true, filterable: true, searchable: true },
+    { name: 'emailSearch', type: 'Edm.String', searchable: true },
     { name: 'organisationName', type: 'Edm.String', sortable: true, filterable: true, searchable: true },
     { name: 'lastLogin', type: 'Edm.Int64', sortable: true, filterable: true },
   ];
