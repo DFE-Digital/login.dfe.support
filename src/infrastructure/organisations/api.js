@@ -83,6 +83,10 @@ const getAllOrganisations = async () => {
   return all;
 };
 
+const getAllServices = async (correlationId) => {
+  return await callOrganisationsApi('services', 'GET', undefined, correlationId);
+};
+
 const getOrganisationById = async (id, correlationId) => {
   return await callOrganisationsApi(`organisations/${id}`, 'GET', undefined, correlationId);
 };
@@ -129,12 +133,17 @@ const setUserAccessToOrganisation = async (userId, organisationId, roleId, corre
   return await callOrganisationsApi(`organisations/${organisationId}/users/${userId}`, 'PUT', body, correlationId);
 };
 
+const getOrganisationCategories = async (correlationId) => {
+  return callOrganisationsApi('organisations/categories', 'GET', undefined, correlationId);
+};
+
 module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
   getPageOfOrganisations,
   getAllOrganisations,
+  getAllServices,
   getOrganisationById,
   getServiceIdentifierDetails,
   addInvitationService,
@@ -143,4 +152,5 @@ module.exports = {
   putSingleServiceIdentifierForUser,
   searchOrganisations,
   setUserAccessToOrganisation,
+  getOrganisationCategories,
 };
