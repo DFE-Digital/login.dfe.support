@@ -116,4 +116,23 @@ describe('when searching for a user in azure search', () => {
       },
     });
   });
+
+
+  it('then the search value is set to lowercase and white space is removed', async () => {
+    await search('Test User', 1);
+
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      method: 'GET',
+      uri: 'https://test-search.search.windows.net/indexes/test-index/docs?api-version=2016-09-01&search=testuser&$count=true&$skip=0&$top=25&$orderby=serialNumber',
+    });
+  });
+
+  it('then the search value is encoded', async () => {
+    await search('Test@User', 1);
+
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      method: 'GET',
+      uri: 'https://test-search.search.windows.net/indexes/test-index/docs?api-version=2016-09-01&search=test%40user&$count=true&$skip=0&$top=25&$orderby=serialNumber',
+    });
+  });
 });

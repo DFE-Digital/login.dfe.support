@@ -79,7 +79,9 @@ describe('when updating an index with new data in azure search', () => {
             deviceStatus: 'Assigned',
             serialNumber: '123-abc-456',
             name: 'User One',
+            nameSearch: 'userone',
             email: 'user.one@unit.test',
+            emailSearch: 'user.one%40unit.test',
             organisationName: 'Hogwarts School of Witchcraft and Wizardry',
             lastLogin: null,
           }
