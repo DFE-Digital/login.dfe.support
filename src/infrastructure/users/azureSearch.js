@@ -48,7 +48,7 @@ const mapSearchIndexUser = (user) => {
 };
 
 
-const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => {
+const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true, filters = undefined) => {
   const currentIndexName = await client.get('CurrentIndex_Users');
 
   try {
@@ -72,11 +72,40 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
         break;
     }
 
+    let filterParam = '';
+    if (filters) {
+      if (filters.organisationType && filters.organisationType.length > 0) {
+        if (filterParam.length > 0) {
+          filterParam += ' and ';
+        }
+        filterParam += `organisationCategories/any(x: search.in(x, '${filters.organisationType.join(', ')}'))`
+      }
+
+      if (filters.accountStatus && filters.accountStatus.length > 0) {
+        if (filterParam.length > 0) {
+          filterParam += ' and ';
+        }
+        filterParam += `(statusId eq ${filters.accountStatus.join(' or statusId eq ')})`
+      }
+
+      if (filters.service && filters.service.length > 0) {
+        if (filterParam.length > 0) {
+          filterParam += ' and ';
+        }
+        filterParam += `services/any(x: search.in(x, '${filters.service.join(', ')}'))`
+      }
+    }
+    
     criteria = criteria.replace(' ','').toLowerCase();
+    
+    let uri = `${getAzureSearchUri(currentIndexName, '/docs')}&search=${encodeURIComponent(criteria)}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`;
+    if (filterParam.length > 0) {
+      uri += `&$filter=${filterParam}`;
+    }
 
     const response = await rp({
       method: 'GET',
-      uri: `${getAzureSearchUri(currentIndexName, '/docs')}&search=${encodeURIComponent(criteria)}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`,
+      uri,
       headers: {
         'content-type': 'application/json',
         'api-key': config.cache.params.apiKey,
@@ -145,6 +174,8 @@ const createIndex = async () => {
           { name: 'email', type: 'Edm.String', sortable: true, filterable: true },
           { name: 'emailSearch', type: 'Edm.String', searchable: true },
           { name: 'organisationName', type: 'Edm.String', sortable: true, filterable: true },
+          { name: 'organisationCategories', type: 'Collection(Edm.String)', searchable: false, filterable: true },
+          { name: 'services', type: 'Collection(Edm.String)', searchable: false, filterable: true },
           { name: 'lastLogin', type: 'Edm.Int64', sortable: true, filterable: true },
           { name: 'successfulLoginsInPast12Months', type: 'Edm.Int64' },
           { name: 'statusLastChangedOn', type: 'Edm.Int64' },
@@ -162,6 +193,9 @@ const createIndex = async () => {
 };
 
 const updateIndex = async (users, index) => {
+  if(!users || users.length === 0) {
+    return;
+  }
   if (!index) {
     index = await client.get('CurrentIndex_Users');
   }
@@ -189,6 +223,8 @@ const updateIndex = async (users, index) => {
             email: user.email,
             emailSearch: encodeURIComponent(user.email).toLowerCase(),
             organisationName: user.organisation ? user.organisation.name : '',
+            organisationCategories: user.organisationCategories || [],
+            services: user.services || [],
             lastLogin,
             successfulLoginsInPast12Months: user.successfulLoginsInPast12Months,
             statusLastChangedOn: user.status.changedOn ? user.status.changedOn : 0,

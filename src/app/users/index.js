@@ -5,8 +5,7 @@ const { isLoggedIn, setCurrentArea } = require('../../infrastructure/utils');
 const logger = require('../../infrastructure/logger');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
 
-const getSearch = require('./getSearch');
-const postSearch = require('./postSearch');
+const search = require('./search');
 const getServices = require('./getServices');
 const getAudit = require('./getAudit');
 const getEditProfile = require('./getEditProfile');
@@ -46,8 +45,8 @@ const users = (csrf) => {
   router.use(isLoggedIn);
   router.use(setCurrentArea('users'));
 
-  router.get('/', csrf, asyncWrapper(getSearch));
-  router.post('/', csrf, asyncWrapper(postSearch));
+  router.get('/', csrf, asyncWrapper(search.get));
+  router.post('/', csrf, asyncWrapper(search.post));
 
   router.get('/new-user', csrf, asyncWrapper(getNewUser));
   router.post('/new-user', csrf, asyncWrapper(postNewUser));

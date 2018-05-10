@@ -65,6 +65,14 @@ const getAllOrganisations = async () => {
   return (await getPageOfOrganisations(1)).organisations;
 };
 
+const getAllServices = async () => {
+  return Promise.resolve([{
+    "id": "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+    "name": "Some service",
+    "description": "Some service that does some stuff",
+  }]);
+};
+
 const getOrganisationById = async (id) => {
   return (await getPageOfOrganisations(1)).organisations.find(x => x.id === id);
 };
@@ -97,12 +105,17 @@ const setUserAccessToOrganisation = async (userId, organisationId, roleId, corre
   return Promise.resolve(null);
 };
 
+const getOrganisationCategories = async (correlationId) => {
+  return Promise.resolve([]);
+};
+
 module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
   getPageOfOrganisations,
   getAllOrganisations,
+  getAllServices,
   getOrganisationById,
   getServiceIdentifierDetails,
   addInvitationService,
@@ -111,4 +124,5 @@ module.exports = {
   putSingleServiceIdentifierForUser,
   searchOrganisations,
   setUserAccessToOrganisation,
+  getOrganisationCategories,
 };

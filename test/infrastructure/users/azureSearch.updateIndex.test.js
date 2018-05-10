@@ -84,5 +84,11 @@ describe('when updating an index with new data in azure search', () => {
         ]
       },
     });
-  })
+  });
+
+  it('then if there are no users to update the endpoint is not called', async () => {
+    await updateIndex([], 'new-index-name');
+
+    expect(rp.mock.calls).toHaveLength(0);
+  });
 });

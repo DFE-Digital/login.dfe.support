@@ -28,6 +28,10 @@ const createIndex = async () => {
 
 const updateIndex = async (userDevices, index) => {
 
+  if(!userDevices || userDevices.length === 0) {
+    return;
+  }
+
   if(!index) {
     index = await client.get('CurrentIndex_UserDevices');
   }
