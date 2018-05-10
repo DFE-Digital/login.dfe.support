@@ -137,9 +137,11 @@ const createIndex = async () => {
         fields: [
           { name: 'id', type: 'Edm.String', key: true, searchable: false, filterable: true },
           { name: 'name', type: 'Edm.String', sortable: true, filterable: true },
+          { name: 'nameSearch', type: 'Edm.String', searchable: true },
           { name: 'firstName', type: 'Edm.String' },
           { name: 'lastName', type: 'Edm.String' },
           { name: 'email', type: 'Edm.String', sortable: true, filterable: true },
+          { name: 'emailSearch', type: 'Edm.String', searchable: true },
           { name: 'organisationName', type: 'Edm.String', sortable: true, filterable: true },
           { name: 'lastLogin', type: 'Edm.Int64', sortable: true, filterable: true },
           { name: 'successfulLoginsInPast12Months', type: 'Edm.Int64' },
