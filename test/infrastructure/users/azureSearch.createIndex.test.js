@@ -68,6 +68,7 @@ describe('when creating an index in azure search', () => {
           { name: 'email', type: 'Edm.String', sortable: true, filterable: true },
           { name: 'emailSearch', type: 'Edm.String', searchable: true },
           { name: 'organisationName', type: 'Edm.String', sortable: true, filterable: true },
+          { name: 'organisationNameSearch', type: 'Edm.String', searchable: true },
           { name: 'organisationCategories', type: 'Collection(Edm.String)', searchable: false, filterable: true },
           { name: 'services', type: 'Collection(Edm.String)', searchable: false, filterable: true },
           { name: 'lastLogin', type: 'Edm.Int64', sortable: true, filterable: true },
