@@ -11,13 +11,37 @@
 </div>
 
 <%
-const pages = locals.numberOfPages, page = locals.page
-const usersOnPage = locals.users.length, usersAll = locals.totalNumberOfResults
-let lowerEndUsers = page === pages ? usersAll - usersOnPage + 1 : usersOnPage * (page - 1) + 1
-const upperEndUsers = lowerEndUsers + usersOnPage - 1
-
-if (locals.totalNumberOfResults === 0) {
-    lowerEndUsers = 0;
+const paginationModel = {
+    method: 'post',
+    csrfToken,
+    currentPage: locals.page,
+    numberOfPages: locals.numberOfPages,
+    totalNumberOfResults: locals.totalNumberOfResults,
+    numberOfResultsOnPage: locals.users.length,
+    data: [
+        { key: 'criteria', value: locals.criteria },
+        { key: 'sort', value: locals.sortBy },
+        { key: 'sortDir', value: locals.sortOrder },
+        { key: 'showFilters', value: locals.showFilters }
+    ]
+}
+if (organisationTypes && organisationTypes.length > 0) {
+    const selected = organisationTypes.filter(x => x.isSelected);
+    selected.forEach((item) => {
+      paginationModel.data.push({ key: 'organisationType', value: item.id });
+    });
+}
+if (accountStatuses && accountStatuses.length > 0) {
+    const selected = accountStatuses.filter(x => x.isSelected);
+    selected.forEach((item) => {
+        paginationModel.data.push({ key: 'accountStatus', value: item.id });
+    });
+}
+if (services && services.length > 0) {
+    const selected = services.filter(x => x.isSelected);
+    selected.forEach((item) => {
+        paginationModel.data.push({ key: 'service', value: item.id });
+    });
 }
 %>
 
@@ -78,20 +102,7 @@ if (locals.totalNumberOfResults === 0) {
     </div>
 </div>
 
-<div class="row meta">
-    <div class="col-6">
-        <p>Showing <%= lowerEndUsers %> - <%= upperEndUsers %> of <b><%= locals.totalNumberOfResults %></b> users</p>
-    </div>
-    <div class="col-6">
-        <% if (locals.numberOfPages > 1) { %>
-        <div class="pagination" data-criteria="<%= criteria %>" data-sort="<%= locals.sortBy %>"
-             data-sortdir="<%= locals.sortOrder %>"
-             data-current="<%= locals.page %>" data-total="<%= locals.numberOfPages %>"
-             data-showfilters="<%= showFilters %>" data-method="form" data-csrf="<%= csrfToken %>">
-        </div>
-        <% } %>
-    </div>
-</div>
+<%- include('../../sharedViews/pagination', paginationModel); %>
 
 <div class="row">
     <% if (showFilters) { %>
@@ -227,16 +238,4 @@ if (locals.totalNumberOfResults === 0) {
     </div>
 </div>
 
-<div class="row meta">
-    <div class="col-6">
-        <p>Showing <%= lowerEndUsers %> - <%= upperEndUsers %> of <b><%= locals.totalNumberOfResults %></b> users</p>
-    </div>
-    <div class="col-6">
-        <% if (locals.numberOfPages > 1) { %>
-        <div class="pagination" data-criteria="<%= criteria %>" data-sort="<%= locals.sortBy %>"
-             data-sortdir="<%= locals.sortOrder %>"
-             data-current="<%= locals.page %>" data-total="<%= locals.numberOfPages %>">
-        </div>
-        <% } %>
-    </div>
-</div>
+<%- include('../../sharedViews/pagination', paginationModel); %>
