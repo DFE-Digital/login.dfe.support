@@ -112,7 +112,7 @@ const getIndexById = async (currentIndexName, userId, filterParam = 'id') => {
 const search = async (currentIndexName, criteria, skip, pageSize, orderBy) => {
   return await rp({
     method: 'GET',
-    uri: `${getAzureSearchUri(currentIndexName, '/docs')}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`,
+    uri: `${getAzureSearchUri(currentIndexName, '/docs')}&search=${encodeURIComponent(criteria)}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`,
     headers: {
       'content-type': 'application/json',
       'api-key': config.cache.params.apiKey,
