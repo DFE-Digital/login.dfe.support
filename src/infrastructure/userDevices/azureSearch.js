@@ -122,7 +122,7 @@ const search = async (criteria, pageNumber, sortBy = 'serialNumber', sortAsc = t
         orderBy = sortAsc ? 'serialNumber' : 'serialNumber desc';
         break;
     }
-
+    criteria = criteria.replace(' ','').toLowerCase();
     const formattedCriteria = criteria.replace(/-/g,'');
     const serialNumber = parseInt(formattedCriteria);
     if(!isNaN(serialNumber)) {
