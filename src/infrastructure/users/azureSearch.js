@@ -222,7 +222,7 @@ const updateIndex = async (users, index) => {
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
-            emailSearch: encodeURIComponent(user.email).toLowerCase(),
+            emailSearch: user.email.replace('@','').toLowerCase(),
             organisationName: user.organisation ? user.organisation.name : '',
             organisationNameSearch: user.organisation ? user.organisation.name.replace(/\s/g, '').toLowerCase() : '',
             organisationCategories: user.organisationCategories || [],

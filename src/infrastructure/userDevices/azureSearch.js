@@ -50,7 +50,7 @@ const updateIndex = async (userDevices, index) => {
         name: userDevice.name,
         nameSearch: userDevice.name.replace(/\s/g, '').toLowerCase(),
         email: userDevice.email,
-        emailSearch: encodeURIComponent(userDevice.email).toLowerCase(),
+        emailSearch: userDevice.email.replace('@','').toLowerCase(),
         organisationName: userDevice.organisation ? userDevice.organisation.name : '',
         lastLogin,
       };
