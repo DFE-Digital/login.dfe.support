@@ -96,9 +96,9 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true, fil
       }
     }
     
-    criteria = criteria.replace(' ','').toLowerCase();
+    criteria = criteria.replace(/\s/g, '').replace('@','').toLowerCase();
     
-    let uri = `${getAzureSearchUri(currentIndexName, '/docs')}&search=${encodeURIComponent(criteria)}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`;
+    let uri = `${getAzureSearchUri(currentIndexName, '/docs')}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`;
     if (filterParam.length > 0) {
       uri += `&$filter=${filterParam}`;
     }
