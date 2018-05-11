@@ -96,9 +96,9 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true, fil
       }
     }
     
-    criteria = criteria.replace(' ','').toLowerCase();
+    criteria = criteria.replace(/\s/g, '').replace('@','').toLowerCase();
     
-    let uri = `${getAzureSearchUri(currentIndexName, '/docs')}&search=${encodeURIComponent(criteria)}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`;
+    let uri = `${getAzureSearchUri(currentIndexName, '/docs')}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`;
     if (filterParam.length > 0) {
       uri += `&$filter=${filterParam}`;
     }
@@ -174,6 +174,7 @@ const createIndex = async () => {
           { name: 'email', type: 'Edm.String', sortable: true, filterable: true },
           { name: 'emailSearch', type: 'Edm.String', searchable: true },
           { name: 'organisationName', type: 'Edm.String', sortable: true, filterable: true },
+          { name: 'organisationNameSearch', type: 'Edm.String', searchable: true },
           { name: 'organisationCategories', type: 'Collection(Edm.String)', searchable: false, filterable: true },
           { name: 'services', type: 'Collection(Edm.String)', searchable: false, filterable: true },
           { name: 'lastLogin', type: 'Edm.Int64', sortable: true, filterable: true },
@@ -217,12 +218,13 @@ const updateIndex = async (users, index) => {
             '@search.action': 'upload',
             id: user.id,
             name: user.name,
-            nameSearch: user.name.replace(' ','').toLowerCase(),
+            nameSearch: user.name.replace(/\s/g, '').toLowerCase(),
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
-            emailSearch: encodeURIComponent(user.email).toLowerCase(),
+            emailSearch: user.email.replace('@','').toLowerCase(),
             organisationName: user.organisation ? user.organisation.name : '',
+            organisationNameSearch: user.organisation ? user.organisation.name.replace(/\s/g, '').toLowerCase() : '',
             organisationCategories: user.organisationCategories || [],
             services: user.services || [],
             lastLogin,
