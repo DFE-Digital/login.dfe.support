@@ -80,6 +80,9 @@ if (services && services.length > 0) {
                 </fieldset>
             </div>
         </form>
+
+    </div>
+    <div class="col-3">
         <form method="post">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <input type="hidden" name="criteria" value="<%= criteria %>"/>
@@ -87,11 +90,10 @@ if (services && services.length > 0) {
             <input type="hidden" name="sort" value="<%= sortBy %>"/>
             <input type="hidden" name="sortDir" value="<%= sortOrder %>"/>
             <input type="hidden" name="showFilters" value="<%= !showFilters %>"/>
-
-            <button type="submit" class="button-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
+            <button type="submit" class="button-link filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
         </form>
     </div>
-    <div class="col-6">
+    <div class="col-3">
         <div class="pull-right">
             <% if(useGenericAddUser) { %>
             <a href="/users/new-user" class="button button-secondary">Add User</a>
@@ -102,7 +104,7 @@ if (services && services.length > 0) {
     </div>
 </div>
 
-<%- include('../../sharedViews/pagination', paginationModel); %>
+
 
 <div class="row">
     <% if (showFilters) { %>
@@ -180,6 +182,7 @@ if (services && services.length > 0) {
     </div>
     <% } %>
     <div class="col-<%= (showFilters ? 8 : 12) %>">
+        <%- include('../../sharedViews/pagination', paginationModel); %>
         <table class="data">
             <thead>
             <%
@@ -257,7 +260,7 @@ if (services && services.length > 0) {
             <% } %>
             </tbody>
         </table>
+        <%- include('../../sharedViews/pagination', paginationModel); %>
     </div>
 </div>
 
-<%- include('../../sharedViews/pagination', paginationModel); %>
