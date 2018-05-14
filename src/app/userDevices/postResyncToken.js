@@ -14,6 +14,7 @@ const action = async (req, res) => {
       csrfToken: req.csrfToken(),
       code1: '',
       code2: '',
+      backLink: '/userdevices/' + req.body.serialNumber + '/' + req.body.uid,
       validationMessages: resyncTokenResult.validationResult.messages,
       uid: req.body.uid,
       serialNumber: req.body.serialNumber,
