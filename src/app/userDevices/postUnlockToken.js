@@ -11,6 +11,7 @@ const action = async (req, res) => {
       unlockCode: unlockTokenResult.unlockCode,
       uid: req.body.uid,
       serialNumber: req.body.serialNumber,
+      backLink: '/userdevices/' + req.body.serialNumber + '/' + req.body.uid,
     });
   }
   else {
@@ -23,6 +24,7 @@ const action = async (req, res) => {
         validationMessages: unlockTokenResult.validationResult.messages,
         uid: req.body.uid,
         serialNumber: req.body.serialNumber,
+        backLink: '/userdevices/' + req.body.serialNumber + '/' + req.body.uid,
       });
     }
   }

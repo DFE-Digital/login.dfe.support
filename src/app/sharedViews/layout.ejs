@@ -67,6 +67,15 @@
 
 
     <main id="content" tabindex="-1">
+
+        <% if (locals.backLink !== undefined) { %>
+            <% if (locals.backLink === true) { %>
+                <div class="js-back-link"></div>
+            <% } else { %>
+                <a href="<%-locals.backLink%>" class="link-back">Back</a>
+            <% } %>
+        <% } %>
+
         <% if (locals.validationMessages !== undefined) { %>
 
         <% const validationKeys = Object.keys(locals.validationMessages) %>
@@ -105,6 +114,9 @@
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script src="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/javascript/vendors/select2.min.js"></script>
 <script src="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/javascript/app.min.js"></script>
+
+
+
 
 
 </body>
