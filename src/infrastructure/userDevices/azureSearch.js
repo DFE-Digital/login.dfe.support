@@ -48,9 +48,9 @@ const updateIndex = async (userDevices, index) => {
         deviceStatus: userDevice.device.status,
         serialNumber: userDevice.device.serialNumber,
         name: userDevice.name,
-        nameSearch: userDevice.name.replace(/\s/g, '').toLowerCase(),
+        nameSearch: userDevice.name ? userDevice.name.replace(/\s/g, '').toLowerCase() : '',
         email: userDevice.email,
-        emailSearch: userDevice.email.replace('@','').toLowerCase(),
+        emailSearch: userDevice.email ? userDevice.email.replace('@','').toLowerCase() : '',
         organisationName: userDevice.organisation ? userDevice.organisation.name : '',
         lastLogin,
       };
