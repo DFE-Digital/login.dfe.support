@@ -1,0 +1,23 @@
+<%- include('summaryPartial', {area: 'organisations', user: locals.user, isInvitation: locals.isInvitation}); %>
+
+<% if (locals.organisations.length > 0) {%>
+<table class="data no-borders">
+    <thead>
+        <tr>
+            <th scope="row">Organisation</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% for (let o = 0; o < locals.organisations.length; o++) { %>
+        <% const org = locals.organisations[o];%>
+            <tr>
+                <td> <%=org.name%> </td>
+            </tr>
+        <%}%>
+    </tbody>
+</table>
+<% } else { %>
+<div class="empty-state">
+    <p><%= user.name %> is not associated with any organisations</p>
+</div>
+<% } %>
