@@ -1,9 +1,12 @@
 <%- include('summaryPartial', {area: 'services', user: locals.user, isInvitation: locals.isInvitation}); %>
 
+<% let hasServices = false %>
 
 <% for (let o = 0; o < locals.organisations.length; o++) { %>
-<% const org = locals.organisations[o];%>
 
+<% const org = locals.organisations[o];%>
+    <% if (org.services.length > 0) {%>
+    <% hasServices = true %>
     <article class="organisation-services">
         <section class="organisation">
             <header>
@@ -11,7 +14,7 @@
             </header>
         </section>
         <section class="services">
-            <% if (org.services.length > 0) {%>
+
             <table class="data no-borders">
                 <thead>
                 <tr>
@@ -49,12 +52,13 @@
                 <%}%>
                 </tbody>
             </table>
-            <%} else {%>
-            <div class="empty-state">
-                <p><%=user.firstName%> <%=user.lastName%> does not have any services at <%=org.name%></p>
-            </div>
-            <%}%>
         </section>
     </article>
-
+    <%}%>
 <%}%>
+
+<% if (!hasServices) { %>
+<div class="empty-state">
+    <p><%= user.name %> is not associated with any services</p>
+</div>
+<% } %>

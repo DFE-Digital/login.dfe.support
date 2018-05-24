@@ -6,6 +6,7 @@ const logger = require('../../infrastructure/logger');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
 
 const search = require('./search');
+const getOrganisations = require('./getOrganisations');
 const getServices = require('./getServices');
 const getAudit = require('./getAudit');
 const getEditProfile = require('./getEditProfile');
@@ -68,8 +69,9 @@ const users = (csrf) => {
   router.post('/confirm-new-k2s-user', csrf, asyncWrapper(postConfirmNewK2sUser));
 
   router.get('/:uid', asyncWrapper((req, res) => {
-    res.redirect(`/users/${req.params.uid}/services`);
+    res.redirect(`/users/${req.params.uid}/organisations`);
   }));
+  router.get('/:uid/organisations', csrf, asyncWrapper(getOrganisations));
   router.get('/:uid/services', csrf, asyncWrapper(getServices));
   router.get('/:uid/audit', csrf, asyncWrapper(getAudit));
 

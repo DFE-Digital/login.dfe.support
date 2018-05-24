@@ -82,6 +82,12 @@
 <nav>
     <ul class="tabs" role="tablist">
 
+        <% if(locals.area === 'organisations') { %>
+        <li class="active">Organisations</li>
+        <% } else { %>
+        <li><a href="organisations" role="tab">Organisations</a></li>
+        <% } %>
+
         <% if(locals.area === 'services') { %>
         <li class="active">Services</li>
         <% } else { %>
