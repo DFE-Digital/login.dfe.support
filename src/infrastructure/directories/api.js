@@ -218,12 +218,12 @@ const reactivate = async (uid, correlationId) => {
   });
 };
 
-const deactivateInvite = async(id, reason, correlationId) => {
+const deactivateInvite = async (id, reason, correlationId) => {
   try {
     const token = await jwtStrategy(config.directories.service).getBearerToken();
     await rp({
       method: 'PATCH',
-      uri: `${config.directories.service.url}/invitations/${id.replace('inv-','')}`,
+      uri: `${config.directories.service.url}/invitations/${id.replace('inv-', '')}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
@@ -234,13 +234,30 @@ const deactivateInvite = async(id, reason, correlationId) => {
       },
       json: true,
     });
-  } catch(e) {
+  } catch (e) {
     console.log(e);
   }
 };
 
 const createInvite = async (givenName, familyName, email, digipassSerialNumber, clientId, redirectUri, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
+
+  const body = {
+    firstName: givenName,
+    lastName: familyName,
+    email,
+    origin: {
+      clientId,
+      redirectUri,
+    },
+    selfStarted: false,
+  };
+  if (digipassSerialNumber) {
+    body.device = {
+      type: 'digipass',
+      serialNumber: digipassSerialNumber,
+    };
+  }
 
   const invitation = await rp({
     method: 'POST',
@@ -249,20 +266,7 @@ const createInvite = async (givenName, familyName, email, digipassSerialNumber, 
       authorization: `bearer ${token}`,
       'x-correlation-id': correlationId,
     },
-    body: {
-      firstName: givenName,
-      lastName: familyName,
-      email,
-      device: {
-        type: 'digipass',
-        serialNumber: digipassSerialNumber,
-      },
-      origin: {
-        clientId,
-        redirectUri,
-      },
-      selfStarted: false,
-    },
+    body,
     json: true,
   });
 
@@ -284,7 +288,7 @@ const updateInvite = async (id, email, correlationId) => {
       },
       json: true,
     });
-  } catch(e) {
+  } catch (e) {
     console.log(e);
   }
 };
