@@ -1,21 +1,17 @@
 <%- include('summaryPartial', {area: 'audit', user: locals.user}); %>
-<%
-const pages = locals.numberOfPages, page = locals.page
-const usersOnPage = locals.audits.length, usersAll = locals.totalNumberOfResults
-const lowerEndUsers = usersAll == 0 ? 0 : (page === pages ? usersAll - usersOnPage + 1 : usersOnPage * ( page - 1) + 1)
-const upperEndUsers = lowerEndUsers == 0 ? 0 : lowerEndUsers + usersOnPage - 1
-%>
-<div class="row meta">
-    <div class="col-6">
-        <p>Showing <%= lowerEndUsers %> - <%= upperEndUsers %> of <b><%=locals.totalNumberOfResults%></b> audits for user</p>
-    </div>
-    <div class="col-6">
-        <% if (locals.numberOfPages > 1) { %>
-        <div class="pagination" data-current="<%=locals.page%>" data-total="<%=locals.numberOfPages%>"></div>
-        <% } %>
-    </div>
-</div>
 
+
+<%
+const paginationModel = {
+    currentPage: locals.page,
+    numberOfPages: locals.numberOfPages,
+    totalNumberOfResults: locals.totalNumberOfResults,
+    numberOfResultsOnPage: locals.audits.length,
+    data: [],
+};
+%>
+
+<%- include('../../sharedViews/pagination', paginationModel); %>
 <div class="row">
     <div class="col-12">
         <table class="data">
@@ -43,14 +39,4 @@ const upperEndUsers = lowerEndUsers == 0 ? 0 : lowerEndUsers + usersOnPage - 1
         </table>
     </div>
 </div>
-
-<div class="row meta">
-    <div class="col-6">
-        <p>Showing <%= lowerEndUsers %> - <%= upperEndUsers %> of <b><%=locals.totalNumberOfResults%></b> audits for user</p>
-    </div>
-    <div class="col-6">
-        <% if (locals.numberOfPages > 1) { %>
-        <div class="pagination" data-current="<%=locals.page%>" data-total="<%=locals.numberOfPages%>"></div>
-        <% } %>
-    </div>
-</div>
+<%- include('../../sharedViews/pagination', paginationModel); %>
