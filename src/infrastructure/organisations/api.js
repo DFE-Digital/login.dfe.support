@@ -138,6 +138,10 @@ const getOrganisationCategories = async (correlationId) => {
   return callOrganisationsApi('organisations/categories', 'GET', undefined, correlationId);
 };
 
+const getOrganisationUsersForApproval = async (pageNumber, correlationId) => {
+  return callOrganisationsApi(`organisations/users-for-approval?page=2`, 'GET', undefined, correlationId);
+};
+
 module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -154,4 +158,5 @@ module.exports = {
   searchOrganisations,
   setUserAccessToOrganisation,
   getOrganisationCategories,
+  getOrganisationUsersForApproval,
 };
