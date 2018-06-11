@@ -107,6 +107,10 @@ const deleteChangeEmailCode = async (userId, correlationId) => {
   return Promise.resolve();
 };
 
+const getUsersById = async(userIds, correlationId) => {
+  return Promise.resolve([]);
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
@@ -124,4 +128,5 @@ module.exports = {
   createChangeEmailCode,
   getChangeEmailCode,
   deleteChangeEmailCode,
+  getUsersById,
 };
