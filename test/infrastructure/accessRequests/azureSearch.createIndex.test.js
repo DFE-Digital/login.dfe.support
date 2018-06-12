@@ -38,7 +38,7 @@ describe('when creating an index in azure search', () => {
     expect(rp.mock.calls).toHaveLength(1);
     expect(rp.mock.calls[0][0]).toMatchObject({
       method: 'PUT',
-      uri: 'https://test-search.search.windows.net/indexes/accessRequests-some-uuid?api-version=2016-09-01'
+      uri: 'https://test-search.search.windows.net/indexes/accessrequests-some-uuid?api-version=2016-09-01'
     })
   });
 
@@ -58,7 +58,7 @@ describe('when creating an index in azure search', () => {
 
     expect(rp.mock.calls[0][0]).toMatchObject({
       body: {
-        name: 'accessRequests-some-uuid',
+        name: 'accessrequests-some-uuid',
         fields: [
           { name: 'userId', type: 'Edm.String', key: true, searchable: false },
           { name: 'orgId', type: 'Edm.String', key: true, searchable: false },
@@ -76,6 +76,6 @@ describe('when creating an index in azure search', () => {
   it('then it should return the new index name', async () => {
     const actual = await createIndex();
 
-    expect(actual).toBe('accessRequests-some-uuid');
+    expect(actual).toBe('accessrequests-some-uuid');
   });
 });

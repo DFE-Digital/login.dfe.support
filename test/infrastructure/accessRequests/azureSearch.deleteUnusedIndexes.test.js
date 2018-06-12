@@ -28,8 +28,8 @@ describe('When deleting unused indexes from Azure Search', () => {
     jest.doMock('ioredis', () => jest.fn().mockImplementation(() => {
       const RedisMock = require('ioredis-mock').default;
       const redisMock = new RedisMock();
-      redisMock.set('CurrentIndex_AccessRequests', 'accessRequests-58457890-ba74-49ae-86eb-b4a144649805');
-      redisMock.set('UnusedIndexes_AccessRequests', '["accessRequests-4771d85e-f3ef-4e71-82ca-30f0663b10c9"]');
+      redisMock.set('CurrentIndex_AccessRequests', 'accessrequests-58457890-ba74-49ae-86eb-b4a144649805');
+      redisMock.set('UnusedIndexes_AccessRequests', '["accessrequests-4771d85e-f3ef-4e71-82ca-30f0663b10c9"]');
       return redisMock;
     }));
 
@@ -41,17 +41,17 @@ describe('When deleting unused indexes from Azure Search', () => {
           "value": [
             {
               "@odata.etag": "\"0x8D561869625D56C\"",
-              "name": "accessRequests-58457890-ba74-49ae-86eb-b4a144649805",
+              "name": "accessrequests-58457890-ba74-49ae-86eb-b4a144649805",
               /*other properties omitted*/
             },
             {
               "@odata.etag": "\"0x8D561869625D56C\"",
-              "name": "accessRequests-4771d85e-f3ef-4e71-82ca-30f0663b10c9",
+              "name": "accessrequests-4771d85e-f3ef-4e71-82ca-30f0663b10c9",
               /*other properties omitted*/
             },
             {
               "@odata.etag": "\"0x8D561869625D56C\"",
-              "name": "accessRequests-24b1f0da-7f82-48b0-9106-720135f9b051",
+              "name": "accessrequests-24b1f0da-7f82-48b0-9106-720135f9b051",
               /*other properties omitted*/
             }
           ]
@@ -66,7 +66,7 @@ describe('When deleting unused indexes from Azure Search', () => {
 
     expect(rp.mock.calls[0][0]).toMatchObject({
       method: 'DELETE',
-      uri: 'https://test-search.search.windows.net/indexes/accessRequests-4771d85e-f3ef-4e71-82ca-30f0663b10c9?api-version=2016-09-01',
+      uri: 'https://test-search.search.windows.net/indexes/accessrequests-4771d85e-f3ef-4e71-82ca-30f0663b10c9?api-version=2016-09-01',
     });
   });
 
@@ -74,7 +74,7 @@ describe('When deleting unused indexes from Azure Search', () => {
     await deleteUnusedIndexes();
 
     rp.mock.calls.forEach((call) => {
-      expect(call[0].uri).not.toMatch(/indexes\/accessRequests-58457890-ba74-49ae-86eb-b4a144649805/);
+      expect(call[0].uri).not.toMatch(/indexes\/accessrequests-58457890-ba74-49ae-86eb-b4a144649805/);
     });
   });
 
@@ -86,7 +86,7 @@ describe('When deleting unused indexes from Azure Search', () => {
     const mockRedis = ioRedis();
     const actual = await mockRedis.get('UnusedIndexes_AccessRequests');
     expect(actual).toBe(JSON.stringify([
-      'accessRequests-4771d85e-f3ef-4e71-82ca-30f0663b10c9',
+      'accessrequests-4771d85e-f3ef-4e71-82ca-30f0663b10c9',
     ]));
   });
 });
