@@ -6,7 +6,7 @@ const https = require('https');
 const KeepAliveAgent = require('agentkeepalive');
 
 const audit = require('./infrastructure/audit');
-const { syncUsersView, syncUserDevicesView, syncAuditCache } = require('./app/syncViews');
+const { syncUsersView, syncUserDevicesView, syncAuditCache, syncAccessRequestsView } = require('./app/syncViews');
 const { tidyIndexes } = require('./app/tidyIndexes');
 
 http.GlobalAgent = new KeepAliveAgent({
@@ -32,6 +32,9 @@ audit.cache.init().then(() => {
 
   const userDeviceSchedule = schedule.scheduleJob(config.schedules.userDevices, syncUserDevicesView);
   logger.info(`first invocation of userDevice schedule will be ${userDeviceSchedule.nextInvocation()}`);
+
+  const accessRequestSchedule = schedule.scheduleJob(config.schedules.accessRequests, syncAccessRequestsView);
+  logger.info(`first invocation of access requests schedule will be ${accessRequestSchedule.nextInvocation()}`);
 
   const indexTidySchedule = schedule.scheduleJob(config.schedules.indexTidy, tidyIndexes);
   logger.info(`first invocation of index tidy schedule will be ${indexTidySchedule.nextInvocation()}`);
