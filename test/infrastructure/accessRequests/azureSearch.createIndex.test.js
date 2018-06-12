@@ -60,8 +60,9 @@ describe('when creating an index in azure search', () => {
       body: {
         name: 'accessrequests-some-uuid',
         fields: [
-          { name: 'userId', type: 'Edm.String', key: true, searchable: false },
-          { name: 'orgId', type: 'Edm.String', key: true, searchable: false },
+          { name: 'userOrgId', type: 'Edm.String', key: true, searchable: false },
+          { name: 'userId', type: 'Edm.String',  searchable: false },
+          { name: 'orgId', type: 'Edm.String', searchable: false },
           { name: 'name', type: 'Edm.String', sortable: true, filterable: true, searchable: true },
           { name: 'nameSearch', type: 'Edm.String',  searchable: true },
           { name: 'email', type: 'Edm.String', sortable: true, filterable: true, searchable: true },
