@@ -70,6 +70,7 @@ describe('when updating an index with new data in azure search', () => {
         value: [
           {
             '@search.action': 'upload',
+            userOrgId: 'user1org1',
             userId: 'user1',
             orgId: 'org1',
             name: 'User One',

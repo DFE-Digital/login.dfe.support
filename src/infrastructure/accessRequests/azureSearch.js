@@ -11,8 +11,9 @@ const pageSize = 25;
 
 const createIndex = async () => {
   const fields = [
-    { name: 'userId', type: 'Edm.String', key: true, searchable: false },
-    { name: 'orgId', type: 'Edm.String', key: true, searchable: false },
+    { name: 'userOrgId', type: 'Edm.String', key: true, searchable: false },
+    { name: 'userId', type: 'Edm.String', searchable: false },
+    { name: 'orgId', type: 'Edm.String', searchable: false },
     { name: 'name', type: 'Edm.String', sortable: true, filterable: true, searchable: true },
     { name: 'nameSearch', type: 'Edm.String',  searchable: true },
     { name: 'email', type: 'Edm.String', sortable: true, filterable: true, searchable: true },
@@ -37,6 +38,7 @@ const updateIndex = async (accessRequests, index) => {
   const accessRequestMap = accessRequests.map((accessRequest) => {
       return {
         '@search.action': 'upload',
+        userOrgId: `${accessRequest.userId}${accessRequest.organisation.id}`,
         userId: accessRequest.userId,
         name: accessRequest.name,
         nameSearch: accessRequest.name ? accessRequest.name.replace(/\s/g, '').toLowerCase() : '',
@@ -138,10 +140,10 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
   }
 };
 
-const getByUserId = async (userId, filterParam='id') => {
+const getById = async (id, filterParam='id') => {
   try {
     const currentIndexName = await client.get('CurrentIndex_UserDevices');
-    const user = await azureSearch.getIndexById(currentIndexName, userId, filterParam);
+    const user = await azureSearch.getIndexById(currentIndexName, id, filterParam);
     return mapAccessRequest(user);
   } catch (e) {
     throw e;
@@ -154,6 +156,6 @@ module.exports = {
   updateActiveIndex,
   deleteUnusedIndexes,
   search,
-  getByUserId,
+  getById,
 };
 
