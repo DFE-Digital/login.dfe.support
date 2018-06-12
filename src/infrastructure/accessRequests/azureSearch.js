@@ -46,7 +46,7 @@ const updateIndex = async (accessRequests, index) => {
         emailSearch: accessRequest.email ? accessRequest.email.replace('@','').toLowerCase() : '',
         organisationName: accessRequest.organisation.name,
         orgId: accessRequest.organisation.id,
-        createdDate: accessRequest.createdDate.getTime(),
+        createdDate: new Date(accessRequest.createdDate).getTime(),
       };
     });
 
