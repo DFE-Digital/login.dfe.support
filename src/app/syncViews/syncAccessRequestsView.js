@@ -21,15 +21,16 @@ const loadAccessRequests = async (newIndexName, correlationId) => {
     if (pageOfAccessRequests.usersForApproval && pageOfAccessRequests.usersForApproval.length > 0) {
       const users = await getUserDetails(pageOfAccessRequests, correlationId);
       const mappedAccessRequests =  pageOfAccessRequests.usersForApproval.map((user) => {
-        const userFound = users.find(c => c.claims.sub.toLowerCase() === user.user_id.toLowerCase());
-        const name = userFound ? `${userFound.claims.given_name} ${userFound.claims.family_name}` : 'No Name Supplied';
-        const email = userFound ? userFound.claims.email : '';
-        return Object.assign({name, email}, user);
+        const userFound = users.find(c => c.sub.toLowerCase() === user.user_id.toLowerCase());
+        const name = userFound ? `${userFound.given_name} ${userFound.family_name}` : 'No Name Supplied';
+        const email = userFound ? userFound.email : '';
+        const organisation = {id: user.org_id, name: user.org_name}
+        return Object.assign({name, email, organisation}, user);
       });
       await accessRequests.updateIndex(mappedAccessRequests, newIndexName);
     }
     pageNumber++;
-    hasMorePages = pageNumber <= pageOfAccessRequests.numberOfPages;
+    hasMorePages = pageNumber <= pageOfAccessRequests.totalNumberOfPages;
   }
 };
 

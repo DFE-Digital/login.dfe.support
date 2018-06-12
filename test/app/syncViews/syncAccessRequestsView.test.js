@@ -40,9 +40,9 @@ describe('When syncing access request materialised view', function () {
     directories.getUsersById.mockReset();
     directories.getUsersById.mockReturnValue(
         [
-          {claims:{ sub: 'user1', given_name: 'User', family_name:'One', email: 'user.one@unit.tests' }},
-          {claims:{ sub: 'user6', given_name: 'User', family_name:'Six', email: 'user.six@unit.tests' }},
-          {claims:{ sub: 'user11', given_name: 'User', family_name: 'Eleven', email: 'user.eleven@unit.tests' }},
+          { sub: 'user1', given_name: 'User', family_name:'One', email: 'user.one@unit.tests' },
+          { sub: 'user6', given_name: 'User', family_name:'Six', email: 'user.six@unit.tests' },
+          { sub: 'user11', given_name: 'User', family_name: 'Eleven', email: 'user.eleven@unit.tests' },
         ]
     );
 
@@ -60,7 +60,7 @@ describe('When syncing access request materialised view', function () {
         user_id: 'user2',
         created_date: '2018-05-31T11:00:05.861Z'
       },
-    ],numberOfPages: 1});
+    ],totalNumberOfPages: 1});
 
     uuid.mockImplementation(() => {
       return 'new-uuid';
@@ -78,7 +78,7 @@ describe('When syncing access request materialised view', function () {
     organisations.getOrganisationUsersForApproval.mockImplementation(() => {
       return {
         usersForApproval: [],
-        numberOfPages: 2,
+        totalNumberOfPages: 2,
       };
     });
 
@@ -108,6 +108,10 @@ describe('When syncing access request materialised view', function () {
      user_id: 'user1',
      email: 'user.one@unit.tests',
      name: 'User One',
+      organisation: {
+       id: '60EEAA8D-D21D-44E9-BF10-6220E841FDAB',
+        name: 'Oxley Park Academy',
+      }
     });
     expect(accessRequests.updateIndex.mock.calls[0][0][1]).toEqual({
       created_date: '2018-05-31T11:00:05.861Z',
@@ -116,6 +120,10 @@ describe('When syncing access request materialised view', function () {
       user_id: 'user2',
       email: '',
       name: 'No Name Supplied',
+      organisation: {
+        id: '60EEAA8D-D21D-44E9-BF10-6220E841FDAB',
+        name: 'Oxley Park Academy',
+      }
     });
     expect(accessRequests.updateIndex.mock.calls[0][1]).toBe('test-index');
   });
