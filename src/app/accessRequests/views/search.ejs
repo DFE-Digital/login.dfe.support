@@ -1,0 +1,71 @@
+<h1 class="heading-xlarge">Access requests</h1>
+
+<div class="">
+    <nav>
+        <ul class="tabs" role="tablist">
+            <li class="active">Organisations (<%=locals.usersForApproval.totalNumberOfResults%>)</li>
+            <!--<li><a href="requests-services.html" role="tab">Services (12)</a></li>-->
+        </ul>
+    </nav>
+</div>
+<div class="row">
+    <div class="col-6">
+        <form method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <div class="search-field">
+                <fieldset class="search-input">
+                    <label for="criteria" class="vh">Search by name, email or organisation requested</label>
+                    <input type="text" id="criteria" name="criteria" value="" class="form-control" placeholder="Search by name, email or organisation requested">
+                </fieldset>
+                <fieldset class="search-submit">
+                    <button type="submit" class="button">Search</button>
+                </fieldset>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="grid-row">
+
+    <div class="col-12">
+        <%- include('../../sharedViews/pagination', paginationModel); %>
+        <table class="data">
+            <thead>
+            <%
+            let baseSortUri = `?criteria=${criteria}&page=${page}&showFilters=${showFilters}`;
+            %>
+            <tr class="sortable">
+                <th scope="col" class="cwp-20">
+                    <a href="<%=baseSortUri%>&sort=name&sortdir=<%= sort.name.nextDirection %>"
+                       class="<% if (sort.name.applied) { %>sorted dir-<%= (sort.name.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
+                    >Name</a></th>
+                <th scope="col" class="cwp-25">
+                    <a href="<%=baseSortUri%>&sort=email&sortdir=<%= sort.email.nextDirection %>"
+                       class="<% if (sort.email.applied) { %>sorted dir-<%= (sort.email.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
+                    >Email</a>
+                <th scope="col" class="cwp-30">
+                    <a href="<%=baseSortUri%>&sort=org_name&sortdir=<%= sort.organisation.nextDirection %>"
+                       class="<% if (sort.organisation.applied) { %>sorted dir-<%= (sort.organisation.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
+                    >Request to access</a></th>
+                <th scope="col" class="cwp-15">
+                    <a href="<%=baseSortUri%>&sort=createdDate&sortdir=<%= sort.createdDate.nextDirection %>"
+                       class="<% if (sort.createdDate.applied) { %>sorted dir-<%= (sort.createdDate.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
+                    >Date</a>
+                    <a href="#" class="sorted dir-d">Date</a></th>
+                <th scope="col" class="cwp-10 last"><span class="vh">Action</span> </th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <% for (let i = 0; i < locals.usersForApproval.length; i++) { %>
+            <tr>
+                <td><a href="/users/<%= usersForApproval[i].userId %>/"><%= users[i].name %></a></td>
+                <td><%= users[i].email %></td>
+                <td><%= users[i].organisation.name %></td>
+                <td><%= users[i].createdDate %></td>
+                <td><a href="request-org-respond.html">More details</a></td>
+            </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
