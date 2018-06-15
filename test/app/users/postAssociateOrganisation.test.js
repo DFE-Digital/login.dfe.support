@@ -46,8 +46,9 @@ describe('when associating user to organisations', () => {
 
     expect(searchOrganisations.mock.calls).toHaveLength(1);
     expect(searchOrganisations.mock.calls[0][0]).toBe('something');
-    expect(searchOrganisations.mock.calls[0][1]).toBe(1);
-    expect(searchOrganisations.mock.calls[0][2]).toBe('correlationId');
+    expect(searchOrganisations.mock.calls[0][1]).toBeUndefined();
+    expect(searchOrganisations.mock.calls[0][2]).toBe(1);
+    expect(searchOrganisations.mock.calls[0][3]).toBe('correlationId');
 
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe('users/views/associateOrganisation');
