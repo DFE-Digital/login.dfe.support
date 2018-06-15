@@ -21,10 +21,10 @@ const getConfirmNewUser = (req, res) => {
       id: req.session.user.organisationId,
       name: req.session.user.organisationName,
     } : undefined,
-    role: {
+    role:req.session.user.permission ? {
       id: req.session.user.permission,
       name: getRoleName(req.session.user.permission),
-    },
+    } : undefined,
   });
 };
 
