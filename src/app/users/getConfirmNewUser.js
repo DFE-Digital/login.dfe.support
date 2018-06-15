@@ -5,7 +5,7 @@ const getRoleName = (id) => {
     case 10000:
       return 'Approver';
     default:
-      return null;
+      throw new Error(`Unrecognised role ${id}`);
   }
 };
 
@@ -21,10 +21,10 @@ const getConfirmNewUser = (req, res) => {
       id: req.session.user.organisationId,
       name: req.session.user.organisationName,
     } : undefined,
-    role: {
+    role: req.session.user.organisationId ? {
       id: req.session.user.permission,
       name: getRoleName(req.session.user.permission),
-    },
+    } : '',
   });
 };
 
