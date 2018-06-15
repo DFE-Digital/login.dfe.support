@@ -1,4 +1,9 @@
+<%if (role.name !== null) {%>
+<a href="organisation-permissions" class="link-back">Back</a>
+<%} else {%>
 <a href="associate-organisation" class="link-back">Back</a>
+<%}%>
+
 <div class="grid-row">
     <div class="col-8">
         <h1 class="heading-xlarge">
@@ -24,10 +29,10 @@
         <dl class="rows spacer">
             <dt>Organisation</dt>
             <dd><%=organisation.name%></dd>
-
+            <%if (role) {%>
             <dt>Permission level</dt>
             <dd><%=role.name%></dd>
-
+            <%}%>
         </dl>
         <%} else {%>
         <p><em>No organisation added</em></p>
