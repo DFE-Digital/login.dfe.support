@@ -13,7 +13,7 @@ const postAssociateOrganisation = async (req, res) => {
   const criteria = req.body.criteria;
   const currentPage = req.body.page;
 
-  const searchResult = await searchOrganisations(criteria, currentPage, req.id);
+  const searchResult = await searchOrganisations(criteria, undefined, currentPage, req.id);
   const results = searchResult.organisations;
   const numberOfPages = searchResult.totalNumberOfPages;
   const numberOfResults = searchResult.totalNumberOfRecords;

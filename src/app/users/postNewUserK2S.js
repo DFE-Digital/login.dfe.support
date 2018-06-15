@@ -1,12 +1,29 @@
 const { sendResult } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
-const { getAllOrganisations, getServiceIdentifierDetails } = require('./../../infrastructure/organisations');
+const { searchOrganisations, getServiceIdentifierDetails } = require('./../../infrastructure/organisations');
 const { getUser } = require('./../../infrastructure/directories');
 const { emailPolicy } = require('login.dfe.validation');
 
 const keyToSuccessIdentifierAlreadyUsed = async (k2sId, correlationId) => {
   const identifier = await getServiceIdentifierDetails(config.serviceMapping.key2SuccessServiceId, 'k2s-id', k2sId, correlationId);
   return identifier ? true : false;
+};
+
+const getLocalAutorities = async (correlationId) => {
+  let pageNumber = 1;
+  let hasMorePages = true;
+  const localAuthorities = [];
+  while (hasMorePages) {
+    const page = await searchOrganisations('', ['002'], pageNumber, correlationId);
+
+    if (page.organisations.length > 0) {
+      localAuthorities.push(...page.organisations);
+    }
+
+    pageNumber++;
+    hasMorePages = page.page < page.totalNumberOfPages;
+  }
+  return localAuthorities;
 };
 
 const validateInput = async (req, orgs) => {
@@ -64,7 +81,7 @@ const validateInput = async (req, orgs) => {
 };
 
 const postNewUserK2S = async (req, res) => {
-  const orgs = await getAllOrganisations();
+  const orgs = await getLocalAutorities(req.id);
   const validationResult = await validateInput(req, orgs);
   if (!validationResult.isValid) {
     validationResult.csrfToken = req.csrfToken();
