@@ -22,6 +22,10 @@ const accessRequests = [
     organisation: {
       id: 'org1',
       name: 'Hogwarts School of Witchcraft and Wizardry',
+      address: 'my address',
+      category: '001',
+      uid: null,
+      urn: '222222',
     },
     createdDate: new Date('2018-11-01T20:00:00.000Z')
   },
@@ -61,7 +65,7 @@ describe('when updating an index with new data in azure search', () => {
     });
   });
 
-  it('then it should include userDevices in body of request', async () => {
+  it('then it should include access requests in body of request', async () => {
     await updateIndex(accessRequests, 'new-index-name');
 
     expect(rp.mock.calls).toHaveLength(1);
@@ -78,6 +82,8 @@ describe('when updating an index with new data in azure search', () => {
             email: 'user.one@unit.test',
             emailSearch: 'user.oneunit.test',
             organisationName: 'Hogwarts School of Witchcraft and Wizardry',
+            orgAddress: 'my address',
+            orgIdentifier: 'URN: 222222',
             createdDate: new Date('2018-11-01T20:00:00.000Z').getTime(),
           }
         ]
