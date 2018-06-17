@@ -20,6 +20,8 @@ const createIndex = async () => {
     { name: 'emailSearch', type: 'Edm.String',  searchable: true },
     { name: 'createdDate',  type: 'Edm.Int64', sortable: true, filterable: true },
     { name: 'organisationName', type: 'Edm.String', sortable: true, filterable: true, searchable: true },
+    { name: 'organisationAddress', type: 'Edm.String'},
+    { name: 'organisationIdentifier', type: 'Edm.String'},
   ];
   return await azureSearch.createIndex(`accessrequests-${uuid()}`, fields);
 
