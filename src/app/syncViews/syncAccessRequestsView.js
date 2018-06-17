@@ -20,12 +20,18 @@ const loadAccessRequests = async (newIndexName, correlationId) => {
     const pageOfAccessRequests = await organisations.getOrganisationUsersForApproval(pageNumber, correlationId);
     if (pageOfAccessRequests.usersForApproval && pageOfAccessRequests.usersForApproval.length > 0) {
       const users = await getUserDetails(pageOfAccessRequests, correlationId);
-      const mappedAccessRequests =  pageOfAccessRequests.usersForApproval.map((user) => {
-        const userFound = users.find(c => c.sub.toLowerCase() === user.user_id.toLowerCase());
-        const name = userFound ? `${userFound.given_name} ${userFound.family_name}` : 'No Name Supplied';
-        const email = userFound ? userFound.email : '';
-        const organisation = {id: user.org_id, name: user.org_name}
-        return Object.assign({name, email, organisation}, user);
+      const mappedAccessRequests =  pageOfAccessRequests.usersForApproval.map((accessRequest) => {
+        const userFound = users.find(c => c.sub.toLowerCase() === accessRequest.user_id.toLowerCase());
+        return {
+          userId: accessRequest.user_id,
+          name: userFound ? `${userFound.given_name} ${userFound.family_name}` : 'No Name Supplied',
+          email: userFound ? userFound.email : '',
+          organisation:  {
+            id: accessRequest.org_id,
+            name: accessRequest.org_name
+          },
+          createdDate: accessRequest.created_date,
+        };
       });
       await accessRequests.updateIndex(mappedAccessRequests, newIndexName);
     }
@@ -33,6 +39,8 @@ const loadAccessRequests = async (newIndexName, correlationId) => {
     hasMorePages = pageNumber <= pageOfAccessRequests.totalNumberOfPages;
   }
 };
+
+
 
 
 const syncAccessRequests = async () => {

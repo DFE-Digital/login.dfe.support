@@ -102,10 +102,8 @@ describe('When syncing access request materialised view', function () {
     expect(accessRequests.updateIndex.mock.calls).toHaveLength(1);
     expect(accessRequests.updateIndex.mock.calls[0][0]).toHaveLength(2);
     expect(accessRequests.updateIndex.mock.calls[0][0][0]).toEqual({
-     created_date: '2018-05-31T11:00:05.861Z',
-     org_id: '60EEAA8D-D21D-44E9-BF10-6220E841FDAB',
-     org_name: 'Oxley Park Academy',
-     user_id: 'user1',
+     createdDate: '2018-05-31T11:00:05.861Z',
+      userId: 'user1',
      email: 'user.one@unit.tests',
      name: 'User One',
       organisation: {
@@ -114,10 +112,8 @@ describe('When syncing access request materialised view', function () {
       }
     });
     expect(accessRequests.updateIndex.mock.calls[0][0][1]).toEqual({
-      created_date: '2018-05-31T11:00:05.861Z',
-      org_id: '60EEAA8D-D21D-44E9-BF10-6220E841FDAB',
-      org_name: 'Oxley Park Academy',
-      user_id: 'user2',
+      createdDate: '2018-05-31T11:00:05.861Z',
+      userId: 'user2',
       email: '',
       name: 'No Name Supplied',
       organisation: {
