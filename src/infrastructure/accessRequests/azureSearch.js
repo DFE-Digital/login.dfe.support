@@ -54,7 +54,7 @@ const updateIndex = async (accessRequests, index) => {
 };
 
 const updateActiveIndex = async (index) => {
-  await client.set('CurrentIndex_UserDevices', index)
+  await client.set('CurrentIndex_AccessRequests', index)
 };
 
 const deleteUnusedIndexes = async () => {
@@ -86,7 +86,7 @@ const mapAccessRequest = (accessRequest) => {
       name: accessRequest.organisationName
     } : null,
     createdDate: new Date(accessRequest.createdDate),
-
+    userOrgId: accessRequest.userOrgId,
   }
 };
 
@@ -140,9 +140,9 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true) => 
   }
 };
 
-const getById = async (id, filterParam='id') => {
+const getById = async (id, filterParam='userOrgId') => {
   try {
-    const currentIndexName = await client.get('CurrentIndex_UserDevices');
+    const currentIndexName = await client.get('CurrentIndex_AccessRequests');
     const user = await azureSearch.getIndexById(currentIndexName, id, filterParam);
     return mapAccessRequest(user);
   } catch (e) {
