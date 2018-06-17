@@ -28,7 +28,11 @@ const loadAccessRequests = async (newIndexName, correlationId) => {
           email: userFound ? userFound.email : '',
           organisation:  {
             id: accessRequest.org_id,
-            name: accessRequest.org_name
+            name: accessRequest.org_name,
+            address: accessRequest.org_address,
+            category: accessRequest.category.id,
+            urn: accessRequest.urn,
+            uid: accessRequest.uid,
           },
           createdDate: accessRequest.created_date,
         };

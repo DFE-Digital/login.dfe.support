@@ -7,6 +7,9 @@ const azureSearch = require('./../azureSearch');
 
 const client = new Redis(config.cache.params.indexPointerConnectionString);
 
+const establishment = '001';
+const multiAcademyTrust = '010';
+const singleAcademyTrust = '013';
 const pageSize = 25;
 
 const createIndex = async () => {
@@ -38,6 +41,15 @@ const updateIndex = async (accessRequests, index) => {
   }
 
   const accessRequestMap = accessRequests.map((accessRequest) => {
+
+      let orgIdentifier = '';
+
+      if (accessRequest.organisation.category === establishment) {
+        orgIdentifier = `URN: ${accessRequest.organisation.urn}`;
+      } else if (accessRequest.organisation.category === multiAcademyTrust || accessRequest.organisation.category === singleAcademyTrust) {
+        orgIdentifier = `UID: ${accessRequest.organisation.uid}`;
+      }
+
       return {
         '@search.action': 'upload',
         userOrgId: `${accessRequest.userId}${accessRequest.organisation.id}`,
@@ -48,6 +60,8 @@ const updateIndex = async (accessRequests, index) => {
         emailSearch: accessRequest.email ? accessRequest.email.replace('@','').toLowerCase() : '',
         organisationName: accessRequest.organisation.name,
         orgId: accessRequest.organisation.id,
+        orgIdentifier: orgIdentifier,
+        orgAddress: accessRequest.organisation.address,
         createdDate: new Date(accessRequest.createdDate).getTime(),
       };
     });
@@ -85,7 +99,9 @@ const mapAccessRequest = (accessRequest) => {
     email: accessRequest.email,
     organisation: accessRequest.organisationName ? {
       id: accessRequest.orgId,
-      name: accessRequest.organisationName
+      name: accessRequest.organisationName,
+      address: accessRequest.orgAddress,
+      identifier: accessRequest.orgIdentifier,
     } : null,
     createdDate: new Date(accessRequest.createdDate),
     userOrgId: accessRequest.userOrgId,

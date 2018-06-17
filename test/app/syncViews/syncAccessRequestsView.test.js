@@ -52,13 +52,29 @@ describe('When syncing access request materialised view', function () {
         org_id: '60EEAA8D-D21D-44E9-BF10-6220E841FDAB',
         org_name: 'Oxley Park Academy',
         user_id: 'user1',
-        created_date: '2018-05-31T11:00:05.861Z'
+        created_date: '2018-05-31T11:00:05.861Z',
+        org_address: 'my address',
+        category: {
+          id: '001',
+          name: 'Establishment'
+        },
+        urn: null,
+        uid: '222222',
+        ukprn: '11111'
       },
       {
         org_id: '60EEAA8D-D21D-44E9-BF10-6220E841FDAB',
         org_name: 'Oxley Park Academy',
         user_id: 'user2',
-        created_date: '2018-05-31T11:00:05.861Z'
+        created_date: '2018-05-31T11:00:05.861Z',
+        org_address: 'my address',
+        category: {
+          id: '001',
+          name: 'Establishment'
+        },
+        urn: null,
+        uid: '222222',
+        ukprn: '11111'
       },
     ],totalNumberOfPages: 1});
 
@@ -96,6 +112,10 @@ describe('When syncing access request materialised view', function () {
     expect(directories.getUsersById.mock.calls[0][0]).toEqual(['user1','user2']);
   });
 
+  it('then it should get the organisation for the access request', async () => {
+
+  });
+
   it('then it should update the new index with users', async () => {
     await syncAccessRequests();
 
@@ -109,6 +129,10 @@ describe('When syncing access request materialised view', function () {
       organisation: {
        id: '60EEAA8D-D21D-44E9-BF10-6220E841FDAB',
         name: 'Oxley Park Academy',
+        address: 'my address',
+        category: '001',
+        uid: '222222',
+        urn: null,
       }
     });
     expect(accessRequests.updateIndex.mock.calls[0][0][1]).toEqual({
@@ -119,6 +143,10 @@ describe('When syncing access request materialised view', function () {
       organisation: {
         id: '60EEAA8D-D21D-44E9-BF10-6220E841FDAB',
         name: 'Oxley Park Academy',
+        address: 'my address',
+        category: '001',
+        uid: '222222',
+        urn: null,
       }
     });
     expect(accessRequests.updateIndex.mock.calls[0][1]).toBe('test-index');
