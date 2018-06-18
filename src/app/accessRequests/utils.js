@@ -1,3 +1,4 @@
+const logger = require('./../../infrastructure/logger');
 const accessRequests = require('../../infrastructure/accessRequests');
 
 const search = async (req) => {
@@ -58,6 +59,13 @@ const search = async (req) => {
   };
 };
 
+const getById = async (req) => {
+  const id = `${req.params.id}`;
+
+  return await accessRequests.getById(id)
+};
+
 module.exports = {
   search,
+  getById,
 };

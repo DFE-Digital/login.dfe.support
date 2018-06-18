@@ -6,6 +6,7 @@ const logger = require('../../infrastructure/logger');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
 
 const {get: getSearch,post: postSearch} = require('./search');
+const {get: getRequest} = require('./accessRequest');
 
 const router = express.Router({ mergeParams: true });
 
@@ -18,6 +19,7 @@ const users = (csrf) => {
   router.get('/', csrf, asyncWrapper(getSearch));
   router.post('/', csrf, asyncWrapper(postSearch));
 
+  router.get('/request/:id', csrf, asyncWrapper(getRequest));
   return router;
 };
 
