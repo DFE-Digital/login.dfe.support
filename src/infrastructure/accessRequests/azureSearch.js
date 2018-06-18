@@ -69,6 +69,18 @@ const updateIndex = async (accessRequests, index) => {
   return await azureSearch.updateIndex(accessRequestMap, index)
 };
 
+const deleteAccessRequest = async(id) => {
+  const currentIndexName = await client.get('CurrentIndex_AccessRequests');
+
+  const item = {
+    '@search.action': 'delete',
+    userOrgId: id
+  };
+
+  await azureSearch.deleteIndexItem(item, currentIndexName);
+
+};
+
 const updateActiveIndex = async (index) => {
   await client.set('CurrentIndex_AccessRequests', index)
 };
@@ -175,5 +187,6 @@ module.exports = {
   deleteUnusedIndexes,
   search,
   getById,
+  deleteAccessRequest,
 };
 
