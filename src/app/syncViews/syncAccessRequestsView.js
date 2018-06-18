@@ -30,7 +30,7 @@ const loadAccessRequests = async (newIndexName, correlationId) => {
             id: accessRequest.org_id,
             name: accessRequest.org_name,
             address: accessRequest.org_address,
-            category: accessRequest.category.id,
+            category: accessRequest.category ? accessRequest.category.id : '',
             urn: accessRequest.urn,
             uid: accessRequest.uid,
           },
