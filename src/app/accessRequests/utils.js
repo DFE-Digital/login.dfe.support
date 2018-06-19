@@ -67,7 +67,7 @@ const getById = async (req) => {
 };
 
 const putUserInOrganisation = async (req) => {
-  const id = `${req.body.id}`;
+  const id = `${req.body.userOrgId}`;
 
   await accessRequests.deleteAccessRequest(id);
 
