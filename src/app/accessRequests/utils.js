@@ -1,5 +1,6 @@
 const logger = require('./../../infrastructure/logger');
 const accessRequests = require('../../infrastructure/accessRequests');
+const organisations = require('./../../infrastructure/organisations');
 
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
@@ -65,7 +66,40 @@ const getById = async (req) => {
   return await accessRequests.getById(id)
 };
 
+const putUserInOrganisation = async (req) => {
+  const id = `${req.body.id}`;
+
+  await accessRequests.deleteAccessRequest(id);
+
+  const userId = req.body.user_id;
+  const orgId = req.body.org_id;
+  const status = req.body.approve_reject.toLowerCase() === 'approve' ? 1 : -1;
+  let role = 0;
+  let reason = req.body.message;
+
+  if(status === 1) {
+    reason = '';
+    role = req.body.role.toLowerCase() === 'approver' ? 10000 : 1;
+  }
+
+  await organisations.setUserAccessToOrganisation(userId,orgId, role, req.id, status, reason );
+
+  logger.audit(`User ${req.user.email} (id: ${req.user.sub}) has set set user id ${userId} to status "${req.body.approve_reject}"`, {
+    type: 'organisation',
+    subType: 'access-request-support',
+    success: true,
+    editedUser: userId,
+    userId: req.user.sub,
+    userEmail: req.user.email,
+    role: role,
+    reason,
+    orgId,
+    status: req.body.approve_reject
+  });
+};
+
 module.exports = {
   search,
   getById,
+  putUserInOrganisation,
 };
