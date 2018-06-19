@@ -39,7 +39,7 @@ describe('when deleting an item from the index with azure search', () => {
     await deleteIndex(accessRequestId, 'new-index-name');
     expect(rp.mock.calls).toHaveLength(1);
     expect(rp.mock.calls[0][0]).toMatchObject({
-      method: 'DELETE',
+      method: 'POST',
       uri: 'https://test-search.search.windows.net/indexes/new-index-name/docs/index?api-version=2016-09-01'
     });
   });
@@ -62,10 +62,10 @@ describe('when deleting an item from the index with azure search', () => {
     expect(rp.mock.calls[0][0]).toMatchObject({
       body: {
         value:
-          {
+          [{
             '@search.action': 'delete',
             userOrgId: 'userOrg1'
-          }
+          }]
       },
     });
   });

@@ -72,10 +72,10 @@ const updateIndex = async (accessRequests, index) => {
 const deleteAccessRequest = async(id) => {
   const currentIndexName = await client.get('CurrentIndex_AccessRequests');
 
-  const item = {
+  const item = [{
     '@search.action': 'delete',
     userOrgId: id
-  };
+  }];
 
   await azureSearch.deleteIndexItem(item, currentIndexName);
 
