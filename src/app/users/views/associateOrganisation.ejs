@@ -4,7 +4,7 @@
         <h1 class="heading-xlarge">
             Add organisation
         </h1>
-        <p class="lede">Search for the organisation the user is associated with. </p>
+        <p class="lede">Search for the organisation the new user should be associated with  </p>
     </div>
 </div>
 <div class="grid-row">
@@ -14,7 +14,7 @@
                 <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
                 <input type="hidden" name="page" value="1" />
                 <fieldset class="search-input">
-                    <label for="criteria" class="vh">Search by name, email or organisation</label>
+                    <label for="criteria" class="vh">Search by organisation name or unique identifier</label>
                     <input type="text" id="criteria" name="criteria" class="form-control" value="<%=criteria%>">
                 </fieldset>
                 <fieldset class="search-submit">
@@ -107,7 +107,7 @@
 <%} else if (canSkip) {%>
 <div class="grid-row">
     <div class="col-8">
-        <p>You can <a href="confirm-new-user">skip this step</a> if you do not want to associated the user with an organisation at this time.</p>
+        <p>You can <a href="confirm-new-user">skip this step</a> if you do not want to associate the user with an organisation at this time.</p>
     </div>
 </div>
 <%}%>
