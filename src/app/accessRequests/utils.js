@@ -15,7 +15,7 @@ const search = async (req) => {
     page = 1;
   }
 
-  let sortBy = paramsSource.sort ? paramsSource.sort.toLowerCase() : 'name';
+  let sortBy = paramsSource.sort ? paramsSource.sort.toLowerCase() : 'createddate';
   let sortAsc = (paramsSource.sortdir ? paramsSource.sortdir : 'asc').toLowerCase() === 'asc';
 
   const results = await accessRequests.search(criteria + '*', page, sortBy, sortAsc);
