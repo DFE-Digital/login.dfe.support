@@ -62,7 +62,7 @@ const updateIndex = async (users, index) => {
 const deleteIndexItem = async(item, index) => {
   try {
     await rp({
-      method: 'DELETE',
+      method: 'POST',
       uri: getAzureSearchUri(index, '/docs/index'),
       headers: {
         'content-type': 'application/json',
