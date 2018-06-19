@@ -82,7 +82,7 @@ const deleteAccessRequest = async(id) => {
 };
 
 const updateActiveIndex = async (index) => {
-  await client.set('CurrentIndex_AccessRequests', index)
+  await client.set('CurrentIndex_AccessRequests', index);
 };
 
 const deleteUnusedIndexes = async () => {

@@ -10,11 +10,14 @@
 <dl class="rows">
     <dt>Organisation</dt>
     <dd><%=locals.accessRequest.organisation.name%></dd>
+    <% if(locals.accessRequest.organisation.address) {%>
     <dt>Address</dt>
     <dd><%=locals.accessRequest.organisation.address%></dd>
+    <% } %>%>
+    <% if(locals.accessRequest.organisation.identifier) {%>
     <dt>ID</dt>
     <dd><%=locals.accessRequest.organisation.identifier%></dd>
-
+    <% } %>
 </dl>
 <form method="POST">
     <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
@@ -22,7 +25,7 @@
     <input type="hidden" name="org_name" value="<%=locals.accessRequest.organisation.name%>"/>
     <input type="hidden" name="userOrgId" value="<%=locals.accessRequest.userOrgId%>"/>
     <input type="hidden" name="user_Id" value="<%=locals.accessRequest.userId%>"/>
-    <input type="hidden" name="org_Id" value="<%=locals.accessRequest.orgId%>"/>
+    <input type="hidden" name="org_Id" value="<%=locals.accessRequest.organisation.id%>"/>
     <div class="form-group">
         <fieldset class="inline">
             <legend>
