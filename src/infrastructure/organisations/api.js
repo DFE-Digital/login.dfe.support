@@ -125,8 +125,14 @@ const putSingleServiceIdentifierForUser = async (userId, serviceId, orgId, value
   return result === undefined;
 };
 
-const searchOrganisations = async (criteria, pageNumber, correlationId) => {
-  return await callOrganisationsApi(`organisations?search=${criteria}&page=${pageNumber}`, 'GET', undefined, correlationId);
+const searchOrganisations = async (criteria, filterByCategories, pageNumber, correlationId) => {
+  let uri = `organisations?search=${criteria}&page=${pageNumber}`;
+  if (filterByCategories) {
+    filterByCategories.forEach((category) => {
+      uri += `&filtercategory=${category}`;
+    });
+  }
+  return await callOrganisationsApi(uri, 'GET', undefined, correlationId);
 };
 
 const setUserAccessToOrganisation = async (userId, organisationId, roleId, correlationId, status, reason,) => {

@@ -1,4 +1,4 @@
-<div class="js-back-link"></div>
+<a href="new-user" class="link-back">Back</a>
 <div class="grid-row">
     <div class="col-8">
         <h1 class="heading-xlarge">
@@ -98,12 +98,16 @@
 
 <%} else if (results) {%>
 <div class="grid-row">
-    <div class="col-9">
+    <div class="col-8">
         <div class="empty-state">
             <p>No organisations found matching search criteria</p>
         </div>
     </div>
 </div>
 <%} else if (canSkip) {%>
-<div>You can <a href="confirm-new-user">skip this step</a> if you do not want to associated the user with an organisation at this time.</div>
+<div class="grid-row">
+    <div class="col-8">
+        <p>You can <a href="confirm-new-user">skip this step</a> if you do not want to associated the user with an organisation at this time.</p>
+    </div>
+</div>
 <%}%>
