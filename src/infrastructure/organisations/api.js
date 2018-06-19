@@ -129,8 +129,8 @@ const searchOrganisations = async (criteria, pageNumber, correlationId) => {
   return await callOrganisationsApi(`organisations?search=${criteria}&page=${pageNumber}`, 'GET', undefined, correlationId);
 };
 
-const setUserAccessToOrganisation = async (userId, organisationId, roleId, correlationId) => {
-  const body = { roleId };
+const setUserAccessToOrganisation = async (userId, organisationId, roleId, correlationId, status, reason,) => {
+  const body = { roleId, status,reason };
   return await callOrganisationsApi(`organisations/${organisationId}/users/${userId}`, 'PUT', body, correlationId);
 };
 
