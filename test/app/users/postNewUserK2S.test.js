@@ -6,7 +6,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/directories');
 
-const { getAllOrganisations, getServiceIdentifierDetails } = require('./../../../src/infrastructure/organisations');
+const { searchOrganisations, getServiceIdentifierDetails } = require('./../../../src/infrastructure/organisations');
 const { getUser } = require('./../../../src/infrastructure/directories');
 const postNewUserK2S = require('./../../../src/app/users/postNewUserK2S');
 
@@ -41,12 +41,16 @@ describe('when handling post of new key-to-success user details', () => {
       redirect: jest.fn(),
     };
 
-    getAllOrganisations.mockReset();
-    getAllOrganisations.mockReturnValue([
-      { id: 'org1', name: 'org one' },
-      { id: 'org2', name: 'org two' },
-      { id: 'org3', name: 'org three' },
-    ]);
+    searchOrganisations.mockReset();
+    searchOrganisations.mockReturnValue({
+      page: 1,
+      organisations: [
+        { id: 'org1', name: 'org one' },
+        { id: 'org2', name: 'org two' },
+        { id: 'org3', name: 'org three' },
+      ],
+      totalNumberOfPages: 1,
+    });
 
     getServiceIdentifierDetails.mockReset();
     getServiceIdentifierDetails.mockReturnValue(null);
