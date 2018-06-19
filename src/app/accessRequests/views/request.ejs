@@ -7,6 +7,7 @@
     <dt>Email</dt>
     <dd><%=locals.accessRequest.email%></dd>
 </dl>
+<hr>
 <dl class="rows">
     <dt>Organisation</dt>
     <dd><%=locals.accessRequest.organisation.name%></dd>
@@ -19,6 +20,7 @@
     <dd><%=locals.accessRequest.organisation.identifier%></dd>
     <% } %>
 </dl>
+<hr>
 <form method="POST">
     <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
     <input type="hidden" name="name" value="<%=locals.accessRequest.name%>"/>
@@ -27,7 +29,7 @@
     <input type="hidden" name="user_Id" value="<%=locals.accessRequest.userId%>"/>
     <input type="hidden" name="org_Id" value="<%=locals.accessRequest.organisation.id%>"/>
     <div class="form-group">
-        <fieldset class="inline">
+        <fieldset class="inline with-sub-title">
             <legend>
                 <h2 class="heading-small">
                     Your response
@@ -45,7 +47,7 @@
     </div>
     <div class="pnl js-hidden" id="panel-permissions-2">
         <div class="form-group">
-            <fieldset class="inline">
+            <fieldset class="inline with-sub-title">
                 <legend>
                     <h2 class="heading-small">
                         Permissions level
@@ -63,7 +65,7 @@
         </div>
     </div>
     <div class="pnl js-hidden" id="panel-message-2">
-        <div class="form-group">
+        <div class="form-group indent">
             <label for="message-1">
                 <span class="form-text">Reason for rejecting (optional)</span>
                 <span class="form-hint">Any text you supply will be emailed to <%=locals.accessRequest.name%> and stored in the audit </span>
@@ -71,7 +73,7 @@
             <textarea rows="3" class="form-control" id="message-1" name="message"></textarea>
         </div>
     </div>
-    <div class="form-group">
+    <div class="form-group indent">
         <fieldset class="search-submit">
             <button type="submit" class="button">Submit</button>
         </fieldset>
