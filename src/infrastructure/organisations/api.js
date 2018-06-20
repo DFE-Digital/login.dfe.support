@@ -135,13 +135,17 @@ const searchOrganisations = async (criteria, filterByCategories, pageNumber, cor
   return await callOrganisationsApi(uri, 'GET', undefined, correlationId);
 };
 
-const setUserAccessToOrganisation = async (userId, organisationId, roleId, correlationId) => {
-  const body = { roleId };
+const setUserAccessToOrganisation = async (userId, organisationId, roleId, correlationId, status, reason,) => {
+  const body = { roleId, status,reason };
   return await callOrganisationsApi(`organisations/${organisationId}/users/${userId}`, 'PUT', body, correlationId);
 };
 
 const getOrganisationCategories = async (correlationId) => {
   return callOrganisationsApi('organisations/categories', 'GET', undefined, correlationId);
+};
+
+const getOrganisationUsersForApproval = async (pageNumber, correlationId) => {
+  return callOrganisationsApi(`organisations/users-for-approval?page=2`, 'GET', undefined, correlationId);
 };
 
 module.exports = {
@@ -160,4 +164,5 @@ module.exports = {
   searchOrganisations,
   setUserAccessToOrganisation,
   getOrganisationCategories,
+  getOrganisationUsersForApproval,
 };

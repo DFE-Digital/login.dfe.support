@@ -109,6 +109,10 @@ const getOrganisationCategories = async (correlationId) => {
   return Promise.resolve([]);
 };
 
+const getOrganisationUsersForApproval = async (pageNumber, correlationId) => {
+  return Promise.resolve([]);
+};
+
 module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -125,4 +129,5 @@ module.exports = {
   searchOrganisations,
   setUserAccessToOrganisation,
   getOrganisationCategories,
+  getOrganisationUsersForApproval,
 };
