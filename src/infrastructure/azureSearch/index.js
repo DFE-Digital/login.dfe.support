@@ -59,6 +59,25 @@ const updateIndex = async (users, index) => {
   }
 };
 
+const deleteIndexItem = async(item, index) => {
+  try {
+    await rp({
+      method: 'POST',
+      uri: getAzureSearchUri(index, '/docs/index'),
+      headers: {
+        'content-type': 'application/json',
+        'api-key': config.cache.params.apiKey,
+      },
+      body: {
+        value: item
+      },
+      json: true,
+    });
+  } catch (e) {
+    throw e;
+  }
+};
+
 const deleteUnusedIndexes = async (unusedIndexes, currentIndexName) => {
   for (let i = 0; i < unusedIndexes.length; i++) {
     if (unusedIndexes[i] !== currentIndexName) {
@@ -128,5 +147,6 @@ module.exports = {
   getIndexes,
   search,
   getIndexById,
+  deleteIndexItem,
 };
 

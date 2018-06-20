@@ -70,6 +70,7 @@
     "auditCache": "*/5 * * * *",
     "users": "*/5 * * * *",
     "userDevices": "*/5 * * * *",
+    "accessRequests": "*/5 * * * *",
     "indexTidy": "*/15 * * * *"
   },
   "toggles": {

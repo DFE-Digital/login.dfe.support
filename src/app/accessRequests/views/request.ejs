@@ -1,0 +1,81 @@
+<a href="/access-requests" class="link-back">Back</a>
+<h1 class="heading-xlarge">Access request</h1>
+
+<dl class="rows">
+    <dt>Name</dt>
+    <dd><%=locals.accessRequest.name%></dd>
+    <dt>Email</dt>
+    <dd><%=locals.accessRequest.email%></dd>
+</dl>
+<hr>
+<dl class="rows">
+    <dt>Organisation</dt>
+    <dd><%=locals.accessRequest.organisation.name%></dd>
+    <% if(locals.accessRequest.organisation.address) {%>
+    <dt>Address</dt>
+    <dd><%=locals.accessRequest.organisation.address%></dd>
+    <% } %>%>
+    <% if(locals.accessRequest.organisation.identifier) {%>
+    <dt>ID</dt>
+    <dd><%=locals.accessRequest.organisation.identifier%></dd>
+    <% } %>
+</dl>
+<hr>
+<form method="POST">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+    <input type="hidden" name="name" value="<%=locals.accessRequest.name%>"/>
+    <input type="hidden" name="org_name" value="<%=locals.accessRequest.organisation.name%>"/>
+    <input type="hidden" name="userOrgId" value="<%=locals.accessRequest.userOrgId%>"/>
+    <input type="hidden" name="user_id" value="<%=locals.accessRequest.userId%>"/>
+    <input type="hidden" name="org_id" value="<%=locals.accessRequest.organisation.id%>"/>
+    <div class="form-group">
+        <fieldset class="inline with-sub-title">
+            <legend>
+                <h2 class="heading-small">
+                    Your response
+                </h2>
+            </legend>
+            <div class="multiple-choice" data-target="panel-permissions-2">
+                <input id="radio-inline-5" type="radio" name="approve_reject" value="Approve">
+                <label for="radio-inline-5">Approve</label>
+            </div>
+            <div class="multiple-choice" data-target="panel-message-2">
+                <input id="radio-inline-6" type="radio" name="approve_reject" value="Reject">
+                <label for="radio-inline-6">Reject</label>
+            </div>
+        </fieldset>
+    </div>
+    <div class="pnl js-hidden" id="panel-permissions-2">
+        <div class="form-group">
+            <fieldset class="inline with-sub-title">
+                <legend>
+                    <h2 class="heading-small">
+                        Permissions level
+                    </h2>
+                </legend>
+                <div class="multiple-choice">
+                    <input id="radio-inline-7" type="radio" name="role" value="End user">
+                    <label for="radio-inline-7">End user</label>
+                </div>
+                <div class="multiple-choice">
+                    <input id="radio-inline-8" type="radio" name="role" value="Approver">
+                    <label for="radio-inline-8">Approver</label>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div class="pnl js-hidden" id="panel-message-2">
+        <div class="form-group indent">
+            <label for="message-1">
+                <span class="form-text">Reason for rejecting (optional)</span>
+                <span class="form-hint">Any text you supply will be emailed to <%=locals.accessRequest.name%> and stored in the audit </span>
+            </label>
+            <textarea rows="3" class="form-control" id="message-1" name="message"></textarea>
+        </div>
+    </div>
+    <div class="form-group indent">
+        <fieldset class="search-submit">
+            <button type="submit" class="button">Submit</button>
+        </fieldset>
+    </div>
+</form>
