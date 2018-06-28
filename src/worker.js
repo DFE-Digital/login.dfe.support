@@ -4,6 +4,8 @@ const config = require('./infrastructure/config');
 const http = require('http');
 const https = require('https');
 const KeepAliveAgent = require('agentkeepalive');
+const express = require('express');
+const healthCheck = require('login.dfe.healthcheck');
 
 const audit = require('./infrastructure/audit');
 const { syncUsersView, syncUserDevicesView, syncAuditCache, syncAccessRequestsView } = require('./app/syncViews');
@@ -38,6 +40,19 @@ audit.cache.init().then(() => {
 
   const indexTidySchedule = schedule.scheduleJob(config.schedules.indexTidy, tidyIndexes);
   logger.info(`first invocation of index tidy schedule will be ${indexTidySchedule.nextInvocation()}`);
+
+
+
+  const port = process.env.PORT || 3000;
+  const app = express();
+  app.use('/healthcheck', healthCheck({ config }));
+  app.get('/', (req, res) => {
+    res.send();
+  });
+  app.listen(port, () => {
+    logger.info(`Server listening on http://localhost:${port}`);
+  });
+
 }).catch((e) => {
   logger.error(`Error initialising audit cache - ${e.message}. Exiting`);
   process.exit(1);
