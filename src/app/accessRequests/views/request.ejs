@@ -24,6 +24,7 @@
 <form method="POST">
     <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
     <input type="hidden" name="name" value="<%=locals.accessRequest.name%>"/>
+    <input type="hidden" name="email" value="<%=locals.accessRequest.email%>"/>
     <input type="hidden" name="org_name" value="<%=locals.accessRequest.organisation.name%>"/>
     <input type="hidden" name="userOrgId" value="<%=locals.accessRequest.userOrgId%>"/>
     <input type="hidden" name="user_id" value="<%=locals.accessRequest.userId%>"/>
