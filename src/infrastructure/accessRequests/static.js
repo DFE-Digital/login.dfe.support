@@ -55,15 +55,20 @@ const deleteUnusedIndexes = async () => {
   return Promise.resolve(null);
 };
 
-const getByUserId = async (userId, filterParam='id') => {
+const deleteAccessRequest = async () => {
+  return Promise.resolve(null);
+};
+
+const getById = async (userId, filterParam='id') => {
   return Promise.resolve(null);
 };
 
 module.exports = {
-  search,
   createIndex,
   updateIndex,
   updateActiveIndex,
   deleteUnusedIndexes,
-  getByUserId,
+  search,
+  getById,
+  deleteAccessRequest,
 };
