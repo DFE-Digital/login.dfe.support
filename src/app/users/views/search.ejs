@@ -80,10 +80,7 @@ if (services && services.length > 0) {
                 </fieldset>
             </div>
         </form>
-
-    </div>
-    <div class="col-3">
-        <form method="post">
+        <form method="post" class="show-filters">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <input type="hidden" name="criteria" value="<%= criteria %>"/>
             <input type="hidden" name="page" value="<%= page %>"/>
@@ -93,13 +90,11 @@ if (services && services.length > 0) {
             <button type="submit" class="button-link filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
         </form>
     </div>
-    <div class="col-3">
-        <div class="pull-right">
-            <% if(useGenericAddUser) { %>
+
+    <div class="col-6">
+        <div class="buttons pull-right">
             <a href="/users/new-user" class="button button-secondary">Invite user</a>
-            <% } else { %>
-            <a href="/users/new-k2s-user" class="button button-secondary">Invite user</a>
-            <% } %>
+            <a href="/users/new-k2s-user" class="button button-secondary">Invite KtS user</a>
         </div>
     </div>
 </div>
