@@ -1,6 +1,8 @@
 const logger = require('./../../infrastructure/logger');
+const config = require('./../../infrastructure/config');
 const accessRequests = require('../../infrastructure/accessRequests');
 const organisations = require('./../../infrastructure/organisations');
+const NotificationClient = require('login.dfe.notifications.client');
 
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
@@ -67,6 +69,10 @@ const getById = async (req) => {
 };
 
 const putUserInOrganisation = async (req) => {
+  const notificationClient = new NotificationClient({
+    connectionString: config.notifications.connectionString,
+  });
+
   const id = `${req.body.userOrgId}`;
 
   await accessRequests.deleteAccessRequest(id);
@@ -83,6 +89,11 @@ const putUserInOrganisation = async (req) => {
   }
 
   await organisations.setUserAccessToOrganisation(userId,orgId, role, req.id, status, reason );
+
+  if(req.body.email) {
+    await notificationClient.sendAccessRequest(req.body.email,req.body.name,req.body.org_name,status===1,reason);
+  }
+
 
   logger.audit(`User ${req.user.email} (id: ${req.user.sub}) has set set user id ${userId} to status "${req.body.approve_reject}"`, {
     type: 'organisation',
