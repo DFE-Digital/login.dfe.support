@@ -47,6 +47,10 @@ const search = async (req) => {
   if (!criteria) {
     criteria = '';
   }
+  let safeCriteria = criteria;
+  if (criteria.indexOf('-') !== -1) {
+    criteria = "\"" + criteria +  "\"";
+  }
 
   let page = paramsSource.page ? parseInt(paramsSource.page) : 1;
   if (isNaN(page)) {
@@ -72,7 +76,7 @@ const search = async (req) => {
   });
 
   return {
-    criteria,
+    criteria: safeCriteria,
     page,
     sortBy,
     sortOrder: sortAsc ? 'asc' : 'desc',
