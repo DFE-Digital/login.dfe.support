@@ -34,6 +34,27 @@ const getOidcClientById = async (id) => {
   }
 };
 
+const getAllOidcClients = async () => {
+  const token = await jwtStrategy(config.hotConfig.service).getBearerToken();
+  try {
+    const client = await rp({
+      method: 'GET',
+      uri: `${config.hotConfig.service.url}/oidcclients`,
+      headers: {
+        authorization: `bearer ${token}`,
+      },
+      json: true,
+    });
+    return client;
+  } catch (e) {
+    if (e.statusCode === 404) {
+      return undefined;
+    }
+    throw e;
+  }
+};
+
 module.exports = {
   getOidcClientById,
+  getAllOidcClients
 };
