@@ -5,6 +5,7 @@ const organisations = require('./../../infrastructure/organisations');
 const { cache: auditCache } = require('./../../infrastructure/audit');
 const uuid = require('uuid/v4');
 const devices = require('./../../infrastructure/devices');
+const { asyncMapLimit } = require('./../../infrastructure/utils');
 const { flatten, chunk } = require('lodash');
 
 const buildUser = async (user, allDevices, correlationId) => {
@@ -86,9 +87,9 @@ const syncUserDevicesView = async () => {
     logger.info(`Syncing page ${pageNumber} of userDevices`);
     const pageOfUsers = await getPageOfUsers(pageNumber, true, correlationId);
     if (pageOfUsers.users) {
-      const mappedUsers = await Promise.all(pageOfUsers.users.map(async (user) => {
+      const mappedUsers = await asyncMapLimit(pageOfUsers.users, async (user) => {
         return await buildUser(user, allDevices, correlationId);
-      }));
+      });
 
       const filteredUsers = mappedUsers.filter((user) => {
         return user !== null;
