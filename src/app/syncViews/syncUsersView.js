@@ -4,7 +4,7 @@ const directories = require('./../../infrastructure/directories');
 const organisations = require('./../../infrastructure/organisations');
 const { cache: auditCache } = require('./../../infrastructure/audit');
 const uuid = require('uuid/v4');
-const { mapUserStatus } = require('./../../infrastructure/utils');
+const { mapUserStatus, asyncMapLimit } = require('./../../infrastructure/utils');
 const flatten = require('lodash/flatten');
 
 const buildUser = async (user, correlationId) => {
@@ -85,10 +85,10 @@ const loadUsers = async (newIndexName, correlationId) => {
     logger.info(`Syncing page ${pageNumber} of users`);
     const pageOfUsers = await directories.getPageOfUsers(pageNumber, correlationId);
     if (pageOfUsers.users && pageOfUsers.users.length > 0) {
-      const mappedUsers = await Promise.all(pageOfUsers.users.map(async (user) => {
+      const mappedUsers = await asyncMapLimit(pageOfUsers.users, async (user) => {
         logger.info(`Building user ${user.email} (id:${user.sub}) for syncing`);
         return await buildUser(user, correlationId);
-      }));
+      });
       await users.updateIndex(mappedUsers, newIndexName);
     }
     pageNumber++;
@@ -154,12 +154,13 @@ const loadInvitations = async (newIndexName, correlationId) => {
     logger.info(`Syncing page ${pageNumber} of invitations`);
     const pageOfInvitations = await directories.getPageOfInvitations(pageNumber, correlationId);
     if (pageOfInvitations.invitations && pageOfInvitations.invitations.length > 0) {
-      const mappedInvitations = (await Promise.all(pageOfInvitations.invitations.map(async (invitation) => {
+      const mappedInvitations = await asyncMapLimit(pageOfInvitations.invitations, async (invitation) => {
         logger.info(`Building invitation ${invitation.email} (id:${invitation.id}) for syncing`);
 
         return buildInvitation(invitation, correlationId);
-      }))).filter(x => x !== null);
-      await users.updateIndex(mappedInvitations, newIndexName);
+      });
+      const filteredMappedInvitations = mappedInvitations.filter(x => x !== null);
+      await users.updateIndex(filteredMappedInvitations, newIndexName);
     }
     pageNumber++;
     hasMorePages = pageNumber <= pageOfInvitations.numberOfPages;
