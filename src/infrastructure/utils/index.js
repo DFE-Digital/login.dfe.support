@@ -5,6 +5,7 @@ const { mapUserStatus, userStatusMap } = require('./mapUserStatus');
 const auditDateFixer = require('./auditDateFixer');
 const auditSorter = require('./auditSorter');
 const patchChangeHistory = require('./patchChangeHistory');
+const asyncMapLimit = require('./asyncMapLimit');
 
 module.exports = {
   isLoggedIn,
@@ -15,4 +16,5 @@ module.exports = {
   auditDateFixer,
   auditSorter,
   patchChangeHistory,
+  asyncMapLimit,
 };

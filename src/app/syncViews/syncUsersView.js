@@ -4,22 +4,8 @@ const directories = require('./../../infrastructure/directories');
 const organisations = require('./../../infrastructure/organisations');
 const { cache: auditCache } = require('./../../infrastructure/audit');
 const uuid = require('uuid/v4');
-const { mapUserStatus } = require('./../../infrastructure/utils');
+const { mapUserStatus, asyncMapLimit } = require('./../../infrastructure/utils');
 const flatten = require('lodash/flatten');
-const mapLimit = require('async/mapLimit');
-
-const MAP_CONCURRENCY = 5;
-const asyncMapLimit = async (coll, iteratee) => {
-  return new Promise((resolve, reject) => {
-    mapLimit(coll, MAP_CONCURRENCY, iteratee, (err, mapped) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(mapped);
-      }
-    });
-  });
-};
 
 const buildUser = async (user, correlationId) => {
   // Get organisation & service details
