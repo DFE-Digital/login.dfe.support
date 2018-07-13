@@ -293,6 +293,25 @@ const updateInvite = async (id, email, correlationId) => {
   }
 };
 
+const resendInvite = async (id, correlationId) => {
+  try {
+    const token = await jwtStrategy(config.directories.service).getBearerToken();
+    await rp({
+      method: 'POST',
+      uri: `${config.directories.service.url}/invitations/${id}/resend`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
 const createUserDevice = async (id, serialNumber, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
   try {
@@ -452,4 +471,5 @@ module.exports = {
   getChangeEmailCode,
   deleteChangeEmailCode,
   getUsersById,
+  resendInvite
 };
