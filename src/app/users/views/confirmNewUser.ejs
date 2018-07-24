@@ -6,6 +6,7 @@
 
 <div class="grid-row">
     <div class="col-8">
+        <form method="post">
         <h1 class="heading-xlarge">
             Review invite details
         </h1>
@@ -61,18 +62,14 @@
         <div class="pnl js-hidden" id="custom-email-contents">
             <div class="form-group">
                 <label class="form-label" for="email-subject">Email subject line</label>
-                <input class="form-control full-width" id="email-subject" value="You’ve been invited to join DfE Sign-in">
+                <input class="form-control full-width" name="email-subject" id="email-subject" value="You’ve been invited to join DfE Sign-in">
             </div>
             <div class="form-group">
                 <label class="form-label" for="email-contents">Email contents</label>
                 <div class="email-editor">
-                    <textarea class="form-control full-width" rows="8" id="email-contents">
-Dear <%=user.firstName%> <%=user.lastName%>
-
-You've received this email because you've been invited to join DfE Sign-in.
-
-Please follow the link at the bottom of this email and enter the code below so we can create your account.
-                    </textarea>
+                    <p>Dear <%=user.firstName%> <%=user.lastName%></p>
+                    <textarea class="form-control full-width" rows="8" name="email-contents" id="email-contents">You've received this email because you've been invited to join DfE Sign-in.</textarea>
+                    <p>Please follow the link at the bottom of this email and enter the code below so we can create your account.</p>
                     <div class="static-text">
                         <p>Your verification code is:</p>
 
@@ -98,15 +95,15 @@ Please follow the link at the bottom of this email and enter the code below so w
                 <span class="form-hint">Decide where the user will be redirected after completing their registration</span>
             </label>
 
-            <select id="user-destination" class="form-control select2">
+            <select id="invite-destination" name="invite-destination" class="form-control select2">
                 <% for (let i = 0; i < oidcClients.length; i++) { %>
                 <% const service = oidcClients[i]; %>
                 <optgroup label="<%= service.friendlyName %> (<%= service.client_id%>)" >
                     <% if (service.service_home) { %>
-                    <option> <%= service.service_home %></option>
+                    <option value="<%= service.client_id%>{split}<%= service.service_home %>"> <%= service.service_home %></option>
                     <%}%>
                     <% for (let a = 0; a < service.redirect_uris.length; a++) { %>
-                    <option> <%= service.redirect_uris[a] %></option>
+                    <option value="<%= service.client_id%>{split}<%= service.redirect_uris[a] %>"> <%= service.redirect_uris[a] %></option>
                     <% } %>
 
                 <% } %>
@@ -116,10 +113,13 @@ Please follow the link at the bottom of this email and enter the code below so w
         </div>
 
         <div class="form-submit">
-            <form method="post">
+
                 <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
-                <button class="button">Submit</button>
-            </form>
+
         </div>
+            <button class="button">Submit</button>
+        </form>
     </div>
+
+
 </div>

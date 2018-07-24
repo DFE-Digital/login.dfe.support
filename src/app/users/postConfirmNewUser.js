@@ -1,4 +1,4 @@
-const { queueCreateInvite } = require('./../../infrastructure/jobs/api');
+const { createInvite } = require('./../../infrastructure/directories');
 const { addInvitationOrganisation } = require('./../../infrastructure/organisations');
 const { getOidcClientById } = require('./../../infrastructure/hotConfig');
 const logger = require('./../../infrastructure/logger');
@@ -14,17 +14,17 @@ const getProfilesOriginForInvite = async () => {
 
 const postConfirmNewUser = async (req, res) => {
   const profilesOrigin = await getProfilesOriginForInvite();
-  let details = {
-    sourceId: req.id || undefined,
-    given_name: req.session.user.firstName|| undefined,
-    family_name: req.session.user.lastName|| undefined,
-    email: req.session.user.email|| undefined,
-    organisationId: req.session.user.organisationId || undefined,
-    callbackUrl: req.session.user.callbackUrl || undefined,
-    userRedirect: profilesOrigin.redirectUri || undefined,
-    clientId: profilesOrigin.clientId,
-  };
-  const invitationId = await queueCreateInvite(details);
+  let emailOverrides = {};
+
+  if (req.body['email-contents-choice'] !== "Approve") {
+    let clientOverrides = req.body['invite-destination'].split('{split}');
+    profilesOrigin.clientId =  clientOverrides[0];
+    profilesOrigin.redirectUri = clientOverrides[1];
+    emailOverrides.subject = req.body['email-subject'];
+    emailOverrides.body = req.body['email-contents'];
+  }
+
+  const invitationId = await createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email, null, profilesOrigin.clientId, profilesOrigin.redirectUri, req.id, emailOverrides);
 
   if (req.session.user.organisationId) {
     await addInvitationOrganisation(invitationId, req.session.user.organisationId, req.session.user.permission || 0, req.id);
