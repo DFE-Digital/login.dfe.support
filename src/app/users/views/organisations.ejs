@@ -5,6 +5,7 @@
     <thead>
         <tr>
             <th scope="row">Organisation</th>
+            <th scope="row">Permission level</th>
         </tr>
     </thead>
     <tbody>
@@ -12,6 +13,7 @@
         <% const org = locals.organisations[o];%>
             <tr>
                 <td> <%=org.name%> </td>
+                <td><%=org.role%></td>
             </tr>
         <%}%>
     </tbody>
