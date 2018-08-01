@@ -6,7 +6,7 @@ const { cache: auditCache } = require('./../../infrastructure/audit');
 const uuid = require('uuid/v4');
 const { mapUserStatus } = require('./../../infrastructure/utils');
 
-const getOrgServiceMappingDetails = async (orgServiceMapping) => {
+const getOrgServiceMappingDetails = (orgServiceMapping) => {
   let organisation = null;
   let organisationCategories = [];
   let services = [];
@@ -42,8 +42,8 @@ const getAllUserServiceMappings = async (correlationId) => {
     if (page.services && page.services.length > 0) {
       userServiceMappings.push(...page.services);
     }
-    pageNumber++;
     hasMorePages = pageNumber < page.totalNumberOfPages;
+    pageNumber++;
   }
   return userServiceMappings;
 };
@@ -57,8 +57,8 @@ const getAllUsers = async (correlationId) => {
     if (page.users && page.users.length > 0) {
       users.push(...page.users);
     }
-    pageNumber++;
     hasMorePages = pageNumber < page.numberOfPages;
+    pageNumber++;
   }
   return users;
 };
@@ -132,8 +132,8 @@ const getAllInvitationServices = async (correlationId) => {
     if (page.services && page.services.length > 0) {
       invitationServiceMappings.push(...page.services);
     }
-    pageNumber++;
     hasMorePages = pageNumber < page.totalNumberOfPages;
+    pageNumber++;
   }
   return invitationServiceMappings;
 };
@@ -147,8 +147,8 @@ const getAllInvitations = async (correlationId) => {
     if (page.invitations && page.invitations.length > 0) {
       invitations.push(...page.invitations);
     }
-    pageNumber++;
     hasMorePages = pageNumber < page.numberOfPages;
+    pageNumber++;
   }
   return invitations;
 };

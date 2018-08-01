@@ -40,7 +40,7 @@ describe('when getting a page of users from directories api', () => {
   });
 
   it('then it should call users resource with page & page size', async () => {
-    await getPageOfUsers(pageNumber, pageSize, false, correlationId);
+    await getPageOfUsers(pageNumber, pageSize, false, false, correlationId);
 
     expect(rp.mock.calls).toHaveLength(1);
     expect(rp.mock.calls[0][0]).toMatchObject({
@@ -50,7 +50,7 @@ describe('when getting a page of users from directories api', () => {
   });
 
   it('then it should call users resource with page and include if includeDevices = true', async () => {
-    await getPageOfUsers(pageNumber, pageSize, true, correlationId);
+    await getPageOfUsers(pageNumber, pageSize, true, false, correlationId);
 
     expect(rp.mock.calls).toHaveLength(1);
     expect(rp.mock.calls[0][0]).toMatchObject({
@@ -60,7 +60,7 @@ describe('when getting a page of users from directories api', () => {
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
-    await getPageOfUsers(pageNumber, pageSize, false, correlationId);
+    await getPageOfUsers(pageNumber, pageSize, false, false, correlationId);
 
     expect(rp.mock.calls[0][0]).toMatchObject({
       headers: {
@@ -70,7 +70,7 @@ describe('when getting a page of users from directories api', () => {
   });
 
   it('then it should include the correlation id', async () => {
-    await getPageOfUsers(pageNumber, pageSize, false, correlationId);
+    await getPageOfUsers(pageNumber, pageSize, false, false, correlationId);
 
     expect(rp.mock.calls[0][0]).toMatchObject({
       headers: {
