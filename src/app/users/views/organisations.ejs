@@ -6,6 +6,7 @@
         <tr>
             <th scope="row">Organisation</th>
             <th scope="row">Permission level</th>
+            <th scope="row">Action</th>
         </tr>
     </thead>
     <tbody>
@@ -14,6 +15,7 @@
             <tr>
                 <td> <%=org.name%> </td>
                 <td><%=org.role.name%></td>
+                <td><a href="edit-organisation-permissions"> Edit permission level</a> </td>
             </tr>
         <%}%>
     </tbody>
