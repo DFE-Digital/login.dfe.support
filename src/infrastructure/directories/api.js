@@ -11,11 +11,11 @@ const rp = require('request-promise').defaults({
 const jwtStrategy = require('login.dfe.jwt-strategies');
 
 
-const getPageOfUsers = async (pageNumber, includeDevices, correlationId) => {
+const getPageOfUsers = async (pageNumber, pageSize, includeDevices, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
-    let uri = `${config.directories.service.url}/users?page=${pageNumber}`;
+    let uri = `${config.directories.service.url}/users?page=${pageNumber}&pageSize=${pageSize}`;
     if (includeDevices) {
       uri += '&include=devices';
     }
@@ -63,13 +63,13 @@ const getUser = async (uid, correlationId) => {
   }
 };
 
-const getPageOfInvitations = async (pageNumber, correlationId) => {
+const getPageOfInvitations = async (pageNumber, pageSize, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
     const pageOfInvitations = await rp({
       method: 'GET',
-      uri: `${config.directories.service.url}/invitations?page=${pageNumber}`,
+      uri: `${config.directories.service.url}/invitations?page=${pageNumber}&pageSize=${pageSize}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,

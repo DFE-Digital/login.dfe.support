@@ -31,7 +31,7 @@ const user2 = {
   salt: 'PasswordIs-password-',
 };
 
-describe('When syncing users materialised view', function () {
+describe.skip('When syncing users materialised view', function () {
   beforeEach(() => {
     users.createIndex.mockReset();
     users.createIndex.mockReturnValue('test-index');
