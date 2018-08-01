@@ -1,0 +1,43 @@
+<a href="organisations" class="link-back">Back</a>
+
+<div class="row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Edit permission level
+        </h1>
+        <dl class="rows">
+            <dt>Name</dt>
+            <dd><%=userFullName%></dd>
+            <dt>Organisation</dt>
+            <dd>org name</dd>
+            <dt>Permission level</dt>
+            <dd></dd>
+        </dl>
+        <form>
+            <div class="form-group">
+                <fieldset>
+                    <legend><h2 class="heading-small">Select a new permission level</h2></legend>
+                    <div class="multiple-choice">
+                        <input id="radio-1" type="radio" name="radio-group" value="" checked>
+                        <label for="radio-1">End user</label>
+                    </div>
+                    <div class="multiple-choice">
+                        <input id="radio-2" type="radio" name="radio-group" value="">
+                        <label for="radio-2">Approver</label>
+                    </div>
+                </fieldset>
+            </div>
+        </form>
+        <div class="form-submit">
+            <a href="user-profile.html?action=user-role-updated" class="button">Save</a>
+        </div>
+    </div>
+    <div class="col-4">
+        <aside>
+            <h2 class="heading-medium">Actions</h2>
+            <ul class="list">
+                <li><a href="user-profile.html?action=user-role-deleted">Delete <%=userFullName%> access to Bishop Ullathorne Catholic School</a> </li>
+            </ul>
+        </aside>
+    </div>
+</div>

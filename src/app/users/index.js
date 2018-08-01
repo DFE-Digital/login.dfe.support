@@ -38,6 +38,8 @@ const postConfirmNewK2sUser = require('./postConfirmNewK2sUser');
 const postCancelChangeEmail = require('./postCancelChangeEmail');
 const getConfirmAssociateOrganisation = require('./getConfirmAssociateOrganisation');
 const postResendInvite = require('./postResendInvite');
+const getEditPermissions = require('./getEditPermissions');
+const postEditPermissions = require('./postEditPermissions');
 
 const router = express.Router({ mergeParams: true });
 
@@ -100,6 +102,9 @@ const users = (csrf) => {
   router.post('/:uid/organisation-permissions', csrf, asyncWrapper(postOrganisationPermissions));
   router.get('/:uid/confirm-associate-organisation', csrf, asyncWrapper(getConfirmAssociateOrganisation));
 
+  router.get('/:uid/edit-organisation-permissions', csrf, asyncWrapper(getEditPermissions));
+  router.post('/:uid/edit-organisation-permissions', csrf, asyncWrapper(postEditPermissions));
+  
   return router;
 };
 
