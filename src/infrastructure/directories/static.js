@@ -1,6 +1,6 @@
 const uuid = require('uuid/v4');
 
-const getPageOfUsers = async (pageNumber, includeDevices, correlationId) => {
+const getPageOfUsers = async (pageNumber, pageSize, includeDevices, correlationId) => {
   const result = {
     users: [
       {
@@ -34,7 +34,7 @@ const getUser = async (uid, correlationId) => {
   };
 };
 
-const getPageOfInvitations = async (pageNumber, correlationId) => {
+const getPageOfInvitations = async (pageNumber, pageSize, correlationId) => {
   return {
     invitations: [],
     numberOfPages: 1,

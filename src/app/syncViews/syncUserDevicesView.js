@@ -85,7 +85,7 @@ const syncUserDevicesView = async () => {
   let pageNumber = 1;
   while (hasMorePages) {
     logger.info(`Syncing page ${pageNumber} of userDevices`);
-    const pageOfUsers = await getPageOfUsers(pageNumber, true, correlationId);
+    const pageOfUsers = await getPageOfUsers(pageNumber, 250, true, correlationId);
     if (pageOfUsers.users) {
       const mappedUsers = await asyncMapLimit(pageOfUsers.users, async (user) => {
         return await buildUser(user, allDevices, correlationId);
