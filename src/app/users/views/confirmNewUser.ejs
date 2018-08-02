@@ -95,7 +95,7 @@
                 <span class="form-hint">Decide where the user will be redirected after completing their registration</span>
             </label>
 
-            <select id="invite-destination" name="invite-destination" class="form-control select2">
+            <select id="invite-destination" name="invite-destination" class="form-control select2" style="width: 75%;">
                 <% for (let i = 0; i < oidcClients.length; i++) { %>
                 <% const service = oidcClients[i]; %>
                 <optgroup label="<%= service.friendlyName %> (<%= service.client_id%>)" >
