@@ -1,4 +1,4 @@
-<a href="organisations" class="link-back">Back</a>
+<a href="../organisations" class="link-back">Back</a>
 
 <div class="row">
     <div class="col-8">
@@ -9,7 +9,7 @@
             <dt>Name</dt>
             <dd><%=userFullName%></dd>
             <dt>Organisation</dt>
-            <dd>org name</dd>
+            <dd><%=locals.organisation.name%></dd>
             <dt>Permission level</dt>
             <dd></dd>
         </dl>
@@ -29,14 +29,14 @@
             </div>
         </form>
         <div class="form-submit">
-            <a href="user-profile.html?action=user-role-updated" class="button">Save</a>
+            <a href="" class="button">Save</a>
         </div>
     </div>
     <div class="col-4">
         <aside>
             <h2 class="heading-medium">Actions</h2>
             <ul class="list">
-                <li><a href="user-profile.html?action=user-role-deleted">Delete <%=userFullName%> access to Bishop Ullathorne Catholic School</a> </li>
+                <li><a href="">Delete <%=userFullName%> access to <%=locals.organisation.name%></a> </li>
             </ul>
         </aside>
     </div>

@@ -75,6 +75,7 @@ const users = (csrf) => {
     res.redirect(`/users/${req.params.uid}/organisations`);
   }));
   router.get('/:uid/organisations', csrf, asyncWrapper(getOrganisations));
+  router.get('/:uid/organisations/:id', csrf, asyncWrapper(getEditPermissions));
   router.get('/:uid/services', csrf, asyncWrapper(getServices));
   router.get('/:uid/audit', csrf, asyncWrapper(getAudit));
   router.get('/:uid/resend-invitation', csrf, asyncWrapper(postResendInvite));
@@ -102,9 +103,9 @@ const users = (csrf) => {
   router.post('/:uid/organisation-permissions', csrf, asyncWrapper(postOrganisationPermissions));
   router.get('/:uid/confirm-associate-organisation', csrf, asyncWrapper(getConfirmAssociateOrganisation));
 
-  router.get('/:uid/edit-organisation-permissions', csrf, asyncWrapper(getEditPermissions));
-  router.post('/:uid/edit-organisation-permissions', csrf, asyncWrapper(postEditPermissions));
-  
+
+  //router.post('/:uid/edit-organisation-permissions', csrf, asyncWrapper(postEditPermissions));
+
   return router;
 };
 
