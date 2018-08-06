@@ -13,24 +13,28 @@
             <dt>Permission level</dt>
             <dd><%=locals.role%></dd>
         </dl>
-        <form>
-            <div class="form-group">
+        <form method="post">
+            <div class="form-group <%= (locals.validationMessages.selectedLevel !== undefined) ? 'form-group-error' : '' %>">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
                 <fieldset>
                     <legend><h2 class="heading-small">Select a new permission level</h2></legend>
+                    <% if (locals.validationMessages.selectedLevel !== undefined) { %>
+                    <p class="error-message" id="validation-permission-level"><%=locals.validationMessages.selectedLevel %></p>
+                    <% } %>
                     <div class="multiple-choice">
-                        <input id="radio-1" type="radio" name="radio-group" value="" checked>
-                        <label for="radio-1">End user</label>
+                        <input id="level-user" type="radio" name="selectedLevel" value="0" checked>
+                        <label for="level-user">End user</label>
                     </div>
                     <div class="multiple-choice">
-                        <input id="radio-2" type="radio" name="radio-group" value="">
-                        <label for="radio-2">Approver</label>
+                        <input id="level-approver" type="radio" name="selectedLevel" value="10000">
+                        <label for="level-approver">Approver</label>
                     </div>
                 </fieldset>
             </div>
+            <div class="form-submit">
+                <button class="button">Save</button>
+            </div>
         </form>
-        <div class="form-submit">
-            <a href="" class="button">Save</a>
-        </div>
     </div>
     <div class="col-4">
         <aside>
