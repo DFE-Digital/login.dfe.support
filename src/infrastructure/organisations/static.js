@@ -113,6 +113,14 @@ const getOrganisationUsersForApproval = async (pageNumber, correlationId) => {
   return Promise.resolve([]);
 };
 
+const listUserServices = async (page, pageSize, correlationId) => {
+  return Promise.resolve([]);
+};
+
+const listInvitationServices = async (page, pageSize, correlationId) => {
+  return Promise.resolve([]);
+};
+
 module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -130,4 +138,6 @@ module.exports = {
   setUserAccessToOrganisation,
   getOrganisationCategories,
   getOrganisationUsersForApproval,
+  listUserServices,
+  listInvitationServices,
 };

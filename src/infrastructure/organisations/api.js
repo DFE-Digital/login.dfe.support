@@ -148,6 +148,14 @@ const getOrganisationUsersForApproval = async (pageNumber, correlationId) => {
   return callOrganisationsApi(`organisations/users-for-approval?page=2`, 'GET', undefined, correlationId);
 };
 
+const listUserServices = async (page, pageSize, correlationId) => {
+  return callOrganisationsApi(`/services/associated-with-user?page=${page}&pageSize=${pageSize}`, 'GET', undefined, correlationId);
+};
+
+const listInvitationServices = async (page, pageSize, correlationId) => {
+  return callOrganisationsApi(`/invitations?page=${page}&pageSize=${pageSize}`, 'GET', undefined, correlationId);
+};
+
 module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -165,4 +173,6 @@ module.exports = {
   setUserAccessToOrganisation,
   getOrganisationCategories,
   getOrganisationUsersForApproval,
+  listUserServices,
+  listInvitationServices,
 };
