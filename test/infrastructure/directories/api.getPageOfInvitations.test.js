@@ -17,6 +17,7 @@ const jwtStrategy = require('login.dfe.jwt-strategies');
 const { getPageOfInvitations } = require('./../../../src/infrastructure/directories/api');
 
 const pageNumber = 1;
+const pageSize = 123;
 const correlationId = 'abc123';
 const apiResponse = {
   invitations: [{
@@ -46,18 +47,18 @@ describe('when getting a page of users from directories api', () => {
     })
   });
 
-  it('then it should call users resource with page', async () => {
-    await getPageOfInvitations(pageNumber, correlationId);
+  it('then it should call users resource with page & pagesize', async () => {
+    await getPageOfInvitations(pageNumber, pageSize, correlationId);
 
     expect(rp.mock.calls).toHaveLength(1);
     expect(rp.mock.calls[0][0]).toMatchObject({
       method: 'GET',
-      uri: 'http://directories.test/invitations?page=1',
+      uri: 'http://directories.test/invitations?page=1&pageSize=123',
     });
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
-    await getPageOfInvitations(pageNumber, correlationId);
+    await getPageOfInvitations(pageNumber, pageSize, correlationId);
 
     expect(rp.mock.calls[0][0]).toMatchObject({
       headers: {
@@ -67,7 +68,7 @@ describe('when getting a page of users from directories api', () => {
   });
 
   it('then it should include the correlation id', async () => {
-    await getPageOfInvitations(pageNumber, correlationId);
+    await getPageOfInvitations(pageNumber, pageSize, correlationId);
 
     expect(rp.mock.calls[0][0]).toMatchObject({
       headers: {
@@ -77,7 +78,7 @@ describe('when getting a page of users from directories api', () => {
   });
 
   it('then it should return api result', async () => {
-    const actual = await getPageOfInvitations(pageNumber, correlationId);
+    const actual = await getPageOfInvitations(pageNumber, pageSize, correlationId);
 
     expect(actual).toMatchObject(apiResponse);
   });
