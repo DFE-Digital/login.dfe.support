@@ -3,7 +3,6 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/users');
 jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/organisations');
-jest.mock('./../../../src/infrastructure/audit/cache');
 jest.mock('./../../../src/infrastructure/audit');
 jest.mock('uuid/v4');
 
@@ -12,178 +11,204 @@ const directories = require('./../../../src/infrastructure/directories');
 const organisations = require('./../../../src/infrastructure/organisations');
 const audit = require('./../../../src/infrastructure/audit');
 const uuid = require('uuid/v4');
-const syncUsersView = require('./../../../src/app/syncViews/syncUsersView');
+const { syncUsersView } = require('./../../../src/app/syncViews');
 
-const user1 = {
-  sub: 'user1',
-  given_name: 'User',
-  family_name: 'One',
-  email: 'user.one@unit.test',
-  password: '0dqy81MVA9lqs2+xinvOXbbGMhd18X4pq5aRfiE65pIKxcWB0OtAffY9NdJy0/ksjhBG9EOYywti2WYmtqwxypRil+x0/nBeBlJUfN7/Q9l8tRiDcqq8NghC8wqSEuyzLKXoE/+VDPkW35Vo8czsOp5PT0xN3IQ31vlld/4PqsqQWYE4WBTBO/PO6SoAfNapDxb4M9C8TiReek43pfVL3wTst8Bv4wkeFcLy7NMGVyM48LmjlyvYPIY5NTz8RGOSCAyB7kIxYEsf9SB0Sp0IMGhHIoM8/Yhso3cJNTKTLod0Uz3Htc0JAStugt6RCrnar3Yc7yUzSGDNZcvM31HsP74i5TifaJiavHOiZxjaHYn/KsLFi5/zqNRcYkzN+dYzWY1hjCSY47za9HMh89ZHxGkmrknQY4YKRp/uvg2driXwZDaIm7NUt90mXim4PGM0kYejp9SUwlIGmc5F4QO5F3tBoRb/AYsf3f6mDw7SXAMnO/OVfglvf/x3ICE7UCLkuMXZAECe8MJoJnpP+LVrNQfJjSrjmBYrVRVkS2QFrte0g2WO1SprE9KH8kkmNEmkC6Z3orDczx5jW7LSl37ZHzq1dvMYAJrEoWH21e6ug5usMSl1X6S5uBIsSrj8kOlTYgr4huPjN54aBTVYazCn6UFVrt83E81nbuyZTadrnA4=',
-  salt: 'PasswordIs-password-',
-};
-const user2 = {
-  sub: 'user2',
-  given_name: 'User',
-  family_name: 'Two',
-  email: 'user.two@unit.test',
-  password: '0dqy81MVA9lqs2+xinvOXbbGMhd18X4pq5aRfiE65pIKxcWB0OtAffY9NdJy0/ksjhBG9EOYywti2WYmtqwxypRil+x0/nBeBlJUfN7/Q9l8tRiDcqq8NghC8wqSEuyzLKXoE/+VDPkW35Vo8czsOp5PT0xN3IQ31vlld/4PqsqQWYE4WBTBO/PO6SoAfNapDxb4M9C8TiReek43pfVL3wTst8Bv4wkeFcLy7NMGVyM48LmjlyvYPIY5NTz8RGOSCAyB7kIxYEsf9SB0Sp0IMGhHIoM8/Yhso3cJNTKTLod0Uz3Htc0JAStugt6RCrnar3Yc7yUzSGDNZcvM31HsP74i5TifaJiavHOiZxjaHYn/KsLFi5/zqNRcYkzN+dYzWY1hjCSY47za9HMh89ZHxGkmrknQY4YKRp/uvg2driXwZDaIm7NUt90mXim4PGM0kYejp9SUwlIGmc5F4QO5F3tBoRb/AYsf3f6mDw7SXAMnO/OVfglvf/x3ICE7UCLkuMXZAECe8MJoJnpP+LVrNQfJjSrjmBYrVRVkS2QFrte0g2WO1SprE9KH8kkmNEmkC6Z3orDczx5jW7LSl37ZHzq1dvMYAJrEoWH21e6ug5usMSl1X6S5uBIsSrj8kOlTYgr4huPjN54aBTVYazCn6UFVrt83E81nbuyZTadrnA4=',
-  salt: 'PasswordIs-password-',
-};
-
-describe('When syncing users materialised view', function () {
-  beforeEach(() => {
-    users.createIndex.mockReset();
-    users.createIndex.mockReturnValue('test-index');
-
-    users.updateIndex.mockReset();
-
-    directories.getPageOfUsers.mockReset();
-    directories.getPageOfUsers.mockReturnValue({
-      users: [user1, user2],
-      numberOfPages: 1,
-    });
-
-    directories.getPageOfInvitations.mockReset();
-    directories.getPageOfInvitations.mockReturnValue({
+const testData = {
+  correlationId: 'some-uuid',
+  indexName: 'new-user-index-name',
+  users: {
+    page1: {
+      users: [{
+        sub: 'user1',
+        given_name: 'User',
+        family_name: 'One',
+        email: 'user.one@unit.tests',
+        status: 1,
+        codes: [
+          { code: 'ABC123', type: 'changeemail', email: 'user.oneplus@unit.tests' },
+        ],
+      }],
+      numberOfPages: 2,
+    },
+    page2: {
+      users: [{
+        sub: 'user2',
+        given_name: 'User',
+        family_name: 'Two',
+        email: 'user.two@unit.tests',
+        status: 0,
+        codes: [],
+      }],
+      numberOfPages: 2,
+    },
+  },
+  invitations: {
+    page1: {
       invitations: [],
-      numberOfPages: 1,
-      page: 1,
-    });
-
-    directories.getChangeEmailCode.mockReset();
-    directories.getChangeEmailCode.mockReturnValueOnce({ email: 'user1@unit.test' });
-
-    organisations.getUserOrganisations.mockReset().mockReturnValue([
-      {
+      numberOfPages: 0,
+    },
+  },
+  userServices: {
+    page1: {
+      services: [{
+        id: 'svc1',
+        userId: 'user1',
+        requestDate: new Date(2018, 6, 1),
         organisation: {
           id: 'org1',
-          name: 'Test Org',
+          name: 'Organisation One',
           category: {
-            id: '001',
-            name: 'Establishment'
+            id: '001'
           },
         },
-        services: [
-          {
-            id: 'service1',
-            name: 'Test Service',
-            requestDate: new Date(2018, 5, 1),
-          }
-        ]
+      }],
+      totalNumberOfPages: 2,
+    },
+    page2: {
+      services: [{
+        id: 'svc1',
+        userId: 'user2',
+        requestDate: new Date(2018, 6, 3),
+        organisation: {
+          id: 'org2',
+          name: 'Organisation Two',
+          category: {
+            id: '002'
+          },
+        },
+      }],
+      totalNumberOfPages: 2,
+    },
+  },
+  invitationServices: {
+    page1: {
+      service: [],
+      totalNumberOfPages: 0,
+    },
+  },
+  audit: {
+    stats: {
+      user1: {
+        lastLogin: new Date(2018, 7, 6),
+        lastStatusChange: undefined,
+        loginsInPast12Months: [{timestamp:new Date(2018, 7, 4)},{timestamp:new Date(2018, 7, 5)},{timestamp:new Date(2018, 7, 6)}]
       },
-    ]);
+    },
+  },
+};
 
-    audit.cache.getStatsForUser.mockReset().mockReturnValue({
-      lastLogin: new Date('2017-10-24T12:35:51.633Z'),
-      loginsInPast12Months: [
-        { timestamp: new Date('2017-10-24T12:35:51.633Z') },
-      ],
-      lastStatusChange: undefined,
+const _getPageOfData = (source, pageNumber) => {
+  const key = `page${pageNumber}`;
+  if (Object.keys(source).find(x => x === key)) {
+    return source[key];
+  }
+  return undefined;
+};
+
+describe('When syncing users materialised view', () => {
+  beforeEach(() => {
+    users.createIndex.mockReset().mockReturnValue(testData.indexName);
+    users.updateIndex.mockReset();
+    users.updateActiveIndex.mockReset();
+
+    directories.getPageOfUsers.mockReset().mockImplementation((pageNumber) => {
+      return _getPageOfData(testData.users, pageNumber);
+    });
+    directories.getPageOfInvitations.mockReset().mockReturnValue(testData.invitations.page1);
+
+    organisations.listUserServices.mockReset().mockImplementation((pageNumber) => {
+      return _getPageOfData(testData.userServices, pageNumber);
+    });
+    organisations.listInvitationServices.mockReset().mockReturnValue(testData.invitationServices.page1);
+
+    audit.cache.getStatsForUser.mockReset().mockImplementation((userId) => {
+      if (Object.keys(testData.audit.stats).find(x => x === userId)) {
+        return testData.audit.stats[userId];
+      }
+      return undefined;
     });
 
-    uuid.mockImplementation(() => {
-      return 'new-uuid';
+    uuid.mockReset().mockReturnValue(testData.correlationId);
+  });
+
+  it('then it should create a new user index', async () => {
+    await syncUsersView();
+
+    expect(users.createIndex).toHaveBeenCalledTimes(1);
+  });
+
+  it('then it should get all pages of users', async () => {
+    await syncUsersView();
+
+    expect(directories.getPageOfUsers).toHaveBeenCalledTimes(2);
+    expect(directories.getPageOfUsers).toHaveBeenCalledWith(1, 250, false, true, testData.correlationId);
+    expect(directories.getPageOfUsers).toHaveBeenCalledWith(2, 250, false, true, testData.correlationId);
+  });
+
+  it('then it should get all pages of user services', async () => {
+    await syncUsersView();
+
+    expect(organisations.listUserServices).toHaveBeenCalledTimes(2);
+    expect(organisations.listUserServices).toHaveBeenCalledWith(1, 250, testData.correlationId);
+    expect(organisations.listUserServices).toHaveBeenCalledWith(2, 250, testData.correlationId);
+  });
+
+  it('then it should update index with user1', async () => {
+    await syncUsersView();
+
+    const expectedUser = testData.users.page1.users[0];
+    const expectedServices = testData.userServices.page1.services;
+    const actual = users.updateIndex.mock.calls[0][0].find(x => x.id === expectedUser.sub);
+    expect(actual).toBeDefined();
+    expect(actual.name).toEqual(`${expectedUser.given_name} ${expectedUser.family_name}`);
+    expect(actual.firstName).toEqual(expectedUser.given_name);
+    expect(actual.lastName).toEqual(expectedUser.family_name);
+    expect(actual.email).toEqual(expectedUser.email);
+    expect(actual.organisation).toEqual({
+      id: expectedServices[0].organisation.id,
+      name: expectedServices[0].organisation.name,
+    });
+    expect(actual.organisationCategories).toEqual([expectedServices[0].organisation.category.id]);
+    expect(actual.services).toEqual([expectedServices[0].id]);
+    expect(actual.lastLogin).toEqual(testData.audit.stats.user1.lastLogin.getTime());
+    expect(actual.successfulLoginsInPast12Months).toEqual(testData.audit.stats.user1.loginsInPast12Months.length);
+    expect(actual.status).toEqual({
+      id: 1,
+      description: 'Active',
+      changedOn: null,
     });
   });
 
-  it('then it should create a new index', async () => {
+  it('then it should update index with user2', async () => {
     await syncUsersView();
 
-    expect(users.createIndex.mock.calls).toHaveLength(1);
-  });
-
-  it('then it should keep getting pages of users from directories until it reaches the end', async () => {
-    directories.getPageOfUsers.mockReset();
-    directories.getPageOfUsers.mockImplementation(() => {
-      return {
-        users: [],
-        numberOfPages: 2,
-      };
+    const expectedUser = testData.users.page2.users[0];
+    const expectedServices = testData.userServices.page2.services;
+    const actual = users.updateIndex.mock.calls[0][0].find(x => x.id === expectedUser.sub);
+    expect(actual).toBeDefined();
+    expect(actual.name).toEqual(`${expectedUser.given_name} ${expectedUser.family_name}`);
+    expect(actual.firstName).toEqual(expectedUser.given_name);
+    expect(actual.lastName).toEqual(expectedUser.family_name);
+    expect(actual.email).toEqual(expectedUser.email);
+    expect(actual.organisation).toEqual({
+      id: expectedServices[0].organisation.id,
+      name: expectedServices[0].organisation.name,
     });
-
-    await syncUsersView();
-
-    expect(directories.getPageOfUsers.mock.calls).toHaveLength(2);
-    expect(directories.getPageOfUsers.mock.calls[0][0]).toBe(1);
-    expect(directories.getPageOfUsers.mock.calls[1][0]).toBe(2);
-  });
-
-  it('then it should get organisations for each user', async () => {
-    await syncUsersView();
-
-    expect(organisations.getUserOrganisations.mock.calls).toHaveLength(2);
-    expect(organisations.getUserOrganisations.mock.calls[0][0]).toBe(user1.sub);
-    expect(organisations.getUserOrganisations.mock.calls[1][0]).toBe(user2.sub);
-  });
-
-  it('then it should update the new index with users', async () => {
-    await syncUsersView();
-
-    expect(users.updateIndex.mock.calls).toHaveLength(1);
-    expect(users.updateIndex.mock.calls[0][0]).toHaveLength(2);
-    expect(users.updateIndex.mock.calls[0][0][0]).toEqual({
-      id: 'user1',
-      name: 'User One',
-      firstName: 'User',
-      lastName: 'One',
-      email: 'user.one@unit.test',
-      organisation: {
-        id: 'org1',
-        name: 'Test Org'
-      },
-      organisationCategories: ['001'],
-      services: ['service1'],
-      lastLogin: 1508848551633,
-      successfulLoginsInPast12Months: 1,
-      status: {
-        id: 1,
-        description: 'Active',
-        changedOn: null,
-      },
-      pendingEmail: 'user1@unit.test',
+    expect(actual.organisationCategories).toEqual([expectedServices[0].organisation.category.id]);
+    expect(actual.services).toEqual([expectedServices[0].id]);
+    expect(actual.lastLogin).toBeNull();
+    expect(actual.successfulLoginsInPast12Months).toEqual(0);
+    expect(actual.status).toEqual({
+      id: 0,
+      description: 'Deactivated',
+      changedOn: null,
     });
-    expect(users.updateIndex.mock.calls[0][0][1]).toEqual({
-      id: 'user2',
-      name: 'User Two',
-      firstName: 'User',
-      lastName: 'Two',
-      email: 'user.two@unit.test',
-      organisation: {
-        id: 'org1',
-        name: 'Test Org'
-      },
-      organisationCategories: ['001'],
-      services: ['service1'],
-      lastLogin: 1508848551633,
-      successfulLoginsInPast12Months: 1,
-      status: {
-        id: 1,
-        description: 'Active',
-        changedOn: null,
-      },
-      pendingEmail: undefined,
-    });
-    expect(users.updateIndex.mock.calls[0][1]).toBe('test-index');
   });
 
-  it('then it should update config to point at new index', async () => {
+  it('then it should update active index to be one created and populated in sync', async () => {
     await syncUsersView();
 
-    expect(users.updateActiveIndex.mock.calls).toHaveLength(1);
-    expect(users.updateActiveIndex.mock.calls[0][0]).toBe('test-index');
-  });
-
-  it('then it should pass correlationId to directories', async () => {
-    await syncUsersView();
-
-    expect(directories.getPageOfUsers.mock.calls[0][1]).toBe('new-uuid');
-  });
-
-  it('then it should pass correlationId to organisations', async () => {
-    await syncUsersView();
-
-    expect(organisations.getUserOrganisations.mock.calls[0][1]).toBe('new-uuid');
-    expect(organisations.getUserOrganisations.mock.calls[1][1]).toBe('new-uuid');
+    expect(users.updateActiveIndex).toHaveBeenCalledTimes(1);
+    expect(users.updateActiveIndex).toHaveBeenCalledWith(testData.indexName);
   });
 });
