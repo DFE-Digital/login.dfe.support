@@ -11,13 +11,17 @@ const rp = require('request-promise').defaults({
 const jwtStrategy = require('login.dfe.jwt-strategies');
 
 
-const getPageOfUsers = async (pageNumber, includeDevices, correlationId) => {
+const getPageOfUsers = async (pageNumber, pageSize, includeDevices, includeCodes, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
-    let uri = `${config.directories.service.url}/users?page=${pageNumber}`;
-    if (includeDevices) {
-      uri += '&include=devices';
+    let uri = `${config.directories.service.url}/users?page=${pageNumber}&pageSize=${pageSize}`;
+    if (includeDevices || includeCodes) {
+      const includes = [
+        includeDevices ? 'devices' : undefined,
+        includeCodes ? 'codes' : undefined,
+      ].filter(x => x !== undefined).join(',');
+      uri += `&include=${includes}`;
     }
     const pageOfUsers = await rp({
       method: 'GET',
@@ -63,13 +67,13 @@ const getUser = async (uid, correlationId) => {
   }
 };
 
-const getPageOfInvitations = async (pageNumber, correlationId) => {
+const getPageOfInvitations = async (pageNumber, pageSize, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
     const pageOfInvitations = await rp({
       method: 'GET',
-      uri: `${config.directories.service.url}/invitations?page=${pageNumber}`,
+      uri: `${config.directories.service.url}/invitations?page=${pageNumber}&pageSize=${pageSize}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
