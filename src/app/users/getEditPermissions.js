@@ -10,10 +10,9 @@ const getOrganisations = async (userId, correlationId) => {
     return {
       id: invitation.organisation.id,
       name: invitation.organisation.name,
-      role: invitation.role,
+      role: invitation.role
     };
   }));
-
   return organisations;
 };
 
@@ -24,10 +23,11 @@ const getEditPermissions = async (req, res) => {
   req.session.org = organisation;
   const organisationDetails = await getOrganisations(req.params.uid, req.id);
   let role;
+
   for (let i = 0; i < organisationDetails.length; i++) {
     const org = organisationDetails[i];
     if (selectedOrganisationId === org.id) {
-      role = org.role.name
+      role = org.role
     }
   }
   return res.render('users/views/editPermissions', {
