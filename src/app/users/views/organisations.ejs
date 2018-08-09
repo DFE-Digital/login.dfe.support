@@ -14,7 +14,11 @@
         <% const org = locals.organisations[o];%>
             <tr>
                 <td> <%=org.name%> </td>
+                <% if (org.role) { %>
                 <td><%=org.role.name%></td>
+                <% } else { %>
+                <td>Unknown</td>
+                <% } %>
                 <td><a href="/users/<%=user.id%>/organisations/<%=org.id%>"> Edit permission level</a> </td>
             </tr>
         <%}%>
