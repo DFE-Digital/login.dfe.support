@@ -6,20 +6,19 @@ const getOrganisations = async (userId, correlationId) => {
     return [];
   }
 
-  const organisations = await Promise.all(orgMapping.map(async (invitation) => {
+  const organisations = await orgMapping.map((invitation) => {
     return {
       id: invitation.organisation.id,
       name: invitation.organisation.name,
       role: invitation.role
     };
-  }));
+  });
   return organisations;
 };
 
 const getEditPermissions = async (req, res) => {
-  let organisation;
   const selectedOrganisationId = req.params.id;
-  organisation = selectedOrganisationId ? await getOrganisationById(selectedOrganisationId, req.id): undefined;
+  const organisation = selectedOrganisationId ? await getOrganisationById(selectedOrganisationId, req.id): undefined;
   req.session.org = organisation;
   const organisationDetails = await getOrganisations(req.params.uid, req.id);
   let role;

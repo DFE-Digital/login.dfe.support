@@ -16,16 +16,14 @@ const validatePermissions = (req) => {
   return model;
 };
 
-const editInvitationPermissions = async(uid, req) => {
-  const model = validatePermissions(req);
+const editInvitationPermissions = async(uid, req, model) => {
   const invitationId = uid.substr(4);
   const organisationId = req.params.id;
   const permissionId = model.selectedLevel;
   await addInvitationOrganisation(invitationId, organisationId, permissionId, req.id);
 };
 
-const editUserPermissions = async(uid, req) => {
-  const model = validatePermissions(req);
+const editUserPermissions = async(uid, req, model) => {
   const organisationId = req.params.id;
   const permissionId = model.selectedLevel;
 
@@ -41,9 +39,9 @@ const postEditPermissions = async (req, res) => {
   }
   const uid = req.params.uid;
   if (uid.startsWith('inv-')) {
-    await editInvitationPermissions(uid, req);
+    await editInvitationPermissions(uid, req, model);
   } else {
-    await editUserPermissions(uid, req);
+    await editUserPermissions(uid, req, model);
   }
   const fullname = model.userFullName;
   const organisationName = model.organisationName;
