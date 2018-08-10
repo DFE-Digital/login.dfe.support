@@ -1,0 +1,47 @@
+<a href="../organisations" class="link-back">Back</a>
+
+<div class="row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Edit permission level
+        </h1>
+        <dl class="rows">
+            <dt>Name</dt>
+            <dd><%=userFullName%></dd>
+            <dt>Organisation</dt>
+            <dd><%=locals.organisation.name%></dd>
+            <dt>Permission level</dt>
+            <dd><%=locals.role.name%></dd>
+        </dl>
+        <form method="post">
+            <div class="form-group <%= (locals.validationMessages.selectedLevel !== undefined) ? 'form-group-error' : '' %>">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+                <fieldset>
+                    <legend><h2 class="heading-small">Select a new permission level</h2></legend>
+                    <% if (locals.validationMessages.selectedLevel !== undefined) { %>
+                    <p class="error-message" id="validation-permission-level"><%=locals.validationMessages.selectedLevel %></p>
+                    <% } %>
+                    <div class="multiple-choice">
+                        <input id="level-user" type="radio" name="selectedLevel" value="0" <%= locals.role.id === 0 ? "checked" : ""%>>
+                        <label for="level-user">End user</label>
+                    </div>
+                    <div class="multiple-choice">
+                        <input id="level-approver" type="radio" name="selectedLevel" value="10000" <%= locals.role.id ===10000 ? "checked" : ""%>>
+                        <label for="level-approver">Approver</label>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="form-submit">
+                <button class="button">Save</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-4">
+        <aside>
+            <h2 class="heading-medium">Actions</h2>
+            <ul class="list">
+                <li><a href="">Delete <%=userFullName%> access to <%=locals.organisation.name%></a> </li>
+            </ul>
+        </aside>
+    </div>
+</div>
