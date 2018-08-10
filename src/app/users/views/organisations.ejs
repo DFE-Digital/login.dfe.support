@@ -6,6 +6,7 @@
         <tr>
             <th scope="row">Organisation</th>
             <th scope="row">Permission level</th>
+            <th scope="row">Action</th>
         </tr>
     </thead>
     <tbody>
@@ -13,7 +14,12 @@
         <% const org = locals.organisations[o];%>
             <tr>
                 <td> <%=org.name%> </td>
+                <% if (org.role) { %>
                 <td><%=org.role.name%></td>
+                <% } else { %>
+                <td>Unknown</td>
+                <% } %>
+                <td><a href="/users/<%=user.id%>/organisations/<%=org.id%>"> Edit permission level</a> </td>
             </tr>
         <%}%>
     </tbody>
