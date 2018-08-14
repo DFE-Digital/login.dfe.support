@@ -33,6 +33,7 @@ const getEditPermissions = async (req, res) => {
     csrfToken: req.csrfToken(),
     organisation,
     role,
+    userId: req.params.uid,
     userFullName: `${req.session.user.firstName} ${req.session.user.lastName}`,
     validationMessages: {},
   });

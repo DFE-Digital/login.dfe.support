@@ -40,6 +40,7 @@ const getConfirmAssociateOrganisation = require('./getConfirmAssociateOrganisati
 const postResendInvite = require('./postResendInvite');
 const getEditPermissions = require('./getEditPermissions');
 const postEditPermissions = require('./postEditPermissions');
+const postDeleteOrganisation = require('./postDeleteOrganisation');
 
 const router = express.Router({ mergeParams: true });
 
@@ -77,6 +78,7 @@ const users = (csrf) => {
   router.get('/:uid/organisations', csrf, asyncWrapper(getOrganisations));
   router.get('/:uid/organisations/:id', csrf, asyncWrapper(getEditPermissions));
   router.post('/:uid/organisations/:id', csrf, asyncWrapper(postEditPermissions));
+  router.get('/:uid/organisations/:id/delete', csrf, asyncWrapper(postDeleteOrganisation));
   router.get('/:uid/services', csrf, asyncWrapper(getServices));
   router.get('/:uid/audit', csrf, asyncWrapper(getAudit));
   router.get('/:uid/resend-invitation', csrf, asyncWrapper(postResendInvite));
