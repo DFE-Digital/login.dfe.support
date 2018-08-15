@@ -112,6 +112,10 @@ const addInvitationOrganisation = async (invitationId, organisationId, roleId, c
   return await callOrganisationsApi(`organisations/${organisationId}/invitations/${invitationId}`, 'PUT', body, correlationId);
 };
 
+const deleteInvitationOrganisation = async (invitationId, organisationId, correlationId) => {
+  return callOrganisationsApi(`organisations/${organisationId}/invitations/${invitationId}`, 'DELETE', correlationId);
+};
+
 const getServicesByUserId = async (id, reqId) => {
   return await callOrganisationsApi(`services/associated-with-user/${id}`, 'GET', undefined, reqId);
 };
@@ -138,6 +142,10 @@ const searchOrganisations = async (criteria, filterByCategories, pageNumber, cor
 const setUserAccessToOrganisation = async (userId, organisationId, roleId, correlationId, status, reason,) => {
   const body = { roleId, status,reason };
   return await callOrganisationsApi(`organisations/${organisationId}/users/${userId}`, 'PUT', body, correlationId);
+};
+
+const deleteUserOrganisation = async (userId, organisationId, correlationId)  => {
+  return callOrganisationsApi(`organisations/${organisationId}/users/${userId}`, 'DELETE', correlationId);
 };
 
 const getOrganisationCategories = async (correlationId) => {
@@ -175,4 +183,6 @@ module.exports = {
   getOrganisationUsersForApproval,
   listUserServices,
   listInvitationServices,
+  deleteUserOrganisation,
+  deleteInvitationOrganisation,
 };
