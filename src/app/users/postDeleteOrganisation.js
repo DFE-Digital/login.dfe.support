@@ -18,7 +18,9 @@ const postDeleteOrganisation = async (req, res) => {
   } else {
     await deleteUserOrg(uid, req);
   }
-  res.flash('info', 'Deactivate complete - Organisation has been deactivated');
+  const fullname = `${req.session.user.firstName} ${req.session.user.lastName}`;
+  const org = req.session.org.name;
+  res.flash('info', `${fullname} no longer has access to ${org}`);
   return res.redirect(`/users/${uid}/organisations`);
 };
 
