@@ -19,7 +19,7 @@ const postDeleteOrganisation = async (req, res) => {
     await deleteUserOrg(uid, req);
   }
   res.flash('info', 'Deactivate complete - Organisation has been deactivated');
-  return res.redirect('../');
+  return res.redirect(`/users/${uid}/organisations`);
 };
 
 
