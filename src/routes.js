@@ -20,6 +20,9 @@ const routes = (app, csrf) => {
   app.get('/', (req, res) => {
     res.redirect('/users');
   });
+  app.get('*', (req, res) => {
+    res.redirect('/not-found');
+  });
 };
 
 module.exports = routes;

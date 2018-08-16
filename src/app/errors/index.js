@@ -13,6 +13,10 @@ const errors = () => {
     res.status(401).render('errors/views/notAuthorised');
   }));
 
+  router.get('/not-found', asyncWrapper((req, res) => {
+    res.status(404).render('errors/views/notFound');
+  }));
+
   return router;
 };
 
