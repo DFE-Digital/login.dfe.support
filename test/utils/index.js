@@ -34,6 +34,9 @@ const configMockFactory = (customConfig) => {
     hotConfig: {
       type: 'static',
     },
+    applications: {
+      type: 'static',
+    },
     notifications:{
       connectionString: 'test',
     },
