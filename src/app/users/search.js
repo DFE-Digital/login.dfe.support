@@ -2,7 +2,8 @@ const { search } = require('./utils');
 const { sendResult } = require('./../../infrastructure/utils');
 const { userStatusMap } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
-const { getAllServices, getOrganisationCategories } = require('./../../infrastructure/organisations');
+const { getOrganisationCategories } = require('./../../infrastructure/organisations');
+const { getAllServices } = require('./../../infrastructure/applications');
 
 const clearNewUserSessionData = (req) => {
   if (req.session.k2sUser) {
@@ -56,7 +57,7 @@ const getFiltersModel = async (req) => {
     });
 
     const selectedServices = unpackMultiSelect(paramsSource.service);
-    services = (await getAllServices(req.id)).map((service) => {
+    services = (await getAllServices()).map((service) => {
       return {
         id: service.id,
         name: service.name,

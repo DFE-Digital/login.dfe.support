@@ -11,7 +11,7 @@ const clients = [
     ],
   },
 ];
-const getAll = async () => {
+const getAllServices = async () => {
   return Promise.resolve([]);
 };
 
@@ -21,5 +21,5 @@ const getServiceById = async (id) => {
 
 module.exports = {
   getServiceById,
-  getAll,
+  getAllServices,
 };

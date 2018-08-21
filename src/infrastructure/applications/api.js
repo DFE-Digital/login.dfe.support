@@ -34,7 +34,7 @@ const getServiceById = async (id) => {
   }
 };
 
-const getAll = async () => {
+const getAllServices = async () => {
   const token = await jwtStrategy(config.applications.service).getBearerToken();
   try {
     const client = await rp({
@@ -56,5 +56,5 @@ const getAll = async () => {
 
 module.exports = {
   getServiceById,
-  getAll,
+  getAllServices,
 };
