@@ -3,7 +3,7 @@ const { getUserDetails } = require('./utils');
 const { getUserAudit } = require('./../../infrastructure/audit');
 const logger = require('./../../infrastructure/logger');
 const { getServiceIdForClientId } = require('./../../infrastructure/serviceMapping');
-const { getServiceById } = require('./../../infrastructure/organisations');
+const { getServiceById } = require('./../../infrastructure/applications');
 
 let cachedServiceIds = {};
 let cachedServices  = {};
@@ -61,16 +61,17 @@ const getCachedServiceIdForClientId = async (client) => {
     cachedServiceIds[client] = await getServiceIdForClientId(client);
   }
   return cachedServiceIds[client]
-}
+};
 
 const getCachedServiceById = async (serviceId, reqId) => {
   let key = `${serviceId}:${reqId}`;
   if (!(key in cachedServices)){
-    const service = getServiceById(serviceId, reqId);
+    const service = getServiceById(serviceId);
     cachedServices[key] = service;
   }
   return cachedServices[key]
-}
+};
+
 const getAudit = async (req, res) => {
   cachedServiceIds = {};
   cachedServices  = {};
@@ -108,8 +109,7 @@ const getAudit = async (req, res) => {
       result: audit.success === undefined ? true : audit.success,
       user: audit.userId.toLowerCase() === user.id.toLowerCase() ? user : await getUserDetails({ params: { uid: audit.userId } }),
     });
-  };
-
+  }
 
   sendResult(req, res, 'users/views/audit', {
     csrfToken: req.csrfToken(),

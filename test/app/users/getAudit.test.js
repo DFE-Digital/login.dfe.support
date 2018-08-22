@@ -2,6 +2,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/utils');
 jest.mock('./../../../src/app/users/utils');
 jest.mock('./../../../src/infrastructure/organisations');
+jest.mock('./../../../src/infrastructure/applications');
 jest.mock('./../../../src/infrastructure/serviceMapping');
 jest.mock('./../../../src/infrastructure/audit');
 
@@ -9,7 +10,7 @@ const { getUserDetails } = require('./../../../src/app/users/utils');
 const { sendResult } = require('./../../../src/infrastructure/utils');
 const { getUserAudit } = require('./../../../src/infrastructure/audit');
 const { getServiceIdForClientId } = require('./../../../src/infrastructure/serviceMapping');
-const { getServiceById } = require('./../../../src/infrastructure/organisations');
+const { getServiceById } = require('./../../../src/infrastructure/applications');
 const getAudit = require('./../../../src/app/users/getAudit');
 
 describe('when getting users audit details', () => {
