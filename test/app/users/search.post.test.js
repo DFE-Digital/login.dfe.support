@@ -10,9 +10,11 @@ jest.mock('./../../../src/app/users/utils', () => {
   };
 });
 jest.mock('./../../../src/infrastructure/organisations');
+jest.mock('./../../../src/infrastructure/applications');
 
 const utils = require('./../../../src/app/users/utils');
-const { getAllServices, getOrganisationCategories } = require('./../../../src/infrastructure/organisations');
+const { getOrganisationCategories } = require('./../../../src/infrastructure/organisations');
+const { getAllServices } = require('./../../../src/infrastructure/applications');
 const { post } = require('./../../../src/app/users/search');
 
 describe('When processing a post to search for users', () => {
@@ -62,9 +64,11 @@ describe('When processing a post to search for users', () => {
       users: usersSearchResult
     });
 
-    getAllServices.mockReset().mockReturnValue([
-      { id: 'svc1', name: 'Service one' },
-      { id: 'svc2', name: 'Service two' },]);
+    getAllServices.mockReset().mockReturnValue({
+      services: [
+        { id: 'svc1', name: 'Service one' },
+        { id: 'svc2', name: 'Service two' },]
+    });
 
     getOrganisationCategories.mockReset().mockReturnValue([
       { id: 'org1', name: 'Organisation one' },
@@ -146,7 +150,7 @@ describe('When processing a post to search for users', () => {
   test('then it should persist selected filters', async () => {
     req.body.showFilters = 'true';
     req.body.organisationType = 'org1';
-    req.body.accountStatus = ['-1', '1']
+    req.body.accountStatus = ['-1', '1'];
     req.body.service = 'svc2';
 
     await post(req, res);
