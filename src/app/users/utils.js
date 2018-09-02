@@ -150,7 +150,7 @@ const getUserDetails = async (req) => {
         successful: user.successfulLoginsInPast12Months,
       },
       serviceId: config.serviceMapping.key2SuccessServiceId,
-      orgId: ktsDetails ? ktsDetails.organisation.id : '',
+      orgId: ktsDetails ? ktsDetails.organisationId : '',
       ktsId: externalIdentifier,
       pendingEmail: user.pendingEmail,
     };
