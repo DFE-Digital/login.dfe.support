@@ -1,7 +1,7 @@
 const users = require('./../../infrastructure/users');
 const logger = require('./../../infrastructure/logger');
 const { getUser, getInvitation, createUserDevice } = require('./../../infrastructure/directories');
-const { getServicesByUserId } = require('./../../infrastructure/organisations');
+const { getServicesByUserId } = require('./../../infrastructure/access');
 const { mapUserStatus } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
 
