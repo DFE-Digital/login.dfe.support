@@ -129,7 +129,7 @@ const getUserDetails = async (req) => {
     const user = await users.getById(uid);
     const serviceDetails = await getServicesByUserId(uid);
 
-    const ktsDetails = serviceDetails ? serviceDetails.find((c) => c.id.toLowerCase() === config.serviceMapping.key2SuccessServiceId.toLowerCase()) : undefined;
+    const ktsDetails = serviceDetails ? serviceDetails.find((c) => c.serviceId.toLowerCase() === config.serviceMapping.key2SuccessServiceId.toLowerCase()) : undefined;
     let externalIdentifier = '';
     if (ktsDetails && ktsDetails.externalIdentifiers) {
       const key = ktsDetails.externalIdentifiers.find((a) => a.key = 'k2s-id');
