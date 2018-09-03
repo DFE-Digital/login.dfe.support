@@ -1,6 +1,7 @@
 const { sendResult } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
-const { searchOrganisations, getServiceIdentifierDetails } = require('./../../infrastructure/organisations');
+const { searchOrganisations } = require('./../../infrastructure/organisations');
+const { getServiceIdentifierDetails } = require('./../../infrastructure/access');
 const { getUser } = require('./../../infrastructure/directories');
 const { emailPolicy } = require('login.dfe.validation');
 

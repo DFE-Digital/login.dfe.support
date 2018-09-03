@@ -4,9 +4,11 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
   }
 }));
 jest.mock('./../../../src/infrastructure/organisations');
+jest.mock('./../../../src/infrastructure/access');
 jest.mock('./../../../src/infrastructure/directories');
 
-const { searchOrganisations, getServiceIdentifierDetails } = require('./../../../src/infrastructure/organisations');
+const { searchOrganisations } = require('./../../../src/infrastructure/organisations');
+const { getServiceIdentifierDetails } = require('./../../../src/infrastructure/access');
 const { getUser } = require('./../../../src/infrastructure/directories');
 const postNewUserK2S = require('./../../../src/app/users/postNewUserK2S');
 
