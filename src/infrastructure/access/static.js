@@ -10,8 +10,13 @@ const putSingleServiceIdentifierForUser = async () => {
   return Promise.resolve(null);
 };
 
+const getServiceIdentifierDetails = async () => {
+  return Promise.resolve(null);
+};
+
 module.exports = {
   addInvitationService,
   getServicesByUserId,
   putSingleServiceIdentifierForUser,
+  getServiceIdentifierDetails,
 };
