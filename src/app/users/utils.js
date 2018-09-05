@@ -131,8 +131,8 @@ const getUserDetails = async (req) => {
 
     const ktsDetails = serviceDetails ? serviceDetails.find((c) => c.serviceId.toLowerCase() === config.serviceMapping.key2SuccessServiceId.toLowerCase()) : undefined;
     let externalIdentifier = '';
-    if (ktsDetails && ktsDetails.externalIdentifiers) {
-      const key = ktsDetails.externalIdentifiers.find((a) => a.key = 'k2s-id');
+    if (ktsDetails && ktsDetails.identifiers) {
+      const key = ktsDetails.identifiers.find((a) => a.key = 'k2s-id');
       if (key) {
         externalIdentifier = key.value;
       }

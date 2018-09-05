@@ -60,7 +60,7 @@ const getServicesByUserId = async (id, correlationId) => {
 const putSingleServiceIdentifierForUser = async (userId, serviceId, orgId, key, value, correlationId) => {
   const token = await jwtStrategy(config.access.service).getBearerToken();
   try {
-    return await rp({
+    await rp({
       method: 'PUT',
       uri: `${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${orgId}/identifiers/${key}`,
       headers: {
@@ -72,8 +72,12 @@ const putSingleServiceIdentifierForUser = async (userId, serviceId, orgId, key, 
       },
       json: true,
     });
+    return true;
   } catch (e) {
     if (e.statusCode === 404) {
+      return undefined;
+    }
+    if (e.statusCode === 409) {
       return undefined;
     }
     throw e;
