@@ -35,7 +35,15 @@ describe('when handling post of new key-to-success user details', () => {
         sub: 'suser1',
         email: 'super.user@unit.test',
       },
-      session: {},
+      session: {
+        k2sUser: {
+          email: 'user.one@unit.test',
+          firstName: 'User',
+          k2sId: '1234567',
+          lastName: 'One',
+          localAuthority: 'org1'
+        }
+      },
     };
 
     res = {
@@ -55,10 +63,15 @@ describe('when handling post of new key-to-success user details', () => {
     });
 
     getServiceIdentifierDetails.mockReset();
-    getServiceIdentifierDetails.mockReturnValue(null);
+    getServiceIdentifierDetails.mockReturnValue({
+        services: {
+          serviceId: 'service-1',
+        }
+      }
+    );
 
     getUser.mockReset();
-    getUser.mockReturnValue(null);
+    getUser.mockReturnValue();
   });
 
   it('then it should render view with error if required data missing', async () => {
@@ -179,7 +192,9 @@ describe('when handling post of new key-to-success user details', () => {
   it('then it should render view with error if key-to-success id is already in use', async () => {
     getServiceIdentifierDetails.mockReturnValue({
       userId: 'user-1',
-      serviceId: 'service-1',
+      services: {
+        serviceId: 'service-1',
+      },
       organisationId: 'organisation-1',
       key: 'k2s-id',
       value: '1234567'
@@ -214,12 +229,5 @@ describe('when handling post of new key-to-success user details', () => {
       localAuthority: req.body.localAuthority,
       k2sId: req.body.k2sId,
     });
-  });
-
-  it('then it should redirect to digipass page', async () => {
-    await postNewUserK2S(req, res);
-
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('assign-digipass');
   });
 });

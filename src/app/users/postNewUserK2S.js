@@ -7,7 +7,7 @@ const { emailPolicy } = require('login.dfe.validation');
 
 const keyToSuccessIdentifierAlreadyUsed = async (k2sId, correlationId) => {
   const identifier = await getServiceIdentifierDetails(config.serviceMapping.key2SuccessServiceId, 'k2s-id', k2sId, correlationId);
-  return identifier ? true : false;
+  return identifier.services.length !== 0;
 };
 
 const getLocalAutorities = async (correlationId) => {
