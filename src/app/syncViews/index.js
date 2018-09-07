@@ -1,10 +1,10 @@
-const syncUsersView = require('./syncUsersView');
+const {syncFullUsersView} = require('./syncUsersView');
 const syncUserDevicesView = require('./syncUserDevicesView');
 const syncAuditCache = require('./syncAuditCache');
 const syncAccessRequestsView = require('./syncAccessRequestsView');
 
 module.exports = {
-  syncUsersView,
+  syncFullUsersView,
   syncUserDevicesView,
   syncAuditCache,
   syncAccessRequestsView,

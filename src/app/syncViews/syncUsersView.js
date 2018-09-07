@@ -183,44 +183,46 @@ const buildAllInvitations = async (correlationId) => {
 };
 
 
-const populateIndex = async (newIndexName, correlationId) => {
+const populateIndex = async (indexName, userLoader, invitationLoader, correlationId) => {
   const batchSize = 50;
-  const usersPromise = buildAllUsers(correlationId);
-  const invitationsPromise = buildAllInvitations(correlationId);
+  const usersPromise = userLoader(correlationId);
+  const invitationsPromise = invitationLoader(correlationId);
 
   const indexUsers = await usersPromise;
   for (let i = 0; i < indexUsers.length; i += batchSize) {
     const batch = indexUsers.slice(i, i + batchSize);
-    logger.info(`Loading users batch ${i}-${i + batchSize} of ${indexUsers.length} into ${newIndexName} (correlationId: ${correlationId}`, { correlationId });
-    await users.updateIndex(batch, newIndexName);
+    logger.info(`Loading users batch ${i}-${i + batchSize} of ${indexUsers.length} into ${indexName} (correlationId: ${correlationId}`, { correlationId });
+    await users.updateIndex(batch, indexName);
   }
 
   const indexInvitations = await invitationsPromise;
   for (let i = 0; i < indexInvitations.length; i += batchSize) {
     const batch = indexInvitations.slice(i, i + batchSize);
-    logger.info(`Loading invitations batch ${i}-${i + batchSize} of ${indexInvitations.length} into ${newIndexName} (correlationId: ${correlationId}`, { correlationId });
-    await users.updateIndex(batch, newIndexName);
+    logger.info(`Loading invitations batch ${i}-${i + batchSize} of ${indexInvitations.length} into ${indexName} (correlationId: ${correlationId}`, { correlationId });
+    await users.updateIndex(batch, indexName);
   }
 };
 
-const syncUsersView = async () => {
-  const correlationId = uuid();
+const syncFullUsersView = async () => {
+  const correlationId = `FullUserIndex-${uuid()}`;
   const start = Date.now();
 
-  logger.info(`Starting to sync users view (correlation id: ${correlationId})`, { correlationId });
+  logger.info(`Starting to sync full users view (correlation id: ${correlationId})`, { correlationId });
 
   // Create new index
   const newIndexName = await users.createIndex();
   logger.info(`Created new user index ${newIndexName} (correlation id: ${correlationId})`);
 
-  await populateIndex(newIndexName, correlationId);
+  await populateIndex(newIndexName, buildAllUsers, buildAllInvitations, correlationId);
 
   // Re-point current index
   await users.updateActiveIndex(newIndexName);
   logger.info(`Pointed user index to ${newIndexName} (correlation id: ${correlationId})`, { correlationId });
 
   const duration = Math.round((Date.now() - start) / 100) / 10;
-  logger.info(`Finished syncing users view in ${duration}sec (correlation id: ${correlationId})`, { correlationId });
+  logger.info(`Finished syncing full users view in ${duration}sec (correlation id: ${correlationId})`, { correlationId });
 };
 
-module.exports = syncUsersView;
+module.exports = {
+  syncFullUsersView
+};
