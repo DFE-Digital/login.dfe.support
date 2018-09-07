@@ -8,7 +8,7 @@ const express = require('express');
 const healthCheck = require('login.dfe.healthcheck');
 
 const audit = require('./infrastructure/audit');
-const { syncFullUsersView, syncUserDevicesView, syncAuditCache, syncAccessRequestsView } = require('./app/syncViews');
+const { syncFullUsersView, syncDiffUsersView, syncUserDevicesView, syncAuditCache, syncAccessRequestsView } = require('./app/syncViews');
 const { tidyIndexes } = require('./app/tidyIndexes');
 
 http.GlobalAgent = new KeepAliveAgent({
@@ -31,6 +31,9 @@ audit.cache.init().then(() => {
 
   const userFullSchedule = schedule.scheduleJob(config.schedules.usersFull, syncFullUsersView);
   logger.info(`first invocation of full user schedule will be ${userFullSchedule.nextInvocation()}`);
+
+  const userDiffSchedule = schedule.scheduleJob(config.schedules.usersDiff, syncDiffUsersView);
+  logger.info(`first invocation of diff user schedule will be ${userDiffSchedule.nextInvocation()}`);
 
   const userDeviceSchedule = schedule.scheduleJob(config.schedules.userDevices, syncUserDevicesView);
   logger.info(`first invocation of userDevice schedule will be ${userDeviceSchedule.nextInvocation()}`);

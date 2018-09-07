@@ -47,13 +47,13 @@ const getAllUserServiceMappings = async (correlationId) => {
   }
   return userServiceMappings;
 };
-const getAllUsers = async (correlationId) => {
+const getAllUsers = async (changedAfter, correlationId) => {
   let hasMorePages = true;
   let pageNumber = 1;
   const users = [];
   while (hasMorePages) {
     logger.info(`Reading page ${pageNumber} of users (correlationId: ${correlationId})`, { correlationId });
-    const page = await directories.getPageOfUsers(pageNumber, 250, false, true, correlationId);
+    const page = await directories.getPageOfUsers(pageNumber, 250, false, true, changedAfter, correlationId);
     if (page.users && page.users.length > 0) {
       users.push(...page.users);
     }
@@ -81,12 +81,7 @@ const getUserAuditStats = async (userId) => {
     successfulLogins: [],
   };
 };
-const buildAllUsers = async (correlationId) => {
-  const usersPromise = getAllUsers(correlationId);
-  const servicesPromise = getAllUserServiceMappings(correlationId);
-
-  const users = await usersPromise;
-  const serviceMappings = await servicesPromise;
+const buildUsers = async (users, serviceMappings) => {
   const usersForIndex = [];
   for (let i = 0; i < users.length; i++) {
     const user = users[i];
@@ -120,6 +115,28 @@ const buildAllUsers = async (correlationId) => {
     })
   }
   return usersForIndex;
+};
+const buildAllUsers = async (correlationId) => {
+  const usersPromise = getAllUsers(undefined, correlationId);
+  const servicesPromise = getAllUserServiceMappings(correlationId);
+
+  const users = await usersPromise;
+  const serviceMappings = await servicesPromise;
+  return buildUsers(users, serviceMappings);
+};
+const buildUsersThatHaveChanged = async (correlationId) => {
+  const changedAfter = await users.getDateOfLastIndexUpdate();
+  const updatedUsers = await getAllUsers(changedAfter, correlationId);
+  const userServices = [];
+
+  for (let i = 0; i < updatedUsers.length; i++) {
+    const serviceMapping = await organisations.getServicesByUserId(updatedUsers[i].sub, correlationId);
+    if (serviceMapping && serviceMapping.length > 0) {
+      userServices.push(...serviceMapping);
+    }
+  }
+
+  return buildUsers(updatedUsers, userServices);
 };
 
 const getAllInvitationServices = async (correlationId) => {
@@ -179,7 +196,7 @@ const buildAllInvitations = async (correlationId) => {
     })
   }
 
-  return [];
+  return invitationsForIndex;
 };
 
 
@@ -222,7 +239,26 @@ const syncFullUsersView = async () => {
   const duration = Math.round((Date.now() - start) / 100) / 10;
   logger.info(`Finished syncing full users view in ${duration}sec (correlation id: ${correlationId})`, { correlationId });
 };
+const syncDiffUsersView = async () => {
+  const correlationId = `DiffUserIndex-${uuid()}`;
+  const start = Date.now();
+
+  logger.info(`Starting to sync diff users view (correlation id: ${correlationId})`, { correlationId });
+
+  // Create new index
+  const existingIndexName = await users.getExistingIndex();
+  logger.info(`Updating user index ${existingIndexName} (correlation id: ${correlationId})`);
+
+  const changesUpTo = new Date();
+  await populateIndex(existingIndexName, buildUsersThatHaveChanged, () => [], correlationId);
+
+  await users.setDateOfLastIndexUpdate(changesUpTo);
+
+  const duration = Math.round((Date.now() - start) / 100) / 10;
+  logger.info(`Finished syncing diff users view in ${duration}sec (correlation id: ${correlationId})`, { correlationId });
+};
 
 module.exports = {
-  syncFullUsersView
+  syncFullUsersView,
+  syncDiffUsersView,
 };

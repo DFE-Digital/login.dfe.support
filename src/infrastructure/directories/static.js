@@ -1,6 +1,6 @@
 const uuid = require('uuid/v4');
 
-const getPageOfUsers = async (pageNumber, pageSize, includeDevices, includeCodes, correlationId) => {
+const getPageOfUsers = async (pageNumber, pageSize, includeDevices, includeCodes, changedAfter, correlationId) => {
   const result = {
     users: [
       {
