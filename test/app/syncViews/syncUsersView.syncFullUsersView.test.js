@@ -105,7 +105,7 @@ const _getPageOfData = (source, pageNumber) => {
   return undefined;
 };
 
-describe('When syncing users materialised view', () => {
+describe('When syncing full users materialised view', () => {
   beforeEach(() => {
     users.createIndex.mockReset().mockReturnValue(testData.indexName);
     users.updateIndex.mockReset();
@@ -141,8 +141,8 @@ describe('When syncing users materialised view', () => {
     await syncFullUsersView();
 
     expect(directories.getPageOfUsers).toHaveBeenCalledTimes(2);
-    expect(directories.getPageOfUsers).toHaveBeenCalledWith(1, 250, false, true, testData.correlationId);
-    expect(directories.getPageOfUsers).toHaveBeenCalledWith(2, 250, false, true, testData.correlationId);
+    expect(directories.getPageOfUsers).toHaveBeenCalledWith(1, 250, false, true, undefined, testData.correlationId);
+    expect(directories.getPageOfUsers).toHaveBeenCalledWith(2, 250, false, true, undefined, testData.correlationId);
   });
 
   it('then it should get all pages of user services', async () => {
