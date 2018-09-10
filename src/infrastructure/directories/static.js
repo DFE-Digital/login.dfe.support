@@ -34,7 +34,7 @@ const getUser = async (uid, correlationId) => {
   };
 };
 
-const getPageOfInvitations = async (pageNumber, pageSize, correlationId) => {
+const getPageOfInvitations = async (pageNumber, pageSize, changedAfter, correlationId) => {
   return {
     invitations: [],
     numberOfPages: 1,

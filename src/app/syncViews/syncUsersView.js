@@ -130,7 +130,7 @@ const buildUsersThatHaveChanged = async (correlationId) => {
   const userServices = [];
 
   for (let i = 0; i < updatedUsers.length; i++) {
-    const serviceMapping = await organisations.getServicesByUserId(updatedUsers[i].sub, correlationId);
+    const serviceMapping = await organisations.listUserServices(updatedUsers[i].sub, correlationId);
     if (serviceMapping && serviceMapping.length > 0) {
       userServices.push(...serviceMapping);
     }
@@ -154,13 +154,13 @@ const getAllInvitationServices = async (correlationId) => {
   }
   return invitationServiceMappings;
 };
-const getAllInvitations = async (correlationId) => {
+const getAllInvitations = async (changedAfter, correlationId) => {
   let hasMorePages = true;
   let pageNumber = 1;
   const invitations = [];
   while (hasMorePages) {
     logger.info(`Reading page ${pageNumber} of invitations (correlationId: ${correlationId})`, { correlationId });
-    const page = await directories.getPageOfInvitations(pageNumber, 250, correlationId);
+    const page = await directories.getPageOfInvitations(pageNumber, 250, changedAfter, correlationId);
     if (page.invitations && page.invitations.length > 0) {
       invitations.push(...page.invitations);
     }
@@ -169,12 +169,7 @@ const getAllInvitations = async (correlationId) => {
   }
   return invitations;
 };
-const buildAllInvitations = async (correlationId) => {
-  const invitationsPromise = getAllInvitations(correlationId);
-  const servicesPromise = getAllInvitationServices(correlationId);
-
-  const invitations = await invitationsPromise;
-  const serviceMappings = await servicesPromise;
+const buildInvitations = (invitations, serviceMappings) => {
   const invitationsForIndex = [];
   for (let i = 0; i < invitations.length; i++) {
     const invitation = invitations[i];
@@ -184,6 +179,8 @@ const buildAllInvitations = async (correlationId) => {
     invitationsForIndex.push({
       id: `inv-${invitation.id}`,
       name: `${invitation.firstName} ${invitation.lastName}`,
+      firstName: invitation.firstName,
+      lastName: invitation.lastName,
       email: invitation.email,
       organisation: organisation ? {
         id: organisation.id,
@@ -198,7 +195,28 @@ const buildAllInvitations = async (correlationId) => {
 
   return invitationsForIndex;
 };
+const buildAllInvitations = async (correlationId) => {
+  const invitationsPromise = getAllInvitations(undefined, correlationId);
+  const servicesPromise = getAllInvitationServices(correlationId);
 
+  const invitations = await invitationsPromise;
+  const serviceMappings = await servicesPromise;
+  return buildInvitations(invitations, serviceMappings);
+};
+const buildInvitationsThatHaveChanged = async (correlationId) => {
+  const changedAfter = await users.getDateOfLastIndexUpdate();
+  const updatedInvitations = await getAllInvitations(changedAfter, correlationId);
+  const invitationServices = [];
+
+  for (let i = 0; i < updatedInvitations.length; i++) {
+    const serviceMapping = await organisations.listInvitationServices(updatedInvitations[i].id, correlationId);
+    if (serviceMapping && serviceMapping.length > 0) {
+      invitationServices.push(...serviceMapping);
+    }
+  }
+
+  return buildInvitations(updatedInvitations, invitationServices);
+};
 
 const populateIndex = async (indexName, userLoader, invitationLoader, correlationId) => {
   const batchSize = 50;
@@ -250,7 +268,7 @@ const syncDiffUsersView = async () => {
   logger.info(`Updating user index ${existingIndexName} (correlation id: ${correlationId})`);
 
   const changesUpTo = new Date();
-  await populateIndex(existingIndexName, buildUsersThatHaveChanged, () => [], correlationId);
+  await populateIndex(existingIndexName, buildUsersThatHaveChanged, buildInvitationsThatHaveChanged, correlationId);
 
   await users.setDateOfLastIndexUpdate(changesUpTo);
 

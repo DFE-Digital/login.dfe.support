@@ -71,7 +71,7 @@ const getUser = async (uid, correlationId) => {
   }
 };
 
-const getPageOfInvitations = async (pageNumber, pageSize, correlationId) => {
+const getPageOfInvitations = async (pageNumber, pageSize, changedAfter, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
