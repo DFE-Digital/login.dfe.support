@@ -45,8 +45,23 @@ const testData = {
   },
   invitations: {
     page1: {
-      invitations: [],
-      numberOfPages: 0,
+      invitations: [{
+        id: 'invitation1',
+        firstName: 'Invited',
+        lastName: 'User1',
+        email: 'invited.user1@unit.tests',
+      }],
+      numberOfPages: 2,
+    },
+    page2: {
+      invitations: [{
+        id: 'invitation2',
+        firstName: 'Invited',
+        lastName: 'User2',
+        email: 'invited.user2@unit.tests',
+        deactivated: true,
+      }],
+      numberOfPages: 2,
     },
   },
   userServices: {
@@ -76,10 +91,30 @@ const testData = {
     }],
   },
   invitationServices: {
-    page1: {
-      service: [],
-      totalNumberOfPages: 0,
-    },
+    invitation1: [{
+      id: 'svc1',
+      invitationId: 'invitation1',
+      requestDate: new Date(2018, 6, 1),
+      organisation: {
+        id: 'org1',
+        name: 'Organisation One',
+        category: {
+          id: '001'
+        },
+      },
+    }],
+    invitation2: [{
+      id: 'svc1',
+      invitationId: 'invitation2',
+      requestDate: new Date(2018, 6, 3),
+      organisation: {
+        id: 'org2',
+        name: 'Organisation Two',
+        category: {
+          id: '002'
+        },
+      },
+    }],
   },
   audit: {
     stats: {
@@ -110,15 +145,22 @@ describe('When syncing diff users materialised view', () => {
     directories.getPageOfUsers.mockReset().mockImplementation((pageNumber) => {
       return _getPageOfData(testData.users, pageNumber);
     });
-    directories.getPageOfInvitations.mockReset().mockReturnValue(testData.invitations.page1);
+    directories.getPageOfInvitations.mockReset().mockImplementation((pageNumber) => {
+      return _getPageOfData(testData.invitations, pageNumber);
+    });
 
-    organisations.getServicesByUserId.mockReset().mockImplementation((userId) => {
+    organisations.listUserServices.mockReset().mockImplementation((userId) => {
       if (Object.keys(testData.userServices).find(x => x === userId)) {
         return testData.userServices[userId];
       }
       return undefined;
     });
-    // organisations.listInvitationServices.mockReset().mockReturnValue(testData.invitationServices.page1);
+    organisations.listInvitationServices.mockReset().mockImplementation((invitationId) => {
+      if (Object.keys(testData.invitationServices).find(x => x === invitationId)) {
+        return testData.invitationServices[invitationId];
+      }
+      return undefined;
+    });
 
     audit.cache.getStatsForUser.mockReset().mockImplementation((userId) => {
       if (Object.keys(testData.audit.stats).find(x => x === userId)) {
@@ -157,9 +199,9 @@ describe('When syncing diff users materialised view', () => {
   it('then it should get all pages of user services', async () => {
     await syncDiffUsersView();
 
-    expect(organisations.getServicesByUserId).toHaveBeenCalledTimes(2);
-    expect(organisations.getServicesByUserId).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
-    expect(organisations.getServicesByUserId).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
+    expect(organisations.listUserServices).toHaveBeenCalledTimes(2);
+    expect(organisations.listUserServices).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
+    expect(organisations.listUserServices).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
   });
 
   it('then it should update index with user1', async () => {
@@ -210,6 +252,72 @@ describe('When syncing diff users materialised view', () => {
     expect(actual.status).toEqual({
       id: 0,
       description: 'Deactivated',
+      changedOn: null,
+    });
+  });
+
+  it('then it should get all pages of invitations that have changed since the last iteration', async () => {
+    await syncDiffUsersView();
+
+    expect(directories.getPageOfInvitations).toHaveBeenCalledTimes(2);
+    expect(directories.getPageOfInvitations).toHaveBeenCalledWith(1, 250, testData.indexLastUpdated, testData.correlationId);
+    expect(directories.getPageOfInvitations).toHaveBeenCalledWith(2, 250, testData.indexLastUpdated, testData.correlationId);
+  });
+
+  it('then it should get all pages of invitations if no index has occurred', async () => {
+    users.getDateOfLastIndexUpdate.mockReturnValue(undefined);
+
+    await syncDiffUsersView();
+
+    expect(directories.getPageOfInvitations).toHaveBeenCalledTimes(2);
+    expect(directories.getPageOfInvitations).toHaveBeenCalledWith(1, 250, undefined, testData.correlationId);
+    expect(directories.getPageOfInvitations).toHaveBeenCalledWith(2, 250, undefined, testData.correlationId);
+  });
+
+  it('then it should update index with invitation1', async () => {
+    await syncDiffUsersView();
+
+    const expectedInvitation = testData.invitations.page1.invitations[0];
+    const expectedServices = testData.invitationServices.invitation1;
+    const actual = users.updateIndex.mock.calls[1][0].find(x => x.id === `inv-${expectedInvitation.id}`);
+    expect(actual).toBeDefined();
+    expect(actual.name).toEqual(`${expectedInvitation.firstName} ${expectedInvitation.lastName}`);
+    expect(actual.firstName).toEqual(expectedInvitation.firstName);
+    expect(actual.lastName).toEqual(expectedInvitation.lastName);
+    expect(actual.email).toEqual(expectedInvitation.email);
+    expect(actual.organisation).toEqual({
+      id: expectedServices[0].organisation.id,
+      name: expectedServices[0].organisation.name,
+    });
+    expect(actual.organisationCategories).toEqual([expectedServices[0].organisation.category.id]);
+    expect(actual.services).toEqual([expectedServices[0].id]);
+    expect(actual.status).toEqual({
+      id: -1,
+      description: 'Invited',
+      changedOn: null,
+    });
+  });
+
+  it('then it should update index with invitation2', async () => {
+    await syncDiffUsersView();
+
+    const expectedInvitation = testData.invitations.page2.invitations[0];
+    const expectedServices = testData.invitationServices.invitation2;
+    const actual = users.updateIndex.mock.calls[1][0].find(x => x.id === `inv-${expectedInvitation.id}`);
+    expect(actual).toBeDefined();
+    expect(actual.name).toEqual(`${expectedInvitation.firstName} ${expectedInvitation.lastName}`);
+    expect(actual.firstName).toEqual(expectedInvitation.firstName);
+    expect(actual.lastName).toEqual(expectedInvitation.lastName);
+    expect(actual.email).toEqual(expectedInvitation.email);
+    expect(actual.organisation).toEqual({
+      id: expectedServices[0].organisation.id,
+      name: expectedServices[0].organisation.name,
+    });
+    expect(actual.organisationCategories).toEqual([expectedServices[0].organisation.category.id]);
+    expect(actual.services).toEqual([expectedServices[0].id]);
+    expect(actual.status).toEqual({
+      id: -2,
+      description: 'Deactivated Invitation',
       changedOn: null,
     });
   });
