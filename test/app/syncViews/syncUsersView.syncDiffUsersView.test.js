@@ -149,13 +149,13 @@ describe('When syncing diff users materialised view', () => {
       return _getPageOfData(testData.invitations, pageNumber);
     });
 
-    organisations.listUserServices.mockReset().mockImplementation((userId) => {
+    organisations.getServicesByUserId.mockReset().mockImplementation((userId) => {
       if (Object.keys(testData.userServices).find(x => x === userId)) {
         return testData.userServices[userId];
       }
       return undefined;
     });
-    organisations.listInvitationServices.mockReset().mockImplementation((invitationId) => {
+    organisations.getInvitationOrganisations.mockReset().mockImplementation((invitationId) => {
       if (Object.keys(testData.invitationServices).find(x => x === invitationId)) {
         return testData.invitationServices[invitationId];
       }
@@ -199,9 +199,9 @@ describe('When syncing diff users materialised view', () => {
   it('then it should get all pages of user services', async () => {
     await syncDiffUsersView();
 
-    expect(organisations.listUserServices).toHaveBeenCalledTimes(2);
-    expect(organisations.listUserServices).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
-    expect(organisations.listUserServices).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
+    expect(organisations.getServicesByUserId).toHaveBeenCalledTimes(2);
+    expect(organisations.getServicesByUserId).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
+    expect(organisations.getServicesByUserId).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
   });
 
   it('then it should update index with user1', async () => {
