@@ -1,7 +1,7 @@
 const Redis = require('ioredis');
 const config = require('./../config');
 const KeepAliveAgent = require('agentkeepalive').HttpsAgent;
-const rp = require('request-promise').defaults({
+const rp = require('login.dfe.request-promise-retry').defaults({
   agent: new KeepAliveAgent({
     maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
     maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
@@ -95,9 +95,9 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true, fil
         filterParam += `services/any(x: search.in(x, '${filters.service.join(', ')}'))`
       }
     }
-    
-    criteria = criteria.replace(/\s/g, '').replace('@','').toLowerCase();
-    
+
+    criteria = criteria.replace(/\s/g, '').replace('@', '').toLowerCase();
+
     let uri = `${getAzureSearchUri(currentIndexName, '/docs')}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`;
     if (filterParam.length > 0) {
       uri += `&$filter=${filterParam}`;
@@ -153,6 +153,10 @@ const getById = async (userId) => {
   }
 };
 
+const getExistingIndex = async () => {
+  return await client.get('CurrentIndex_Users')
+};
+
 const createIndex = async () => {
   try {
     const indexName = `users-${uuid()}`;
@@ -194,7 +198,7 @@ const createIndex = async () => {
 };
 
 const updateIndex = async (users, index) => {
-  if(!users || users.length === 0) {
+  if (!users || users.length === 0) {
     return;
   }
   if (!index) {
@@ -222,7 +226,7 @@ const updateIndex = async (users, index) => {
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
-            emailSearch: user.email.replace('@','').toLowerCase(),
+            emailSearch: user.email.replace('@', '').toLowerCase(),
             organisationName: user.organisation ? user.organisation.name : '',
             organisationNameSearch: user.organisation ? user.organisation.name.replace(/\s/g, '').toLowerCase() : '',
             organisationCategories: user.organisationCategories || [],
@@ -286,11 +290,28 @@ const deleteUnusedIndexes = async () => {
   await client.set('UnusedIndexes_Users', JSON.stringify(indexesAppearingUnused));
 };
 
+const getDateOfLastIndexUpdate = async () => {
+  const value = await client.get('IndexLastUpdated_Users');
+  if (!value) {
+    return undefined;
+  }
+
+  const date = new Date(value);
+  return isNaN(date.valueOf()) ? undefined : date;
+};
+
+const setDateOfLastIndexUpdate = async (date) => {
+  await client.set('IndexLastUpdated_Users', date.toISOString());
+};
+
 module.exports = {
   search,
   getById,
+  getExistingIndex,
   createIndex,
   updateIndex,
   updateActiveIndex,
   deleteUnusedIndexes,
+  getDateOfLastIndexUpdate,
+  setDateOfLastIndexUpdate,
 };

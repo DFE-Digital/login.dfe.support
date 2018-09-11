@@ -12,14 +12,14 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
     },
   },
 }));
-jest.mock('request-promise');
+jest.mock('login.dfe.request-promise-retry');
 jest.mock('uuid/v4', () => {
   return jest.fn().mockReturnValue('some-uuid');
 });
 
 
 const rp = jest.fn();
-const requestPromise = require('request-promise');
+const requestPromise = require('login.dfe.request-promise-retry');
 requestPromise.defaults.mockReturnValue(rp);
 
 

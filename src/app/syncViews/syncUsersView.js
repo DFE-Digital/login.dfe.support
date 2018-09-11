@@ -47,19 +47,26 @@ const getAllUserServiceMappings = async (correlationId) => {
   }
   return userServiceMappings;
 };
-const getAllUsers = async (correlationId) => {
+const getAllUsers = async (changedAfter, correlationId) => {
   let hasMorePages = true;
   let pageNumber = 1;
+  let numberOfPages = 'unknown';
   const users = [];
   while (hasMorePages) {
-    logger.info(`Reading page ${pageNumber} of users (correlationId: ${correlationId})`, { correlationId });
-    const page = await directories.getPageOfUsers(pageNumber, 250, false, true, correlationId);
-    if (page.users && page.users.length > 0) {
-      users.push(...page.users);
+    try {
+      logger.info(`Reading page ${pageNumber} of ${numberOfPages} of users (correlationId: ${correlationId})`, { correlationId });
+      const page = await directories.getPageOfUsers(pageNumber, 250, false, true, changedAfter, correlationId);
+      if (page.users && page.users.length > 0) {
+        users.push(...page.users);
+      }
+      numberOfPages = page.numberOfPages.toString();
+      hasMorePages = pageNumber < page.numberOfPages;
+      pageNumber++;
+    } catch (e) {
+      throw new Error(`Error getting page ${pageNumber} of users (correlationId: ${correlationId}, changedAfter: ${changedAfter}) - ${e.message}`);
     }
-    hasMorePages = pageNumber < page.numberOfPages;
-    pageNumber++;
   }
+  logger.info(`Finished reading all users. (found: ${users.length},correlationId: ${correlationId})`);
   return users;
 };
 const getUserAuditStats = async (userId) => {
@@ -81,12 +88,7 @@ const getUserAuditStats = async (userId) => {
     successfulLogins: [],
   };
 };
-const buildAllUsers = async (correlationId) => {
-  const usersPromise = getAllUsers(correlationId);
-  const servicesPromise = getAllUserServiceMappings(correlationId);
-
-  const users = await usersPromise;
-  const serviceMappings = await servicesPromise;
+const buildUsers = async (users, serviceMappings) => {
   const usersForIndex = [];
   for (let i = 0; i < users.length; i++) {
     const user = users[i];
@@ -121,6 +123,28 @@ const buildAllUsers = async (correlationId) => {
   }
   return usersForIndex;
 };
+const buildAllUsers = async (correlationId) => {
+  const usersPromise = getAllUsers(undefined, correlationId);
+  const servicesPromise = getAllUserServiceMappings(correlationId);
+
+  const users = await usersPromise;
+  const serviceMappings = await servicesPromise;
+  return buildUsers(users, serviceMappings);
+};
+const buildUsersThatHaveChanged = async (correlationId) => {
+  const changedAfter = await users.getDateOfLastIndexUpdate();
+  const updatedUsers = await getAllUsers(changedAfter, correlationId);
+  const userServices = [];
+
+  for (let i = 0; i < updatedUsers.length; i++) {
+    const serviceMapping = await organisations.getServicesByUserId(updatedUsers[i].sub, correlationId);
+    if (serviceMapping && serviceMapping.length > 0) {
+      userServices.push(...serviceMapping);
+    }
+  }
+
+  return buildUsers(updatedUsers, userServices);
+};
 
 const getAllInvitationServices = async (correlationId) => {
   let hasMorePages = true;
@@ -137,27 +161,29 @@ const getAllInvitationServices = async (correlationId) => {
   }
   return invitationServiceMappings;
 };
-const getAllInvitations = async (correlationId) => {
+const getAllInvitations = async (changedAfter, correlationId) => {
   let hasMorePages = true;
   let pageNumber = 1;
+  let numberOfPages = 'unknown';
   const invitations = [];
   while (hasMorePages) {
-    logger.info(`Reading page ${pageNumber} of invitations (correlationId: ${correlationId})`, { correlationId });
-    const page = await directories.getPageOfInvitations(pageNumber, 250, correlationId);
-    if (page.invitations && page.invitations.length > 0) {
-      invitations.push(...page.invitations);
+    try {
+      logger.info(`Reading page ${pageNumber} of ${numberOfPages} of invitations (correlationId: ${correlationId})`, { correlationId });
+      const page = await directories.getPageOfInvitations(pageNumber, 250, changedAfter, correlationId);
+      if (page.invitations && page.invitations.length > 0) {
+        invitations.push(...page.invitations);
+      }
+      numberOfPages = page.numberOfPages.toString();
+      hasMorePages = pageNumber < page.numberOfPages;
+      pageNumber++;
+    } catch (e) {
+      throw new Error(`Error getting page ${pageNumber} of invitations (correlationId: ${correlationId}, changedAfter: ${changedAfter}) - ${e.message}`);
     }
-    hasMorePages = pageNumber < page.numberOfPages;
-    pageNumber++;
   }
+  logger.info(`Finished reading all invitations. (found: ${invitations.length},correlationId: ${correlationId})`);
   return invitations;
 };
-const buildAllInvitations = async (correlationId) => {
-  const invitationsPromise = getAllInvitations(correlationId);
-  const servicesPromise = getAllInvitationServices(correlationId);
-
-  const invitations = await invitationsPromise;
-  const serviceMappings = await servicesPromise;
+const buildInvitations = (invitations, serviceMappings) => {
   const invitationsForIndex = [];
   for (let i = 0; i < invitations.length; i++) {
     const invitation = invitations[i];
@@ -167,6 +193,8 @@ const buildAllInvitations = async (correlationId) => {
     invitationsForIndex.push({
       id: `inv-${invitation.id}`,
       name: `${invitation.firstName} ${invitation.lastName}`,
+      firstName: invitation.firstName,
+      lastName: invitation.lastName,
       email: invitation.email,
       organisation: organisation ? {
         id: organisation.id,
@@ -179,48 +207,90 @@ const buildAllInvitations = async (correlationId) => {
     })
   }
 
-  return [];
+  return invitationsForIndex;
+};
+const buildAllInvitations = async (correlationId) => {
+  const invitationsPromise = getAllInvitations(undefined, correlationId);
+  const servicesPromise = getAllInvitationServices(correlationId);
+
+  const invitations = await invitationsPromise;
+  const serviceMappings = await servicesPromise;
+  return buildInvitations(invitations, serviceMappings);
+};
+const buildInvitationsThatHaveChanged = async (correlationId) => {
+  const changedAfter = await users.getDateOfLastIndexUpdate();
+  const updatedInvitations = await getAllInvitations(changedAfter, correlationId);
+  const invitationServices = [];
+
+  for (let i = 0; i < updatedInvitations.length; i++) {
+    const serviceMapping = await organisations.getInvitationOrganisations(updatedInvitations[i].id, correlationId);
+    if (serviceMapping && serviceMapping.length > 0) {
+      invitationServices.push(...serviceMapping);
+    }
+  }
+
+  return buildInvitations(updatedInvitations, invitationServices);
 };
 
-
-const populateIndex = async (newIndexName, correlationId) => {
+const populateIndex = async (indexName, userLoader, invitationLoader, correlationId) => {
   const batchSize = 50;
-  const usersPromise = buildAllUsers(correlationId);
-  const invitationsPromise = buildAllInvitations(correlationId);
+  const usersPromise = userLoader(correlationId);
+  const invitationsPromise = invitationLoader(correlationId);
 
   const indexUsers = await usersPromise;
   for (let i = 0; i < indexUsers.length; i += batchSize) {
     const batch = indexUsers.slice(i, i + batchSize);
-    logger.info(`Loading users batch ${i}-${i + batchSize} of ${indexUsers.length} into ${newIndexName} (correlationId: ${correlationId}`, { correlationId });
-    await users.updateIndex(batch, newIndexName);
+    logger.info(`Loading users batch ${i}-${i + batchSize} of ${indexUsers.length} into ${indexName} (correlationId: ${correlationId}`, { correlationId });
+    await users.updateIndex(batch, indexName);
   }
 
   const indexInvitations = await invitationsPromise;
   for (let i = 0; i < indexInvitations.length; i += batchSize) {
     const batch = indexInvitations.slice(i, i + batchSize);
-    logger.info(`Loading invitations batch ${i}-${i + batchSize} of ${indexInvitations.length} into ${newIndexName} (correlationId: ${correlationId}`, { correlationId });
-    await users.updateIndex(batch, newIndexName);
+    logger.info(`Loading invitations batch ${i}-${i + batchSize} of ${indexInvitations.length} into ${indexName} (correlationId: ${correlationId}`, { correlationId });
+    await users.updateIndex(batch, indexName);
   }
 };
 
-const syncUsersView = async () => {
-  const correlationId = uuid();
+const syncFullUsersView = async () => {
+  const correlationId = `FullUserIndex-${uuid()}`;
   const start = Date.now();
 
-  logger.info(`Starting to sync users view (correlation id: ${correlationId})`, { correlationId });
+  logger.info(`Starting to sync full users view (correlation id: ${correlationId})`, { correlationId });
 
   // Create new index
   const newIndexName = await users.createIndex();
   logger.info(`Created new user index ${newIndexName} (correlation id: ${correlationId})`);
 
-  await populateIndex(newIndexName, correlationId);
+  await populateIndex(newIndexName, buildAllUsers, buildAllInvitations, correlationId);
 
   // Re-point current index
   await users.updateActiveIndex(newIndexName);
   logger.info(`Pointed user index to ${newIndexName} (correlation id: ${correlationId})`, { correlationId });
 
   const duration = Math.round((Date.now() - start) / 100) / 10;
-  logger.info(`Finished syncing users view in ${duration}sec (correlation id: ${correlationId})`, { correlationId });
+  logger.info(`Finished syncing full users view in ${duration}sec (correlation id: ${correlationId})`, { correlationId });
+};
+const syncDiffUsersView = async () => {
+  const correlationId = `DiffUserIndex-${uuid()}`;
+  const start = Date.now();
+
+  logger.info(`Starting to sync diff users view (correlation id: ${correlationId})`, { correlationId });
+
+  // Create new index
+  const existingIndexName = await users.getExistingIndex();
+  logger.info(`Updating user index ${existingIndexName} (correlation id: ${correlationId})`);
+
+  const changesUpTo = new Date();
+  await populateIndex(existingIndexName, buildUsersThatHaveChanged, buildInvitationsThatHaveChanged, correlationId);
+
+  await users.setDateOfLastIndexUpdate(changesUpTo);
+
+  const duration = Math.round((Date.now() - start) / 100) / 10;
+  logger.info(`Finished syncing diff users view in ${duration}sec (correlation id: ${correlationId})`, { correlationId });
 };
 
-module.exports = syncUsersView;
+module.exports = {
+  syncFullUsersView,
+  syncDiffUsersView,
+};
