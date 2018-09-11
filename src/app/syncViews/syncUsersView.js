@@ -137,7 +137,7 @@ const buildUsersThatHaveChanged = async (correlationId) => {
   const userServices = [];
 
   for (let i = 0; i < updatedUsers.length; i++) {
-    const serviceMapping = await organisations.listUserServices(updatedUsers[i].sub, correlationId);
+    const serviceMapping = await organisations.getServicesByUserId(updatedUsers[i].sub, correlationId);
     if (serviceMapping && serviceMapping.length > 0) {
       userServices.push(...serviceMapping);
     }
