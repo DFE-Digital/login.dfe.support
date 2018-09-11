@@ -47,6 +47,10 @@ const getById = async (userId) => {
   return users.find(x => x.id === userId);
 };
 
+const getExistingIndex = async () => {
+  return Promise.resolve('existing');
+};
+
 const createIndex = async () => {
   return Promise.resolve('new');
 };
@@ -63,11 +67,22 @@ const deleteUnusedIndexes = async () => {
   return Promise.resolve(null);
 };
 
+const getDateOfLastIndexUpdate = async () => {
+  return Promise.resolve(undefined);
+};
+
+const setDateOfLastIndexUpdate = async (date) => {
+  return Promise.resolve();
+};
+
 module.exports = {
   search,
   getById,
+  getExistingIndex,
   createIndex,
   updateIndex,
   updateActiveIndex,
   deleteUnusedIndexes,
+  getDateOfLastIndexUpdate,
+  setDateOfLastIndexUpdate,
 };

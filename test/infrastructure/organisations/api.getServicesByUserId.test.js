@@ -1,4 +1,4 @@
-jest.mock('request-promise');
+jest.mock('login.dfe.request-promise-retry');
 jest.mock('login.dfe.jwt-strategies');
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
   organisations: {
@@ -12,7 +12,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 }));
 
 const rp = jest.fn();
-const requestPromise = require('request-promise');
+const requestPromise = require('login.dfe.request-promise-retry');
 requestPromise.defaults.mockReturnValue(rp);
 
 const jwtStrategy = require('login.dfe.jwt-strategies');
@@ -68,41 +68,5 @@ describe('when getting a users services mapping from api', () => {
         'x-correlation-id': correlationId,
       },
     });
-  });
-
-  it('then if a 503 error is returned the request is sent again', async () => {
-    rp.mockImplementation(() => {
-      const error = new Error('error');
-      error.statusCode = 503;
-      throw error;
-    });
-
-    try{
-      await getServicesByUserId(userId, correlationId);
-    } catch(e) {
-
-    }
-    expect(rp.mock.calls).toHaveLength(2);
-  });
-
-  it('then if no values are specified for retry factor and number of retries default values are used', async () => {
-    const config = require('./../../../src/infrastructure/config');
-    config.organisations.service.numberOfRetries = undefined;
-    config.organisations.service.retryFactor = 1;
-
-    rp.mockImplementation(() => {
-      const error = new Error('error');
-      error.statusCode = 503;
-      throw error;
-    });
-
-    try{
-      await getServicesByUserId(userId, correlationId);
-    } catch(e) {
-
-    }
-
-
-    expect(rp.mock.calls).toHaveLength(3);
   });
 });
