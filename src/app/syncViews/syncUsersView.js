@@ -50,16 +50,23 @@ const getAllUserServiceMappings = async (correlationId) => {
 const getAllUsers = async (changedAfter, correlationId) => {
   let hasMorePages = true;
   let pageNumber = 1;
+  let numberOfPages = 'unknown';
   const users = [];
   while (hasMorePages) {
-    logger.info(`Reading page ${pageNumber} of users (correlationId: ${correlationId})`, { correlationId });
-    const page = await directories.getPageOfUsers(pageNumber, 250, false, true, changedAfter, correlationId);
-    if (page.users && page.users.length > 0) {
-      users.push(...page.users);
+    try {
+      logger.info(`Reading page ${pageNumber} of ${numberOfPages} of users (correlationId: ${correlationId})`, { correlationId });
+      const page = await directories.getPageOfUsers(pageNumber, 250, false, true, changedAfter, correlationId);
+      if (page.users && page.users.length > 0) {
+        users.push(...page.users);
+      }
+      numberOfPages = page.numberOfPages.toString();
+      hasMorePages = pageNumber < page.numberOfPages;
+      pageNumber++;
+    } catch (e) {
+      throw new Error(`Error getting page ${pageNumber} of users (correlationId: ${correlationId}, changedAfter: ${changedAfter}) - ${e.message}`);
     }
-    hasMorePages = pageNumber < page.numberOfPages;
-    pageNumber++;
   }
+  logger.info(`Finished reading all users. (found: ${users.length},correlationId: ${correlationId})`);
   return users;
 };
 const getUserAuditStats = async (userId) => {
@@ -157,16 +164,23 @@ const getAllInvitationServices = async (correlationId) => {
 const getAllInvitations = async (changedAfter, correlationId) => {
   let hasMorePages = true;
   let pageNumber = 1;
+  let numberOfPages = 'unknown';
   const invitations = [];
   while (hasMorePages) {
-    logger.info(`Reading page ${pageNumber} of invitations (correlationId: ${correlationId})`, { correlationId });
-    const page = await directories.getPageOfInvitations(pageNumber, 250, changedAfter, correlationId);
-    if (page.invitations && page.invitations.length > 0) {
-      invitations.push(...page.invitations);
+    try {
+      logger.info(`Reading page ${pageNumber} of ${numberOfPages} of invitations (correlationId: ${correlationId})`, { correlationId });
+      const page = await directories.getPageOfInvitations(pageNumber, 250, changedAfter, correlationId);
+      if (page.invitations && page.invitations.length > 0) {
+        invitations.push(...page.invitations);
+      }
+      numberOfPages = page.numberOfPages.toString();
+      hasMorePages = pageNumber < page.numberOfPages;
+      pageNumber++;
+    } catch (e) {
+      throw new Error(`Error getting page ${pageNumber} of invitations (correlationId: ${correlationId}, changedAfter: ${changedAfter}) - ${e.message}`);
     }
-    hasMorePages = pageNumber < page.numberOfPages;
-    pageNumber++;
   }
+  logger.info(`Finished reading all invitations. (found: ${invitations.length},correlationId: ${correlationId})`);
   return invitations;
 };
 const buildInvitations = (invitations, serviceMappings) => {

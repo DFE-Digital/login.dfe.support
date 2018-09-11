@@ -1,10 +1,10 @@
 const logger = require('./../src/infrastructure/logger');
 const audit = require('./../src/infrastructure/audit');
-const { syncUsersView } = require('./../src/app/syncViews');
+const { syncFullUsersView } = require('./../src/app/syncViews');
 
 logger.info('Initialising audit');
 audit.cache.init().then(() => {
-  syncUsersView().then(() => {
+  syncFullUsersView().then(() => {
     logger.info('Success');
     process.exit();
   }).catch((e) => {
