@@ -75,9 +75,13 @@ const getPageOfInvitations = async (pageNumber, pageSize, changedAfter, correlat
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
+    let uri = `${config.directories.service.url}/invitations?page=${pageNumber}&pageSize=${pageSize}`;
+    if (changedAfter) {
+      uri += `&changedAfter=${changedAfter.toISOString()}`;
+    }
     const pageOfInvitations = await rp({
       method: 'GET',
-      uri: `${config.directories.service.url}/invitations?page=${pageNumber}&pageSize=${pageSize}`,
+      uri,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,

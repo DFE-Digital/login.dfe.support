@@ -223,7 +223,7 @@ const buildInvitationsThatHaveChanged = async (correlationId) => {
   const invitationServices = [];
 
   for (let i = 0; i < updatedInvitations.length; i++) {
-    const serviceMapping = await organisations.listInvitationServices(updatedInvitations[i].id, correlationId);
+    const serviceMapping = await organisations.getInvitationOrganisations(updatedInvitations[i].id, correlationId);
     if (serviceMapping && serviceMapping.length > 0) {
       invitationServices.push(...serviceMapping);
     }
