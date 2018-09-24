@@ -5,6 +5,7 @@ const organisations = require('./../../infrastructure/organisations');
 const { cache: auditCache } = require('./../../infrastructure/audit');
 const uuid = require('uuid/v4');
 const { mapUserStatus } = require('./../../infrastructure/utils');
+const { filter } = require('lodash');
 
 const getOrgServiceMappingDetails = (orgServiceMapping) => {
   let organisation = null;
@@ -171,7 +172,7 @@ const getAllInvitations = async (changedAfter, correlationId) => {
       logger.info(`Reading page ${pageNumber} of ${numberOfPages} of invitations (correlationId: ${correlationId})`, { correlationId });
       const page = await directories.getPageOfInvitations(pageNumber, 250, changedAfter, correlationId);
       if (page.invitations && page.invitations.length > 0) {
-        invitations.push(...page.invitations);
+        invitations.push(...filter(page.invitations, (item) => !item.isCompleted));
       }
       numberOfPages = page.numberOfPages.toString();
       hasMorePages = pageNumber < page.numberOfPages;
