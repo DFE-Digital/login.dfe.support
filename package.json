@@ -8,7 +8,7 @@
     "test": "./node_modules/.bin/jest"
   },
   "engines": {
-    "node": "8.x.x"
+    "node": "8.9.4"
   },
   "repository": {
     "type": "git",
