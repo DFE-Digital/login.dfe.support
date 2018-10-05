@@ -36,7 +36,7 @@
     "helmet": "^3.9.0",
     "ioredis": "^3.2.2",
     "lodash": "^4.17.10",
-    "login.dfe.audit.winston-sequelize-transport": "github:DFE-Digital/login.dfe.audit.winston-sequelize-transport#v2.2",
+    "login.dfe.audit.winston-sequelize-transport": "github:DFE-Digital/login.dfe.audit.winston-sequelize-transport#v2.4",
     "login.dfe.express-error-handling": "git+https://github.com/DFE-Digital/login.dfe.express-error-handling.git#v1.3",
     "login.dfe.healthcheck": "git+https://github.com/DFE-Digital/login.dfe.healthcheck.git#v1.4.5",
     "login.dfe.jwt-strategies": "https://github.com/DFE-Digital/login.dfe.jwt-strategies.git#v2.0.1",
