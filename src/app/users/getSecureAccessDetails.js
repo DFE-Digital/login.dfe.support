@@ -4,7 +4,7 @@ const { getLegacyUsernames } = require('./../../infrastructure/directories');
 
 const getSecureDetails = async (req, res) => {
   const user = await getUserDetails(req);
-  const secureAccessDetails = await getLegacyUsernames(req.params.uid);
+  const secureAccessDetails = await getLegacyUsernames(req.params.uid, req.id);
   sendResult(req, res, 'users/views/secureAccessDetails', {
     csrfToken: req.csrfToken(),
     user,
