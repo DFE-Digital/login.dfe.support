@@ -5,7 +5,7 @@ jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/serviceMapping');
 jest.mock('./../../../src/infrastructure/audit');
-
+jest.mock('ioredis');
 const { getUserDetails } = require('./../../../src/app/users/utils');
 const { getUserOrganisations } = require('./../../../src/infrastructure/organisations');
 const { getUserDevices } = require('./../../../src/infrastructure/directories');
