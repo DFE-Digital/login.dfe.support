@@ -465,6 +465,26 @@ const getUsersById = async (ids, correlationId) => {
   }
 };
 
+const getLegacyUsernames = async (userIds, correlationId) => {
+  const token = await jwtStrategy(config.directories.service).getBearerToken();
+  try {
+    return await rp({
+      method: 'GET',
+      uri: `${config.directories.service.url}/users/${userIds}/legacy-username`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+  } catch (e) {
+    if (e.statusCode === 404) {
+      return null;
+    }
+    throw e;
+  }
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
@@ -484,5 +504,6 @@ module.exports = {
   getChangeEmailCode,
   deleteChangeEmailCode,
   getUsersById,
-  resendInvite
+  resendInvite,
+  getLegacyUsernames,
 };

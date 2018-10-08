@@ -1,0 +1,29 @@
+<%- include('summaryPartial', {area: 'secure-access', user: locals.user, isInvitation: locals.isInvitation}); %>
+
+<% if (locals.secureAccessDetails.length > 0) { %>
+    <table class="data no-borders">
+        <thead>
+        <tr>
+            <th scope="row">Username</th>
+            <th scope="row">Date Migrated</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% for (let o = 0; o < locals.secureAccessDetails.length; o++) { %>
+            <% const saUser = locals.secureAccessDetails[o];%>
+            <tr>
+                <td> <%=saUser.legacy_username%> </td>
+                <% if (saUser.createdAt) { %>
+                <td><%=locals.moment(saUser.createdAt).format('DD MMM YYYY')%></td>
+                <% } else { %>
+                    <td>Unknown</td>
+                <% } %>
+            </tr>
+        <% } %>
+        </tbody>
+    </table>
+<% } else { %>
+<div class="empty-state">
+    <p><%= user.name %> has no Secure Access details</p>
+</div>
+<% } %>
