@@ -41,6 +41,7 @@ const postResendInvite = require('./postResendInvite');
 const getEditPermissions = require('./getEditPermissions');
 const postEditPermissions = require('./postEditPermissions');
 const postDeleteOrganisation = require('./postDeleteOrganisation');
+const getSecureAccess = require('./getSecureAccessDetails');
 
 const router = express.Router({ mergeParams: true });
 
@@ -82,6 +83,7 @@ const users = (csrf) => {
   router.get('/:uid/services', csrf, asyncWrapper(getServices));
   router.get('/:uid/audit', csrf, asyncWrapper(getAudit));
   router.get('/:uid/resend-invitation', csrf, asyncWrapper(postResendInvite));
+  router.get('/:uid/secure-access', csrf, asyncWrapper(getSecureAccess));
 
   router.get('/:uid/edit-profile', csrf, asyncWrapper(getEditProfile));
   router.post('/:uid/edit-profile', csrf, asyncWrapper(postEditProfile));
