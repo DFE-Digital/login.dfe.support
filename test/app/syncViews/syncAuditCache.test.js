@@ -2,6 +2,7 @@ jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
 jest.mock('./../../../src/infrastructure/audit/cache');
 jest.mock('./../../../src/infrastructure/audit');
+jest.mock('ioredis');
 
 const audit = require('./../../../src/infrastructure/audit');
 const syncAuditCache = require('./../../../src/app/syncViews/syncAuditCache');

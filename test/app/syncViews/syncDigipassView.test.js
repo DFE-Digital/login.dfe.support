@@ -7,6 +7,7 @@ jest.mock('./../../../src/infrastructure/audit/cache');
 jest.mock('./../../../src/infrastructure/audit');
 jest.mock('./../../../src/infrastructure/devices');
 jest.mock('uuid/v4');
+jest.mock('ioredis');
 
 const userDevices = require('./../../../src/infrastructure/userDevices');
 const directories = require('./../../../src/infrastructure/directories');
