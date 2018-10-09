@@ -1,4 +1,4 @@
-jest.mock('request-promise');
+jest.mock('login.dfe.request-promise-retry');
 jest.mock('login.dfe.jwt-strategies');
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
   organisations: {
@@ -10,7 +10,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 }));
 
 const rp = jest.fn();
-const requestPromise = require('request-promise');
+const requestPromise = require('login.dfe.request-promise-retry');
 requestPromise.defaults.mockReturnValue(rp);
 
 const jwtStrategy = require('login.dfe.jwt-strategies');

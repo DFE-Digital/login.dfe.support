@@ -1,4 +1,4 @@
-jest.mock('request-promise');
+jest.mock('login.dfe.request-promise-retry');
 jest.mock('login.dfe.jwt-strategies');
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
   directories: {
@@ -10,7 +10,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 }));
 
 const rp = jest.fn();
-const requestPromise = require('request-promise');
+const requestPromise = require('login.dfe.request-promise-retry');
 requestPromise.defaults.mockReturnValue(rp);
 
 const jwtStrategy = require('login.dfe.jwt-strategies');
@@ -48,7 +48,7 @@ describe('when getting a page of users from directories api', () => {
   });
 
   it('then it should call users resource with page & pagesize', async () => {
-    await getPageOfInvitations(pageNumber, pageSize, correlationId);
+    await getPageOfInvitations(pageNumber, pageSize, undefined, correlationId);
 
     expect(rp.mock.calls).toHaveLength(1);
     expect(rp.mock.calls[0][0]).toMatchObject({
@@ -58,7 +58,7 @@ describe('when getting a page of users from directories api', () => {
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
-    await getPageOfInvitations(pageNumber, pageSize, correlationId);
+    await getPageOfInvitations(pageNumber, pageSize, undefined, correlationId);
 
     expect(rp.mock.calls[0][0]).toMatchObject({
       headers: {
@@ -68,7 +68,7 @@ describe('when getting a page of users from directories api', () => {
   });
 
   it('then it should include the correlation id', async () => {
-    await getPageOfInvitations(pageNumber, pageSize, correlationId);
+    await getPageOfInvitations(pageNumber, pageSize, undefined, correlationId);
 
     expect(rp.mock.calls[0][0]).toMatchObject({
       headers: {
@@ -78,7 +78,7 @@ describe('when getting a page of users from directories api', () => {
   });
 
   it('then it should return api result', async () => {
-    const actual = await getPageOfInvitations(pageNumber, pageSize, correlationId);
+    const actual = await getPageOfInvitations(pageNumber, pageSize, undefined, correlationId);
 
     expect(actual).toMatchObject(apiResponse);
   });

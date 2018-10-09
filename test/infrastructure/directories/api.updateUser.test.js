@@ -24,7 +24,7 @@ jest.mock('agentkeepalive', () => {
     HttpsAgent : jest.fn()
   }
 });
-jest.mock('request-promise');
+jest.mock('login.dfe.request-promise-retry');
 jest.mock('login.dfe.jwt-strategies', () => {
   return jest.fn().mockImplementation(() => {
     return {
@@ -34,7 +34,7 @@ jest.mock('login.dfe.jwt-strategies', () => {
 });
 
 const rp = jest.fn();
-const requestPromise = require('request-promise');
+const requestPromise = require('login.dfe.request-promise-retry');
 requestPromise.defaults.mockReturnValue(rp);
 
 const { updateUser } = require('./../../../src/infrastructure/directories/api');

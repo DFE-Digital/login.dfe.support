@@ -7,6 +7,7 @@ jest.mock('./../../../src/infrastructure/audit/cache');
 jest.mock('./../../../src/infrastructure/audit');
 jest.mock('./../../../src/infrastructure/devices');
 jest.mock('uuid/v4');
+jest.mock('ioredis');
 
 const userDevices = require('./../../../src/infrastructure/userDevices');
 const directories = require('./../../../src/infrastructure/directories');
@@ -185,7 +186,7 @@ describe('When syncing userDevices materialised view', function () {
   it('then it should pass correlationId to directories', async () => {
     await syncUserDevicesView();
 
-    expect(directories.getPageOfUsers.mock.calls[0][4]).toBe('new-uuid');
+    expect(directories.getPageOfUsers.mock.calls[0][5]).toBe('new-uuid');
   });
 
   it('then it should pass correlationId to organisations', async () => {
