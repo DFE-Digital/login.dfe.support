@@ -127,7 +127,7 @@ const getUserDetails = async (req) => {
     };
   } else {
     const user = await users.getById(uid);
-    const serviceDetails = await getServicesByUserId(uid);
+    const serviceDetails = await getServicesByUserId(uid, req.id);
 
     const ktsDetails = serviceDetails ? serviceDetails.find((c) => c.serviceId.toLowerCase() === config.serviceMapping.key2SuccessServiceId.toLowerCase()) : undefined;
     let externalIdentifier = '';
