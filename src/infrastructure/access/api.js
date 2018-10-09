@@ -22,7 +22,7 @@ const addInvitationService = async (invitationId, serviceId, organisationId, ext
         'x-correlation-id': correlationId,
       },
       body: {
-        externalIdentifiers,
+        identifiers: externalIdentifiers,
       },
       json: true,
     });
