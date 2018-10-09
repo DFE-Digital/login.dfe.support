@@ -1,6 +1,6 @@
 const config = require('./../config');
 const KeepAliveAgent = require('agentkeepalive').HttpsAgent;
-const rp = require('request-promise').defaults({
+const rp = require('login.dfe.request-promise-retry').defaults({
   agent: new KeepAliveAgent({
     maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
     maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
@@ -11,7 +11,7 @@ const rp = require('request-promise').defaults({
 const jwtStrategy = require('login.dfe.jwt-strategies');
 
 
-const getPageOfUsers = async (pageNumber, pageSize, includeDevices, includeCodes, correlationId) => {
+const getPageOfUsers = async (pageNumber, pageSize, includeDevices, includeCodes, changedAfter, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
@@ -23,6 +23,10 @@ const getPageOfUsers = async (pageNumber, pageSize, includeDevices, includeCodes
       ].filter(x => x !== undefined).join(',');
       uri += `&include=${includes}`;
     }
+    if (changedAfter) {
+      uri += `&changedAfter=${changedAfter.toISOString()}`;
+    }
+
     const pageOfUsers = await rp({
       method: 'GET',
       uri: uri,
@@ -67,13 +71,17 @@ const getUser = async (uid, correlationId) => {
   }
 };
 
-const getPageOfInvitations = async (pageNumber, pageSize, correlationId) => {
+const getPageOfInvitations = async (pageNumber, pageSize, changedAfter, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
+    let uri = `${config.directories.service.url}/invitations?page=${pageNumber}&pageSize=${pageSize}`;
+    if (changedAfter) {
+      uri += `&changedAfter=${changedAfter.toISOString()}`;
+    }
     const pageOfInvitations = await rp({
       method: 'GET',
-      uri: `${config.directories.service.url}/invitations?page=${pageNumber}&pageSize=${pageSize}`,
+      uri,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
@@ -457,6 +465,26 @@ const getUsersById = async (ids, correlationId) => {
   }
 };
 
+const getLegacyUsernames = async (userIds, correlationId) => {
+  const token = await jwtStrategy(config.directories.service).getBearerToken();
+  try {
+    return await rp({
+      method: 'GET',
+      uri: `${config.directories.service.url}/users/${userIds}/legacy-username`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+  } catch (e) {
+    if (e.statusCode === 404) {
+      return null;
+    }
+    throw e;
+  }
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
@@ -476,5 +504,6 @@ module.exports = {
   getChangeEmailCode,
   deleteChangeEmailCode,
   getUsersById,
-  resendInvite
+  resendInvite,
+  getLegacyUsernames,
 };

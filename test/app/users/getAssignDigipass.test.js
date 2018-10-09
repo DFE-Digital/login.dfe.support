@@ -10,7 +10,7 @@ const { sendResult } = require('./../../../src/infrastructure/utils');
 
 const getAssignDigipass = require('./../../../src/app/users/getAssignDigipass');
 
-describe('when getting assign digipass token for user', () => {
+describe('when getting assign digipass token for user',  () => {
   let req;
   let res;
 

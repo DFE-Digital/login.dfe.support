@@ -5,16 +5,17 @@ jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/audit');
 jest.mock('uuid/v4');
+jest.mock('ioredis');
 
 const users = require('./../../../src/infrastructure/users');
 const directories = require('./../../../src/infrastructure/directories');
 const organisations = require('./../../../src/infrastructure/organisations');
 const audit = require('./../../../src/infrastructure/audit');
 const uuid = require('uuid/v4');
-const { syncUsersView } = require('./../../../src/app/syncViews');
+const { syncFullUsersView } = require('./../../../src/app/syncViews');
 
 const testData = {
-  correlationId: 'some-uuid',
+  correlationId: 'FullUserIndex-some-uuid',
   indexName: 'new-user-index-name',
   users: {
     page1: {
@@ -105,7 +106,7 @@ const _getPageOfData = (source, pageNumber) => {
   return undefined;
 };
 
-describe('When syncing users materialised view', () => {
+describe('When syncing full users materialised view', () => {
   beforeEach(() => {
     users.createIndex.mockReset().mockReturnValue(testData.indexName);
     users.updateIndex.mockReset();
@@ -128,25 +129,25 @@ describe('When syncing users materialised view', () => {
       return undefined;
     });
 
-    uuid.mockReset().mockReturnValue(testData.correlationId);
+    uuid.mockReset().mockReturnValue('some-uuid');
   });
 
   it('then it should create a new user index', async () => {
-    await syncUsersView();
+    await syncFullUsersView();
 
     expect(users.createIndex).toHaveBeenCalledTimes(1);
   });
 
   it('then it should get all pages of users', async () => {
-    await syncUsersView();
+    await syncFullUsersView();
 
     expect(directories.getPageOfUsers).toHaveBeenCalledTimes(2);
-    expect(directories.getPageOfUsers).toHaveBeenCalledWith(1, 250, false, true, testData.correlationId);
-    expect(directories.getPageOfUsers).toHaveBeenCalledWith(2, 250, false, true, testData.correlationId);
+    expect(directories.getPageOfUsers).toHaveBeenCalledWith(1, 250, false, true, undefined, testData.correlationId);
+    expect(directories.getPageOfUsers).toHaveBeenCalledWith(2, 250, false, true, undefined, testData.correlationId);
   });
 
   it('then it should get all pages of user services', async () => {
-    await syncUsersView();
+    await syncFullUsersView();
 
     expect(organisations.listUserServices).toHaveBeenCalledTimes(2);
     expect(organisations.listUserServices).toHaveBeenCalledWith(1, 250, testData.correlationId);
@@ -154,7 +155,7 @@ describe('When syncing users materialised view', () => {
   });
 
   it('then it should update index with user1', async () => {
-    await syncUsersView();
+    await syncFullUsersView();
 
     const expectedUser = testData.users.page1.users[0];
     const expectedServices = testData.userServices.page1.services;
@@ -180,7 +181,7 @@ describe('When syncing users materialised view', () => {
   });
 
   it('then it should update index with user2', async () => {
-    await syncUsersView();
+    await syncFullUsersView();
 
     const expectedUser = testData.users.page2.users[0];
     const expectedServices = testData.userServices.page2.services;
@@ -206,7 +207,7 @@ describe('When syncing users materialised view', () => {
   });
 
   it('then it should update active index to be one created and populated in sync', async () => {
-    await syncUsersView();
+    await syncFullUsersView();
 
     expect(users.updateActiveIndex).toHaveBeenCalledTimes(1);
     expect(users.updateActiveIndex).toHaveBeenCalledWith(testData.indexName);

@@ -1,6 +1,6 @@
 const uuid = require('uuid/v4');
 
-const getPageOfUsers = async (pageNumber, pageSize, includeDevices, includeCodes, correlationId) => {
+const getPageOfUsers = async (pageNumber, pageSize, includeDevices, includeCodes, changedAfter, correlationId) => {
   const result = {
     users: [
       {
@@ -34,7 +34,7 @@ const getUser = async (uid, correlationId) => {
   };
 };
 
-const getPageOfInvitations = async (pageNumber, pageSize, correlationId) => {
+const getPageOfInvitations = async (pageNumber, pageSize, changedAfter, correlationId) => {
   return {
     invitations: [],
     numberOfPages: 1,
@@ -111,6 +111,10 @@ const getUsersById = async(userIds, correlationId) => {
   return Promise.resolve([]);
 };
 
+const getLegacyUsernames = async(userIds, correlationId) => {
+  return Promise.resolve([]);
+};
+
 module.exports = {
   getPageOfUsers,
   getUser,
@@ -129,4 +133,5 @@ module.exports = {
   getChangeEmailCode,
   deleteChangeEmailCode,
   getUsersById,
+  getLegacyUsernames,
 };

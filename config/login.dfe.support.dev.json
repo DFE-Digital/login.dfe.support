@@ -68,7 +68,8 @@
   },
   "schedules": {
     "auditCache": "*/5 * * * *",
-    "users": "*/5 * * * *",
+    "usersFull": "0 0 * * *",
+    "usersDiff": "*/5 * * * *",
     "userDevices": "*/5 * * * *",
     "accessRequests": "*/5 * * * *",
     "indexTidy": "*/15 * * * *"

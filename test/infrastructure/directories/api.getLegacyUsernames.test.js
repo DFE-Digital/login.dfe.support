@@ -1,15 +1,10 @@
 jest.mock('login.dfe.request-promise-retry');
-jest.mock('agentkeepalive', () => {
-  return {
-    HttpsAgent : jest.fn()
-  }
-});
 jest.mock('login.dfe.jwt-strategies');
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
-  organisations: {
+  directories: {
     type: 'api',
     service: {
-      url: 'http://organisations.test',
+      url: 'http://directories.test',
     },
   },
 }));
@@ -19,19 +14,17 @@ const requestPromise = require('login.dfe.request-promise-retry');
 requestPromise.defaults.mockReturnValue(rp);
 
 const jwtStrategy = require('login.dfe.jwt-strategies');
-const { getOrganisationUsersForApproval } = require('./../../../src/infrastructure/organisations/api');
+const { getLegacyUsernames } = require('./../../../src/infrastructure/directories/api');
 
 const correlationId = 'abc123';
 const apiResponse = {
-  organisations: [{
-    id: 'org1',
-    name: 'org one',
-  }],
-  page: 1,
-  totalNumberOfPages: 2,
+  uid: 'dA29AABD-5D40-471E-9ABC-380B2634EAEB',
+  legacy_username: 'username',
+  createdAt: '10/04/2017',
 };
+const userIds = ['user1', 'user2'];
 
-describe('when getting a page of organisations users for approval from api', () => {
+describe('when getting a legacy user by userid', () => {
   beforeEach(() => {
     rp.mockReset();
     rp.mockImplementation(() => {
@@ -46,18 +39,18 @@ describe('when getting a page of organisations users for approval from api', () 
     })
   });
 
-  it('then it should call organisations resource with page number', async () => {
-    await getOrganisationUsersForApproval(2, correlationId);
+  it('then it calls directories api with ids', async () => {
+    await getLegacyUsernames(userIds, correlationId);
 
     expect(rp.mock.calls).toHaveLength(1);
     expect(rp.mock.calls[0][0]).toMatchObject({
       method: 'GET',
-      uri: 'http://organisations.test/organisations/users-for-approval?page=2',
+      uri: 'http://directories.test/users/user1,user2/legacy-username'
     });
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
-    await getOrganisationUsersForApproval(2, correlationId);
+    await getLegacyUsernames(userIds, correlationId);
 
     expect(rp.mock.calls[0][0]).toMatchObject({
       headers: {
@@ -67,7 +60,7 @@ describe('when getting a page of organisations users for approval from api', () 
   });
 
   it('then it should include the correlation id', async () => {
-    await getOrganisationUsersForApproval(2, correlationId);
+    await getLegacyUsernames(userIds, correlationId);
 
     expect(rp.mock.calls[0][0]).toMatchObject({
       headers: {
@@ -76,15 +69,4 @@ describe('when getting a page of organisations users for approval from api', () 
     });
   });
 
-  it('then it should return page of orgs from api', async () => {
-    const actual = await getOrganisationUsersForApproval(2, correlationId);
-
-    expect(actual).not.toBeNull();
-    expect(actual.totalNumberOfPages).toBe(2);
-    expect(actual.organisations).toHaveLength(1);
-    expect(actual.organisations[0]).toMatchObject({
-      id: 'org1',
-      name: 'org one',
-    });
-  });
 });
