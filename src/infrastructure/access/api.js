@@ -31,6 +31,9 @@ const addInvitationService = async (invitationId, serviceId, organisationId, ext
     if (status === 403) {
       return false;
     }
+    if (status === 409) {
+      return false;
+    }
     throw e;
   }
 };
