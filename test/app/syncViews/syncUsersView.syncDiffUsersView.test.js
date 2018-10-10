@@ -95,9 +95,7 @@ const testData = {
   },
   invitationServices: {
     invitation1: [{
-      id: 'svc1',
       invitationId: 'invitation1',
-      requestDate: new Date(2018, 6, 1),
       organisation: {
         id: 'org1',
         name: 'Organisation One',
@@ -105,11 +103,15 @@ const testData = {
           id: '001'
         },
       },
+      services:[
+        {
+          id: 'svc1',
+          name: 'Service 1',
+        },
+      ],
     }],
     invitation2: [{
-      id: 'svc1',
       invitationId: 'invitation2',
-      requestDate: new Date(2018, 6, 3),
       organisation: {
         id: 'org2',
         name: 'Organisation Two',
@@ -117,6 +119,12 @@ const testData = {
           id: '002'
         },
       },
+      services:[
+        {
+          id: 'svc1',
+          name: 'Service 1',
+        },
+      ],
     }],
   },
   audit: {
@@ -293,7 +301,7 @@ describe('When syncing diff users materialised view', () => {
       name: expectedServices[0].organisation.name,
     });
     expect(actual.organisationCategories).toEqual([expectedServices[0].organisation.category.id]);
-    expect(actual.services).toEqual([expectedServices[0].id]);
+    expect(actual.services).toEqual([expectedServices[0].services[0].id]);
     expect(actual.status).toEqual({
       id: -1,
       description: 'Invited',
@@ -317,7 +325,7 @@ describe('When syncing diff users materialised view', () => {
       name: expectedServices[0].organisation.name,
     });
     expect(actual.organisationCategories).toEqual([expectedServices[0].organisation.category.id]);
-    expect(actual.services).toEqual([expectedServices[0].id]);
+    expect(actual.services).toEqual([expectedServices[0].services[0].id]);
     expect(actual.status).toEqual({
       id: -2,
       description: 'Deactivated Invitation',
