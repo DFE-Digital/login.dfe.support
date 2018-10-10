@@ -205,6 +205,32 @@ const updateIndex = async (users, index) => {
     index = await client.get('CurrentIndex_Users');
   }
   try {
+    const usersForIndex = users.map((user) => {
+      let lastLogin = user.lastLogin;
+      if (lastLogin && lastLogin instanceof Date) {
+        lastLogin = lastLogin.getTime();
+      }
+      return {
+        '@search.action': 'upload',
+        id: user.id,
+        name: user.name,
+        nameSearch: user.name.replace(/\s/g, '').toLowerCase(),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        emailSearch: user.email.replace('@', '').toLowerCase(),
+        organisationName: user.organisation ? user.organisation.name : '',
+        organisationNameSearch: user.organisation ? user.organisation.name.replace(/\s/g, '').toLowerCase() : '',
+        organisationCategories: user.organisationCategories || [],
+        services: user.services || [],
+        lastLogin: lastLogin || 0,
+        successfulLoginsInPast12Months: user.successfulLoginsInPast12Months || 0,
+        statusLastChangedOn: user.status.changedOn ? user.status.changedOn : 0,
+        statusDescription: user.status.description,
+        statusId: user.status.id,
+        pendingEmail: user.pendingEmail || '',
+      };
+    });
     await rp({
       method: 'POST',
       uri: getAzureSearchUri(index, '/docs/index'),
@@ -213,32 +239,7 @@ const updateIndex = async (users, index) => {
         'api-key': config.cache.params.apiKey,
       },
       body: {
-        value: users.map((user) => {
-          let lastLogin = user.lastLogin;
-          if (lastLogin && lastLogin instanceof Date) {
-            lastLogin = lastLogin.getTime();
-          }
-          return {
-            '@search.action': 'upload',
-            id: user.id,
-            name: user.name,
-            nameSearch: user.name.replace(/\s/g, '').toLowerCase(),
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            emailSearch: user.email.replace('@', '').toLowerCase(),
-            organisationName: user.organisation ? user.organisation.name : '',
-            organisationNameSearch: user.organisation ? user.organisation.name.replace(/\s/g, '').toLowerCase() : '',
-            organisationCategories: user.organisationCategories || [],
-            services: user.services || [],
-            lastLogin,
-            successfulLoginsInPast12Months: user.successfulLoginsInPast12Months,
-            statusLastChangedOn: user.status.changedOn ? user.status.changedOn : 0,
-            statusDescription: user.status.description,
-            statusId: user.status.id,
-            pendingEmail: user.pendingEmail,
-          };
-        }),
+        value: usersForIndex,
       },
       json: true,
     });
