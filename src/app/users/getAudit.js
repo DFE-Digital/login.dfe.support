@@ -4,6 +4,7 @@ const { getUserAudit } = require('./../../infrastructure/audit');
 const logger = require('./../../infrastructure/logger');
 const { getServiceIdForClientId } = require('./../../infrastructure/serviceMapping');
 const { getServiceById } = require('./../../infrastructure/applications');
+const { getOrganisationById } = require('./../../infrastructure/organisations');
 
 let cachedServiceIds = {};
 let cachedServices  = {};
@@ -51,6 +52,18 @@ const describeAuditEvent = async (audit) => {
 
   if (audit.type === 'reset-password') {
     return 'Reset password';
+  }
+  if (audit.type === 'support' && audit.subType === 'user-org-deleted') {
+    const organisationId = audit.editedFields && audit.editedFields.find(x => x.name === 'new_organisation');
+    const organisation = await getOrganisationById(organisationId.oldValue);
+    const viewedUser = await getUserDetails({ params: { uid: audit.editedUser } });
+    return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName}`
+  }
+  if (audit.type === 'support' && audit.subType === 'user-org') {
+    const organisationId = audit.editedFields && audit.editedFields.find(x => x.name === 'new_organisation');
+    const organisation = await getOrganisationById(organisationId.newValue);
+    const viewedUser = await getUserDetails({ params: { uid: audit.editedUser } });
+    return `Added organisation: ${organisation.name} for user ${viewedUser.firstName} ${viewedUser.lastName}`
   }
 
   return `${audit.type} / ${audit.subType}`;
