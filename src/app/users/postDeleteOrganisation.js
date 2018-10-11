@@ -23,10 +23,11 @@ const postDeleteOrganisation = async (req, res) => {
   const org = req.session.org.name;
   logger.audit(`${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${req.params.id}) for user ${req.session.user.email} (id: ${uid})`, {
     type: 'support',
-    subType: 'user-org',
+    subType: 'user-org-deleted',
     userId: req.user.sub,
     userEmail: req.user.email,
     editedUser: uid,
+    organisationId: req.params.id,
     editedFields: [{
       name: 'new_organisation',
       oldValue: req.params.id,
