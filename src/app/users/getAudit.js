@@ -54,9 +54,10 @@ const describeAuditEvent = async (audit) => {
     return 'Reset password';
   }
   if (audit.type === 'support' && audit.subType === 'user-org-deleted') {
-    const organisation = await getOrganisationById(audit.organisationId);
+    const organisationId = audit.editedFields && audit.editedFields.find(x => x.name === 'new_organisation');
+    const organisation = await getOrganisationById(organisationId.oldValue);
     const viewedUser = await getUserDetails({ params: { uid: audit.editedUser } });
-    return `Deleted organisation: ${organisation} for user  ${viewedUser.firstName} ${viewedUser.lastName}`
+    return `Deleted organisation: ${organisation.name}  for user  ${viewedUser.firstName} ${viewedUser.lastName}`
   }
 
   return `${audit.type} / ${audit.subType}`;
