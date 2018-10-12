@@ -21,7 +21,7 @@ const routes = (app, csrf) => {
     res.redirect('/users');
   });
   app.get('*', (req, res) => {
-    res.redirect('/not-found');
+    res.status(404).render('errors/views/notFound');
   });
 };
 
