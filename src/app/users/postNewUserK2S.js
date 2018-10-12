@@ -1,12 +1,13 @@
 const { sendResult } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
-const { searchOrganisations, getServiceIdentifierDetails } = require('./../../infrastructure/organisations');
+const { searchOrganisations } = require('./../../infrastructure/organisations');
+const { getServiceIdentifierDetails } = require('./../../infrastructure/access');
 const { getUser } = require('./../../infrastructure/directories');
 const { emailPolicy } = require('login.dfe.validation');
 
 const keyToSuccessIdentifierAlreadyUsed = async (k2sId, correlationId) => {
   const identifier = await getServiceIdentifierDetails(config.serviceMapping.key2SuccessServiceId, 'k2s-id', k2sId, correlationId);
-  return identifier ? true : false;
+  return identifier.services.length !== 0;
 };
 
 const getLocalAutorities = async (correlationId) => {
