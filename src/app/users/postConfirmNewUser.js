@@ -15,14 +15,15 @@ const getProfilesOriginForInvite = async () => {
 const postConfirmNewUser = async (req, res) => {
   const profilesOrigin = await getProfilesOriginForInvite();
   let emailOverrides = {};
+  let clientOverrides = req.body['invite-destination'].split('{split}');
 
   if (req.body['email-contents-choice'] !== "Approve") {
-    let clientOverrides = req.body['invite-destination'].split('{split}');
-    profilesOrigin.clientId =  clientOverrides[0];
-    profilesOrigin.redirectUri = clientOverrides[1];
     emailOverrides.subject = req.body['email-subject'];
     emailOverrides.body = req.body['email-contents'];
   }
+
+  profilesOrigin.clientId = clientOverrides[0];
+  profilesOrigin.redirectUri = clientOverrides[1];
 
   const invitationId = await createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email, null, profilesOrigin.clientId, profilesOrigin.redirectUri, req.id, emailOverrides);
 
