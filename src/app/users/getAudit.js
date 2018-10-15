@@ -46,6 +46,10 @@ const describeAuditEvent = async (audit) => {
     return `Searched for users using criteria "${audit.criteria}"`;
   }
 
+  if (audit.type === 'change-email' && audit.success) {
+    return 'Changed email';
+  }
+
   if (audit.type === 'change-password') {
     return 'Changed password';
   }
