@@ -3,6 +3,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/users');
 jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/organisations');
+jest.mock('./../../../src/infrastructure/access');
 jest.mock('./../../../src/infrastructure/audit');
 jest.mock('uuid/v4');
 jest.mock('ioredis');
@@ -10,6 +11,7 @@ jest.mock('ioredis');
 const users = require('./../../../src/infrastructure/users');
 const directories = require('./../../../src/infrastructure/directories');
 const organisations = require('./../../../src/infrastructure/organisations');
+const access = require('./../../../src/infrastructure/access');
 const audit = require('./../../../src/infrastructure/audit');
 const uuid = require('uuid/v4');
 const { syncDiffUsersView } = require('./../../../src/app/syncViews');
@@ -158,7 +160,7 @@ describe('When syncing diff users materialised view', () => {
       return _getPageOfData(testData.invitations, pageNumber);
     });
 
-    organisations.getServicesByUserId.mockReset().mockImplementation((userId) => {
+    access.getServicesByUserId.mockReset().mockImplementation((userId) => {
       if (Object.keys(testData.userServices).find(x => x === userId)) {
         return testData.userServices[userId];
       }
@@ -208,9 +210,9 @@ describe('When syncing diff users materialised view', () => {
   it('then it should get all pages of user services', async () => {
     await syncDiffUsersView();
 
-    expect(organisations.getServicesByUserId).toHaveBeenCalledTimes(2);
-    expect(organisations.getServicesByUserId).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
-    expect(organisations.getServicesByUserId).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
+    expect(access.getServicesByUserId).toHaveBeenCalledTimes(2);
+    expect(access.getServicesByUserId).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
+    expect(access.getServicesByUserId).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
   });
 
   it('then it should update index with user1', async () => {

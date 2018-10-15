@@ -40,6 +40,9 @@ const configMockFactory = (customConfig) => {
     notifications:{
       connectionString: 'test',
     },
+    access:{
+      type: 'static',
+    },
     loggerSettings: {},
     toggles: {},
   }, customConfig);
