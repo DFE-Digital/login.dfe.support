@@ -58,6 +58,7 @@ const logs = db.define('AuditLogs', {
   type: Sequelize.STRING,
   subType: Sequelize.STRING,
   userId: Sequelize.UUID,
+  organisationId: Sequelize.UUID,
 }, {
   timestamps: true,
   tableName: 'AuditLogs',
