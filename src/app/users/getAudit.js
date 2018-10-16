@@ -53,6 +53,11 @@ const describeAuditEvent = async (audit) => {
   if (audit.type === 'reset-password') {
     return 'Reset password';
   }
+
+  if (audit.type === 'change-name') {
+    return 'Changed name'
+  }
+
   if (audit.type === 'support' && audit.subType === 'user-org-deleted') {
     const organisationId = audit.editedFields && audit.editedFields.find(x => x.name === 'new_organisation');
     const organisation = await getOrganisationById(organisationId.oldValue);
