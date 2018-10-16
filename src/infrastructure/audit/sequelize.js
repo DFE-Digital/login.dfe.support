@@ -13,6 +13,7 @@ const mapAuditEntity = (auditEntity) => {
     level: auditEntity.getDataValue('level'),
     message: auditEntity.getDataValue('message'),
     timestamp: auditEntity.getDataValue('createdAt'),
+    organisationId: auditEntity.getDataValue('organisationId'),
   };
 
   auditEntity.metaData.forEach((meta) => {
