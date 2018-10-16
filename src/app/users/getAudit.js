@@ -65,6 +65,11 @@ const describeAuditEvent = async (audit) => {
     const viewedUser = await getUserDetails({ params: { uid: audit.editedUser } });
     return `Added organisation: ${organisation.name} for user ${viewedUser.firstName} ${viewedUser.lastName}`
   }
+  if (audit.type === 'support' && audit.subType === 'user-org-permission-edited') {
+    const editedFields = audit.editedFields && audit.editedFields.find(x => x.name === 'edited_permission');
+    const viewedUser = await getUserDetails({ params: { uid: audit.editedUser } });
+    return `Edited permission level to ${editedFields.newValue} for user ${viewedUser.firstName} ${viewedUser.lastName} in organisation ${editedFields.organisation}`
+  }
 
   return `${audit.type} / ${audit.subType}`;
 };
