@@ -55,6 +55,7 @@ const postEditPermissions = async (req, res) => {
     userEmail: req.user.email,
     editedUser: uid,
     editedFields: [{
+      organisation: organisationName,
       name: 'edited_permission',
       newValue: permissionName,
     }],
