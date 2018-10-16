@@ -111,6 +111,7 @@ const getAudit = async (req, res) => {
   for (let i = 0; i < pageOfAudits.audits.length; i++) {
     let audit = pageOfAudits.audits[i];
     let service = null;
+    let organisation = null;
     if (audit.client) {
       const serviceId = await getCachedServiceIdForClientId(audit.client);
       if(serviceId) {
@@ -119,6 +120,9 @@ const getAudit = async (req, res) => {
         logger.info(`User audit tab - No service mapping for client ${audit.client} using client id`);
         service = { name: audit.client };
       }
+    }
+    if (audit.organisationId) {
+      organisation = await getOrganisationById(audit.organisationId);
     }
 
     audits.push({
@@ -129,6 +133,7 @@ const getAudit = async (req, res) => {
         description: await describeAuditEvent(audit),
       },
       service,
+      organisation,
       result: audit.success === undefined ? true : audit.success,
       user: audit.userId.toLowerCase() === user.id.toLowerCase() ? user : await getUserDetails({ params: { uid: audit.userId } }),
     });
