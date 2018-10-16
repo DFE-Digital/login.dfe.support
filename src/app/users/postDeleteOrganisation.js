@@ -27,7 +27,6 @@ const postDeleteOrganisation = async (req, res) => {
     userId: req.user.sub,
     userEmail: req.user.email,
     editedUser: uid,
-    organisationId: req.params.id,
     editedFields: [{
       name: 'new_organisation',
       oldValue: req.params.id,
