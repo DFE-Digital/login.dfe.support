@@ -1,4 +1,6 @@
+const logger = require('./../../infrastructure/logger');
 const { setUserAccessToOrganisation, addInvitationOrganisation } = require('./../../infrastructure/organisations');
+
 const validatePermissions = (req) => {
   const validPermissions = [0, 10000];
   const level = parseInt(req.body.selectedLevel);
@@ -46,6 +48,17 @@ const postEditPermissions = async (req, res) => {
   const fullname = model.userFullName;
   const organisationName = model.organisationName;
   const permissionName = model.selectedLevel === 10000 ? 'approver' : 'end user';
+  logger.audit(`${req.user.email} (id: ${req.user.sub}) edited permission level to ${permissionName} for organisation ${organisationName} (id: ${req.params.id}) for user ${req.session.user.email} (id: ${uid})`, {
+    type: 'support',
+    subType: 'user-org-permission-edited',
+    userId: req.user.sub,
+    userEmail: req.user.email,
+    editedUser: uid,
+    editedFields: [{
+      name: 'edited_permission',
+      newValue: permissionName,
+    }],
+  });
   res.flash('info', `${fullname} now has ${permissionName} access to ${organisationName} `);
   return res.redirect(`/users/${uid}/organisations`);
 };
