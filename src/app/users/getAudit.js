@@ -57,6 +57,11 @@ const describeAuditEvent = async (audit) => {
   if (audit.type === 'reset-password') {
     return 'Reset password';
   }
+
+  if (audit.type === 'change-name') {
+    return 'Changed name'
+  }
+
   if (audit.type === 'support' && audit.subType === 'user-org-deleted') {
     const organisationId = audit.editedFields && audit.editedFields.find(x => x.name === 'new_organisation');
     const organisation = await getOrganisationById(organisationId.oldValue);
@@ -68,6 +73,11 @@ const describeAuditEvent = async (audit) => {
     const organisation = await getOrganisationById(organisationId.newValue);
     const viewedUser = await getUserDetails({ params: { uid: audit.editedUser } });
     return `Added organisation: ${organisation.name} for user ${viewedUser.firstName} ${viewedUser.lastName}`
+  }
+  if (audit.type === 'support' && audit.subType === 'user-org-permission-edited') {
+    const editedFields = audit.editedFields && audit.editedFields.find(x => x.name === 'edited_permission');
+    const viewedUser = await getUserDetails({ params: { uid: audit.editedUser } });
+    return `Edited permission level to ${editedFields.newValue} for user ${viewedUser.firstName} ${viewedUser.lastName} in organisation ${editedFields.organisation}`
   }
 
   return `${audit.type} / ${audit.subType}`;
@@ -105,6 +115,7 @@ const getAudit = async (req, res) => {
   for (let i = 0; i < pageOfAudits.audits.length; i++) {
     let audit = pageOfAudits.audits[i];
     let service = null;
+    let organisation = null;
     if (audit.client) {
       const serviceId = await getCachedServiceIdForClientId(audit.client);
       if(serviceId) {
@@ -113,6 +124,9 @@ const getAudit = async (req, res) => {
         logger.info(`User audit tab - No service mapping for client ${audit.client} using client id`);
         service = { name: audit.client };
       }
+    }
+    if (audit.organisationId) {
+      organisation = await getOrganisationById(audit.organisationId);
     }
 
     audits.push({
@@ -123,6 +137,7 @@ const getAudit = async (req, res) => {
         description: await describeAuditEvent(audit),
       },
       service,
+      organisation,
       result: audit.success === undefined ? true : audit.success,
       user: audit.userId.toLowerCase() === user.id.toLowerCase() ? user : await getUserDetails({ params: { uid: audit.userId } }),
     });
