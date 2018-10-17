@@ -2,6 +2,7 @@ const logger = require('./../../infrastructure/logger');
 const users = require('./../../infrastructure/users');
 const directories = require('./../../infrastructure/directories');
 const organisations = require('./../../infrastructure/organisations');
+const { getServicesByUserId } = require('./../../infrastructure/access');
 const { cache: auditCache } = require('./../../infrastructure/audit');
 const uuid = require('uuid/v4');
 const { mapUserStatus } = require('./../../infrastructure/utils');
@@ -137,12 +138,14 @@ const buildUsersThatHaveChanged = async (correlationId) => {
   const updatedUsers = await getAllUsers(changedAfter, correlationId);
   const userServices = [];
 
+  logger.info(`Reading service mappings for users (correlationId: ${correlationId})`, { correlationId });
   for (let i = 0; i < updatedUsers.length; i++) {
-    const serviceMapping = await organisations.getServicesByUserId(updatedUsers[i].sub, correlationId);
+    const serviceMapping = await getServicesByUserId(updatedUsers[i].sub, correlationId);
     if (serviceMapping && serviceMapping.length > 0) {
       userServices.push(...serviceMapping);
     }
   }
+  logger.info(`Finished reading service mappings for users (correlationId: ${correlationId})`, { correlationId });
 
   return buildUsers(updatedUsers, userServices);
 };
@@ -224,10 +227,13 @@ const buildInvitationsThatHaveChanged = async (correlationId) => {
   const invitationServices = [];
 
   for (let i = 0; i < updatedInvitations.length; i++) {
-    const serviceMapping = await organisations.getInvitationOrganisations(updatedInvitations[i].id, correlationId);
-    if (serviceMapping && serviceMapping.length > 0) {
-      invitationServices.push(...serviceMapping);
-    }
+    const serviceMapping = (await organisations.getInvitationOrganisations(updatedInvitations[i].id, correlationId)) || [];
+    serviceMapping.forEach((mapping) => {
+      mapping.services.forEach((svc) => {
+        const mapped = Object.assign({ invitationId: updatedInvitations[i].id }, svc, { organisation: mapping.organisation });
+        invitationServices.push(mapped);
+      });
+    });
   }
 
   return buildInvitations(updatedInvitations, invitationServices);

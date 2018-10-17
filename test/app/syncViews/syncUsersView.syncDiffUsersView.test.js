@@ -3,6 +3,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/users');
 jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/organisations');
+jest.mock('./../../../src/infrastructure/access');
 jest.mock('./../../../src/infrastructure/audit');
 jest.mock('uuid/v4');
 jest.mock('ioredis');
@@ -10,6 +11,7 @@ jest.mock('ioredis');
 const users = require('./../../../src/infrastructure/users');
 const directories = require('./../../../src/infrastructure/directories');
 const organisations = require('./../../../src/infrastructure/organisations');
+const access = require('./../../../src/infrastructure/access');
 const audit = require('./../../../src/infrastructure/audit');
 const uuid = require('uuid/v4');
 const { syncDiffUsersView } = require('./../../../src/app/syncViews');
@@ -93,9 +95,7 @@ const testData = {
   },
   invitationServices: {
     invitation1: [{
-      id: 'svc1',
       invitationId: 'invitation1',
-      requestDate: new Date(2018, 6, 1),
       organisation: {
         id: 'org1',
         name: 'Organisation One',
@@ -103,11 +103,15 @@ const testData = {
           id: '001'
         },
       },
+      services:[
+        {
+          id: 'svc1',
+          name: 'Service 1',
+        },
+      ],
     }],
     invitation2: [{
-      id: 'svc1',
       invitationId: 'invitation2',
-      requestDate: new Date(2018, 6, 3),
       organisation: {
         id: 'org2',
         name: 'Organisation Two',
@@ -115,6 +119,12 @@ const testData = {
           id: '002'
         },
       },
+      services:[
+        {
+          id: 'svc1',
+          name: 'Service 1',
+        },
+      ],
     }],
   },
   audit: {
@@ -150,7 +160,7 @@ describe('When syncing diff users materialised view', () => {
       return _getPageOfData(testData.invitations, pageNumber);
     });
 
-    organisations.getServicesByUserId.mockReset().mockImplementation((userId) => {
+    access.getServicesByUserId.mockReset().mockImplementation((userId) => {
       if (Object.keys(testData.userServices).find(x => x === userId)) {
         return testData.userServices[userId];
       }
@@ -200,9 +210,9 @@ describe('When syncing diff users materialised view', () => {
   it('then it should get all pages of user services', async () => {
     await syncDiffUsersView();
 
-    expect(organisations.getServicesByUserId).toHaveBeenCalledTimes(2);
-    expect(organisations.getServicesByUserId).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
-    expect(organisations.getServicesByUserId).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
+    expect(access.getServicesByUserId).toHaveBeenCalledTimes(2);
+    expect(access.getServicesByUserId).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
+    expect(access.getServicesByUserId).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
   });
 
   it('then it should update index with user1', async () => {
@@ -291,7 +301,7 @@ describe('When syncing diff users materialised view', () => {
       name: expectedServices[0].organisation.name,
     });
     expect(actual.organisationCategories).toEqual([expectedServices[0].organisation.category.id]);
-    expect(actual.services).toEqual([expectedServices[0].id]);
+    expect(actual.services).toEqual([expectedServices[0].services[0].id]);
     expect(actual.status).toEqual({
       id: -1,
       description: 'Invited',
@@ -315,7 +325,7 @@ describe('When syncing diff users materialised view', () => {
       name: expectedServices[0].organisation.name,
     });
     expect(actual.organisationCategories).toEqual([expectedServices[0].organisation.category.id]);
-    expect(actual.services).toEqual([expectedServices[0].id]);
+    expect(actual.services).toEqual([expectedServices[0].services[0].id]);
     expect(actual.status).toEqual({
       id: -2,
       description: 'Deactivated Invitation',
