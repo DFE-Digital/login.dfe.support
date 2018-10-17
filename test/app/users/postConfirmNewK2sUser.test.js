@@ -3,17 +3,21 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
     type: 'static',
     key2SuccessServiceId: '1234567',
   },
+  access : {
+    type: 'static'
+  }
 }));
 jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
 jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/serviceMapping');
 jest.mock('./../../../src/infrastructure/organisations');
+jest.mock('./../../../src/infrastructure/access');
 jest.mock('./../../../src/infrastructure/hotConfig');
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
 const { createInvite } = require('./../../../src/infrastructure/directories');
 const { getClientIdForServiceId } = require('./../../../src/infrastructure/serviceMapping');
-const { addInvitationService } = require('./../../../src/infrastructure/organisations');
+const { addInvitationService } = require('./../../../src/infrastructure/access');
 const { getOidcClientById } = require('./../../../src/infrastructure/hotConfig');
 const postConfirmNewK2sUser = require('./../../../src/app/users/postConfirmNewK2sUser');
 
@@ -99,11 +103,10 @@ describe('when confirming the details of a new K2S user', () => {
 
     expect(addInvitationService.mock.calls).toHaveLength(1);
     expect(addInvitationService.mock.calls[0][0]).toBe('invite1');
-    expect(addInvitationService.mock.calls[0][1]).toBe('LA-1');
-    expect(addInvitationService.mock.calls[0][2]).toBe('1234567');
-    expect(addInvitationService.mock.calls[0][3]).toBe(0);
-    expect(addInvitationService.mock.calls[0][4]).toEqual([{ key: 'k2s-id', value: '1928371' }]);
-    expect(addInvitationService.mock.calls[0][5]).toBe('correlationId');
+    expect(addInvitationService.mock.calls[0][1]).toBe('1234567');
+    expect(addInvitationService.mock.calls[0][2]).toBe('LA-1');
+    expect(addInvitationService.mock.calls[0][3]).toEqual([{ key: 'k2s-id', value: '1928371' }]);
+    expect(addInvitationService.mock.calls[0][4]).toBe('correlationId');
   });
 
   it('then it should set a flash message that user has been invited and redirect to user list', async () => {

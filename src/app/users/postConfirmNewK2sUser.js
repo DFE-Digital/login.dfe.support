@@ -1,5 +1,6 @@
 const { createInvite } = require('./../../infrastructure/directories');
-const { addInvitationService, putSingleServiceIdentifierForUser } = require('./../../infrastructure/organisations');
+const { putSingleServiceIdentifierForUser } = require('./../../infrastructure/organisations');
+const { addInvitationService } = require('./../../infrastructure/access');
 const { getClientIdForServiceId } = require('./../../infrastructure/serviceMapping');
 const { getOidcClientById } = require('./../../infrastructure/hotConfig');
 const config = require('./../../infrastructure/config');
@@ -27,8 +28,7 @@ const postConfirmNewK2sUser = async (req, res) => {
   const externalIdentifiers = [
     { key: 'k2s-id', value: req.session.k2sUser.k2sId },
   ];
-  await addInvitationService(invitationId, req.session.k2sUser.localAuthority, config.serviceMapping.key2SuccessServiceId, 0, externalIdentifiers, req.id);
-
+  await addInvitationService(invitationId, config.serviceMapping.key2SuccessServiceId, req.session.k2sUser.localAuthority, externalIdentifiers, req.id);
   logger.audit(`${req.user.email} (id: ${req.user.sub}) invited ${req.session.k2sUser.email} to user key-to-success. Key-to-Success id: ${req.session.k2sUser.k2sId}, Digipass: ${req.session.digipassSerialNumberToAssign}`,
     {
       type: 'support',

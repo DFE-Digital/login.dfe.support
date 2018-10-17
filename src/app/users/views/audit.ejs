@@ -20,6 +20,7 @@ const paginationModel = {
                     <th scope="col" class="cwp-20">Date</th>
                     <th scope="col" class="cwp-30">Event</th>
                     <th scope="col" class="cwp-15">Service</th>
+                    <th scope="col" class="cwp-15">Organisation</th>
                     <th scope="col" class="cwp-15">Result</th>
                     <th scope="col" class="cwp-20">User</th>
                 </tr>
@@ -31,6 +32,7 @@ const paginationModel = {
                     <td><%= locals.moment(audit.timestamp).format('DD/MMM/YYYY HH:mm:ss') %></td>
                     <td><%= audit.event.description %></td>
                     <td><%= audit.service ? audit.service.name : '' %></td>
+                    <td><%= audit.organisation ? audit.organisation.name: '' %></td>
                     <td><%= audit.result ? 'Success' : 'Failure' %></td>
                     <td><%= audit.user ? audit.user.name : '' %></td>
                 </tr>

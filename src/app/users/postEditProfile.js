@@ -2,7 +2,7 @@ const logger = require('./../../infrastructure/logger');
 const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetails, waitForIndexToUpdate } = require('./utils');
 const { updateUser } = require('./../../infrastructure/directories');
-const { putSingleServiceIdentifierForUser } = require('./../../infrastructure/organisations');
+const { putSingleServiceIdentifierForUser } = require('./../../infrastructure/access');
 const { getById, updateIndex } = require('./../../infrastructure/users');
 const userDevices = require('./../../infrastructure/userDevices');
 
@@ -91,10 +91,10 @@ const postEditProfile = async (req, res) => {
   }
 
   const uid = req.params.uid;
-
+  const idKey = 'k2s-id';
   //todo k2s-id set id
   if (req.body.orgId && req.body.serviceId) {
-    const identifierResult = await putSingleServiceIdentifierForUser(uid, req.body.serviceId, req.body.orgId, req.body.ktsId, req.id)
+    const identifierResult = await putSingleServiceIdentifierForUser(uid, req.body.serviceId, req.body.orgId, idKey, req.body.ktsId, req.id);
 
     if (!identifierResult) {
       sendResult(req, res, 'users/views/editProfile', {
