@@ -24,11 +24,15 @@ const describeAuditEvent = async (audit) => {
   }
 
   if (audit.type === 'support' && audit.subType === 'user-edit') {
+    const viewedUser = await getUserDetails({ params: { uid: audit.editedUser } });
     const editedStatusTo = audit.editedFields && audit.editedFields.find(x => x.name === 'status');
     if (editedStatusTo && editedStatusTo.newValue === 0) {
       const newStatus = mapUserStatus(editedStatusTo.newValue);
       const reason = audit.reason ? audit.reason : 'no reason given';
-      return `${newStatus.description} (reason: ${reason})`;
+      return `${newStatus.description} user: ${viewedUser.firstName} ${viewedUser.lastName} (reason: ${reason})`;
+    }
+    if (editedStatusTo && editedStatusTo.newValue === 1) {
+      return `Reactivated user: ${viewedUser.firstName} ${viewedUser.lastName}`
     }
     if (editedStatusTo) {
       const newStatus = mapUserStatus(editedStatusTo.newValue);
