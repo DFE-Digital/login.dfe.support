@@ -186,7 +186,7 @@ describe('When syncing userDevices materialised view', function () {
   it('then it should pass correlationId to directories', async () => {
     await syncUserDevicesView();
 
-    expect(directories.getPageOfUsers.mock.calls[0][5]).toBe('new-uuid');
+    expect(directories.getPageOfUsers.mock.calls[0][6]).toBe('new-uuid');
   });
 
   it('then it should pass correlationId to organisations', async () => {

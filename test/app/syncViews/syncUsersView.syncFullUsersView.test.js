@@ -28,6 +28,9 @@ const testData = {
         codes: [
           { code: 'ABC123', type: 'changeemail', email: 'user.oneplus@unit.tests' },
         ],
+        legacyUsernames: [
+          'sa_user1',
+        ],
       }],
       numberOfPages: 2,
     },
@@ -142,8 +145,8 @@ describe('When syncing full users materialised view', () => {
     await syncFullUsersView();
 
     expect(directories.getPageOfUsers).toHaveBeenCalledTimes(2);
-    expect(directories.getPageOfUsers).toHaveBeenCalledWith(1, 250, false, true, undefined, testData.correlationId);
-    expect(directories.getPageOfUsers).toHaveBeenCalledWith(2, 250, false, true, undefined, testData.correlationId);
+    expect(directories.getPageOfUsers).toHaveBeenCalledWith(1, 250, false, true, true, undefined, testData.correlationId);
+    expect(directories.getPageOfUsers).toHaveBeenCalledWith(2, 250, false, true, true, undefined, testData.correlationId);
   });
 
   it('then it should get all pages of user services', async () => {
@@ -178,6 +181,7 @@ describe('When syncing full users materialised view', () => {
       description: 'Active',
       changedOn: null,
     });
+    expect(actual.legacyUsernames).toEqual(expectedUser.legacyUsernames);
   });
 
   it('then it should update index with user2', async () => {
@@ -204,6 +208,7 @@ describe('When syncing full users materialised view', () => {
       description: 'Deactivated',
       changedOn: null,
     });
+    expect(actual.legacyUsernames).toEqual([]);
   });
 
   it('then it should update active index to be one created and populated in sync', async () => {
