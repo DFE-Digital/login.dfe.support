@@ -11,15 +11,16 @@ const rp = require('login.dfe.request-promise-retry').defaults({
 const jwtStrategy = require('login.dfe.jwt-strategies');
 
 
-const getPageOfUsers = async (pageNumber, pageSize, includeDevices, includeCodes, changedAfter, correlationId) => {
+const getPageOfUsers = async (pageNumber, pageSize, includeDevices, includeCodes, includeLegacyUsernames, changedAfter, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
     let uri = `${config.directories.service.url}/users?page=${pageNumber}&pageSize=${pageSize}`;
-    if (includeDevices || includeCodes) {
+    if (includeDevices || includeCodes || includeLegacyUsernames) {
       const includes = [
         includeDevices ? 'devices' : undefined,
         includeCodes ? 'codes' : undefined,
+        includeLegacyUsernames ? 'legacyusernames' : undefined,
       ].filter(x => x !== undefined).join(',');
       uri += `&include=${includes}`;
     }
