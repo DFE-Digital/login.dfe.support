@@ -8,10 +8,28 @@
         "appServiceName": {
             "value": ""
         },
-        "appServiceConfigPath": {
+        "appServicePlanRG": {
             "value": ""
         },
-        "appServicePlanRG": {
+        "nodeVersion": {
+            "value": ""
+        },
+        "customHostName": {
+            "value": ""
+        },
+        "certificateResourceGroup": {
+            "value": ""
+        },
+        "certificateName": {
+            "value": ""
+        },
+        "numberOfWorkers": {
+            "value": ""
+        },
+        "minTlsVersion": {
+            "value": ""
+        },
+        "appServiceConfigPath": {
             "value": ""
         }
     }
