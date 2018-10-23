@@ -27,37 +27,77 @@
                 "description": "The default NodeJS version that the App Service will run"
             }
         },
+        "minTlsVersion": {
+            "type": "string",
+            "defaultValue": "1.0",
+            "metadata": {
+                "description": "The minimum tls version for the service"
+            }
+        },
+        "numberOfWorkers": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "The number of workers to assign to the app service within the app service plan"
+            }
+        },
         "appServiceConfigPath": {
             "type": "string",
             "metadata": {
                 "description": "JSON string containing app config"
             }
+        },
+        "customHostName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "certificateResourceGroup": {
+            "type": "string"
+        },
+        "certificateName": {
+            "type": "string"
         }
     },
-    "variables": {
-        "appServicePlanId": "[resourceId(parameters('appServicePlanRG'),'Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
-    },
+    "variables": {},
     "resources": [
         {
-            "type": "Microsoft.Web/sites",
+            "apiVersion": "2017-05-10",
             "name": "[parameters('appServiceName')]",
-            "apiVersion": "2016-08-01",
-            "location": "[resourceGroup().location]",
+            "type": "Microsoft.Resources/deployments",
             "properties": {
-                "clientAffinityEnabled": false,
-                "serverFarmId": "[variables('appServicePlanId')]",
-                "siteConfig": {
-                    "appSettings": [
-                        {
-                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                            "value": "[parameters('nodeVersion')]"
-                        },
-                        {
-                            "name": "settings",
-                            "value": "[parameters('appServiceConfigPath')]"
-                        }
-                    ],
-                    "alwaysOn": true
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/DFE-Digital/login.dfe.infrastructure/master/Shared/app-service.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "appServiceName": {
+                        "value": "[parameters('appServiceName')]"
+                    },
+                    "appServicePlanName": {
+                        "value": "[parameters('appServicePlanName')]"
+                    },
+                    "appServicePlanRG": {
+                        "value": "[parameters('appServicePlanRG')]"
+                    },
+                    "nodeVersion": {
+                        "value": "[parameters('nodeVersion')]"
+                    },
+                    "numberOfWorkers": {
+                        "value": "[parameters('numberOfWorkers')]"
+                    },
+                    "appServiceConfigPath": {
+                        "value": "[parameters('appServiceConfigPath')]"
+                    },
+                    "minTlsVersion": {
+                        "value": "[parameters('minTlsVersion')]"
+                    },
+                    "customHostName": {
+                        "value": "[parameters('customHostName')]"
+                    },
+                    "certificateThumbprint": {
+                        "value": "[reference(resourceId(parameters('certificateResourceGroup'), 'Microsoft.Web/certificates', parameters('certificateName')), '2016-03-01').Thumbprint]"
+                    }
                 }
             }
         }
