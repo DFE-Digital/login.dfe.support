@@ -187,6 +187,7 @@ const createIndex = async () => {
           { name: 'statusDescription', type: 'Edm.String', sortable: true, filterable: true },
           { name: 'statusId', type: 'Edm.Int64' },
           { name: 'pendingEmail', type: 'Edm.String' },
+          { name: 'legacyUsernames', type: 'Collection(Edm.String)', searchable: true, filterable: true },
         ]
       },
       json: true,
@@ -229,6 +230,7 @@ const updateIndex = async (users, index) => {
         statusDescription: user.status.description,
         statusId: user.status.id,
         pendingEmail: user.pendingEmail || '',
+        legacyUsernames: user.legacyUsernames || [],
       };
     });
     await rp({
