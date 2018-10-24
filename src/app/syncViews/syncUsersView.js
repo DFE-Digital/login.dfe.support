@@ -57,7 +57,7 @@ const getAllUsers = async (changedAfter, correlationId) => {
   while (hasMorePages) {
     try {
       logger.info(`Reading page ${pageNumber} of ${numberOfPages} of users (correlationId: ${correlationId})`, { correlationId });
-      const page = await directories.getPageOfUsers(pageNumber, 250, false, true, changedAfter, correlationId);
+      const page = await directories.getPageOfUsers(pageNumber, 250, false, true, true, changedAfter, correlationId);
       if (page.users && page.users.length > 0) {
         users.push(...page.users);
       }
@@ -121,7 +121,8 @@ const buildUsers = async (users, serviceMappings) => {
       successfulLoginsInPast12Months: successfulLogins.length,
       status: mapUserStatus(user.status, statusLastChangedOn),
       pendingEmail,
-    })
+      legacyUsernames: user.legacyUsernames || [],
+    });
   }
   return usersForIndex;
 };
