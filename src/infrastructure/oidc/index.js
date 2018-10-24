@@ -30,6 +30,16 @@ const getPassportStrategy = async () => {
   });
 };
 
+const hasJwtExpired = async (exp) => {
+  if (!exp) {
+    return true;
+  }
+
+  const expires = new Date(Date.UTC(1970, 0, 1) + (user.exp * 1000)).getTime();
+  const now = Date.now();
+  return expires < now;
+};
+
 
 const init = async (app) => {
   passport.use('oidc', await getPassportStrategy());
@@ -37,7 +47,11 @@ const init = async (app) => {
     done(null, user);
   });
   passport.deserializeUser((user, done) => {
-    done(null, user);
+    if (hasJwtExpired(user.exp)) {
+      done(null, null);
+    } else {
+      done(null, user);
+    }
   });
   app.use(passport.initialize());
   app.use(passport.session());
@@ -61,7 +75,7 @@ const init = async (app) => {
 
       const supportClaims = await getUserSupportClaims(user.sub);
       if (!supportClaims || !supportClaims.isSupportUser) {
-        if(!req.session.redirectUrl.toLowerCase().endsWith('signout')) {
+        if (!req.session.redirectUrl.toLowerCase().endsWith('signout')) {
           return res.redirect('/not-authorised');
         }
       } else {
