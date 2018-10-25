@@ -30,12 +30,12 @@ const getPassportStrategy = async () => {
   });
 };
 
-const hasJwtExpired = async (exp) => {
+const hasJwtExpired = (exp) => {
   if (!exp) {
     return true;
   }
 
-  const expires = new Date(Date.UTC(1970, 0, 1) + (user.exp * 1000)).getTime();
+  const expires = new Date(Date.UTC(1970, 0, 1) + (exp * 1000)).getTime();
   const now = Date.now();
   return expires < now;
 };
