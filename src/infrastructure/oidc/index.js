@@ -30,6 +30,16 @@ const getPassportStrategy = async () => {
   });
 };
 
+const hasJwtExpired = (exp) => {
+  if (!exp) {
+    return true;
+  }
+
+  const expires = new Date(Date.UTC(1970, 0, 1) + (exp * 1000)).getTime();
+  const now = Date.now();
+  return expires < now;
+};
+
 
 const init = async (app) => {
   passport.use('oidc', await getPassportStrategy());
@@ -37,7 +47,11 @@ const init = async (app) => {
     done(null, user);
   });
   passport.deserializeUser((user, done) => {
-    done(null, user);
+    if (hasJwtExpired(user.exp)) {
+      done(null, null);
+    } else {
+      done(null, user);
+    }
   });
   app.use(passport.initialize());
   app.use(passport.session());
@@ -59,13 +73,20 @@ const init = async (app) => {
         return res.redirect('/');
       }
 
-      const supportClaims = await getUserSupportClaims(user.sub);
+      const userDetails = {
+        sub: user.sub,
+        email: user.email,
+        exp: user.exp,
+        id_token: user.id_token,
+      };
+
+      const supportClaims = await getUserSupportClaims(userDetails.sub);
       if (!supportClaims || !supportClaims.isSupportUser) {
-        if(!req.session.redirectUrl.toLowerCase().endsWith('signout')) {
+        if (!req.session.redirectUrl.toLowerCase().endsWith('signout')) {
           return res.redirect('/not-authorised');
         }
       } else {
-        Object.assign(user, supportClaims);
+        Object.assign(userDetails, supportClaims);
       }
 
       if (req.session.redirectUrl) {
@@ -73,7 +94,7 @@ const init = async (app) => {
         req.session.redirectUrl = null;
       }
 
-      return req.logIn(user, (loginErr) => {
+      return req.logIn(userDetails, (loginErr) => {
         if (loginErr) {
           logger.error(`Login error in auth callback - ${loginErr}`);
           return next(loginErr);
