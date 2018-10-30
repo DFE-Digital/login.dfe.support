@@ -141,7 +141,7 @@ const buildUsersThatHaveChanged = async (correlationId) => {
 
   logger.info(`Reading service mappings for users (correlationId: ${correlationId})`, { correlationId });
   for (let i = 0; i < updatedUsers.length; i++) {
-    const serviceMapping = await getServicesByUserId(updatedUsers[i].sub, correlationId);
+    const serviceMapping = await organisations.getServicesByUserId(updatedUsers[i].sub, correlationId);
     if (serviceMapping && serviceMapping.length > 0) {
       userServices.push(...serviceMapping);
     }
