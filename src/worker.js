@@ -10,6 +10,9 @@ const healthCheck = require('login.dfe.healthcheck');
 const audit = require('./infrastructure/audit');
 const { syncFullUsersView, syncDiffUsersView, syncUserDevicesView, syncAuditCache, syncAccessRequestsView } = require('./app/syncViews');
 const { tidyIndexes } = require('./app/tidyIndexes');
+const configSchema = require('./infrastructure/config/schema');
+
+configSchema.validate();
 
 http.GlobalAgent = new KeepAliveAgent({
   maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
