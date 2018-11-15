@@ -20,6 +20,9 @@ const setCorrelationId = require('express-mw-correlation-id');
 const registerRoutes = require('./routes');
 const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
 const KeepAliveAgent = require('agentkeepalive');
+const configSchema = require('./infrastructure/config/schema');
+
+configSchema.validate();
 
 if (config.hostingEnvironment.applicationInsights) {
   appInsights.setup(config.hostingEnvironment.applicationInsights).start();
