@@ -163,7 +163,7 @@ describe('When syncing diff users materialised view', () => {
       return _getPageOfData(testData.invitations, pageNumber);
     });
 
-    access.getServicesByUserId.mockReset().mockImplementation((userId) => {
+    organisations.getServicesByUserId.mockReset().mockImplementation((userId) => {
       if (Object.keys(testData.userServices).find(x => x === userId)) {
         return testData.userServices[userId];
       }
@@ -213,9 +213,9 @@ describe('When syncing diff users materialised view', () => {
   it('then it should get all pages of user services', async () => {
     await syncDiffUsersView();
 
-    expect(access.getServicesByUserId).toHaveBeenCalledTimes(2);
-    expect(access.getServicesByUserId).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
-    expect(access.getServicesByUserId).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
+    expect(organisations.getServicesByUserId).toHaveBeenCalledTimes(2);
+    expect(organisations.getServicesByUserId).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
+    expect(organisations.getServicesByUserId).toHaveBeenCalledWith(testData.users.page1.users[0].sub, testData.correlationId);
   });
 
   it('then it should update index with user1', async () => {
