@@ -42,8 +42,9 @@ const getEditPermissions = require('./getEditPermissions');
 const postEditPermissions = require('./postEditPermissions');
 const postDeleteOrganisation = require('./postDeleteOrganisation');
 const getSecureAccess = require('./getSecureAccessDetails');
-const { get: getAssociateServices } = require('./associateServices');
+const { get: getAssociateServices, post: postAssociateServices } = require('./associateServices');
 const { get: getSelectOrganisation, post: postSelectOrganisation }  = require('./selectOrganisation');
+const { get: getAssociateRoles } = require('./associateRoles');
 
 const router = express.Router({ mergeParams: true });
 
@@ -114,6 +115,9 @@ const users = (csrf) => {
   router.post('/:uid/select-organisation', csrf, asyncWrapper(postSelectOrganisation));
 
   router.get('/:uid/organisations/:orgId', csrf, asyncWrapper(getAssociateServices));
+  router.post('/:uid/organisations/:orgId', csrf, asyncWrapper(postAssociateServices));
+
+  router.get('/:uid/organisations/:orgId/services/:sid', csrf, asyncWrapper(getAssociateRoles));
 
   return router;
 };
