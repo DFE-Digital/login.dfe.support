@@ -4,7 +4,7 @@ const { getUserAudit } = require('./../../infrastructure/audit');
 const logger = require('./../../infrastructure/logger');
 const { getServiceIdForClientId } = require('./../../infrastructure/serviceMapping');
 const { getServiceById } = require('./../../infrastructure/applications');
-const { getOrganisationById } = require('./../../infrastructure/organisations');
+const { getOrganisationById, getUserOrganisations } = require('./../../infrastructure/organisations');
 
 let cachedServiceIds = {};
 let cachedServices  = {};
@@ -107,6 +107,7 @@ const getAudit = async (req, res) => {
   cachedServiceIds = {};
   cachedServices  = {};
   const user = await getUserDetails(req);
+  const userOrganisations = await getUserOrganisations(req.params.uid, req.id);
 
   const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
   if (isNaN(pageNumber)) {
@@ -150,6 +151,7 @@ const getAudit = async (req, res) => {
   sendResult(req, res, 'users/views/audit', {
     csrfToken: req.csrfToken(),
     user,
+    organisations: userOrganisations,
     audits: audits,
     numberOfPages: pageOfAudits.numberOfPages,
     page: pageNumber,
