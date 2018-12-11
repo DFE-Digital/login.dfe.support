@@ -1,9 +1,11 @@
 const users = require('./../../infrastructure/users');
 const logger = require('./../../infrastructure/logger');
 const { getUser, getInvitation, createUserDevice } = require('./../../infrastructure/directories');
-const { getServicesByUserId } = require('./../../infrastructure/access');
+const { getServicesByUserId, getServicesByInvitationId } = require('./../../infrastructure/access');
+const { getServiceById } = require('./../../infrastructure/applications');
 const { mapUserStatus } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
+const sortBy = require('lodash/sortBy');
 
 const delay = async (milliseconds) => {
   return new Promise((resolve) => {
@@ -157,6 +159,28 @@ const getUserDetails = async (req) => {
   }
 };
 
+const getAllServicesForUserInOrg = async (userId, organisationId, correlationId) => {
+  const allUserServices = userId.startsWith('inv-') ? await getServicesByInvitationId(userId.substr(4), correlationId) : await getServicesByUserId(userId, correlationId);
+  if (!allUserServices) {
+    return [];
+  }
+
+  const userServicesForOrg = allUserServices.filter(x => x.organisationId === organisationId);
+  const services = userServicesForOrg.map((service) => ({
+    id: service.serviceId,
+    dateActivated: service.accessGrantedOn,
+    name: '',
+    status: null,
+  }));
+  for (let i = 0; i < services.length; i++) {
+    const service = services[i];
+    const application = await getServiceById(service.id);
+    service.name = application.name;
+    service.status = mapUserStatus(service.status);
+  }
+  return sortBy(services, 'name');
+};
+
 const createDevice = async (req) => {
 
   const userId = req.body.userId;
@@ -206,4 +230,5 @@ module.exports = {
   getUserDetails,
   createDevice,
   waitForIndexToUpdate,
+  getAllServicesForUserInOrg,
 };
