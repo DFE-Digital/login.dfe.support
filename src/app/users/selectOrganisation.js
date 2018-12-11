@@ -28,7 +28,7 @@ const getNaturalIdentifiers = async (req) => {
 const get = async (req, res) => {
   const userOrganisations = await getNaturalIdentifiers(req);
   if (userOrganisations.length === 1) {
-    return res.redirect(`associate-services/${userOrganisations[0].organisation.id}`);
+    return res.redirect(`organisations/${userOrganisations[0].organisation.id}`);
   }
   return res.render('users/views/selectOrganisation', {
     csrfToken: req.csrfToken(),
@@ -60,7 +60,7 @@ const post = async (req, res) => {
     model.csrfToken = req.csrfToken();
     return res.render('users/views/selectOrganisation', model);
   }
-  return res.redirect(`/users/${req.params.uid}/associate-services/${model.selectedOrganisation}`);
+  return res.redirect(`/users/${req.params.uid}/organisations/${model.selectedOrganisation}`);
 };
 
 

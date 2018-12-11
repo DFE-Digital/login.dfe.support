@@ -79,8 +79,8 @@ const users = (csrf) => {
     res.redirect(`/users/${req.params.uid}/organisations`);
   }));
   router.get('/:uid/organisations', csrf, asyncWrapper(getOrganisations));
-  router.get('/:uid/organisations/:id', csrf, asyncWrapper(getEditPermissions));
-  router.post('/:uid/organisations/:id', csrf, asyncWrapper(postEditPermissions));
+  router.get('/:uid/organisations/:id/edit-permission', csrf, asyncWrapper(getEditPermissions));
+  router.post('/:uid/organisations/:id/edit-permission', csrf, asyncWrapper(postEditPermissions));
   router.post('/:uid/organisations/:id/delete-organisation', csrf, asyncWrapper(postDeleteOrganisation));
   router.get('/:uid/services', csrf, asyncWrapper(getServices));
   router.get('/:uid/audit', csrf, asyncWrapper(getAudit));
@@ -113,7 +113,7 @@ const users = (csrf) => {
   router.get('/:uid/select-organisation', csrf, asyncWrapper(getSelectOrganisation));
   router.post('/:uid/select-organisation', csrf, asyncWrapper(postSelectOrganisation));
 
-  router.get('/:uid/associate-services/:orgId', csrf, asyncWrapper(getAssociateServices));
+  router.get('/:uid/organisations/:orgId', csrf, asyncWrapper(getAssociateServices));
 
   return router;
 };
