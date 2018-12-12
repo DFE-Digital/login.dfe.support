@@ -3,7 +3,7 @@ jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils')
 
 jest.mock('./../../../src/infrastructure/organisations');
 
-const { getUserOrganisations } = require('./../../../src/infrastructure/organisations');
+const { getUserOrganisations, getInvitationOrganisations } = require('./../../../src/infrastructure/organisations');
 
 describe('when displaying the multiple organisation selection', () => {
 
@@ -45,6 +45,22 @@ describe('when displaying the multiple organisation selection', () => {
       },
     ]);
 
+    getInvitationOrganisations.mockReset();
+    getInvitationOrganisations.mockReturnValue([
+      {
+        organisation: {
+          id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
+          name: 'Great Big School'
+        },
+      },
+      {
+        organisation: {
+          id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
+          name: 'Little Tiny School'
+        },
+      },
+    ]);
+
     getMultipleOrgSelection = require('./../../../src/app/users/selectOrganisation').get;
   });
 
@@ -63,7 +79,7 @@ describe('when displaying the multiple organisation selection', () => {
     });
   });
 
-  it('then it should include the users organisations in the model', async () => {
+  it('then it should include the users organisations in the model if for user', async () => {
     await getMultipleOrgSelection(req, res);
     expect(getUserOrganisations.mock.calls).toHaveLength(1);
     expect(getUserOrganisations.mock.calls[0][0]).toBe('user1');
@@ -74,8 +90,22 @@ describe('when displaying the multiple organisation selection', () => {
         id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
         name: 'Little Tiny School',
       }
-
     });
   });
+
+  it('then it should include the invitations organisations in the model if for invitation', async () => {
+    req.params.uid = 'inv-invitation1';
+    await getMultipleOrgSelection(req, res);
+    expect(getInvitationOrganisations.mock.calls).toHaveLength(1);
+    expect(getInvitationOrganisations.mock.calls[0][0]).toBe('invitation1');
+    expect(getInvitationOrganisations.mock.calls[0][1]).toBe('correlationId');
+    expect(res.render.mock.calls[0][1].organisations[1]).toMatchObject({
+      naturalIdentifiers: [],
+      organisation: {
+        id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
+        name: 'Little Tiny School',
+      }
+    });
+  })
 
 });
