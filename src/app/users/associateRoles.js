@@ -26,7 +26,6 @@ const get = async (req, res) => {
     user: req.session.user,
     validationMessages: {},
     backLink: true,
-    currentPage: 'users',
     organisationDetails,
     selectedRoles,
     serviceDetails,
