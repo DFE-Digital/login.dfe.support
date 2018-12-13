@@ -1,0 +1,45 @@
+<a href="organisations" class="link-back">Back</a>
+<div class="grid-row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Select organisation
+        </h1>
+        <p>Select the user's organisation that you want to add services to.</p>
+
+        <form method="post">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+            <div class="form-group <%= (locals.validationMessages.selectedOrganisation !== undefined) ? 'form-group-error' : '' %>">
+                <fieldset>
+                    <% if (locals.validationMessages.selectedOrganisation !== undefined) { %>
+                    <p class="error-message" id="validation-selected-organisation"><%=locals.validationMessages.selectedOrganisation %></p>
+                    <% } %>
+                    <legend class="vh">Select the organisation </legend>
+                    <% for(let i= 0; i < locals.organisations.length; i++) {
+                        const org = locals.organisations[i];
+                    %>
+                    <div class="multiple-choice">
+                        <input id="<%= org.organisation.id %>" type="radio" name="selectedOrganisation" value="<%= org.organisation.id %>">
+                        <label for="<%= org.organisation.id %>">
+                            <span class="form-label-bold"><%= org.organisation.name %></span>
+                            <% if (org.naturalIdentifiers) { %>
+                                <span class="form-hint">
+                                <%= org.naturalIdentifiers.join(', ') %>
+                            </span>
+                            <% } %>
+                            <% if (org.organisation.address && org.organisation.address !== 'Not recorded') { %>
+                                <span class="form-hint">
+                                <%= org.organisation.address %>
+                            </span>
+                            <% } %>
+                        </label>
+                    </div>
+                    <% } %>
+                </fieldset>
+            </div>
+            <div class="form-submit submit-buttons">
+                <button class="button">Continue</button>
+                <a href="./" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
