@@ -105,12 +105,26 @@ describe('when displaying the associate roles view', () => {
     });
   });
 
-  it('then it should include the number of selected services', async () => {
+  it('then it should include the organisation details for a invitation if request of invitation', async () => {
     req.params.uid = 'inv-invitation1';
+
     await getAssociateRoles(req, res);
     expect(getInvitationOrganisations.mock.calls).toHaveLength(1);
     expect(getInvitationOrganisations.mock.calls[0][0]).toBe('invitation1');
     expect(getInvitationOrganisations.mock.calls[0][1]).toBe('correlationId');
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      organisationDetails: {
+        organisation: {
+          id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
+          name: 'Great Big School'
+        },
+      },
+    });
+  });
+
+  it('then it should include the number of selected services', async () => {
+    await getAssociateRoles(req, res);
+
     expect(res.render.mock.calls[0][1]).toMatchObject({
       totalNumberOfServices: req.session.user.services.length,
     });
