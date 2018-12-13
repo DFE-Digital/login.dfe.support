@@ -26,7 +26,14 @@ const getNaturalIdentifiers = async (req) => {
   return userOrganisations;
 };
 
+const clearServiceSessionData = (req) => {
+  if (req.session.user.services) {
+    req.session.user.services = undefined;
+  }
+};
+
 const get = async (req, res) => {
+  clearServiceSessionData(req);
   const userOrganisations = await getNaturalIdentifiers(req);
   if (userOrganisations.length === 1) {
     return res.redirect(`organisations/${userOrganisations[0].organisation.id}`);

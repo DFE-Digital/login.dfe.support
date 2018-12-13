@@ -1,0 +1,63 @@
+<div class="row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Select services
+        </h1>
+        <dl class="app-check-your-answers app-check-your-answers--short">
+
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__title">
+                    User
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%= locals.name%>
+                </dd>
+            </div>
+
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__title">
+                    Organisation
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%=locals.organisationDetails.organisation.name%>
+                </dd>
+            </div>
+        </dl>
+        <% if (locals.services.length > 0) { %>
+        <form method="post">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+            <div class="form-group  <%= (locals.validationMessages.services !== undefined) ? 'form-group-error' : '' %>">
+                <fieldset>
+                    <% if (locals.validationMessages.services !== undefined) { %>
+                    <p class="error-message" id="validation-selected-organisation"><%=locals.validationMessages.services%></p>
+                    <% } %>
+                    <legend>
+                        <span class="body-text">Select all required services</span>
+                    </legend>
+
+                    <% for (let i = 0; i < locals.services.length; i++) { %>
+                        <% const service = locals.services[i]; %>
+                        <div class="multiple-choice">
+
+                            <input id="<%=service.id%>" type="checkbox" name="service" value="<%=service.id%>"
+                                    <% if (locals.selectedServices && locals.selectedServices.length > 0) {
+                                    for(let i = 0; i < locals.selectedServices.length; i++) {
+                                        const selectedService = locals.selectedServices[i].serviceId;
+                                    %>
+                                    <%= service.id === selectedService ? 'checked': ''%><% } }%>>
+                            <label for="<%=service.id%>"><%=service.name%></label>
+                        </div>
+                    <% } %>
+
+                </fieldset>
+            </div>
+            <div class="form-submit submit-buttons">
+                <button type="submit" class="button">Continue</button>
+                <a href= "./../" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
+        <% } else { %>
+            <p> No services available </p>
+        <% } %>
+    </div>
+</div>

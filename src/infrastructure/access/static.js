@@ -14,9 +14,14 @@ const getServiceIdentifierDetails = async () => {
   return Promise.resolve(null);
 };
 
+const getServicesByInvitationId = async () => {
+  return Promise.resolve(null);
+};
+
 module.exports = {
   addInvitationService,
   getServicesByUserId,
   putSingleServiceIdentifierForUser,
   getServiceIdentifierDetails,
+  getServicesByInvitationId
 };

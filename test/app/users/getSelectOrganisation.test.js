@@ -24,7 +24,13 @@ describe('when displaying the multiple organisation selection', () => {
       params: {
         uid: 'user1',
       },
-      session: {},
+      session: {
+        user: {
+          services: {
+
+          }
+        }
+      },
     };
     res = {
       render: jest.fn(),
@@ -106,6 +112,6 @@ describe('when displaying the multiple organisation selection', () => {
         name: 'Little Tiny School',
       }
     });
-  })
+  });
 
 });
