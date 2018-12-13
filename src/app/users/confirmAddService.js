@@ -1,13 +1,15 @@
 'use strict';
 const { getAllServices } = require('./../../infrastructure/applications');
 const { listRolesOfService, addInvitationService, addUserService } = require('./../../infrastructure/access');
-const { getUserOrganisations } = require('./../../infrastructure/organisations');
+const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
+const logger = require('./../../infrastructure/logger');
 
 const get = async (req, res) => {
+  const userId = req.params.uid;
   if (!req.session.user) {
-    return res.redirect(`/users/${req.params.uid}/organisations`);
+    return res.redirect(`/users/${userId}/organisations`);
   }
-  const userOrganisations = await getUserOrganisations(req.params.uid, req.id);
+  const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisations(userId, req.id);
   const organisationDetails = userOrganisations.find(x => x.organisation.id === req.params.orgId);
 
   const services = req.session.user.services.map(service => ({
@@ -27,7 +29,7 @@ const get = async (req, res) => {
 
   return res.render('users/views/confirmAddService', {
     backLink: true,
-    changeLink: `/users/${req.params.uid}/organisations/${req.params.orgId}`,
+    changeLink: `/users/${userId}/organisations/${req.params.orgId}`,
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     user: {
@@ -41,11 +43,11 @@ const get = async (req, res) => {
 };
 
 const post = async (req, res) => {
+  const uid = req.params.uid;
   if (!req.session.user) {
-    return res.redirect(`/users/${req.params.uid}/organisations`);
+    return res.redirect(`/users/${uid}/organisations`);
   }
 
-  let uid = req.params.uid;
   const organisationId = req.params.orgId;
   if (req.session.user.services) {
     for (let i = 0; i < req.session.user.services.length; i++) {
@@ -58,6 +60,18 @@ const post = async (req, res) => {
       }
     }
   }
+
+  logger.audit(`${req.user.email} (id: ${req.user.sub}) added services for organisation id: ${organisationId} for user ${req.session.user.email} (id: ${uid})`, {
+    type: 'approver',
+    subType: 'user-services-added',
+    userId: req.user.sub,
+    userEmail: req.user.email,
+    editedUser: uid,
+    editedFields: [{
+      name: 'add_services',
+      newValue: req.session.user.services,
+    }],
+  });
   res.flash('info', `Services successfully added`);
   res.redirect(`/users/${uid}/services`)
 };
