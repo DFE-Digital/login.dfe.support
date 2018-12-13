@@ -42,6 +42,8 @@ const getEditPermissions = require('./getEditPermissions');
 const postEditPermissions = require('./postEditPermissions');
 const postDeleteOrganisation = require('./postDeleteOrganisation');
 const getSecureAccess = require('./getSecureAccessDetails');
+const { get: getAssociateServices } = require('./associateServices');
+const { get: getSelectOrganisation, post: postSelectOrganisation }  = require('./selectOrganisation');
 
 const router = express.Router({ mergeParams: true });
 
@@ -77,8 +79,8 @@ const users = (csrf) => {
     res.redirect(`/users/${req.params.uid}/organisations`);
   }));
   router.get('/:uid/organisations', csrf, asyncWrapper(getOrganisations));
-  router.get('/:uid/organisations/:id', csrf, asyncWrapper(getEditPermissions));
-  router.post('/:uid/organisations/:id', csrf, asyncWrapper(postEditPermissions));
+  router.get('/:uid/organisations/:id/edit-permission', csrf, asyncWrapper(getEditPermissions));
+  router.post('/:uid/organisations/:id/edit-permission', csrf, asyncWrapper(postEditPermissions));
   router.post('/:uid/organisations/:id/delete-organisation', csrf, asyncWrapper(postDeleteOrganisation));
   router.get('/:uid/services', csrf, asyncWrapper(getServices));
   router.get('/:uid/audit', csrf, asyncWrapper(getAudit));
@@ -108,7 +110,10 @@ const users = (csrf) => {
   router.post('/:uid/organisation-permissions', csrf, asyncWrapper(postOrganisationPermissions));
   router.get('/:uid/confirm-associate-organisation', csrf, asyncWrapper(getConfirmAssociateOrganisation));
 
+  router.get('/:uid/select-organisation', csrf, asyncWrapper(getSelectOrganisation));
+  router.post('/:uid/select-organisation', csrf, asyncWrapper(postSelectOrganisation));
 
+  router.get('/:uid/organisations/:orgId', csrf, asyncWrapper(getAssociateServices));
 
   return router;
 };

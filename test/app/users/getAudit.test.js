@@ -26,6 +26,9 @@ describe('when getting users audit details', () => {
       query: {
         page: 3,
       },
+      params: {
+        uid: 'user1',
+      },
     };
 
     res = {
