@@ -18,7 +18,7 @@ const get = async (req, res) => {
     return res.redirect(`/users/${req.params.uid}/organisations`)
   }
   const userId = req.params.uid;
-  const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisations(req.params.uid, req.id);
+  const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisations(userId, req.id);
   const organisationDetails = userOrganisations.find(x => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
 
@@ -37,7 +37,8 @@ const get = async (req, res) => {
 };
 
 const validate = async (req) => {
-  const userOrganisations = await getUserOrganisations(req.params.uid, req.id);
+  const userId = req.params.uid;
+  const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisations(userId, req.id);
   const organisationDetails = userOrganisations.find(x => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
   const model = {
