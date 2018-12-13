@@ -106,7 +106,8 @@ describe('when confirming the details of a new K2S user', () => {
     expect(addInvitationService.mock.calls[0][1]).toBe('1234567');
     expect(addInvitationService.mock.calls[0][2]).toBe('LA-1');
     expect(addInvitationService.mock.calls[0][3]).toEqual([{ key: 'k2s-id', value: '1928371' }]);
-    expect(addInvitationService.mock.calls[0][4]).toBe('correlationId');
+    expect(addInvitationService.mock.calls[0][4]).toEqual([]);
+    expect(addInvitationService.mock.calls[0][5]).toBe('correlationId');
   });
 
   it('then it should set a flash message that user has been invited and redirect to user list', async () => {
