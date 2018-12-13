@@ -10,7 +10,7 @@ jest.mock('./../../../src/infrastructure/applications', () => {
 jest.mock('./../../../src/app/users/utils');
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
-const { getUserOrganisations } = require('./../../../src/infrastructure/organisations');
+const { getUserOrganisations, getInvitationOrganisations } = require('./../../../src/infrastructure/organisations');
 const { getAllServices } = require('./../../../src/infrastructure/applications');
 const { getAllServicesForUserInOrg } = require('./../../../src/app/users/utils');
 const res = getResponseMock();
@@ -73,6 +73,21 @@ describe('when displaying the associate service view', () => {
         },
       },
     ]);
+    getInvitationOrganisations.mockReset();
+    getInvitationOrganisations.mockReturnValue([
+      {
+        organisation: {
+          id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
+          name: 'Great Big School'
+        },
+      },
+      {
+        organisation: {
+          id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
+          name: 'Little Tiny School'
+        },
+      },
+    ]);
     getAssociateServices = require('./../../../src/app/users/associateServices').get;
   });
 
@@ -91,9 +106,28 @@ describe('when displaying the associate service view', () => {
     });
   });
 
-  it('then it should include the organisation details', async () => {
+  it('then it should include the organisation details for a user if request for user', async () => {
     await getAssociateServices(req, res);
+    expect(getUserOrganisations.mock.calls).toHaveLength(1);
+    expect(getUserOrganisations.mock.calls[0][0]).toBe('user1');
+    expect(getUserOrganisations.mock.calls[0][1]).toBe('correlationId');
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      organisationDetails:
+        {
+          organisation: {
+            id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
+            name: 'Great Big School'
+          },
+        },
+    });
+  });
 
+  it('then it should include the organisation details for a invite if request for invite', async () => {
+    req.params.uid = 'inv-invitation1';
+    await getAssociateServices(req, res);
+    expect(getInvitationOrganisations.mock.calls).toHaveLength(1);
+    expect(getInvitationOrganisations.mock.calls[0][0]).toBe('invitation1');
+    expect(getInvitationOrganisations.mock.calls[0][1]).toBe('correlationId');
     expect(res.render.mock.calls[0][1]).toMatchObject({
       organisationDetails:
         {

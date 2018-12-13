@@ -27,7 +27,7 @@ const getNaturalIdentifiers = async (req) => {
 };
 
 const clearServiceSessionData = (req) => {
-  if (req.session.user) {
+  if (req.session.user.services) {
     req.session.user.services = undefined;
   }
 };
