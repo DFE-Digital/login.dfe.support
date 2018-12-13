@@ -1,7 +1,7 @@
 'use strict';
-const { getUserOrganisations } = require('./../../infrastructure/organisations');
+const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 const { getAllServicesForUserInOrg } = require('./utils');
-const { getAllServices } = require('./../../infrastructure/applications')
+const { getAllServices } = require('./../../infrastructure/applications');
 
 const getAllAvailableServices = async (req) => {
   const allServices = await getAllServices();
@@ -17,7 +17,8 @@ const get = async (req, res) => {
   if (!req.session.user) {
     return res.redirect(`/users/${req.params.uid}/organisations`)
   }
-  const userOrganisations = await getUserOrganisations(req.params.uid, req.id);
+  const userId = req.params.uid;
+  const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisations(req.params.uid, req.id);
   const organisationDetails = userOrganisations.find(x => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
 
