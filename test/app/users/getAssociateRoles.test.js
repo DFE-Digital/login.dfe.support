@@ -35,7 +35,8 @@ describe('when displaying the associate roles view', () => {
               serviceId: 'service1',
               roles: [],
             }
-          ]
+          ],
+          isAddService: true
         },
       },
     });

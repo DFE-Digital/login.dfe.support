@@ -9,9 +9,11 @@ const policyEngine = new PolicyEngine(config);
 
 const getSingleServiceForUser = async (userId, organisationId, serviceId, correlationId) => {
   const userService = userId.startsWith('inv-') ? await getSingleInvitationService(userId.substr(4), serviceId, organisationId, correlationId) : await getSingleUserService(userId, serviceId, organisationId, correlationId);
+  const application = await getServiceById(serviceId, correlationId);
   return {
     id: userService.serviceId,
-    roles: userService.roles
+    roles: userService.roles,
+    name: application.name
   }
 };
 
@@ -21,16 +23,17 @@ const get = async (req, res) => {
     return res.redirect(`/users/${userId}/organisations`);
   }
 
-  if (req.session.user.isEditService) {
+  if (!req.session.user.isAddService) {
     const userRoles = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
     req.session.user.services = [{
       serviceId: userRoles.id,
       roles: userRoles.roles.map(a => a.id),
+      name: userRoles.name
     }]
   }
 
-  const totalNumberOfServices = !req.session.user.isEditService ? req.session.user.services.length : 1;
-  const currentService = !req.session.user.isEditService ? req.session.user.services.findIndex(x => x.serviceId === req.params.sid) + 1 : 1;
+  const totalNumberOfServices = req.session.user.isAddService ? req.session.user.services.length : 1;
+  const currentService = req.session.user.isAddService ? req.session.user.services.findIndex(x => x.serviceId === req.params.sid) + 1 : 1;
 
   const serviceDetails = await getServiceById(req.params.sid, req.id);
   const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisations(userId, req.id);
