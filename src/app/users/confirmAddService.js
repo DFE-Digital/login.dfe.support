@@ -29,13 +29,14 @@ const get = async (req, res) => {
 
   return res.render('users/views/confirmAddService', {
     backLink: true,
-    changeLink: `/users/${userId}/organisations/${req.params.orgId}`,
+    changeLink: req.session.user.isAddService ? `/users/${userId}/organisations/${req.params.orgId}` : `/users/${userId}/organisations/${req.params.orgId}/services/${req.session.user.services[0].serviceId}`,
     currentPage: 'users',
     csrfToken: req.csrfToken(),
     user: {
       firstName: req.session.user.firstName,
       lastName: req.session.user.lastName,
       email: req.session.user.email,
+      isAddService: req.session.user.isAddService
     },
     services,
     organisationDetails,
@@ -61,18 +62,33 @@ const post = async (req, res) => {
     }
   }
 
-  logger.audit(`${req.user.email} (id: ${req.user.sub}) added services for organisation id: ${organisationId} for user ${req.session.user.email} (id: ${uid})`, {
-    type: 'approver',
-    subType: 'user-services-added',
-    userId: req.user.sub,
-    userEmail: req.user.email,
-    editedUser: uid,
-    editedFields: [{
-      name: 'add_services',
-      newValue: req.session.user.services,
-    }],
-  });
-  res.flash('info', `Services successfully added`);
+  if (req.session.user.isAddService) {
+    logger.audit(`${req.user.email} (id: ${req.user.sub}) added services for organisation id: ${organisationId} for user ${req.session.user.email} (id: ${uid})`, {
+      type: 'approver',
+      subType: 'user-services-added',
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      editedUser: uid,
+      editedFields: [{
+        name: 'add_services',
+        newValue: req.session.user.services,
+      }],
+    });
+    res.flash('info', `Services successfully added`);
+  } else {
+    logger.audit(`${req.user.email} (id: ${req.user.sub}) updated service ${req.session.user.services[0].name} for organisation id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`, {
+      type: 'approver',
+      subType: 'user-service-updated',
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      editedUser: uid,
+      editedFields: [{
+        name: 'update_service',
+        newValue: req.session.user.services,
+      }],
+    });
+    res.flash('info', `${req.session.user.services[0].name} updated successfully`);
+  }
   res.redirect(`/users/${uid}/services`)
 };
 
