@@ -39,5 +39,9 @@ module.exports = {
   getServicesByUserId,
   putSingleServiceIdentifierForUser,
   getServiceIdentifierDetails,
-  getServicesByInvitationId
+  getServicesByInvitationId,
+  getSingleInvitationService,
+  getSingleUserService,
+  listRolesOfService,
+  addUserService
 };
