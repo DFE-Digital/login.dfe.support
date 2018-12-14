@@ -9,8 +9,16 @@ jest.mock('./../../../src/infrastructure/applications', () => {
   };
 });
 
+jest.mock('./../../../src/infrastructure/access', () => {
+  return {
+    getSingleUserService: jest.fn(),
+    getSingleInvitationService: jest.fn(),
+  };
+});
+
 const { getRequestMock, getResponseMock } = require('./../../utils');
 const { getServiceById } = require('./../../../src/infrastructure/applications');
+const { getSingleUserService, getSingleInvitationService } = require('./../../../src/infrastructure/access');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../../src/infrastructure/organisations');
 const res = getResponseMock();
 
@@ -72,6 +80,27 @@ describe('when displaying the associate roles view', () => {
         },
       },
     ]);
+
+    getSingleUserService.mockReset();
+    getSingleUserService.mockReturnValue({
+      id: 'service1',
+      name: 'service name',
+      roles: [],
+    });
+
+    getSingleInvitationService.mockReset();
+    getSingleInvitationService.mockReturnValue({
+      id: 'service1',
+      name: 'service name',
+      roles: [],
+    });
+
+    getServiceById.mockReset();
+    getServiceById.mockReturnValue({
+      id: 'service1',
+      name: 'service name'
+    });
+
     getAssociateRoles = require('./../../../src/app/users/associateRoles').get;
   });
 
@@ -144,5 +173,27 @@ describe('when displaying the associate roles view', () => {
     expect(getServiceById.mock.calls).toHaveLength(1);
     expect(getServiceById.mock.calls[0][0]).toBe('service1');
   });
-});
 
+  it('then it should get current users roles if editing service', async () => {
+    req.session.user.isAddService = false;
+    await getAssociateRoles(req, res);
+    expect(getSingleUserService.mock.calls).toHaveLength(1);
+    expect(getSingleUserService.mock.calls[0][0]).toBe('user1');
+    expect(getSingleUserService.mock.calls[0][1]).toBe('service1');
+    expect(getSingleUserService.mock.calls[0][2]).toBe('88a1ed39-5a98-43da-b66e-78e564ea72b0');
+    expect(getSingleUserService.mock.calls[0][3]).toBe('correlationId');
+  });
+
+  it('then it should get current invitations roles if editing service', async () => {
+    req.session.user.isAddService = false;
+    req.params.uid = 'inv-invitation1';
+    await getAssociateRoles(req, res);
+    expect(getSingleInvitationService.mock.calls).toHaveLength(1);
+    expect(getSingleInvitationService.mock.calls[0][0]).toBe('invitation1');
+    expect(getSingleInvitationService.mock.calls[0][1]).toBe('service1');
+    expect(getSingleInvitationService.mock.calls[0][2]).toBe('88a1ed39-5a98-43da-b66e-78e564ea72b0');
+    expect(getSingleInvitationService.mock.calls[0][3]).toBe('correlationId');
+  });
+
+
+});
