@@ -137,6 +137,7 @@ const action = async (req, res) => {
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
+    isEditService: true,
   };
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) viewed user ${user.email} (id: ${user.id})`, {
