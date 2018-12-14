@@ -224,4 +224,8 @@ module.exports = {
   getServicesByInvitationId,
   putSingleServiceIdentifierForUser,
   getServiceIdentifierDetails,
+  getSingleUserService,
+  getSingleInvitationService,
+  listRolesOfService,
+  addUserService,
 };
