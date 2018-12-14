@@ -128,10 +128,52 @@ const getServiceIdentifierDetails = async (serviceId, identifierKey, identifierV
   }
 };
 
+const getSingleUserService = async (userId, serviceId, organisationId, correlationId) => {
+  const token = await jwtStrategy(config.access.service).getBearerToken();
+  try {
+    return await rp({
+      method: 'GET',
+      uri: `${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${organisationId}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+  } catch (e) {
+    if (e.statusCode === 404) {
+      return undefined;
+    }
+    throw e;
+  }
+};
+
+const getSingleInvitationService = async (invitationId, serviceId, organisationId, correlationId) => {
+  const token = await jwtStrategy(config.access.service).getBearerToken();
+  try {
+    return await rp({
+      method: 'GET',
+      uri: `${config.access.service.url}/invitations/${invitationId}/services/${serviceId}/organisations/${organisationId}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+  } catch (e) {
+    if (e.statusCode === 404) {
+      return undefined;
+    }
+    throw e;
+  }
+};
+
 module.exports = {
   addInvitationService,
   getServicesByUserId,
   getServicesByInvitationId,
   putSingleServiceIdentifierForUser,
   getServiceIdentifierDetails,
+  getSingleUserService,
+  getSingleInvitationService,
 };

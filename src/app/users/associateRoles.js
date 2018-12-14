@@ -2,8 +2,18 @@
 const config = require('./../../infrastructure/config');
 const { getServiceById } = require('./../../infrastructure/applications');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
+const { getSingleUserService, getSingleInvitationService } = require ('./../../infrastructure/access');
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
+
+
+const getSingleServiceForUser = async (userId, organisationId, serviceId, correlationId) => {
+  const userService = userId.startsWith('inv-') ? await getSingleInvitationService(userId.substr(4), serviceId, organisationId, correlationId) : await getSingleUserService(userId, serviceId, organisationId, correlationId);
+  return {
+    id: userService.serviceId,
+    roles: userService.roles
+  }
+};
 
 const get = async (req, res) => {
   const userId = req.params.uid;
@@ -11,8 +21,16 @@ const get = async (req, res) => {
     return res.redirect(`/users/${userId}/organisations`);
   }
 
-  const totalNumberOfServices = req.session.user.services.length;
-  const currentService = req.session.user.services.findIndex(x => x.serviceId === req.params.sid) + 1;
+  if (req.session.user.isEditService) {
+    const userRoles = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
+    req.session.user.services = [{
+      serviceId: userRoles.id,
+      roles: userRoles.roles.map(a => a.id),
+    }]
+  }
+
+  const totalNumberOfServices = !req.session.user.isEditService ? req.session.user.services.length : 1;
+  const currentService = !req.session.user.isEditService ? req.session.user.services.findIndex(x => x.serviceId === req.params.sid) + 1 : 1;
 
   const serviceDetails = await getServiceById(req.params.sid, req.id);
   const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisations(userId, req.id);

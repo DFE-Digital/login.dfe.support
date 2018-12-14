@@ -1,9 +1,11 @@
 <div class="row">
     <div class="col-8">
         <h1 class="heading-xlarge">
-            Select roles
+            <%=locals.user.isEditService ? 'Edit Service' : 'Select roles'%>
         </h1>
-        <p>Showing service <%= locals.currentService%> of <%=locals.totalNumberOfServices%></p>
+        <% if (!locals.user.isEditService) { %>
+            <p>Showing service <%= locals.currentService%> of <%=locals.totalNumberOfServices%></p>
+        <% } %>
         <dl class="app-check-your-answers app-check-your-answers--short">
 
             <div class="app-check-your-answers__contents">
