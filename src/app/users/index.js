@@ -45,7 +45,7 @@ const getSecureAccess = require('./getSecureAccessDetails');
 const { get: getAssociateServices, post: postAssociateServices } = require('./associateServices');
 const { get: getSelectOrganisation, post: postSelectOrganisation }  = require('./selectOrganisation');
 const { get: getAssociateRoles, post: postAssociateRoles } = require('./associateRoles');
-const { get: getConfirmAddSerice } = require('./confirmAddService');
+const { get: getConfirmAddService, post: postConfirmAddService } = require('./confirmAddService');
 
 const router = express.Router({ mergeParams: true });
 
@@ -121,8 +121,9 @@ const users = (csrf) => {
   router.get('/:uid/organisations/:orgId/services/:sid', csrf, asyncWrapper(getAssociateRoles));
   router.post('/:uid/organisations/:orgId/services/:sid', csrf, asyncWrapper(postAssociateRoles));
 
-  router.get('/:uid/organisations/:orgId/confirm', csrf, asyncWrapper(getConfirmAddSerice));
-  router.post('/:uid/organisations/:orgId/confirm', csrf, asyncWrapper());
+  router.get('/:uid/organisations/:orgId/confirm', csrf, asyncWrapper(getConfirmAddService));
+  router.post('/:uid/organisations/:orgId/confirm', csrf, asyncWrapper(postConfirmAddService));
+
   return router;
 };
 

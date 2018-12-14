@@ -10,7 +10,7 @@ const rp = require('request-promise').defaults({
 });
 const jwtStrategy = require('login.dfe.jwt-strategies');
 
-const addInvitationService = async (invitationId, serviceId, organisationId, externalIdentifiers = [], correlationId) => {
+const addInvitationService = async (invitationId, serviceId, organisationId, externalIdentifiers = [], roles = [], correlationId) => {
   const token = await jwtStrategy(config.access.service).getBearerToken();
 
   try {
@@ -23,6 +23,35 @@ const addInvitationService = async (invitationId, serviceId, organisationId, ext
       },
       body: {
         identifiers: externalIdentifiers,
+        roles,
+      },
+      json: true,
+    });
+  } catch (e) {
+    const status = e.statusCode ? e.statusCode : 500;
+    if (status === 403) {
+      return false;
+    }
+    if (status === 409) {
+      return false;
+    }
+    throw e;
+  }
+};
+
+const addUserService = async (userId, serviceId, organisationId, roles = [], correlationId) => {
+  const token = await jwtStrategy(config.access.service).getBearerToken();
+
+  try {
+    return await rp({
+      method: 'PUT',
+      uri: `${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${organisationId}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      body: {
+        roles
       },
       json: true,
     });
@@ -168,12 +197,31 @@ const getSingleInvitationService = async (invitationId, serviceId, organisationI
   }
 };
 
+const listRolesOfService = async (serviceId, correlationId) => {
+  const token = await jwtStrategy(config.access.service).getBearerToken();
+  try {
+    return await rp({
+      method: 'GET',
+      uri: `${config.access.service.url}/services/${serviceId}/roles`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      json: true,
+    });
+  } catch (e) {
+    if (e.statusCode === 404) {
+      return undefined;
+    }
+    throw e;
+  }
+};
+
+
 module.exports = {
   addInvitationService,
   getServicesByUserId,
   getServicesByInvitationId,
   putSingleServiceIdentifierForUser,
   getServiceIdentifierDetails,
-  getSingleUserService,
-  getSingleInvitationService,
 };

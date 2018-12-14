@@ -1,0 +1,114 @@
+<div class="grid-row">
+    <div class="col-8">
+
+            <h1 class="heading-xlarge">
+                Review new services
+            </h1>
+            <p>Please review these details before granting access.</p>
+
+        <dl class="app-check-your-answers app-check-your-answers--short">
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__title">
+                    Personal details
+                </dt>
+                <dd class="app-check-your-answers__change ">
+                </dd>
+            </div>
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__question">
+                    First name
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%=locals.user.firstName%>
+                </dd>
+            </div>
+
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__question">
+                    Last name
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%=locals.user.lastName%>
+                </dd>
+
+            </div>
+
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__question">
+                    Email Address
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%=locals.user.email%>
+                </dd>
+            </div>
+        </dl>
+
+
+        <dl class="app-check-your-answers app-check-your-answers--short">
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__title">
+                    Organisation
+                </dt>
+                <dd class="app-check-your-answers__answer"></dd>
+            </div>
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__question">
+                    Name
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%=locals.organisationDetails.organisation.name%>
+                </dd>
+            </div>
+        </dl>
+
+        <dl class="app-check-your-answers app-check-your-answers--short">
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__title">
+                    Services
+                </dt>
+                <dd class="app-check-your-answers__change ">
+                    <a href= "<%=locals.changeLink%>" >
+                        Change
+                    </a>
+                </dd>
+            </div>
+
+            <% if (locals.services.length > 0) { %>
+                <% for (let i = 0; i< locals.services.length; i++) { %>
+                    <% const service = locals.services[i]; %>
+                    <div class="app-check-your-answers__contents__group">
+                        <dt class="app-check-your-answers__group__title">
+                            Service
+                        </dt>
+                        <dd class="app-check-your-answers__group">
+                            <%= service.name%>
+                        </dd>
+                    </div>
+                    <div class="app-check-your-answers__contents">
+                        <dt class="app-check-your-answers__question">
+                            Roles
+                        </dt>
+                        <dd class="app-check-your-answers__answer">
+                            <% if (locals.services[i].roles.length > 0) { %>
+                                <% for (let x = 0; x < locals.services[i].roles.length; x++) { %>
+                                    <% const role = locals.services[i].roles[x]; %>
+                                    <%= role.name %> <br>
+                                <% } %>
+                            <% } else { %>
+                                No roles selected
+                            <% } %>
+                        </dd>
+                    </div>
+                <% } %>
+            <% } %>
+        </dl>
+
+        <form method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <div class="form-submit submit-buttons">
+                <button type="submit" class="button">Submit</button>
+                <a href="./../../" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
