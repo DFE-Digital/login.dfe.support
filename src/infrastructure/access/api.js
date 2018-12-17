@@ -67,6 +67,61 @@ const addUserService = async (userId, serviceId, organisationId, roles = [], cor
   }
 };
 
+const updateUserService = async (userId, serviceId, organisationId, roles, correlationId) => {
+  const token = await jwtStrategy(config.access.service).getBearerToken();
+  try {
+    return await rp({
+      method: 'PATCH',
+      uri: `${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${organisationId}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      body: {
+        roles
+      },
+      json: true,
+    });
+  } catch (e) {
+    const status = e.statusCode ? e.statusCode : 500;
+    if (status === 403) {
+      return false;
+    }
+    if (status === 409) {
+      return false;
+    }
+    throw e;
+  }
+};
+
+const updateInvitationService = async (invitationId, serviceId, organisationId, roles, correlationId) => {
+  const token = await jwtStrategy(config.access.service).getBearerToken();
+
+  try {
+    return await rp({
+      method: 'PATCH',
+      uri: `${config.access.service.url}/invitations/${invitationId}/services/${serviceId}/organisations/${organisationId}`,
+      headers: {
+        authorization: `bearer ${token}`,
+        'x-correlation-id': correlationId,
+      },
+      body: {
+        roles,
+      },
+      json: true,
+    });
+  } catch (e) {
+    const status = e.statusCode ? e.statusCode : 500;
+    if (status === 403) {
+      return false;
+    }
+    if (status === 409) {
+      return false;
+    }
+    throw e;
+  }
+};
+
 const getServicesByUserId = async (id, correlationId) => {
   const token = await jwtStrategy(config.access.service).getBearerToken();
 
@@ -228,4 +283,6 @@ module.exports = {
   getSingleInvitationService,
   listRolesOfService,
   addUserService,
+  updateInvitationService,
+  updateUserService
 };

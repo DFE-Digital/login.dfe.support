@@ -5,11 +5,13 @@ jest.mock('./../../../src/infrastructure/access', () => {
   return {
     addInvitationService: jest.fn(),
     addUserService: jest.fn(),
+    updateUserService: jest.fn(),
+    updateInvitationService: jest.fn(),
   };
 });
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
-const { addUserService, addInvitationService } = require('./../../../src/infrastructure/access');
+const { addUserService, addInvitationService, updateInvitationService, updateUserService } = require('./../../../src/infrastructure/access');
 const logger = require('./../../../src/infrastructure/logger');
 const res = getResponseMock();
 
@@ -55,6 +57,7 @@ describe('when adding new services to a user', () => {
   });
 
   it('then it should add services to invitation for organisation if req for invitation', async () => {
+    req.session.user.isAddService = true;
     req.params.uid = 'inv-invite1';
     await postConfirmAddService(req, res);
 
@@ -68,6 +71,7 @@ describe('when adding new services to a user', () => {
   });
 
   it('then it should add services to user if req for user', async () => {
+    req.session.user.isAddService = true;
     req.params.uid = 'user1';
     await postConfirmAddService(req, res);
 
@@ -77,6 +81,30 @@ describe('when adding new services to a user', () => {
     expect(addUserService.mock.calls[0][2]).toBe('88a1ed39-5a98-43da-b66e-78e564ea72b0');
     expect(addUserService.mock.calls[0][3]).toEqual([]);
     expect(addUserService.mock.calls[0][4]).toBe('correlationId');
+  });
+
+  it('then it should update services for user if req for user', async () => {
+    req.params.uid = 'user1';
+    await postConfirmAddService(req, res);
+
+    expect(updateUserService.mock.calls).toHaveLength(1);
+    expect(updateUserService.mock.calls[0][0]).toBe('user1');
+    expect(updateUserService.mock.calls[0][1]).toBe('service1');
+    expect(updateUserService.mock.calls[0][2]).toBe('88a1ed39-5a98-43da-b66e-78e564ea72b0');
+    expect(updateUserService.mock.calls[0][3]).toEqual([]);
+    expect(updateUserService.mock.calls[0][4]).toBe('correlationId');
+  });
+
+  it('then it should update services for invitation for organisation if req for invitation', async () => {
+    req.params.uid = 'inv-invite1';
+    await postConfirmAddService(req, res);
+
+    expect(updateInvitationService.mock.calls).toHaveLength(1);
+    expect(updateInvitationService.mock.calls[0][0]).toBe('invite1');
+    expect(updateInvitationService.mock.calls[0][1]).toBe('service1');
+    expect(updateInvitationService.mock.calls[0][2]).toBe('88a1ed39-5a98-43da-b66e-78e564ea72b0');
+    expect(updateInvitationService.mock.calls[0][3]).toEqual([]);
+    expect(updateInvitationService.mock.calls[0][4]).toBe('correlationId');
   });
 
   it('then it should should audit adding services to an existing user if isAddService is true', async () => {
