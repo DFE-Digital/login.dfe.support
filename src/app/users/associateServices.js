@@ -78,6 +78,7 @@ const post = async (req, res) => {
       roles: existingServiceSelections ? existingServiceSelections.roles : [],
     };
   });
+  req.session.user.isAddService = true;
 
   const service = req.session.user.services[0].serviceId;
   return res.redirect(`${req.params.orgId}/services/${service}`)
