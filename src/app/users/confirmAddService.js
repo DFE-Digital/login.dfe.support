@@ -1,6 +1,6 @@
 'use strict';
 const { getAllServices } = require('./../../infrastructure/applications');
-const { listRolesOfService, addInvitationService, addUserService } = require('./../../infrastructure/access');
+const { listRolesOfService, addInvitationService, addUserService, updateInvitationService, updateUserService } = require('./../../infrastructure/access');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 const logger = require('./../../infrastructure/logger');
 
@@ -55,9 +55,9 @@ const post = async (req, res) => {
       const service = req.session.user.services[i];
       if (uid.startsWith('inv-')) {
         const invitationId = uid.substr(4);
-        await addInvitationService(invitationId, service.serviceId, organisationId, [], service.roles, req.id);
+        req.session.user.isAddService ?  await addInvitationService(invitationId, service.serviceId, organisationId, [], service.roles, req.id) : await updateInvitationService(invitationId, service.serviceId, organisationId, service.roles, req.id);
       } else {
-        await addUserService(uid, service.serviceId, organisationId, service.roles, req.id);
+        req.session.user.isAddService ? await addUserService(uid, service.serviceId, organisationId, service.roles, req.id) : await updateUserService(uid, service.serviceId, organisationId, service.roles, req.id);
       }
     }
   }

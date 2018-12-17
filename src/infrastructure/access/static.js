@@ -34,6 +34,15 @@ const listRolesOfService = async () => {
   return Promise.resolve(null);
 };
 
+const updateUserService = async () => {
+  return Promise.resolve(null);
+};
+
+const updateInvitationService = async () => {
+  return Promise.resolve(null);
+};
+
+
 module.exports = {
   addInvitationService,
   getServicesByUserId,
@@ -43,5 +52,7 @@ module.exports = {
   getSingleInvitationService,
   getSingleUserService,
   listRolesOfService,
-  addUserService
+  addUserService,
+  updateUserService,
+  updateInvitationService
 };
