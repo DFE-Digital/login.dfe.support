@@ -1,9 +1,11 @@
 <div class="row">
     <div class="col-8">
         <h1 class="heading-xlarge">
-            Select roles
+            <%=locals.user.isAddService ? 'Select roles' : 'Edit service'%>
         </h1>
-        <p>Showing service <%= locals.currentService%> of <%=locals.totalNumberOfServices%></p>
+        <% if (locals.user.isAddService) { %>
+            <p>Showing service <%= locals.currentService%> of <%=locals.totalNumberOfServices%></p>
+        <% } %>
         <dl class="app-check-your-answers app-check-your-answers--short">
 
             <div class="app-check-your-answers__contents">
@@ -59,10 +61,12 @@
                     <% } %>
                 </fieldset>
             </div>
+            <% if (!(!locals.user.isAddService && locals.serviceRoles.length === 0)) {%>
             <div class="form-submit submit-buttons">
                 <button type="submit" class="button">Continue</button>
                 <a href="./../../../" class="button button-secondary">Cancel</a>
             </div>
+            <% } %>
         </form>
     </div>
 </div>

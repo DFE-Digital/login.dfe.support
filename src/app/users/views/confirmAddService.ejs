@@ -2,9 +2,9 @@
     <div class="col-8">
 
             <h1 class="heading-xlarge">
-                Review new services
+                <%=locals.user.isAddService ? 'Review new services' : 'Review service changes' %>
             </h1>
-            <p>Please review these details before granting access.</p>
+            <p><%=locals.user.isAddService ? 'Please review these details before granting access.' : 'Please review these details before saving.'%></p>
 
         <dl class="app-check-your-answers app-check-your-answers--short">
             <div class="app-check-your-answers__contents">
@@ -102,7 +102,6 @@
                 <% } %>
             <% } %>
         </dl>
-
         <form method="post">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <div class="form-submit submit-buttons">

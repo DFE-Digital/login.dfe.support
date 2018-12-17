@@ -5,11 +5,13 @@ jest.mock('./../../../src/infrastructure/access', () => {
   return {
     addInvitationService: jest.fn(),
     addUserService: jest.fn(),
+    updateUserService: jest.fn(),
+    updateInvitationService: jest.fn(),
   };
 });
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
-const { addUserService, addInvitationService } = require('./../../../src/infrastructure/access');
+const { addUserService, addInvitationService, updateInvitationService, updateUserService } = require('./../../../src/infrastructure/access');
 const logger = require('./../../../src/infrastructure/logger');
 const res = getResponseMock();
 
@@ -32,6 +34,7 @@ describe('when adding new services to a user', () => {
           services: [
             {
               serviceId: 'service1',
+              name: 'service1',
               roles: [],
             }
           ]
@@ -54,6 +57,7 @@ describe('when adding new services to a user', () => {
   });
 
   it('then it should add services to invitation for organisation if req for invitation', async () => {
+    req.session.user.isAddService = true;
     req.params.uid = 'inv-invite1';
     await postConfirmAddService(req, res);
 
@@ -67,6 +71,7 @@ describe('when adding new services to a user', () => {
   });
 
   it('then it should add services to user if req for user', async () => {
+    req.session.user.isAddService = true;
     req.params.uid = 'user1';
     await postConfirmAddService(req, res);
 
@@ -78,7 +83,32 @@ describe('when adding new services to a user', () => {
     expect(addUserService.mock.calls[0][4]).toBe('correlationId');
   });
 
-  it('then it should should audit adding services to an existing user', async () => {
+  it('then it should update services for user if req for user', async () => {
+    req.params.uid = 'user1';
+    await postConfirmAddService(req, res);
+
+    expect(updateUserService.mock.calls).toHaveLength(1);
+    expect(updateUserService.mock.calls[0][0]).toBe('user1');
+    expect(updateUserService.mock.calls[0][1]).toBe('service1');
+    expect(updateUserService.mock.calls[0][2]).toBe('88a1ed39-5a98-43da-b66e-78e564ea72b0');
+    expect(updateUserService.mock.calls[0][3]).toEqual([]);
+    expect(updateUserService.mock.calls[0][4]).toBe('correlationId');
+  });
+
+  it('then it should update services for invitation for organisation if req for invitation', async () => {
+    req.params.uid = 'inv-invite1';
+    await postConfirmAddService(req, res);
+
+    expect(updateInvitationService.mock.calls).toHaveLength(1);
+    expect(updateInvitationService.mock.calls[0][0]).toBe('invite1');
+    expect(updateInvitationService.mock.calls[0][1]).toBe('service1');
+    expect(updateInvitationService.mock.calls[0][2]).toBe('88a1ed39-5a98-43da-b66e-78e564ea72b0');
+    expect(updateInvitationService.mock.calls[0][3]).toEqual([]);
+    expect(updateInvitationService.mock.calls[0][4]).toBe('correlationId');
+  });
+
+  it('then it should should audit adding services to an existing user if isAddService is true', async () => {
+    req.session.user.isAddService = true;
     await postConfirmAddService(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
@@ -96,6 +126,24 @@ describe('when adding new services to a user', () => {
     });
   });
 
+  it('then it should should audit editing a service if isAddService is false', async () => {
+    await postConfirmAddService(req, res);
+
+    expect(logger.audit.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls[0][0]).toBe('super.user@unit.test (id: suser1) updated service service1 for organisation id: 88a1ed39-5a98-43da-b66e-78e564ea72b0) for user test@test.com (id: user1)');
+    expect(logger.audit.mock.calls[0][1]).toMatchObject({
+      type: 'approver',
+      subType: 'user-service-updated',
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      editedUser: req.params.uid,
+      editedFields: [{
+        name: 'update_service',
+        newValue: req.session.user.services,
+      }],
+    });
+  });
+
   it('then it should redirect to services tab', async () => {
     await postConfirmAddService(req, res);
 
@@ -103,12 +151,21 @@ describe('when adding new services to a user', () => {
     expect(res.redirect.mock.calls[0][0]).toBe(`/users/${req.params.uid}/services`);
   });
 
-  it('then a flash message is displayed showing services have been added', async () => {
+  it('then a flash message is displayed showing services have been added if isAddService is true', async () => {
+    req.session.user.isAddService = true;
     await postConfirmAddService(req, res);
 
     expect(res.flash.mock.calls).toHaveLength(1);
     expect(res.flash.mock.calls[0][0]).toBe('info');
     expect(res.flash.mock.calls[0][1]).toBe(`Services successfully added`)
+  });
+
+  it('then a flash message is displayed showing service has been edited if isAddService is false', async () => {
+    await postConfirmAddService(req, res);
+
+    expect(res.flash.mock.calls).toHaveLength(1);
+    expect(res.flash.mock.calls[0][0]).toBe('info');
+    expect(res.flash.mock.calls[0][1]).toBe(`${req.session.user.services[0].name} updated successfully`)
   });
 
 });

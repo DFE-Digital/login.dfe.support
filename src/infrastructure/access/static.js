@@ -22,9 +22,26 @@ const getServicesByInvitationId = async () => {
   return Promise.resolve(null);
 };
 
+const getSingleUserService = async () => {
+  return Promise.resolve(null);
+};
+
+const getSingleInvitationService = async () => {
+  return Promise.resolve(null);
+};
+
 const listRolesOfService = async () => {
   return Promise.resolve(null);
 };
+
+const updateUserService = async () => {
+  return Promise.resolve(null);
+};
+
+const updateInvitationService = async () => {
+  return Promise.resolve(null);
+};
+
 
 module.exports = {
   addInvitationService,
@@ -32,6 +49,10 @@ module.exports = {
   putSingleServiceIdentifierForUser,
   getServiceIdentifierDetails,
   getServicesByInvitationId,
+  getSingleInvitationService,
+  getSingleUserService,
   listRolesOfService,
-  addUserService
+  addUserService,
+  updateUserService,
+  updateInvitationService
 };
