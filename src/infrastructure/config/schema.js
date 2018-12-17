@@ -113,6 +113,10 @@ const togglesSchema = new SimpleSchema({
   useGenericAddUser: Boolean,
 });
 
+const notificationsSchema = new SimpleSchema({
+  connectionString: patterns.redis
+});
+
 
 const schema = new SimpleSchema({
   loggerSettings: schemas.loggerSettings,
@@ -130,6 +134,7 @@ const schema = new SimpleSchema({
   hotConfig: schemas.apiClient,
   schedules: schedulesSchema,
   toggles: togglesSchema,
+  notifications: notificationsSchema
 });
 
 module.exports.validate = () => {
