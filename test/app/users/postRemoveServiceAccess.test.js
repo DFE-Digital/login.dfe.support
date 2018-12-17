@@ -130,7 +130,7 @@ describe('when removing access to a service', () => {
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0]).toBe('super.user@unit.test (id: suser1) removed service service name for organisation id: 88a1ed39-5a98-43da-b66e-78e564ea72b0) for user test@test.com (id: user1)');
     expect(logger.audit.mock.calls[0][1]).toMatchObject({
-      type: 'approver',
+      type: 'support',
       subType: 'user-service-deleted',
       userId: 'suser1',
       userEmail: 'super.user@unit.test',
