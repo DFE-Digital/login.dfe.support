@@ -1,19 +1,43 @@
 const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
+const { getUsersById } = require('./../../infrastructure/directories');
 const logger = require('./../../infrastructure/logger');
+const flatten = require('lodash/flatten');
+const uniq = require('lodash/uniq');
+
+const getApproverDetails = async (organisations, correlationId) => {
+  const allApproverIds = flatten(organisations.map((org) => org.approvers));
+  const distinctApproverIds = uniq(allApproverIds);
+  if (distinctApproverIds.length === 0) {
+    return [];
+  }
+  return await getUsersById(distinctApproverIds, correlationId);
+};
+
 
 const getOrganisations = async (userId, correlationId) => {
   const orgMapping = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), correlationId) : await getUserOrganisations(userId, correlationId);
   if (!orgMapping) {
     return [];
   }
+  const allApprovers = await getApproverDetails(orgMapping, correlationId);
+  if (!allApprovers) {
+    return [];
+  }
 
   const organisations = await Promise.all(orgMapping.map(async (invitation) => {
+    const approvers = invitation.approvers.map((approverId) => {
+      return allApprovers.find(x => x.sub.toLowerCase() === approverId.toLowerCase());
+    }).filter(x => x);
     return {
       id: invitation.organisation.id,
       name: invitation.organisation.name,
       role: invitation.role,
+      urn: invitation.organisation.urn,
+      uid: invitation.organisation.uid,
+      ukprn: invitation.organisation.ukprn,
+      approvers,
     };
   }));
 
