@@ -64,7 +64,7 @@
             <% if (!(!locals.user.isAddService && locals.serviceRoles.length === 0)) {%>
             <div class="form-submit submit-buttons">
                 <button type="submit" class="button">Continue</button>
-                <a href="./../../../" class="button button-secondary">Cancel</a>
+                <a href="<%=locals.user.isAddService ? "/users/" + locals.user.uid + "/organisations" : "/users/" + locals.user.uid + "/services"%>" class="button button-secondary">Cancel</a>
             </div>
             <% } %>
         </form>
