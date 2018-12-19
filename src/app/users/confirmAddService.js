@@ -36,7 +36,8 @@ const get = async (req, res) => {
       firstName: req.session.user.firstName,
       lastName: req.session.user.lastName,
       email: req.session.user.email,
-      isAddService: req.session.user.isAddService
+      isAddService: req.session.user.isAddService,
+      uid: userId
     },
     services,
     organisationDetails,
