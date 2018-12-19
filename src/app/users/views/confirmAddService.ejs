@@ -105,8 +105,8 @@
         <form method="post">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <div class="form-submit submit-buttons">
-                <button type="submit" class="button">Submit</button>
-                <a href="./../../" class="button button-secondary">Cancel</a>
+                <button type="submit" class="button"><%=locals.user.isAddService ? "Submit" : "Save"%></button>
+                <a href="<%=locals.user.isAddService ? "/users/" + locals.user.uid + "/organisations" : "/users/" + locals.user.uid + "/services"%>" class="button button-secondary">Cancel</a>
             </div>
         </form>
     </div>
