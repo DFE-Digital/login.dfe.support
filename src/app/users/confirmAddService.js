@@ -65,7 +65,7 @@ const post = async (req, res) => {
 
   if (req.session.user.isAddService) {
     logger.audit(`${req.user.email} (id: ${req.user.sub}) added services for organisation id: ${organisationId} for user ${req.session.user.email} (id: ${uid})`, {
-      type: 'approver',
+      type: 'support',
       subType: 'user-services-added',
       userId: req.user.sub,
       userEmail: req.user.email,
@@ -78,7 +78,7 @@ const post = async (req, res) => {
     res.flash('info', `Services successfully added`);
   } else {
     logger.audit(`${req.user.email} (id: ${req.user.sub}) updated service ${req.session.user.services[0].name} for organisation id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`, {
-      type: 'approver',
+      type: 'support',
       subType: 'user-service-updated',
       userId: req.user.sub,
       userEmail: req.user.email,
