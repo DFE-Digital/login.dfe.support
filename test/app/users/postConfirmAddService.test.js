@@ -114,7 +114,7 @@ describe('when adding new services to a user', () => {
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0]).toBe('super.user@unit.test (id: suser1) added services for organisation id: 88a1ed39-5a98-43da-b66e-78e564ea72b0 for user test@test.com (id: user1)');
     expect(logger.audit.mock.calls[0][1]).toMatchObject({
-      type: 'approver',
+      type: 'support',
       subType: 'user-services-added',
       userId: req.user.sub,
       userEmail: req.user.email,
@@ -132,7 +132,7 @@ describe('when adding new services to a user', () => {
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0]).toBe('super.user@unit.test (id: suser1) updated service service1 for organisation id: 88a1ed39-5a98-43da-b66e-78e564ea72b0) for user test@test.com (id: user1)');
     expect(logger.audit.mock.calls[0][1]).toMatchObject({
-      type: 'approver',
+      type: 'support',
       subType: 'user-service-updated',
       userId: req.user.sub,
       userEmail: req.user.email,

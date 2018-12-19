@@ -69,4 +69,14 @@
             <% } %>
         </form>
     </div>
+    <% if (!locals.user.isAddService) { %>
+    <div class="col-4">
+        <aside>
+            <h2 class="heading-medium">Actions</h2>
+            <ul class="list">
+                <li><a href="<%=locals.serviceDetails.id%>/remove-service">Remove service</a> </li>
+            </ul>
+        </aside>
+    </div>
+    <% }%>
 </div>
