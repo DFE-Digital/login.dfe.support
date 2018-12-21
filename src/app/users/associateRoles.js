@@ -40,6 +40,7 @@ const get = async (req, res) => {
   const organisationDetails = userOrganisations.find(x => x.organisation.id === req.params.orgId);
   const serviceRoles = await policyEngine.getRolesAvailableForUser(userId, req.params.orgId, req.params.sid, req.id);
   const selectedRoles = req.session.user.services ? req.session.user.services.find(x => x.serviceId === req.params.sid) : [];
+  req.session.user.uid = userId;
 
   const model = {
     csrfToken: req.csrfToken(),
