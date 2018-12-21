@@ -22,9 +22,6 @@ const getOrganisations = async (userId, correlationId) => {
     return [];
   }
   const allApprovers = await getApproverDetails(orgMapping, correlationId);
-  if (!allApprovers) {
-    return [];
-  }
 
   const organisations = await Promise.all(orgMapping.map(async (invitation) => {
     const approvers = invitation.approvers.map((approverId) => {
