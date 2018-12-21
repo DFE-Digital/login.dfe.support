@@ -85,7 +85,7 @@ const postEditEmail = async (req, res) => {
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
     model.user = user;
-    sendResult(req, res, 'users/views/editEmail', model);
+    return sendResult(req, res, 'users/views/editEmail', model);
   }
 
   if (req.params.uid.startsWith('inv-')) {
