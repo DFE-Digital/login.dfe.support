@@ -4,16 +4,55 @@
 <table class="data no-borders">
     <thead>
         <tr>
-            <th scope="row">Organisation</th>
-            <th scope="row">Permission level</th>
-            <th scope="row">Action</th>
+            <th scope="col" class="cwp-60">Organisation</th>
+            <th scope="col" class="cwp-20">Permission level</th>
+            <th scope="col" class="cwp-20">Action</th>
         </tr>
     </thead>
     <tbody>
         <% for (let o = 0; o < locals.organisations.length; o++) { %>
         <% const org = locals.organisations[o];%>
             <tr>
-                <td> <%=org.name%> </td>
+                <td> <%=org.name%> <br>
+                    <article class="organisation-services" style="margin-bottom: 0">
+                        <section class="organisation">
+                            <div class="user">
+                                <a href="" class="info-link">Information and approvers <span class="vh">for <%=org.name%></span> </a>
+                            </div>
+                            <div class="meta js-hidden">
+                                <div class="approvers">
+                                    <dl class="rows condensed small-dt">
+                                        <% if (org.urn) { %>
+                                        <dt><abbr title="Unique Reference Number">URN</abbr></dt>
+                                        <dd><%=org.urn%></dd>
+                                        <% } %>
+
+                                        <% if (org.uid) { %>
+                                        <dt><abbr title="Unique Identifier">UID</abbr></dt>
+                                        <dd><%=org.uid%></dd>
+                                        <% } %>
+
+                                        <% if (org.ukprn) { %>
+                                        <dt><abbr title="UK Provider Reference Number">UKPRN</abbr></dt>
+                                        <dd><%=org.ukprn%></dd>
+                                        <% } %>
+
+                                        <% if (org.approvers.length > 0) { %>
+                                            <dt>Approvers</dt>
+                                            <dd>
+                                                <ul>
+                                                    <% for (let a = 0; a < org.approvers.length; a++) { %>
+                                                    <li><%=org.approvers[a].name%> <a href="mailto:<%=org.approvers[a].email%>"><%=org.approvers[a].email%></a></li>
+                                                    <% } %>
+                                                </ul>
+                                            </dd>
+                                        <% } %>
+                                    </dl>
+                                </div>
+                            </div>
+                        </section>
+                    </article>
+                </td>
                 <% if (org.role) { %>
                 <td><%=org.role.name%></td>
                 <% } else { %>
