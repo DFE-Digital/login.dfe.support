@@ -40,6 +40,7 @@ const getConfirmAssociateOrganisation = require('./getConfirmAssociateOrganisati
 const postResendInvite = require('./postResendInvite');
 const getEditPermissions = require('./getEditPermissions');
 const postEditPermissions = require('./postEditPermissions');
+const getDeleteOrganisation = require('./getDeleteOrganisation');
 const postDeleteOrganisation = require('./postDeleteOrganisation');
 const getSecureAccess = require('./getSecureAccessDetails');
 const { get: getAssociateServices, post: postAssociateServices } = require('./associateServices');
@@ -84,7 +85,8 @@ const users = (csrf) => {
   router.get('/:uid/organisations', csrf, asyncWrapper(getOrganisations));
   router.get('/:uid/organisations/:id/edit-permission', csrf, asyncWrapper(getEditPermissions));
   router.post('/:uid/organisations/:id/edit-permission', csrf, asyncWrapper(postEditPermissions));
-  router.post('/:uid/organisations/:id/delete-organisation', csrf, asyncWrapper(postDeleteOrganisation));
+  router.get('/:uid/organisations/:id/remove-organisation', csrf, asyncWrapper(getDeleteOrganisation));
+  router.post('/:uid/organisations/:id/remove-organisation', csrf, asyncWrapper(postDeleteOrganisation));
   router.get('/:uid/services', csrf, asyncWrapper(getServices));
   router.get('/:uid/audit', csrf, asyncWrapper(getAudit));
   router.get('/:uid/resend-invitation', csrf, asyncWrapper(postResendInvite));
