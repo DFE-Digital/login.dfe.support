@@ -41,10 +41,7 @@
             <h2 class="heading-medium">Actions</h2>
             <ul class="list">
                 <li>
-                    <form method="post" action="/users/<%=locals.userId%>/organisations/<%=locals.organisation.id%>/delete-organisation" class="delete-org">
-                        <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                        <button class="button-text">Delete <%=userFullName%> access to <%=locals.organisation.name%></button>
-                    </form>
+                    <a href="/users/<%=locals.userId%>/organisations/<%=locals.organisation.id%>/remove-organisation">Remove organisation</a>
                 </li>
             </ul>
         </aside>
