@@ -34,6 +34,8 @@ const getOrganisations = async (userId, correlationId) => {
       urn: invitation.organisation.urn,
       uid: invitation.organisation.uid,
       ukprn: invitation.organisation.ukprn,
+      numericIdentifier: invitation.numericIdentifier,
+      textIdentifier: invitation.textIdentifier,
       approvers,
     };
   }));
