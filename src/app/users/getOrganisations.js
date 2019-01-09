@@ -1,7 +1,7 @@
 const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
-const { getUsersById } = require('./../../infrastructure/directories');
+const { getUsersByIdV2 } = require('./../../infrastructure/directories');
 const logger = require('./../../infrastructure/logger');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
@@ -12,7 +12,7 @@ const getApproverDetails = async (organisations, correlationId) => {
   if (distinctApproverIds.length === 0) {
     return [];
   }
-  return await getUsersById(distinctApproverIds, correlationId);
+  return await getUsersByIdV2(distinctApproverIds, correlationId);
 };
 
 
