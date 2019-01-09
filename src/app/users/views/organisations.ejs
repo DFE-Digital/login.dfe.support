@@ -4,9 +4,12 @@
 <table class="data no-borders">
     <thead>
         <tr>
-            <th scope="col" class="cwp-60">Organisation</th>
+            <th scope="col" class="cwp-40">Organisation</th>
+            <% if (!locals.isInvitation ) {%>
+            <th scope="col" class="cwp-20">Legacy ID/Name</th>
+            <% }%>
             <th scope="col" class="cwp-20">Permission level</th>
-            <th scope="col" class="cwp-20">Action</th>
+            <th scope="col" class="cwp-30">Action</th>
         </tr>
     </thead>
     <tbody>
@@ -53,6 +56,9 @@
                         </section>
                     </article>
                 </td>
+                <% if (!locals.isInvitation ) {%>
+                <td><%= org.numericIdentifier && org.textIdentifier ? `${org.numericIdentifier} / ${org.textIdentifier}` : '' -%></td>
+                <% }%>
                 <% if (org.role) { %>
                 <td><%=org.role.name%></td>
                 <% } else { %>
