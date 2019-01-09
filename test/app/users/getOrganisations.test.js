@@ -8,7 +8,7 @@ jest.mock('./../../../src/infrastructure/audit');
 jest.mock('ioredis');
 const { getUserDetails } = require('./../../../src/app/users/utils');
 const { getUserOrganisations } = require('./../../../src/infrastructure/organisations');
-const { getUsersById } = require('./../../../src/infrastructure/directories');
+const { getUsersByIdV2 } = require('./../../../src/infrastructure/directories');
 const { getClientIdForServiceId } = require('./../../../src/infrastructure/serviceMapping');
 const { getUserLoginAuditsForService } = require('./../../../src/infrastructure/audit');
 const getOrganisations = require('./../../../src/app/users/getOrganisations');
@@ -123,8 +123,8 @@ describe('when getting users organisation details', () => {
       }
     });
 
-    getUsersById.mockReset();
-    getUsersById.mockReturnValue(
+    getUsersByIdV2.mockReset();
+    getUsersByIdV2.mockReturnValue(
       [
         { sub: 'user1', given_name: 'User', family_name:'One', email: 'user.one@unit.tests' },
         { sub: 'user6', given_name: 'User', family_name:'Six', email: 'user.six@unit.tests' },

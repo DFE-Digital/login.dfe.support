@@ -111,6 +111,10 @@ const getUsersById = async(userIds, correlationId) => {
   return Promise.resolve([]);
 };
 
+const getUsersByIdV2 = async(userIds, correlationId) => {
+  return Promise.resolve([]);
+};
+
 const getLegacyUsernames = async(userIds, correlationId) => {
   return Promise.resolve([]);
 };
@@ -134,4 +138,5 @@ module.exports = {
   deleteChangeEmailCode,
   getUsersById,
   getLegacyUsernames,
+  getUsersByIdV2
 };
