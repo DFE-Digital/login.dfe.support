@@ -46,6 +46,9 @@ const getOrganisations = async (userId, correlationId) => {
     return {
       id: invitation.organisation.id,
       name: invitation.organisation.name,
+      urn: invitation.organisation.urn,
+      uid: invitation.organisation.uid,
+      ukprn: invitation.organisation.ukprn,
       services,
     };
   }));
@@ -123,7 +126,20 @@ const action = async (req, res) => {
 
   const organisations = [];
   for (let i = 0; i < organisationDetails.length; i++) {
-    const org = Object.assign(Object.assign({}, organisationDetails[i]), { services: [] });
+    const org = Object.assign(Object.assign({}, organisationDetails[i]), { services: [], naturalIdentifiers: [] });
+    org.naturalIdentifiers = [];
+    const urn = org.urn;
+    const uid = org.uid;
+    const ukprn = org.ukprn;
+    if (urn) {
+      org.naturalIdentifiers.push(`URN: ${urn}`)
+    }
+    if (uid) {
+      org.naturalIdentifiers.push(`UID: ${uid}`)
+    }
+    if (ukprn) {
+      org.naturalIdentifiers.push(`UKPRN: ${ukprn}`)
+    }
     for (let j = 0; j < organisationDetails[i].services.length; j++) {
       const svc = Object.assign({}, organisationDetails[i].services[j]);
       svc.lastLogin = await getLastLoginForService(user.id, svc.id, req.id);
