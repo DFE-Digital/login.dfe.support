@@ -10,7 +10,11 @@
     <article class="organisation-services">
         <section class="organisation">
             <header>
-                <h3 class="heading-small spacer-heading"><%=org.name%> <%=org.urn%></h3>
+                <h3 class="heading-small spacer-heading"><%=org.name%>
+                    <% if (org.naturalIdentifiers && org.naturalIdentifiers.length !== 0) { %>
+                        (<%= org.naturalIdentifiers.join(', ') %>)
+                    <% } %>
+                </h3>
             </header>
         </section>
         <section class="services">
