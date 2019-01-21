@@ -2,12 +2,10 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
 jest.mock('./../../../src/app/users/utils');
 jest.mock('./../../../src/infrastructure/directories');
-jest.mock('./../../../src/infrastructure/users');
 
 const logger = require('./../../../src/infrastructure/logger');
-const { getUserDetails } = require('./../../../src/app/users/utils');
+const { getUserDetails, getUserDetailsById, updateUserDetails } = require('./../../../src/app/users/utils');
 const { reactivate } = require('./../../../src/infrastructure/directories');
-const { getById, updateIndex } = require('./../../../src/infrastructure/users');
 const postConfirmReactivate = require('./../../../src/app/users/postConfirmReactivate');
 
 describe('When reactivating an user account', () => {
@@ -43,6 +41,7 @@ describe('When reactivating an user account', () => {
       firstName: 'Rupert',
       lastName: 'Grint',
       email: 'rupert.grint@hogwarts.test',
+      organisationName: 'Hogwarts School of Witchcraft and Wizardry',
       lastLogin: null,
       status: {
         id: 0,
@@ -53,16 +52,24 @@ describe('When reactivating an user account', () => {
       },
     });
 
-    getById.mockReset().mockReturnValue({
+    getUserDetailsById.mockReset().mockReturnValue({
       id: '915a7382-576b-4699-ad07-a9fd329d3867',
       name: 'Rupert Grint',
+      firstName: 'Rupert',
+      lastName: 'Grint',
       email: 'rupert.grint@hogwarts.test',
       organisationName: 'Hogwarts School of Witchcraft and Wizardry',
       lastLogin: null,
-      statusDescription: 'Active'
+      status: {
+        id: 0,
+        description: 'Deactivated'
+      },
+      loginsInPast12Months: {
+        successful: 0,
+      },
     });
 
-    updateIndex.mockReset();
+    updateUserDetails.mockReset();
   });
 
   it('then it should redirect to view user profile', async () => {
@@ -83,9 +90,8 @@ describe('When reactivating an user account', () => {
   it('then it should update user in search index', async () => {
     await postConfirmReactivate(req, res);
 
-    expect(updateIndex.mock.calls).toHaveLength(1);
-    expect(updateIndex.mock.calls[0][0]).toHaveLength(1);
-    expect(updateIndex.mock.calls[0][0][0]).toMatchObject({
+    expect(updateUserDetails.mock.calls).toHaveLength(1);
+    expect(updateUserDetails.mock.calls[0][0]).toMatchObject({
       id: '915a7382-576b-4699-ad07-a9fd329d3867',
       name: 'Rupert Grint',
       email: 'rupert.grint@hogwarts.test',

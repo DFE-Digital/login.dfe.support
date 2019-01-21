@@ -1,18 +1,15 @@
 const logger = require('./../../infrastructure/logger');
-const { getUserDetails, waitForIndexToUpdate } = require('./utils');
+const { getUserDetails, getUserDetailsById, updateUserDetails, waitForIndexToUpdate } = require('./utils');
 const { reactivate } = require('./../../infrastructure/directories');
-const { getById, updateIndex } = require('./../../infrastructure/users');
 
-const updateUserIndex = async (uid) => {
-  const user = await getById(uid);
+const updateUserIndex = async (uid, correlationId) => {
+  const user = await getUserDetailsById(uid, correlationId);
   user.status = {
     id: 1,
     description: 'Active',
   };
-  if (user.lastLogin) {
-    user.lastLogin = user.lastLogin.getTime();
-  }
-  await updateIndex([user]);
+
+  await updateUserDetails(user, correlationId);
 
   await waitForIndexToUpdate(uid, (updated) => updated.status.id === 1);
 };
@@ -21,7 +18,7 @@ const postConfirmReactivate = async (req, res) => {
   const user = await getUserDetails(req);
 
   await reactivate(req.params.uid, req.id);
-  await updateUserIndex(req.params.uid);
+  await updateUserIndex(req.params.uid, req.id);
 
   // Audit
   logger.audit(`${req.user.email} (id: ${req.user.sub}) reactivated user ${user.email} (id: ${user.id})`, {

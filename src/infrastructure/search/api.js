@@ -87,7 +87,18 @@ const getSearchDetailsForUserById = async (id) => {
   }
 };
 
+const updateUserInSearch = async (user, correlationId) => {
+  const body = {
+    pendingEmail: user.pendingEmail,
+    statusId: user.status.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+  };
+  await callApi(`/users/${user.id}`, 'PATCH', body, correlationId);
+};
+
 module.exports = {
   seachForUsers,
   getSearchDetailsForUserById,
+  updateUserInSearch,
 };
