@@ -1,6 +1,6 @@
-const users = require('./../../infrastructure/users');
 const logger = require('./../../infrastructure/logger');
-const { getUser, getInvitation, createUserDevice } = require('./../../infrastructure/directories');
+const { seachForUsers, getSearchDetailsForUserById } = require('./../../infrastructure/search');
+const { getInvitation, createUserDevice } = require('./../../infrastructure/directories');
 const { getServicesByUserId, getServicesByInvitationId } = require('./../../infrastructure/access');
 const { getServiceById } = require('./../../infrastructure/applications');
 const { mapUserStatus } = require('./../../infrastructure/utils');
@@ -51,7 +51,7 @@ const search = async (req) => {
   }
   let safeCriteria = criteria;
   if (criteria.indexOf('-') !== -1) {
-    criteria = "\"" + criteria +  "\"";
+    criteria = "\"" + criteria + "\"";
   }
 
   let page = paramsSource.page ? parseInt(paramsSource.page) : 1;
@@ -64,7 +64,7 @@ const search = async (req) => {
 
   const filter = buildFilters(paramsSource);
 
-  const results = await users.search(criteria + '*', page, sortBy, sortAsc, filter);
+  const results = await seachForUsers(criteria + '*', page, sortBy, sortAsc, filter);
   logger.audit(`${req.user.email} (id: ${req.user.sub}) searched for users in support using criteria "${criteria}"`, {
     type: 'support',
     subType: 'user-search',
@@ -128,7 +128,7 @@ const getUserDetails = async (req) => {
       deactivated: invitation.deactivated
     };
   } else {
-    const user = await users.getById(uid);
+    const user = await getSearchDetailsForUserById(uid);
     const serviceDetails = await getServicesByUserId(uid, req.id);
 
     const ktsDetails = serviceDetails ? serviceDetails.find((c) => c.serviceId.toLowerCase() === config.serviceMapping.key2SuccessServiceId.toLowerCase()) : undefined;
@@ -217,7 +217,7 @@ const waitForIndexToUpdate = async (uid, updatedCheck) => {
   const abadonTime = Date.now() + 2000;
   let hasBeenUpdated = false;
   while (!hasBeenUpdated && Date.now() < abadonTime) {
-    const updated = await users.getById(uid);
+    const updated = await getSearchDetailsForUserById(uid);
     hasBeenUpdated = updatedCheck(updated);
     if (!hasBeenUpdated) {
       delay(200);
