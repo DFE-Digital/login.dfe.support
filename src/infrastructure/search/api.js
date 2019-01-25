@@ -72,13 +72,45 @@ const mapSearchDeviceToSupportModel = (device) => {
     name: device.assignee,
   };
 };
+const mapSupportUserSortByToSearchApi = (supportSortBy) => {
+  switch (supportSortBy.toLowerCase()) {
+    case 'name':
+      return 'searchableName';
+    case 'email':
+      return 'searchableEmail';
+    case 'organisation':
+      return 'primaryOrganisation';
+    case 'lastlogin':
+      return 'lastLogin';
+    case 'status':
+      return 'statusId';
+    default:
+      throw new Error(`Unexpected user sort field ${supportSortBy}`);
+  }
+};
+const mapSupportDeviceSortByToSearchApi = (supportSortBy) => {
+  switch (supportSortBy.toLowerCase()) {
+    case 'serialnumber':
+      return 'serialNumber';
+    case 'status':
+      return 'statusId';
+    case 'name':
+      return 'searchableAssignee';
+    case 'organisation':
+      return 'searchableOrganisationName';
+    case 'lastlogin':
+      return 'lastLogin';
+    default:
+      throw new Error(`Unexpected device sort field ${supportSortBy}`);
+  }
+};
 
 
 const seachForUsers = async (criteria, pageNumber, sortBy, sortDirection, filters) => {
   try {
     let endpoint = `/users?criteria=${criteria}&page=${pageNumber}`;
     if (sortBy) {
-      endpoint += `&sortBy=${sortBy}`;
+      endpoint += `&sortBy=${mapSupportUserSortByToSearchApi(sortBy)}`;
     }
     if (sortDirection) {
       endpoint += `&sortDirection=${sortDirection}`;
@@ -125,7 +157,7 @@ const searchForDevices = async (criteria, pageNumber, sortBy, sortDirection) => 
   try {
     let endpoint = `/devices?criteria=${criteria}&page=${pageNumber}`;
     if (sortBy) {
-      endpoint += `&sortBy=${sortBy}`;
+      endpoint += `&sortBy=${mapSupportDeviceSortByToSearchApi(sortBy)}`;
     }
     if (sortDirection) {
       endpoint += `&sortDirection=${sortDirection}`;
