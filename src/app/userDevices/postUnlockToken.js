@@ -9,9 +9,8 @@ const action = async (req, res) => {
     sendResult(req, res, 'userDevices/views/unlockTokenCode', {
       csrfToken: req.csrfToken(),
       unlockCode: unlockTokenResult.unlockCode,
-      uid: req.body.uid,
       serialNumber: req.body.serialNumber,
-      backLink: '/userdevices/' + req.body.serialNumber + '/' + req.body.uid,
+      backLink: '/userdevices/' + req.body.serialNumber,
     });
   }
   else {
@@ -22,9 +21,8 @@ const action = async (req, res) => {
       sendResult(req, res, 'userDevices/views/unlockToken', {
         csrfToken: req.csrfToken(),
         validationMessages: unlockTokenResult.validationResult.messages,
-        uid: req.body.uid,
         serialNumber: req.body.serialNumber,
-        backLink: '/userdevices/' + req.body.serialNumber + '/' + req.body.uid,
+        backLink: '/userdevices/' + req.body.serialNumber,
       });
     }
   }

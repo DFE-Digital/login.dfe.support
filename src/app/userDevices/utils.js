@@ -1,9 +1,9 @@
-const userDevices = require('./../../infrastructure/userDevices');
+const { searchForDevices, getSearchDetailsForDeviceBySerialNumber, updateDeviceInSearch } = require('./../../infrastructure/search');
 const devices = require('./../../infrastructure/devices');
 const logger = require('./../../infrastructure/logger');
 const { getUserLoginAuditsSince, getTokenAudits } = require('./../../infrastructure/audit');
 const moment = require('moment');
-const { deleteUserDevice} = require('./../../infrastructure/directories')
+const { deleteUserDevice } = require('./../../infrastructure/directories');
 
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
@@ -19,9 +19,9 @@ const search = async (req) => {
   }
 
   let sortBy = paramsSource.sort ? paramsSource.sort.toLowerCase() : 'serialNumber';
-  let sortAsc = (paramsSource.sortdir ? paramsSource.sortdir : 'asc').toLowerCase() === 'asc';
+  let sortDir = (paramsSource.sortdir || 'asc').toLowerCase();
 
-  const results = await userDevices.search(criteria + '*', page, sortBy, sortAsc);
+  const results = await searchForDevices(criteria + '*', page, sortBy, sortDir);
   logger.audit(`${req.user.email} (id: ${req.user.sub}) searched for user devices in support using criteria "${criteria}"`, {
     type: 'support',
     subType: 'userDevice-search',
@@ -31,36 +31,36 @@ const search = async (req) => {
     pageNumber: page,
     numberOfPages: results.numberOfPages,
     sortedBy: sortBy,
-    sortDirection: sortAsc ? 'asc' : 'desc',
+    sortDirection: sortDir,
   });
 
   return {
     criteria,
     page,
     sortBy,
-    sortOrder: sortAsc ? 'asc' : 'desc',
+    sortOrder: sortDir,
     numberOfPages: results.numberOfPages,
     totalNumberOfResults: results.totalNumberOfResults,
     userDevices: results.userDevices,
     sort: {
       serialNumber: {
-        nextDirection: sortBy === 'serialnumber' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        nextDirection: sortBy === 'serialnumber' ? sortDir : 'asc',
         applied: sortBy === 'serialnumber',
       },
       organisation: {
-        nextDirection: sortBy === 'organisation' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        nextDirection: sortBy === 'organisation' ? sortDir : 'asc',
         applied: sortBy === 'organisation',
       },
       name: {
-        nextDirection: sortBy === 'name' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        nextDirection: sortBy === 'name' ? sortDir : 'asc',
         applied: sortBy === 'name',
       },
       status: {
-        nextDirection: sortBy === 'status' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        nextDirection: sortBy === 'status' ? sortDir : 'asc',
         applied: sortBy === 'status',
       },
       lastLogin: {
-        nextDirection: sortBy === 'lastlogin' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        nextDirection: sortBy === 'lastlogin' ? sortDir : 'asc',
         applied: sortBy === 'lastlogin',
       },
     }
@@ -68,31 +68,40 @@ const search = async (req) => {
 };
 
 const getUserTokenDetails = async (req, params) => {
-  const uid = params.uid;
   const serialNumber = params.serialNumber;
+  const correlationId = req.id;
 
-  const logins = (await getUserLoginAuditsSince(uid, moment().subtract(1, 'years').toDate())).map(x => {
-    x.timestamp = new Date(x.timestamp);
-    return x;
-  });
-  const successfulLogins = logins.filter(x => x.success).sort((x, y) => {
-    const xTime = x.timestamp.getTime();
-    const yTime = y.timestamp.getTime();
-    if (xTime > yTime) {
-      return -1;
-    }
-    if (xTime < yTime) {
-      return 1;
-    }
-    return 0;
-  });
+  const result = await getSearchDetailsForDeviceBySerialNumber(serialNumber, correlationId);
+  if (!result) {
+    return undefined;
+  }
+  const uid = result.id;
+
+  let successfulLogins = [];
+  if(uid) {
+    const logins = (await getUserLoginAuditsSince(uid, moment().subtract(1, 'years').toDate())).map(x => {
+      x.timestamp = new Date(x.timestamp);
+      return x;
+    });
+    successfulLogins = logins.filter(x => x.success).sort((x, y) => {
+      const xTime = x.timestamp.getTime();
+      const yTime = y.timestamp.getTime();
+      if (xTime > yTime) {
+        return -1;
+      }
+      if (xTime < yTime) {
+        return 1;
+      }
+      return 0;
+    });
+  }
 
   const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
   if (isNaN(pageNumber)) {
     return null;
   }
 
-  const result = await userDevices.getByUserId(uid);
+  // const result = await userDevices.getByUserId(uid);
   let auditRecords = [];
   if (result) {
     auditRecords = await getTokenAudits(uid, serialNumber, pageNumber, result.name);
@@ -287,7 +296,7 @@ const deactivateToken = async (req) => {
   };
   const result = await devices.deactivateToken(serialNumber, reason, correlationId);
 
-  if(result) {
+  if (result) {
     removeResult = await deleteUserDevice(uid, serialNumber, correlationId);
   }
 
@@ -301,12 +310,16 @@ const deactivateToken = async (req) => {
       userEmail: req.user.email,
       deviceSerialNumber: serialNumber,
     });
-  }
-  else {
+  } else {
 
-    const result = await userDevices.getByUserId(serialNumber, 'serialNumber');
+    // const result = await userDevices.getByUserId(serialNumber, 'serialNumber');
+    const result = await getSearchDetailsForDeviceBySerialNumber(serialNumber, correlationId);
     result.device.status = 'Deactivated';
-    await userDevices.updateIndex([result]);
+    result.id = null;
+    result.name = null;
+    result.organisation = null;
+    // await userDevices.updateIndex([result]);
+    await updateDeviceInSearch(result, correlationId);
 
     logger.audit(`${req.user.email} (id: ${req.user.sub}) Deactivated token with serial number "${serialNumber}"`, {
       type: 'support',
