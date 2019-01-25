@@ -23,14 +23,14 @@ const users = (csrf) => {
   router.use(isLoggedIn);
   router.use(setCurrentArea('tokens'));
 
-  router.get('/', csrf, getSearch);
-  router.get('/:serialNumber/:uid', csrf, asyncWrapper(getUserDevice));
-  router.get('/:serialNumber/resync/:uid', csrf, asyncWrapper(getResyncToken));
-  router.get('/:serialNumber/unlock/:uid', csrf, asyncWrapper(getUnlockCode));
-  router.get('/:serialNumber/deactivate/:uid', csrf, asyncWrapper(getDeactivateToken));
-  router.post('/:serialNumber/resync/:uid', csrf, asyncWrapper(postResyncToken));
-  router.post('/:serialNumber/unlock/:uid', csrf, asyncWrapper(postUnlockToken));
-  router.post('/:serialNumber/deactivate/:uid', csrf, asyncWrapper(postDeactivateToken));
+  router.get('/', csrf, asyncWrapper(getSearch));
+  router.get('/:serialNumber', csrf, asyncWrapper(getUserDevice));
+  router.get('/:serialNumber/resync', csrf, asyncWrapper(getResyncToken));
+  router.get('/:serialNumber/unlock', csrf, asyncWrapper(getUnlockCode));
+  router.get('/:serialNumber/deactivate', csrf, asyncWrapper(getDeactivateToken));
+  router.post('/:serialNumber/resync', csrf, asyncWrapper(postResyncToken));
+  router.post('/:serialNumber/unlock', csrf, asyncWrapper(postUnlockToken));
+  router.post('/:serialNumber/deactivate', csrf, asyncWrapper(postDeactivateToken));
   router.post('/', csrf, postSearch);
 
   return router;

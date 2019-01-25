@@ -81,7 +81,7 @@ const paginationModel = {
             <% } %>
             <% for (let i = 0; i < locals.userDevices.length; i++) { %>
                 <tr>
-                    <td><a href="/userDevices/<%=userDevices[i].device.serialNumber%>/<%=userDevices[i].id%>%>"><%= userDevices[i].device.serialNumberFormatted %></a></td>
+                    <td><a href="/userDevices/<%=userDevices[i].device.serialNumber%>%>"><%= userDevices[i].device.serialNumberFormatted %></a></td>
                     <td><%= userDevices[i].device.status %></td>
                     <td><%= userDevices[i].name %></td>
                     <td>

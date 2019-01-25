@@ -8,7 +8,7 @@ const action = async (req, res) => {
     uid: req.params.uid,
     serialNumber: req.params.serialNumber,
     validationMessages: {},
-    backLink: '/userdevices/' + req.params.serialNumber + '/' + req.params.uid,
+    backLink: '/userdevices/' + req.params.serialNumber,
   });
 };
 

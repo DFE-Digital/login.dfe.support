@@ -6,7 +6,7 @@ const action = async (req, res) => {
     id: '',
     code1: '',
     code2: '',
-    backLink: '/userdevices/' + req.params.serialNumber + '/' + req.params.uid,
+    backLink: '/userdevices/' + req.params.serialNumber,
     validationMessages: [],
     uid: req.params.uid,
     serialNumber: req.params.serialNumber,

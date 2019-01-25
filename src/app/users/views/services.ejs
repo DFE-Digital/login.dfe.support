@@ -46,7 +46,7 @@
                         <% if (locals.user.id.startsWith('inv-')) {%>
                         <%=service.token ? service.token.serialNumber : ''%>
                         <% } else {%>
-                        <a href="/userDevices/<%=service.token.nonFormattedSerialNumber%>/<%=locals.user.id%>"><%=service.token.serialNumber%></a>
+                        <a href="/userDevices/<%=service.token.nonFormattedSerialNumber%>"><%=service.token.serialNumber%></a>
                         <% } %>
                         <% } else { %>
                         <a href="/users/<%=locals.user.id%>/assign-digipass/<%=service.id%>">Assign</a>
