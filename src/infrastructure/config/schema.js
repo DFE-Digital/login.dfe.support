@@ -128,6 +128,7 @@ const schema = new SimpleSchema({
   organisations: schemas.apiClient,
   applications: schemas.apiClient,
   access: schemas.apiClient,
+  search: schemas.apiClient,
   audit: auditSchema,
   serviceMapping: serviceMappingSchema,
   devices: schemas.apiClient,

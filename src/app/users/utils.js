@@ -1,6 +1,6 @@
-const users = require('./../../infrastructure/users');
 const logger = require('./../../infrastructure/logger');
-const { getUser, getInvitation, createUserDevice } = require('./../../infrastructure/directories');
+const { seachForUsers, getSearchDetailsForUserById, updateUserInSearch } = require('./../../infrastructure/search');
+const { getInvitation, createUserDevice } = require('./../../infrastructure/directories');
 const { getServicesByUserId, getServicesByInvitationId } = require('./../../infrastructure/access');
 const { getServiceById } = require('./../../infrastructure/applications');
 const { mapUserStatus } = require('./../../infrastructure/utils');
@@ -51,7 +51,7 @@ const search = async (req) => {
   }
   let safeCriteria = criteria;
   if (criteria.indexOf('-') !== -1) {
-    criteria = "\"" + criteria +  "\"";
+    criteria = "\"" + criteria + "\"";
   }
 
   let page = paramsSource.page ? parseInt(paramsSource.page) : 1;
@@ -64,7 +64,7 @@ const search = async (req) => {
 
   const filter = buildFilters(paramsSource);
 
-  const results = await users.search(criteria + '*', page, sortBy, sortAsc, filter);
+  const results = await seachForUsers(criteria + '*', page, sortBy, sortAsc, filter);
   logger.audit(`${req.user.email} (id: ${req.user.sub}) searched for users in support using criteria "${criteria}"`, {
     type: 'support',
     subType: 'user-search',
@@ -111,9 +111,12 @@ const search = async (req) => {
 };
 
 const getUserDetails = async (req) => {
-  const uid = req.params.uid;
+  return getUserDetailsById(req.params.uid, req.id);
+};
+
+const getUserDetailsById = async (uid, correlationId) => {
   if (uid.startsWith('inv-')) {
-    const invitation = await getInvitation(uid.substr(4), req.id);
+    const invitation = await getInvitation(uid.substr(4), correlationId);
     return {
       id: uid,
       name: `${invitation.firstName} ${invitation.lastName}`,
@@ -128,8 +131,8 @@ const getUserDetails = async (req) => {
       deactivated: invitation.deactivated
     };
   } else {
-    const user = await users.getById(uid);
-    const serviceDetails = await getServicesByUserId(uid, req.id);
+    const user = await getSearchDetailsForUserById(uid);
+    const serviceDetails = await getServicesByUserId(uid, correlationId);
 
     const ktsDetails = serviceDetails ? serviceDetails.find((c) => c.serviceId.toLowerCase() === config.serviceMapping.key2SuccessServiceId.toLowerCase()) : undefined;
     let externalIdentifier = '';
@@ -157,6 +160,10 @@ const getUserDetails = async (req) => {
       pendingEmail: user.pendingEmail,
     };
   }
+};
+
+const updateUserDetails = async (user, correlationId) => {
+  await updateUserInSearch(user, correlationId);
 };
 
 const getAllServicesForUserInOrg = async (userId, organisationId, correlationId) => {
@@ -214,13 +221,13 @@ const createDevice = async (req) => {
 };
 
 const waitForIndexToUpdate = async (uid, updatedCheck) => {
-  const abadonTime = Date.now() + 2000;
+  const abandonTime = Date.now() + 2000;
   let hasBeenUpdated = false;
-  while (!hasBeenUpdated && Date.now() < abadonTime) {
-    const updated = await users.getById(uid);
+  while (!hasBeenUpdated && Date.now() < abandonTime) {
+    const updated = await getSearchDetailsForUserById(uid);
     hasBeenUpdated = updatedCheck(updated);
     if (!hasBeenUpdated) {
-      delay(200);
+      await delay(200);
     }
   }
 };
@@ -228,6 +235,8 @@ const waitForIndexToUpdate = async (uid, updatedCheck) => {
 module.exports = {
   search,
   getUserDetails,
+  getUserDetailsById,
+  updateUserDetails,
   createDevice,
   waitForIndexToUpdate,
   getAllServicesForUserInOrg,
