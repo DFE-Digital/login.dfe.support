@@ -1,11 +1,11 @@
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
 jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/organisations');
-jest.mock('./../../../src/infrastructure/users');
+jest.mock('./../../../src/infrastructure/search');
 
 const { getUser } = require('./../../../src/infrastructure/directories');
 const { getServicesByUserId } = require('./../../../src/infrastructure/organisations');
-const users = require('./../../../src/infrastructure/users');
+const { getSearchDetailsForUserById } = require('./../../../src/infrastructure/search');
 const { getUserDetails } = require('./../../../src/app/users/utils');
 
 describe('When getting user details', () => {
@@ -14,8 +14,7 @@ describe('When getting user details', () => {
   beforeEach(() => {
     getServicesByUserId.mockReset();
 
-    users.getById.mockReset();
-    users.getById.mockReturnValue({
+    getSearchDetailsForUserById.mockReset().mockReturnValue({
       id: 'user1',
       name: 'Albus Dumbledore',
       firstName: 'Albus',
@@ -41,8 +40,8 @@ describe('When getting user details', () => {
   it('then it should get user from users index', async () => {
     await getUserDetails(req);
 
-    expect(users.getById.mock.calls).toHaveLength(1);
-    expect(users.getById.mock.calls[0][0]).toBe('user1');
+    expect(getSearchDetailsForUserById.mock.calls).toHaveLength(1);
+    expect(getSearchDetailsForUserById.mock.calls[0][0]).toBe('user1');
   });
 
   it('then it should map user and login data to result', async () => {

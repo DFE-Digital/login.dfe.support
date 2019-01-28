@@ -7,16 +7,15 @@ const action = async (req, res) => {
 
   if(resyncTokenResult.resyncResult) {
     res.flash('info', 'Resync complete - Please ask the user to sign in to check the token is synced with the system');
-    res.redirect(`/userDevices/${req.body.serialNumber}/${req.body.uid}`)
+    res.redirect(`/userDevices/${req.body.serialNumber}`)
   }
   else {
     sendResult(req, res, 'userDevices/views/resyncToken', {
       csrfToken: req.csrfToken(),
       code1: '',
       code2: '',
-      backLink: '/userdevices/' + req.body.serialNumber + '/' + req.body.uid,
+      backLink: '/userdevices/' + req.body.serialNumber,
       validationMessages: resyncTokenResult.validationResult.messages,
-      uid: req.body.uid,
       serialNumber: req.body.serialNumber,
     });
   }

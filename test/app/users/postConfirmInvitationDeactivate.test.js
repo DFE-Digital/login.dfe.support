@@ -1,14 +1,11 @@
-jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
-}));
+jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({}));
 jest.mock('./../../../src/infrastructure/directories');
-jest.mock('./../../../src/infrastructure/users');
 jest.mock('./../../../src/app/users/utils');
 jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
 
-const { getRequestMock} = require('./../../utils');
+const { getRequestMock } = require('./../../utils');
 const post = require('./../../../src/app/users/postConfirmInvitationDeactivate');
-const { getUserDetails } = require('./../../../src/app/users/utils');
-const { getById, updateIndex } = require('./../../../src/infrastructure/users');
+const { getUserDetails, getUserDetailsById, updateUserDetails } = require('./../../../src/app/users/utils');
 const logger = require('./../../../src/infrastructure/logger');
 const { deactivateInvite } = require('./../../../src/infrastructure/directories');
 
@@ -30,14 +27,11 @@ describe('When processing a post for a user invitation deactivate request', () =
     };
 
 
-    getUserDetails.mockReset();
-    getUserDetails.mockReturnValue({id:expectedUserId,status:{id:-1}});
+    getUserDetails.mockReset().mockReturnValue({ id: expectedUserId, status: { id: -1 } });
 
-    getById.mockReset();
-    getById.mockReturnValue({status:{
-      id:123,
-      description:'',
-    }})
+    getUserDetailsById.mockReset().mockReturnValue({ id: expectedUserId, status: { id: -1 } });
+
+    updateUserDetails.mockReset();
   });
 
   test('then it updates the user setting the status to deactivated', async () => {
@@ -52,13 +46,13 @@ describe('When processing a post for a user invitation deactivate request', () =
   test('then the user index is updated', async () => {
     await post(req, res);
 
-    expect(updateIndex.mock.calls).toHaveLength(1);
-    expect(updateIndex.mock.calls[0][0]).toMatchObject([{
-      status:{
-        id:-2,
-        description:'Deactivated Invitation',
+    expect(updateUserDetails.mock.calls).toHaveLength(1);
+    expect(updateUserDetails.mock.calls[0][0]).toMatchObject({
+      status: {
+        id: -2,
+        description: 'Deactivated Invitation',
       }
-    }])
+    })
   });
 
   it('then the event is audited', async () => {

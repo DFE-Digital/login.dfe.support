@@ -1,18 +1,15 @@
 const logger = require('./../../infrastructure/logger');
-const { getUserDetails, waitForIndexToUpdate } = require('./utils');
+const { getUserDetails, getUserDetailsById, updateUserDetails, waitForIndexToUpdate } = require('./utils');
 const { deactivate } = require('./../../infrastructure/directories');
-const { getById, updateIndex } = require('./../../infrastructure/users');
 
-const updateUserIndex = async (uid) => {
-  const user = await getById(uid);
+const updateUserIndex = async (uid, correlationId) => {
+  const user = await getUserDetailsById(uid, correlationId);
   user.status = {
     id: 0,
     description: 'Deactivated',
   };
-  if (user.lastLogin) {
-    user.lastLogin = user.lastLogin.getTime();
-  }
-  await updateIndex([user]);
+
+  await updateUserDetails(user, correlationId);
 
   await waitForIndexToUpdate(uid, (updated) => updated.status.id === 0);
 };
@@ -21,7 +18,7 @@ const postConfirmDeactivate = async (req, res) => {
   const user = await getUserDetails(req);
 
   await deactivate(user.id, req.id);
-  await updateUserIndex(user.id);
+  await updateUserIndex(user.id, req.id);
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) deactivated user ${user.email} (id: ${user.id})`, {
     type: 'support',

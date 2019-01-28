@@ -1,9 +1,8 @@
 const logger = require('./../../infrastructure/logger');
 const { sendResult } = require('./../../infrastructure/utils');
-const { getUserDetails, waitForIndexToUpdate } = require('./utils');
+const { getUserDetails, getUserDetailsById, updateUserDetails, waitForIndexToUpdate } = require('./utils');
 const { updateUser } = require('./../../infrastructure/directories');
 const { putSingleServiceIdentifierForUser } = require('./../../infrastructure/access');
-const { getById, updateIndex } = require('./../../infrastructure/users');
 const userDevices = require('./../../infrastructure/userDevices');
 
 const validate = (req) => {
@@ -26,20 +25,18 @@ const validate = (req) => {
   };
 };
 
-const updateUserIndex = async (uid, firstName, lastName) => {
-  const user = await getById(uid);
+const updateUserIndex = async (uid, firstName, lastName, correlationId) => {
+  const user = await getUserDetailsById(uid, correlationId);
   user.name = `${firstName} ${lastName}`;
   user.firstName = firstName;
   user.lastName = lastName;
-  if (user.lastLogin) {
-    user.lastLogin = user.lastLogin.getTime();
-  }
-  await updateIndex([user]);
+
+  await updateUserDetails(user, correlationId);
 
   await waitForIndexToUpdate(uid, (updated) => updated.firstName === firstName && updated.lastName === lastName);
 };
 
-const updateUserDeviceIndex = async (uid, firstName, lastName) => {
+const updateUserDeviceIndex = async (uid, firstName, lastName, correlationId) => {
   const userDevice = await userDevices.getByUserId(uid);
 
   if(userDevice) {
@@ -110,8 +107,8 @@ const postEditProfile = async (req, res) => {
   }
 
   await updateUser(uid, req.body.firstName, req.body.lastName, req.id);
-  await updateUserIndex(uid, req.body.firstName, req.body.lastName);
-  await updateUserDeviceIndex(uid, req.body.firstName, req.body.lastName);
+  await updateUserIndex(uid, req.body.firstName, req.body.lastName, req.id);
+  await updateUserDeviceIndex(uid, req.body.firstName, req.body.lastName, req.id);
 
   auditEdit(req, user);
 

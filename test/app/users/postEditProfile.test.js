@@ -6,9 +6,8 @@ jest.mock('./../../../src/infrastructure/users');
 jest.mock('./../../../src/infrastructure/userDevices');
 
 const logger = require('./../../../src/infrastructure/logger');
-const { getUserDetails } = require('./../../../src/app/users/utils');
+const { getUserDetails, getUserDetailsById, updateUserDetails } = require('./../../../src/app/users/utils');
 const { updateUser } = require('./../../../src/infrastructure/directories');
-const { getById, updateIndex } = require('./../../../src/infrastructure/users');
 const userDevices = require('./../../../src/infrastructure/userDevices');
 const postEditProfile = require('./../../../src/app/users/postEditProfile');
 
@@ -41,13 +40,13 @@ describe('when updating users profile details', () => {
 
     logger.audit.mockReset();
 
-    getUserDetails.mockReset();
-    getUserDetails.mockReturnValue({
+    getUserDetails.mockReset().mockReturnValue({
       id: '915a7382-576b-4699-ad07-a9fd329d3867',
       name: 'Bobby Grint',
       firstName: 'Bobby',
       lastName: 'Grint',
       email: 'rupert.grint@hogwarts.test',
+      organisationName: 'Hogwarts School of Witchcraft and Wizardry',
       lastLogin: null,
       status: {
         id: 1,
@@ -58,18 +57,26 @@ describe('when updating users profile details', () => {
       },
     });
 
-    updateUser.mockReset();
-
-    getById.mockReset().mockReturnValue({
+    getUserDetailsById.mockReset().mockReturnValue({
       id: '915a7382-576b-4699-ad07-a9fd329d3867',
       name: 'Bobby Grint',
+      firstName: 'Bobby',
+      lastName: 'Grint',
       email: 'rupert.grint@hogwarts.test',
       organisationName: 'Hogwarts School of Witchcraft and Wizardry',
       lastLogin: null,
-      statusDescription: 'Active'
+      status: {
+        id: 1,
+        description: 'Active'
+      },
+      loginsInPast12Months: {
+        successful: 0,
+      },
     });
 
-    updateIndex.mockReset();
+    updateUserDetails.mockReset();
+
+    updateUser.mockReset();
 
     userDevices.updateIndex.mockReset();
     userDevices.getByUserId.mockReset().mockReturnValue({
@@ -131,15 +138,17 @@ describe('when updating users profile details', () => {
   it('then it should update user in search index', async () => {
     await postEditProfile(req, res);
 
-    expect(updateIndex.mock.calls).toHaveLength(1);
-    expect(updateIndex.mock.calls[0][0]).toHaveLength(1);
-    expect(updateIndex.mock.calls[0][0][0]).toMatchObject({
+    expect(updateUserDetails.mock.calls).toHaveLength(1);
+    expect(updateUserDetails.mock.calls[0][0]).toMatchObject({
       id: '915a7382-576b-4699-ad07-a9fd329d3867',
       name: 'Rupert Grint',
       email: 'rupert.grint@hogwarts.test',
       organisationName: 'Hogwarts School of Witchcraft and Wizardry',
       lastLogin: null,
-      statusDescription: 'Active'
+      status: {
+        id: 1,
+        description: 'Active',
+      },
     })
   });
 

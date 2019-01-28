@@ -75,7 +75,7 @@ describe('When processing a get to search for user devices', () => {
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.flash.mock.calls[0][0]).toBe('info');
     expect(res.flash.mock.calls[0][1]).toBe('Resync complete - Please ask the user to sign in to check the token is synced with the system');
-    expect(res.redirect.mock.calls[0][0]).toBe('/userDevices/123456/test');
+    expect(res.redirect.mock.calls[0][0]).toBe('/userDevices/123456');
   });
 
   test('then it should render the resync token view if the resync result is false', async () => {
