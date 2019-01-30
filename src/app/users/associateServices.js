@@ -5,7 +5,7 @@ const { getAllServices } = require('./../../infrastructure/applications');
 
 const getAllAvailableServices = async (req) => {
   const allServices = await getAllServices();
-  let externalServices = allServices.services.filter(x => x.isExternalService === true && !(x.relyingParty && x.relyingParty.params && x.relyingParty.params.hideApprover === 'true'));
+  let externalServices = allServices.services.filter(x => x.isExternalService === true && !(x.relyingParty && x.relyingParty.params && x.relyingParty.params.hideSupport === 'true'));
   if (req.params.uid) {
     const allUserServicesInOrg = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
     externalServices = externalServices.filter(ex => !allUserServicesInOrg.find(as => as.id === ex.id));
