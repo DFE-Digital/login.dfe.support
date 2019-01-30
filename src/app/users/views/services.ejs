@@ -25,7 +25,6 @@
                     <th scope="col" class="cwp-30">Service</th>
                     <th scope="col" class="cwp-25">User type</th>
                     <th scope="col" class="cwp-15">Activated</th>
-                    <th scope="col" class="cwp-15">Last active</th>
                     <th scope="col" class="cwp-15">Token</th>
                 </tr>
                 </thead>
@@ -40,7 +39,6 @@
                     <%} else {%>
                     <td>Pending</td>
                     <%}%>
-                    <td><%=service.lastLogin ? locals.moment(service.lastLogin).format('DD MMM YYYY, HH:mm:ss') : 'Never'%></td>
                     <td>
                         <%if (service.token && service.token.serialNumber) {%>
                         <% if (locals.user.id.startsWith('inv-')) {%>
