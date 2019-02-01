@@ -118,12 +118,12 @@
                     <select id="invite-destination" name="invite-destination" class="form-control select2" style="width: 75%;">
                         <% for (let i = 0; i < oidcClients.length; i++) { %>
                         <% const service = oidcClients[i]; %>
-                        <optgroup label="<%= service.friendlyName %> (<%= service.client_id%>)" >
-                            <% if (service.service_home) { %>
-                            <option value="<%= service.client_id%>{split}<%= service.service_home %>"> <%= service.service_home %></option>
+                        <optgroup label="<%= service.name %> (<%= service.relyingParty.client_id%>)" >
+                            <% if (service.relyingParty.service_home) { %>
+                            <option value="<%= service.relyingParty.client_id%>{split}<%= service.relyingParty.service_home %>"> <%= service.relyingParty.service_home %></option>
                             <%}%>
-                            <% for (let a = 0; a < service.redirect_uris.length; a++) { %>
-                            <option value="<%= service.client_id%>{split}<%= service.redirect_uris[a] %>"> <%= service.redirect_uris[a] %></option>
+                            <% for (let a = 0; a < service.relyingParty.redirect_uris.length; a++) { %>
+                            <option value="<%= service.relyingParty.client_id%>{split}<%= service.relyingParty.redirect_uris[a] %>"> <%= service.relyingParty.redirect_uris[a] %></option>
                             <% } %>
 
                         <% } %>
