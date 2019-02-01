@@ -7,110 +7,131 @@
 <div class="grid-row">
     <div class="col-8">
         <form method="post">
-        <h1 class="heading-xlarge">
-            Review invite details
-        </h1>
-        <p>Please review these details before sending an invite.  The user will need to confirm their email address and create a password before their DfE Sign-in account becomes active.</p>
-        <h2 class="heading-medium">Personal details </h2>
-        <dl class="rows">
-            <dt>First name</dt>
-            <dd><%=user.firstName%></dd>
+            <h1 class="heading-xlarge">
+                Review invite details
+            </h1>
+            <p>Please review these details before sending an invite.  The user will need to confirm their email address and create a password before their DfE Sign-in account becomes active.</p>
+            <h2 class="heading-medium">Personal details </h2>
+            <dl class="rows">
+                <dt>First name</dt>
+                <dd><%=user.firstName%></dd>
 
-            <dt>Last name</dt>
-            <dd><%=user.lastName%></dd>
+                <dt>Last name</dt>
+                <dd><%=user.lastName%></dd>
 
-            <dt>Email address</dt>
-            <dd><%=user.email%></dd>
+                <dt>Email address</dt>
+                <dd><%=user.email%></dd>
 
-        </dl>
+            </dl>
 
-        <h2 class="heading-medium">Organisation </h2>
+            <h2 class="heading-medium">Organisation </h2>
 
-        <%if (organisation) {%>
-        <dl class="rows spacer">
-            <dt>Organisation</dt>
-            <dd><%=organisation.name%></dd>
-            <dt>Permission level</dt>
-            <dd><%=role.name%></dd>
-        </dl>
-        <%} else {%>
-        <p><em>No organisation added</em></p>
-        <%}%>
+            <%if (organisation) {%>
+            <dl class="rows spacer">
+                <dt>Organisation</dt>
+                <dd><%=organisation.name%></dd>
+                <dt>Permission level</dt>
+                <dd><%=role.name%></dd>
+            </dl>
+            <%} else {%>
+            <p><em>No organisation added</em></p>
+            <%}%>
 
-        <hr>
+            <hr>
 
-        <h2 class="heading-medium">Content of the email invitation to <%=user.firstName%> <%=user.lastName%> </h2>
+            <h2 class="heading-medium">Content of the email invitation to <%=user.firstName%> <%=user.lastName%> </h2>
 
-        <div class="form-group">
-            <fieldset class="inline with-sub-title">
-                <legend>
-                    <h2 class="heading-small">
-                        Your response
-                    </h2>
-                </legend>
-                <div class="multiple-choice">
-                    <input id="content-default" type="radio" name="email-contents-choice" value="Approve" checked>
-                    <label for="content-default">Default</label>
-                </div>
-                <div class="multiple-choice" data-target="custom-email-contents">
-                    <input id="content-custom" type="radio" name="email-contents-choice" value="Reject">
-                    <label for="content-custom">Custom</label>
-                </div>
-            </fieldset>
-        </div>
-
-        <div class="pnl js-hidden" id="custom-email-contents">
             <div class="form-group">
-                <label class="form-label" for="email-subject">Email subject line</label>
-                <input class="form-control full-width" name="email-subject" id="email-subject" value="You’ve been invited to join DfE Sign-in">
+                <fieldset class="inline with-sub-title">
+                    <legend>
+                        <h2 class="heading-small">
+                            Your response
+                        </h2>
+                    </legend>
+                    <div class="multiple-choice">
+                        <input id="content-default" type="radio" name="email-contents-choice" value="Approve" checked>
+                        <label for="content-default">Default</label>
+                    </div>
+                    <div class="multiple-choice" data-target="custom-email-contents">
+                        <input id="content-custom" type="radio" name="email-contents-choice" value="Reject">
+                        <label for="content-custom">Custom</label>
+                    </div>
+                </fieldset>
             </div>
-            <div class="form-group">
-                <label class="form-label" for="email-contents">Email contents</label>
-                <div class="email-editor">
-                    <p>Dear <%=user.firstName%> <%=user.lastName%></p>
-                    <textarea class="form-control full-width" rows="8" name="email-contents" id="email-contents">You've received this email because you've been invited to join DfE Sign-in.</textarea>
-                    <p>Please follow the link at the bottom of this email and enter the code below so we can create your account.</p>
-                    <div class="static-text">
-                        <p>Your verification code is:</p>
 
-                        <p class="code">VERFICATION CODE</p>
+            <div class="pnl js-hidden" id="custom-email-contents">
+                <div class="form-group">
+                    <label class="form-label" for="email-subject">Email subject line</label>
+                    <input class="form-control full-width" name="email-subject" id="email-subject" value="You’ve been invited to join DfE Sign-in">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="email-contents">Email contents</label>
+                    <div class="email-editor">
+                        <p>Dear <%=user.firstName%> <%=user.lastName%></p>
+                        <textarea class="form-control full-width" rows="8" name="email-contents" id="email-contents">You've received this email because you've been invited to join DfE Sign-in.</textarea>
+                        <p>Please follow the link at the bottom of this email and enter the code below so we can create your account.</p>
+                        <div class="static-text">
+                            <p>Your verification code is:</p>
 
-                        <p>To verify your email address and set up your account, please follow the link below: <em>LINK TO THE SERVICE </em></p>
+                            <p class="code">VERFICATION CODE</p>
 
-                        <p><em>If you received this email in error, please ignore it.</em></p>
+                            <p>To verify your email address and set up your account, please follow the link below: <em>LINK TO THE SERVICE </em></p>
 
-                        <p>Kind regards,</p>
+                            <p><em>If you received this email in error, please ignore it.</em></p>
 
-                        <p>DfE Sign-in</p>
+                            <p>Kind regards,</p>
+
+                            <p>DfE Sign-in</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <hr>
+            <hr>
+            <h2 class="heading-medium">Destination for user</h2>
 
-        <div class="form-group">
-            <label for="user-destination">
-                <span class="form-label-bold">Destination for user</span>
-                <span class="form-hint">Decide where the user will be redirected after completing their registration</span>
-            </label>
+            <div class="form-group">
+                <fieldset class="inline with-sub-title">
+                    <legend>
+                        <h2 class="heading-small">
+                            Your response
+                        </h2>
+                    </legend>
+                    <div class="multiple-choice">
+                        <input id="redirect-default" type="radio" name="redirect-choice" value="Approve" checked>
+                        <label for="redirect-default">Default</label>
+                    </div>
+                    <div class="multiple-choice" data-target="custom-redirect">
+                        <input id="redirect-custom" type="radio" name="redirect-choice" value="Reject">
+                        <label for="redirect-custom">Custom</label>
+                    </div>
+                </fieldset>
+            </div>
 
-            <select id="invite-destination" name="invite-destination" class="form-control select2" style="width: 75%;">
-                <% for (let i = 0; i < oidcClients.length; i++) { %>
-                <% const service = oidcClients[i]; %>
-                <optgroup label="<%= service.friendlyName %> (<%= service.client_id%>)" >
-                    <% if (service.service_home) { %>
-                    <option value="<%= service.client_id%>{split}<%= service.service_home %>"> <%= service.service_home %></option>
-                    <%}%>
-                    <% for (let a = 0; a < service.redirect_uris.length; a++) { %>
-                    <option value="<%= service.client_id%>{split}<%= service.redirect_uris[a] %>"> <%= service.redirect_uris[a] %></option>
-                    <% } %>
+            <div class="pnl js-hidden" id="custom-redirect">
+                <div class="form-group">
+                    <label for="user-destination">
+                        <span class="form-label-bold">Destination for user</span>
+                        <span class="form-hint">Decide where the user will be redirected after completing their registration</span>
+                    </label>
 
-                <% } %>
-                </optgroup>
+                    <select id="invite-destination" name="invite-destination" class="form-control select2" style="width: 75%;">
+                        <% for (let i = 0; i < oidcClients.length; i++) { %>
+                        <% const service = oidcClients[i]; %>
+                        <optgroup label="<%= service.name %> (<%= service.relyingParty.client_id%>)" >
+                            <% if (service.relyingParty.service_home) { %>
+                            <option value="<%= service.relyingParty.client_id%>{split}<%= service.relyingParty.service_home %>"> <%= service.relyingParty.service_home %></option>
+                            <%}%>
+                            <% for (let a = 0; a < service.relyingParty.redirect_uris.length; a++) { %>
+                            <option value="<%= service.relyingParty.client_id%>{split}<%= service.relyingParty.redirect_uris[a] %>"> <%= service.relyingParty.redirect_uris[a] %></option>
+                            <% } %>
 
-            </select>
-        </div>
+                        <% } %>
+                        </optgroup>
+
+                    </select>
+                </div>
+            </div>
 
         <div class="form-submit">
 
@@ -120,6 +141,4 @@
             <button class="button">Submit</button>
         </form>
     </div>
-
-
 </div>
