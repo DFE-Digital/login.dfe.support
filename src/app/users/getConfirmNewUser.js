@@ -1,4 +1,4 @@
-const { getAllOidcClients } = require('./../../infrastructure/hotConfig/api');
+const { getAllServices } = require('./../../infrastructure/applications');
 
 const getRoleName = (id) => {
   switch (id) {
@@ -12,7 +12,7 @@ const getRoleName = (id) => {
 };
 
 const getConfirmNewUser = async(req, res) => {
-  const oidcClients = await getAllOidcClients();
+  const oidcClients = await getAllServices();
 
   return res.render('users/views/confirmNewUser', {
     csrfToken: req.csrfToken(),
@@ -29,7 +29,7 @@ const getConfirmNewUser = async(req, res) => {
       id: req.session.user.permission,
       name: getRoleName(req.session.user.permission),
     } : '',
-    oidcClients,
+    oidcClients: oidcClients.services,
   });
 };
 
