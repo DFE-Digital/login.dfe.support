@@ -1,0 +1,80 @@
+<div class="row">
+    <div class="col-6">
+        <h1 class="heading-xlarge">Organisations</h1>
+    </div>
+</div>
+
+<%
+const paginationModel = {
+    method: 'post',
+    csrfToken,
+    currentPage: locals.page,
+    numberOfPages: locals.numberOfPages,
+    totalNumberOfResults: locals.totalNumberOfResults,
+    numberOfResultsOnPage: locals.organisations.length,
+    data: [
+        { key: 'criteria', value: locals.criteria },
+    ]
+}
+%>
+
+<div class="row row-spacer">
+    <div class="col-6">
+        <form method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+
+            <div class="search-field">
+                <fieldset class="search-input">
+                    <label for="criteria" class="vh">Search by name, urn, uid or ukprn</label>
+                    <input type="text" id="criteria" name="criteria" value="<%= criteria %>" class="form-control"
+                           placeholder="Search by name, urn, uid or ukprn">
+                </fieldset>
+                <fieldset class="search-submit">
+                    <button type="submit" class="button">Search</button>
+                </fieldset>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-6">
+        <div class="buttons pull-right">
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-12">
+        <%- include('../../sharedViews/pagination', paginationModel); %>
+        <table class="data">
+            <thead>
+            <tr class="sortable">
+                <th scope="col" class="cwp-35">Name</th>
+                <th scope="col" class="cwp-20">Type</th>
+                <th scope="col" class="cwp-15">No. Approvers</th>
+                <th scope="col" class="cwp-10">URN</th>
+                <th scope="col" class="cwp-10">UID</th>
+                <th scope="col" class="cwp-10">UKPRN</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% if(locals.organisations.length === 0 && locals.criteria) { %>
+                <tr>
+                    <td colspan="5"><span class="empty-state">No organisations found</span></td>
+                </tr>
+            <% } %>
+            <% for (let i = 0; i < locals.organisations.length; i++) { %>
+                <tr>
+                    <td><a href="/organisations/<%= organisations[i].id %>/"><%= organisations[i].name %></a></td>
+                    <td><%= organisations[i].category.name %></td>
+                    <td>TBC</td>
+                    <td><%= organisations[i].urn %></td>
+                    <td><%= organisations[i].uid %></td>
+                    <td><%= organisations[i].ukprn %></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+        <%- include('../../sharedViews/pagination', paginationModel); %>
+    </div>
+</div>

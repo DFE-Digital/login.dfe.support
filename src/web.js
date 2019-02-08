@@ -132,7 +132,7 @@ const init = async () => {
     const server = https.createServer(options, app);
 
     server.listen(config.hostingEnvironment.port, () => {
-      logger.info(`Dev server listening on https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port} with config:\n${JSON.stringify(config)}`);
+      logger.info(`Dev server listening on https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`);
     });
   } else {
     app.listen(process.env.PORT, () => {
