@@ -77,6 +77,10 @@ const getOrganisationById = async (id) => {
   return (await getPageOfOrganisations(1)).organisations.find(x => x.id === id);
 };
 
+const getOrganisationByIdV2 = async (id) => {
+  return (await getPageOfOrganisations(1)).organisations.find(x => x.id === id);
+};
+
 const getServiceIdentifierDetails = async () => {
   return Promise.resolve(null);
 };
@@ -129,6 +133,7 @@ module.exports = {
   getAllOrganisations,
   getAllServices,
   getOrganisationById,
+  getOrganisationByIdV2,
   getServiceIdentifierDetails,
   addInvitationService,
   addInvitationOrganisation,
