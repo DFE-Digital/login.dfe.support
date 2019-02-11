@@ -1,3 +1,12 @@
+<% if (locals.flash.info) { %>
+    <div class="row">
+        <div class="col-12">
+            <div class="notification notification-success">
+                <%= locals.flash.info %>
+            </div>
+        </div>
+    </div>
+<% } %>
 <div class="row">
     <div class="col-8">
         <h1 class="heading-xlarge">
@@ -31,7 +40,7 @@
         <aside>
             <h2 class="heading-medium">Actions</h2>
             <ul class="list">
-                <li><a href="#">Send WS Sync</a></li>
+                <li><a href="web-service-sync">Send WS Sync</a></li>
             </ul>
         </aside>
     </div>

@@ -7,6 +7,7 @@ const { asyncWrapper } = require('login.dfe.express-error-handling');
 
 const search = require('./search');
 const organisationUsers = require('./organisationUsers');
+const webServiceSync = require('./webServiceSync');
 
 const router = express.Router({ mergeParams: true });
 
@@ -24,6 +25,8 @@ const users = (csrf) => {
   });
   router.get('/:id/users', csrf, asyncWrapper(organisationUsers.get));
   router.post('/:id/users', csrf, asyncWrapper(organisationUsers.post));
+  router.get('/:id/web-service-sync', csrf, asyncWrapper(webServiceSync.get));
+  router.post('/:id/web-service-sync', csrf, asyncWrapper(webServiceSync.post));
 
   return router;
 };
