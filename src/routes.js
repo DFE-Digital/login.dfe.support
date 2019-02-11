@@ -1,4 +1,5 @@
 const users = require('./app/users');
+const organisations = require('./app/organisations');
 const userDevices = require('./app/userDevices');
 const errors = require('./app/errors');
 const signOut = require('./app/signOut');
@@ -12,6 +13,7 @@ const routes = (app, csrf) => {
   app.use('/healthcheck', healthCheck({ config, checks: healthCheckChecks }));
 
   app.use('/users', users(csrf));
+  app.use('/organisations', organisations(csrf));
   app.use('/userDevices', userDevices(csrf));
   app.use('/signout', signOut(csrf));
   app.use('/access-requests', accessRequests(csrf));

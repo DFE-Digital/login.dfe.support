@@ -79,6 +79,10 @@ const getOrganisationById = async (id, correlationId) => {
   return await callOrganisationsApi(`organisations/${id}`, 'GET', undefined, correlationId);
 };
 
+const getOrganisationByIdV2 = async (id, correlationId) => {
+  return await callOrganisationsApi(`organisations/v2/${id}`, 'GET', undefined, correlationId);
+};
+
 const getServiceIdentifierDetails = async (serviceId, identifierKey, identifierValue, correlationId) => {
   return await callOrganisationsApi(`services/${serviceId}/identifiers/${identifierKey}/${identifierValue}`, 'GET', undefined, correlationId);
 };
@@ -160,6 +164,7 @@ module.exports = {
   getAllOrganisations,
   getAllServices,
   getOrganisationById,
+  getOrganisationByIdV2,
   getServiceIdentifierDetails,
   addInvitationService,
   addInvitationOrganisation,
