@@ -45,6 +45,7 @@ const mapSearchUserToSupportModel = (user) => {
     organisation: user.primaryOrganisation ? {
       name: user.primaryOrganisation
     } : null,
+    organisations: user.organisations,
     lastLogin: user.lastLogin ? new Date(user.lastLogin) : null,
     successfulLoginsInPast12Months: user.numberOfSuccessfulLoginsInPast12Months,
     status: mapUserStatus(user.statusId, user.statusLastChangedOn),
@@ -119,7 +120,7 @@ const seachForUsers = async (criteria, pageNumber, sortBy, sortDirection, filter
       const properties = Object.keys(filters);
       properties.forEach((property) => {
         const values = filters[property];
-        endpoint += values.join(v => `&filter_${property}=${v}`);
+        endpoint += values.map(v => `&filter_${property}=${v}`).join('');
       });
     }
     const results = await callApi(endpoint, 'GET');

@@ -45,9 +45,9 @@ if (upperWindowBound < pages) {
                     <% if (locals.currentPage === pageBracketLeft[i]) { %>
                     <span class="current"><%= pageBracketLeft[i] %></span>
                     <% } else if (locals.method === 'post') { %>
-                    <%- include('pageForm', {page: pageBracketLeft[i], csrfToken: locals.csrfToken, data: locals.data}); %>
+                    <%- include('pageForm', {page: pageBracketLeft[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
                     <% } else { %>
-                    <%- include('pageLink', {page: pageBracketLeft[i], csrfToken: locals.csrfToken, data: locals.data}); %>
+                    <%- include('pageLink', {page: pageBracketLeft[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
                     <% } %>
                 </li>
                 <% } %>
@@ -61,9 +61,9 @@ if (upperWindowBound < pages) {
                     <% if (locals.currentPage === pageBracketMiddle[i]) { %>
                     <span class="current"><%= pageBracketMiddle[i] %></span>
                     <% } else if (locals.method === 'post') { %>
-                    <%- include('pageForm', {page: pageBracketMiddle[i], csrfToken: locals.csrfToken, data: locals.data}); %>
+                    <%- include('pageForm', {page: pageBracketMiddle[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
                     <% } else { %>
-                    <%- include('pageLink', {page: pageBracketMiddle[i], csrfToken: locals.csrfToken, data: locals.data}); %>
+                    <%- include('pageLink', {page: pageBracketMiddle[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
                     <% } %>
                 </li>
                 <% } %>
@@ -77,9 +77,9 @@ if (upperWindowBound < pages) {
                     <% if (locals.currentPage === pageBracketRight[i]) { %>
                     <span class="current"><%= pageBracketRight[i] %></span>
                     <% } else if (locals.method === 'post') { %>
-                    <%- include('pageForm', {page: pageBracketRight[i], csrfToken: locals.csrfToken, data: locals.data}); %>
+                    <%- include('pageForm', {page: pageBracketRight[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
                     <% } else { %>
-                    <%- include('pageLink', {page: pageBracketRight[i], csrfToken: locals.csrfToken, data: locals.data}); %>
+                    <%- include('pageLink', {page: pageBracketRight[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
                     <% } %>
                 </li>
                 <% } %>

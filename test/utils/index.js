@@ -55,6 +55,7 @@ const getRequestMock = (customRequest = {}) => {
     accepts: jest.fn().mockReturnValue(['text/html']),
     params: {},
     body: {},
+    query: {},
     user: {
       sub: 'suser1',
       email: 'super.user@unit.test',

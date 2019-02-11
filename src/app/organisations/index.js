@@ -23,6 +23,7 @@ const users = (csrf) => {
     res.redirect('users');
   });
   router.get('/:id/users', csrf, asyncWrapper(organisationUsers.get));
+  router.post('/:id/users', csrf, asyncWrapper(organisationUsers.post));
 
   return router;
 };

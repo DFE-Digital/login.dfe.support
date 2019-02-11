@@ -1,36 +1,50 @@
-<div class="col-8">
-    <h1 class="heading-xlarge">
-        <%= organisation.name %>
-        <small><%= organisation.category.name %></small>
-    </h1>
-    <dl class="inline condensed">
-        <% if (organisation.urn) { %>
-            <dt class="label">URN:</dt>
-            <dd><%= organisation.urn %></dd>
-        <% } %>
+<div class="row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            <%= organisation.name %>
+            <small><%= organisation.category.name %></small>
+        </h1>
+        <dl class="inline condensed">
+            <% if (organisation.urn) { %>
+                <dt class="label">URN:</dt>
+                <dd><%= organisation.urn %></dd>
+            <% } %>
 
-        <% if (organisation.uid) { %>
-            <dt class="label">UID:</dt>
-            <dd><%= organisation.uid %></dd>
-        <% } %>
+            <% if (organisation.uid) { %>
+                <dt class="label">UID:</dt>
+                <dd><%= organisation.uid %></dd>
+            <% } %>
 
-        <% if (organisation.ukprn) { %>
-            <dt class="label">UKPRN:</dt>
-            <dd><%= organisation.ukprn %></dd>
-        <% } %>
+            <% if (organisation.ukprn) { %>
+                <dt class="label">UKPRN:</dt>
+                <dd><%= organisation.ukprn %></dd>
+            <% } %>
 
-        <dt class="label">Address:</dt>
-        <dd><%= organisation.address %></dd>
+            <dt class="label">Address:</dt>
+            <dd><%= organisation.address || 'Not Recorded' %></dd>
 
-        <dt class="label">Legacy Id:</dt>
-        <dd><%= organisation.legacyId %></dd>
-    </dl>
+            <dt class="label">Legacy Id:</dt>
+            <dd><%= organisation.legacyId %></dd>
+        </dl>
+    </div>
+    <div class="col-4">
+        <aside>
+            <h2 class="heading-medium">Actions</h2>
+            <ul class="list">
+                <li><a href="#">Send WS Sync</a></li>
+            </ul>
+        </aside>
+    </div>
 </div>
-<div class="col-4">
-    <aside>
-        <h2 class="heading-medium">Actions</h2>
-        <ul class="list">
-            <li><a href="#">Send WS Sync</a></li>
-        </ul>
-    </aside>
-</div>
+
+<nav>
+    <ul class="tabs" role="tablist">
+
+        <% if(locals.area === 'users') { %>
+            <li class="active">Users</li>
+        <% } else { %>
+            <li><a href="users" role="tab">Users</a></li>
+        <% } %>
+
+    </ul>
+</nav>
