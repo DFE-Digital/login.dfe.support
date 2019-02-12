@@ -48,6 +48,7 @@ const { get: getSelectOrganisation, post: postSelectOrganisation }  = require('.
 const { get: getAssociateRoles, post: postAssociateRoles } = require('./associateRoles');
 const { get: getConfirmAddService, post: postConfirmAddService } = require('./confirmAddService');
 const { get: getRemoveServiceAccess, post: postRemoveServiceAccess} = require('./removeServiceAccess');
+const { get: getWebServiceSync, post: postWebServiceSync} = require('./webServiceSync');
 
 const router = express.Router({ mergeParams: true });
 
@@ -117,6 +118,9 @@ const users = (csrf) => {
 
   router.get('/:uid/select-organisation', csrf, asyncWrapper(getSelectOrganisation));
   router.post('/:uid/select-organisation', csrf, asyncWrapper(postSelectOrganisation));
+
+  router.get('/:uid/web-service-sync', csrf, asyncWrapper(getWebServiceSync));
+  router.post('/:uid/web-service-sync', csrf, asyncWrapper(postWebServiceSync));
 
   router.get('/:uid/organisations/:orgId', csrf, asyncWrapper(getAssociateServices));
   router.post('/:uid/organisations/:orgId', csrf, asyncWrapper(postAssociateServices));
