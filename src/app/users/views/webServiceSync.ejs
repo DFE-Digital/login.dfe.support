@@ -1,0 +1,17 @@
+<a href="organisations" class="link-back">Back</a>
+<div class="row">
+    <div class="col-12">
+        <h1 class="heading-xlarge">
+            Confirm sync of user
+        </h1>
+        <form method="post" id="form-ws-sync">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <fieldset>
+                <legend><p>Please confirm you would like to sync <strong><%=user.name%></strong> with all services that receive web services</p></legend>
+            </fieldset>
+            <div class="form-submit submit-buttons">
+                <button type="submit" class="button">Send WS Sync</button>
+            </div>
+        </form>
+    </div>
+</div>
