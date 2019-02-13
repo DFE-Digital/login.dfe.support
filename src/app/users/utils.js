@@ -64,7 +64,7 @@ const search = async (req) => {
 
   const filter = buildFilters(paramsSource);
 
-  const results = await seachForUsers(criteria + '*', page, sortBy, sortAsc, filter);
+  const results = await seachForUsers(criteria + '*', page, sortBy, sortAsc ? 'asc' : 'desc', filter);
   logger.audit(`${req.user.email} (id: ${req.user.sub}) searched for users in support using criteria "${criteria}"`, {
     type: 'support',
     subType: 'user-search',
