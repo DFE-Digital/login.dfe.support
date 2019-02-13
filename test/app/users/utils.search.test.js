@@ -120,7 +120,7 @@ describe('When processing a user search request', () => {
       expect(actual.sort.name.nextDirection).toBe('desc');
       expect(actual.sort.name.applied).toBe(true);
       expect(seachForUsers.mock.calls[0][2]).toBe('name');
-      expect(seachForUsers.mock.calls[0][3]).toBe(true);
+      expect(seachForUsers.mock.calls[0][3]).toBe('asc');
     });
 
     test('then it should filter by organisation types if specified', async () => {
@@ -248,7 +248,7 @@ describe('When processing a user search request', () => {
       expect(actual.sort.name.nextDirection).toBe('desc');
       expect(actual.sort.name.applied).toBe(true);
       expect(seachForUsers.mock.calls[0][2]).toBe('name');
-      expect(seachForUsers.mock.calls[0][3]).toBe(true);
+      expect(seachForUsers.mock.calls[0][3]).toBe('asc');
     });
 
     test('then it should use sort order specified', async () => {
@@ -260,7 +260,7 @@ describe('When processing a user search request', () => {
       expect(actual.sort.email.nextDirection).toBe('asc');
       expect(actual.sort.email.applied).toBe(true);
       expect(seachForUsers.mock.calls[0][2]).toBe('email');
-      expect(seachForUsers.mock.calls[0][3]).toBe(false);
+      expect(seachForUsers.mock.calls[0][3]).toBe('desc');
     });
   });
 });
