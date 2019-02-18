@@ -58,7 +58,7 @@ const init = async (app) => {
 
   app.get('/auth', passport.authenticate('oidc'));
   app.get('/auth/cb', (req, res, next) => {
-    const defaultLoggedInPath = '/my-services';
+    const defaultLoggedInPath = '/';
 
     if (req.query.error === 'sessionexpired') {
       return res.redirect(defaultLoggedInPath);
