@@ -54,6 +54,7 @@ const paginationModel = {
                 <th scope="col" class="cwp-10">URN</th>
                 <th scope="col" class="cwp-10">UID</th>
                 <th scope="col" class="cwp-10">UKPRN</th>
+                <th scope="col" class="cwp-10">Status</th>
             </tr>
             </thead>
             <tbody>
@@ -69,6 +70,7 @@ const paginationModel = {
                     <td><%= organisations[i].urn %></td>
                     <td><%= organisations[i].uid %></td>
                     <td><%= organisations[i].ukprn %></td>
+                    <td><%= organisations[i].status.name %></td>
                 </tr>
             <% } %>
             </tbody>
