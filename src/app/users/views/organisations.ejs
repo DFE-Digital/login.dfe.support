@@ -24,24 +24,24 @@
                             </div>
                             <div class="meta js-hidden">
                                 <div class="approvers">
-                                    <dl class="rows condensed small-dt">
+                                    <dl class="inline condensed small-dt">
                                         <% if (org.urn) { %>
-                                        <dt><abbr title="Unique Reference Number">URN</abbr></dt>
+                                        <dt><abbr title="Unique Reference Number">URN:</abbr></dt>
                                         <dd><%=org.urn%></dd>
                                         <% } %>
 
                                         <% if (org.uid) { %>
-                                        <dt><abbr title="Unique Identifier">UID</abbr></dt>
+                                        <dt><abbr title="Unique Identifier">UID:</abbr></dt>
                                         <dd><%=org.uid%></dd>
                                         <% } %>
 
                                         <% if (org.ukprn) { %>
-                                        <dt><abbr title="UK Provider Reference Number">UKPRN</abbr></dt>
+                                        <dt><abbr title="UK Provider Reference Number">UKPRN:</abbr></dt>
                                         <dd><%=org.ukprn%></dd>
                                         <% } %>
 
                                         <% if (org.approvers.length > 0) { %>
-                                            <dt>Approvers</dt>
+                                            <dt>Approvers:</dt>
                                             <dd>
                                                 <ul>
                                                     <% for (let a = 0; a < org.approvers.length; a++) { %>
