@@ -9,7 +9,7 @@ jest.mock('ioredis');
 
 const { getUserDetails } = require('./../../../src/app/users/utils');
 const { sendResult } = require('./../../../src/infrastructure/utils');
-const { getUserAudit } = require('./../../../src/infrastructure/audit');
+const { getUserAudit, getUserChangeHistory } = require('./../../../src/infrastructure/audit');
 const {getServiceIdForClientId} = require('./../../../src/infrastructure/serviceMapping');
 const { getServiceById } = require('./../../../src/infrastructure/applications');
 const getAudit = require('./../../../src/app/users/getAudit');
@@ -86,6 +86,22 @@ describe('when getting users audit details', () => {
       numberOfRecords: 56,
     });
 
+    getUserChangeHistory.mockReset();
+    getUserChangeHistory.mockReturnValue({
+      audits: [
+        {
+          type: 'support',
+          subType: 'user-edit',
+          success: false,
+          userId: 'user1',
+          userEmail: 'some.user@test.tester',
+          level: 'audit',
+          message: 'Some detailed message',
+          timestamp: '2018-01-29T17:31:00.000Z'
+        }
+      ]
+    });
+
     getServiceIdForClientId.mockReset();
     getServiceIdForClientId.mockImplementation((clientId) => {
       if (clientId === 'client-1') {
@@ -159,6 +175,7 @@ describe('when getting users audit details', () => {
             name: 'service-1',
             description: 'service-1',
           },
+          organisation: null,
           result: false,
           user: {
             id: 'user1'
@@ -176,6 +193,7 @@ describe('when getting users audit details', () => {
             name: 'service-2',
             description: 'service-2',
           },
+          organisation: null,
           result: true,
           user: {
             id: 'user1'
@@ -188,12 +206,25 @@ describe('when getting users audit details', () => {
             subType: 'some-subtype',
             description: 'some-new-type / some-subtype',
           },
+          organisation: null,
           service: null,
           result: false,
           user: {
             id: 'user1'
           },
         },
+        {
+          timestamp: new Date('2018-01-29T17:31:00.000Z'),
+          event: {
+            type: 'support',
+            subType: 'user-edit',
+            description: 'Edited user'
+          },
+          result:  false,
+          user: {
+            id: 'user1'
+          }
+        }
       ],
     });
   });
@@ -217,7 +248,7 @@ describe('when getting users audit details', () => {
   it('then it should get user details', async () => {
     await getAudit(req, res);
 
-    expect(getUserDetails.mock.calls).toHaveLength(1);
+    expect(getUserDetails.mock.calls).toHaveLength(2);
     expect(getUserDetails.mock.calls[0][0]).toBe(req);
   });
 
