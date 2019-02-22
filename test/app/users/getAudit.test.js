@@ -213,18 +213,6 @@ describe('when getting users audit details', () => {
             id: 'user1'
           },
         },
-        {
-          timestamp: new Date('2018-01-29T17:31:00.000Z'),
-          event: {
-            type: 'support',
-            subType: 'user-edit',
-            description: 'Edited user'
-          },
-          result:  false,
-          user: {
-            id: 'user1'
-          }
-        }
       ],
     });
   });
@@ -248,7 +236,7 @@ describe('when getting users audit details', () => {
   it('then it should get user details', async () => {
     await getAudit(req, res);
 
-    expect(getUserDetails.mock.calls).toHaveLength(2);
+    expect(getUserDetails.mock.calls).toHaveLength(1);
     expect(getUserDetails.mock.calls[0][0]).toBe(req);
   });
 
