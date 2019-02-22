@@ -1,6 +1,6 @@
 const { sendResult, mapUserStatus } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
-const { getUserAudit, getUserChangeHistory } = require('./../../infrastructure/audit');
+const { getUserAudit } = require('./../../infrastructure/audit');
 const logger = require('./../../infrastructure/logger');
 const { getServiceIdForClientId } = require('./../../infrastructure/serviceMapping');
 const { getServiceById } = require('./../../infrastructure/applications');
@@ -117,7 +117,6 @@ const getAudit = async (req, res) => {
     return res.status(400).send();
   }
   const pageOfAudits = await getUserAudit(user.id, pageNumber);
-  const pageOfChangeHistory = await getUserChangeHistory(user.id, pageNumber);
   let audits = [];
 
   for (let i = 0; i < pageOfAudits.audits.length; i++) {
@@ -147,22 +146,8 @@ const getAudit = async (req, res) => {
       service,
       organisation,
       result: audit.success === undefined ? true : audit.success,
-      user: audit.userId.toLowerCase() === user.id.toLowerCase() ? user : await getUserDetails({ params: { uid: audit.userId } }),
-    });
-  }
-
-  for (let i = 0; i < pageOfChangeHistory.audits.length; i++) {
-    let audit = pageOfChangeHistory.audits[i];
-    audits.push({
-      timestamp:  new Date(audit.timestamp),
-      event: {
-        type: audit.type,
-        subType: audit.subType,
-        description: await describeAuditEvent(audit, req),
-      },
-      result: audit.success === undefined ? true : audit.success,
       user: audit.userId.toLowerCase() === user.id.toLowerCase() ? user : await getUserDetails({ params: { uid: audit.userId.toUpperCase() } }),
-    })
+    });
   }
 
   sendResult(req, res, 'users/views/audit', {
