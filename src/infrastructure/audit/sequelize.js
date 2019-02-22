@@ -69,10 +69,37 @@ const getAllAuditsSince = async (sinceDate) => {
 };
 
 const getUserAudit = async (userId, pageNumber) => {
+  const metaSubQuery = db.dialect.QueryGenerator.selectQuery('AuditLogMeta', {
+    attributes: ['AuditId'],
+    where: {
+      [Op.or]: [
+        {
+          key: {
+            [Op.eq]: 'editedUser',
+          },
+        },
+        {
+          key: {
+            [Op.eq]: 'viewedUser',
+          },
+        }
+      ],
+      value: {
+        [Op.eq]: userId,
+      },
+    },
+  }).slice(0, -1);
+
   return getPageOfAudits({
-    userId: {
-      [Op.eq]: userId,
-    }
+    [Op.or]:
+      {
+        userId: {
+          [Op.eq]: userId,
+        },
+        id: {
+          [Op.in]: [Sequelize.literal(metaSubQuery)],
+        },
+      },
   }, pageNumber);
 };
 
