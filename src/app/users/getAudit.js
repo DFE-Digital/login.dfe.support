@@ -1,6 +1,6 @@
 const { sendResult, mapUserStatus } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
-const { getUserAudit } = require('./../../infrastructure/audit');
+const { getUserAudit, getPageOfUserAudits } = require('./../../infrastructure/audit');
 const logger = require('./../../infrastructure/logger');
 const { getServiceIdForClientId } = require('./../../infrastructure/serviceMapping');
 const { getServiceById } = require('./../../infrastructure/applications');
@@ -26,7 +26,7 @@ const describeAuditEvent = async (audit, req) => {
   }
 
   if (audit.type === 'support' && audit.subType === 'user-edit') {
-    const viewedUser = await getUserDetails({ params: { uid: audit.editedUser } });
+    const viewedUser = audit.editedUser ? await getUserDetails({ params: { uid: audit.editedUser } }) : '';
     const editedStatusTo = audit.editedFields && audit.editedFields.find(x => x.name === 'status');
     if (editedStatusTo && editedStatusTo.newValue === 0) {
       const newStatus = mapUserStatus(editedStatusTo.newValue);
@@ -45,7 +45,7 @@ const describeAuditEvent = async (audit, req) => {
   }
 
   if (audit.type === 'support' && audit.subType === 'user-view') {
-    const viewedUser = await getUserDetails({ params: { uid: audit.viewedUser } });
+    const viewedUser = audit.viewedUser ?  await getUserDetails({ params: { uid: audit.viewedUser } }) : '';
     return `Viewed user ${viewedUser.firstName} ${viewedUser.lastName}`;
   }
 
@@ -116,7 +116,7 @@ const getAudit = async (req, res) => {
   if (isNaN(pageNumber)) {
     return res.status(400).send();
   }
-  const pageOfAudits = await getUserAudit(user.id, pageNumber);
+  const pageOfAudits = await getPageOfUserAudits(user.id, pageNumber);
   let audits = [];
 
   for (let i = 0; i < pageOfAudits.audits.length; i++) {

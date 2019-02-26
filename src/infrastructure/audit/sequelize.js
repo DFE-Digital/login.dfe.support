@@ -1,8 +1,9 @@
-const { logs, db } = require('./sequelize-schema');
+const {logs, db} = require('./sequelize-schema');
 const Sequelize = require('sequelize');
-const { getUser } = require('./../../infrastructure/directories');
+const {getUser} = require('./../../infrastructure/directories');
 
 const Op = Sequelize.Op;
+const QueryTypes = Sequelize.QueryTypes;
 const pageSize = 25;
 
 const mapAuditEntity = (auditEntity) => {
@@ -26,6 +27,7 @@ const mapAuditEntity = (auditEntity) => {
   return audit;
 };
 
+
 const getPageOfAudits = async (where, pageNumber) => {
   const auditLogs = await logs.findAll({
     where,
@@ -44,6 +46,50 @@ const getPageOfAudits = async (where, pageNumber) => {
     numberOfPages: Math.ceil(count / pageSize),
     numberOfRecords: count,
   }
+};
+
+const getPageOfUserAudits = async (userId, pageNumber) => {
+  let queryWhere = `WHERE id IN (SELECT AL.id FROM AuditLogs AL LEFT JOIN AuditLogMeta ALM on AL.id = ALM.auditId ` +
+    `WHERE AL.userId = :userId OR (ALM.[key] IN ('editedUser', 'viewedUser') AND ALM.[value] = :userId))`;
+  const queryOpts = {
+    type: QueryTypes.SELECT,
+    replacements: {userId: userId},
+  };
+  const skip = (pageNumber - 1) * pageSize;
+  const count = (await db.query(`SELECT COUNT(1) count FROM AuditLogs ALPage ${queryWhere};`, queryOpts))[0].count;
+  const rows = await db.query('SELECT AuditLogs.*, AuditLogMeta.[key], AuditLogMeta.[value] ' +
+    `FROM (SELECT * FROM AuditLogs ALPage ${queryWhere} ` +
+    `ORDER BY ALPage.[createdAt] DESC OFFSET ${skip} ROWS FETCH NEXT 25 ROWS ONLY) AuditLogs ` +
+    `LEFT JOIN AuditLogMeta ON AuditLogs.id = AuditLogMeta.auditId`, queryOpts);
+
+  const entities = [];
+  let currentEntity;
+  for (let i = 0; i < rows.length; i += 1) {
+    const currentRow = rows[i];
+    if (!currentEntity || currentRow.id !== currentEntity.id) {
+      currentEntity = {
+        id: currentRow.id,
+        type: currentRow.type,
+        subType: currentRow.subType,
+        userId: currentRow.userId ? currentRow.userId.toLowerCase() : '',
+        level: currentRow.level,
+        message: currentRow.message,
+        timestamp: currentRow.createdAt,
+        organisationId: currentRow.organisationId,
+      };
+      entities.push(currentEntity)
+    }
+
+    if (currentRow.key) {
+      const isJson = currentRow.key === 'editedFields';
+      currentEntity[currentRow.key] = isJson ? JSON.parse(currentRow.value) : currentRow.value;
+    }
+  }
+  return {
+    audits: entities,
+    numberOfPages: Math.ceil(count / pageSize),
+    numberOfRecords: count,
+  };
 };
 
 const getUserName = async (userId) => {
@@ -191,7 +237,7 @@ const getAuditEvent = (type, subType, unlockType) => {
 
 const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
 
-  const where =  {
+  const where = {
     key: {
       [Op.eq]: 'deviceSerialNumber',
     },
@@ -228,7 +274,7 @@ const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
       date: new Date(audit.timestamp),
       name: audit.userId ? (audit.userId === userId ? userName : await getUserName(audit.userId)) : audit.userEmail,
       success: audit.success === "0" ? 'Failure' : 'Success',
-      event: getAuditEvent(audit.type,audit.subType,audit.unlockType),
+      event: getAuditEvent(audit.type, audit.subType, audit.unlockType),
     });
   }
 
@@ -246,4 +292,5 @@ module.exports = {
   getUserLoginAuditsForService,
   getUserChangeHistory,
   getTokenAudits,
+  getPageOfUserAudits,
 };
