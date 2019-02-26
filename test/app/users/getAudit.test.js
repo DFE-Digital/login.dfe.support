@@ -9,7 +9,7 @@ jest.mock('ioredis');
 
 const { getUserDetails } = require('./../../../src/app/users/utils');
 const { sendResult } = require('./../../../src/infrastructure/utils');
-const { getUserAudit, getUserChangeHistory } = require('./../../../src/infrastructure/audit');
+const { getPageOfUserAudits, getUserChangeHistory } = require('./../../../src/infrastructure/audit');
 const {getServiceIdForClientId} = require('./../../../src/infrastructure/serviceMapping');
 const { getServiceById } = require('./../../../src/infrastructure/applications');
 const getAudit = require('./../../../src/app/users/getAudit');
@@ -46,8 +46,8 @@ describe('when getting users audit details', () => {
 
     sendResult.mockReset();
 
-    getUserAudit.mockReset();
-    getUserAudit.mockReturnValue({
+    getPageOfUserAudits.mockReset();
+    getPageOfUserAudits.mockReturnValue({
       audits: [
         {
           type: 'sign-in',
@@ -245,17 +245,17 @@ describe('when getting users audit details', () => {
 
     await getAudit(req, res);
 
-    expect(getUserAudit.mock.calls).toHaveLength(1);
-    expect(getUserAudit.mock.calls[0][0]).toBe('user1');
-    expect(getUserAudit.mock.calls[0][1]).toBe(1);
+    expect(getPageOfUserAudits.mock.calls).toHaveLength(1);
+    expect(getPageOfUserAudits.mock.calls[0][0]).toBe('user1');
+    expect(getPageOfUserAudits.mock.calls[0][1]).toBe(1);
   });
 
   it('then it should get page of audits using page specified', async () => {
     await getAudit(req, res);
 
-    expect(getUserAudit.mock.calls).toHaveLength(1);
-    expect(getUserAudit.mock.calls[0][0]).toBe('user1');
-    expect(getUserAudit.mock.calls[0][1]).toBe(3);
+    expect(getPageOfUserAudits.mock.calls).toHaveLength(1);
+    expect(getPageOfUserAudits.mock.calls[0][0]).toBe('user1');
+    expect(getPageOfUserAudits.mock.calls[0][1]).toBe(3);
   });
 
   it('then it should return 400 if specified page is not numeric', async () => {
