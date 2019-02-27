@@ -20,6 +20,11 @@ const { getRequestMock, getResponseMock } = require('./../../utils');
 const { getServiceById } = require('./../../../src/infrastructure/applications');
 const { getSingleUserService, getSingleInvitationService } = require('./../../../src/infrastructure/access');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../../src/infrastructure/organisations');
+const PolicyEngine = require('login.dfe.policy-engine');
+
+const policyEngine = {
+  getPolicyApplicationResultsForUser: jest.fn(),
+};
 const res = getResponseMock();
 
 describe('when displaying the associate roles view', () => {
@@ -100,6 +105,11 @@ describe('when displaying the associate roles view', () => {
       id: 'service1',
       name: 'service name'
     });
+
+    policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({
+      rolesAvailableToUser: [],
+    });
+    PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
     getAssociateRoles = require('./../../../src/app/users/associateRoles').get;
   });
