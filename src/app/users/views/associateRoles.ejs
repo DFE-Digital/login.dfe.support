@@ -37,13 +37,15 @@
         </dl>
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-            <div class="form-group">
+            <div class="form-group  <%= (locals.validationMessages.roles !== undefined) ? 'form-group-error' : '' %>">
                 <fieldset>
+                    <% if (locals.validationMessages.roles !== undefined) { %>
+                    <p class="error-message" id="validation-selected-role"><%=locals.validationMessages.roles%></p>
+                    <% } %>
                     <% if (locals.serviceRoles.length > 0) { %>
                         <legend>
                             <span class="body-text">Select all required roles</span>
                         </legend>
-
                         <% for (let i = 0; i < locals.serviceRoles.length; i++) { %>
                             <% const role = locals.serviceRoles[i]; %>
                             <div class="multiple-choice">
