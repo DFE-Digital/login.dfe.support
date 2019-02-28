@@ -1,6 +1,6 @@
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
 jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
-
+jest.mock('login.dfe.policy-engine');
 jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/applications', () => {
   return {
@@ -10,9 +10,15 @@ jest.mock('./../../../src/infrastructure/applications', () => {
 jest.mock('./../../../src/app/users/utils');
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
+const PolicyEngine = require('login.dfe.policy-engine');
 const { getUserOrganisations } = require('./../../../src/infrastructure/organisations');
 const { getAllServices } = require('./../../../src/infrastructure/applications');
 const { getAllServicesForUserInOrg } = require('./../../../src/app/users/utils');
+
+const policyEngine = {
+  getPolicyApplicationResultsForUser: jest.fn(),
+  validate: jest.fn(),
+};
 const res = getResponseMock();
 
 describe('when adding services to a user', () => {
@@ -35,6 +41,13 @@ describe('when adding services to a user', () => {
       },
     });
     res.mockResetAll();
+
+    policyEngine.getPolicyApplicationResultsForUser.mockReset().mockReturnValue({
+      policiesAppliedForUser: [],
+      rolesAvailableToUser: [],
+      serviceAvailableToUser: true,
+    });
+    PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
     getAllServices.mockReset();
     getAllServices.mockReturnValue({
@@ -93,7 +106,7 @@ describe('when adding services to a user', () => {
           name: "Great Big School"
         }
       },
-      selectedServices:  undefined,
+      selectedServices:  [],
       services: [
         {
           id: 'service1',
@@ -115,6 +128,77 @@ describe('when adding services to a user', () => {
       },
       validationMessages: {
         services: 'At least one service must be selected',
+      },
+    });
+  });
+
+  it('then it should render view if a service selected that is no longer available', async () => {
+    req.body.service = [
+      'service1',
+    ];
+    getAllServices.mockReturnValue({
+      services: [{
+        id: 'service1',
+        dateActivated: '10/10/2018',
+        name: 'service name',
+        status: 'active',
+        isExternalService: true,
+        relyingParty: {
+          params: {}
+        }
+      },{
+        id: 'service3',
+        dateActivated: '10/10/2018',
+        name: 'service name',
+        status: 'active',
+        isExternalService: true,
+        relyingParty: {
+          params: {}
+        }
+      }]
+    });
+    policyEngine.getPolicyApplicationResultsForUser.mockImplementation((userId, organisationId, serviceId) => ({
+      policiesAppliedForUser: [],
+      rolesAvailableToUser: [],
+      serviceAvailableToUser: serviceId === 'service3',
+    }));
+
+    await postAssociateServices(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe('users/views/associateServices');
+    expect(res.render.mock.calls[0][1]).toEqual({
+      csrfToken: 'token',
+      name: 'test name',
+      backLink: '/users/user1/select-organisation',
+      organisationDetails: {
+        organisation: {
+          id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+          name: "Great Big School"
+        }
+      },
+      selectedServices:  ['service1'],
+      services: [
+        {
+          id: 'service3',
+          dateActivated: '10/10/2018',
+          name: 'service name',
+          status: 'active',
+          isExternalService: true,
+          relyingParty: {
+            params: {
+
+            }
+          }
+        }
+      ],
+      user: {
+        email: 'test@test.com',
+        firstName: 'test',
+        lastName: 'name',
+      },
+      validationMessages: {
+        services: 'A service was selected that is no longer available',
       },
     });
   });

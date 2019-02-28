@@ -1,7 +1,10 @@
 'use strict';
+const config = require('./../../infrastructure/config');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 const { getAllServicesForUserInOrg } = require('./utils');
 const { getAllServices } = require('./../../infrastructure/applications');
+const PolicyEngine = require('login.dfe.policy-engine');
+const policyEngine = new PolicyEngine(config);
 
 const getAllAvailableServices = async (req) => {
   const allServices = await getAllServices();
@@ -10,7 +13,14 @@ const getAllAvailableServices = async (req) => {
     const allUserServicesInOrg = await getAllServicesForUserInOrg(req.params.uid, req.params.orgId, req.id);
     externalServices = externalServices.filter(ex => !allUserServicesInOrg.find(as => as.id === ex.id));
   }
-  return externalServices;
+  const servicesNotAvailableThroughPolicies = [];
+  for (let i = 0; i < externalServices.length; i++) {
+    const policyResult = await policyEngine.getPolicyApplicationResultsForUser(req.params.uid, req.params.orgId, externalServices[i].id, req.id);
+    if (!policyResult.serviceAvailableToUser) {
+      servicesNotAvailableThroughPolicies.push(externalServices[i].id);
+    }
+  }
+  return externalServices.filter(x => !servicesNotAvailableThroughPolicies.find(y => x.id === y));
 };
 
 const get = async (req, res) => {
@@ -41,6 +51,12 @@ const validate = async (req) => {
   const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisations(userId, req.id);
   const organisationDetails = userOrganisations.find(x => x.organisation.id === req.params.orgId);
   const externalServices = await getAllAvailableServices(req);
+  let selectedServices = [];
+  if (req.body.service && req.body.service instanceof Array) {
+    selectedServices = req.body.service;
+  } else if (req.body.service) {
+    selectedServices = [req.body.service];
+  }
   const model = {
     name: req.session.user ? `${req.session.user.firstName} ${req.session.user.lastName}` : '',
     user: req.session.user,
@@ -48,10 +64,13 @@ const validate = async (req) => {
     backLink: userOrganisations.length > 1 ? `/users/${req.params.uid}/select-organisation` : `/users/${req.params.uid}/organisations`,
     organisationDetails,
     services: externalServices,
-    selectedServices: req.body.service,
+    selectedServices,
   };
-  if (!model.selectedServices) {
+  if (model.selectedServices.length < 1) {
     model.validationMessages.services = 'At least one service must be selected';
+  }
+  if (selectedServices.filter(sid => !externalServices.find(s => s.id.toLowerCase() === sid.toLowerCase())).length > 0) {
+    model.validationMessages.services = 'A service was selected that is no longer available';
   }
   return model;
 };
@@ -66,12 +85,7 @@ const post = async (req, res) => {
     return res.render('users/views/associateServices', model);
   }
 
-  let selectedServices = model.selectedServices;
-  if (!(selectedServices instanceof Array)) {
-    selectedServices = [req.body.service];
-  }
-
-  req.session.user.services = selectedServices.map((serviceId) => {
+  req.session.user.services = model.selectedServices.map((serviceId) => {
     const existingServiceSelections = req.session.user.services ? req.session.user.services.find(x => x.serviceId === serviceId) : undefined;
     return {
       serviceId,
