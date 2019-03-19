@@ -15,7 +15,7 @@ const getAllAvailableServices = async (req) => {
   }
   const servicesNotAvailableThroughPolicies = [];
   for (let i = 0; i < externalServices.length; i++) {
-    const policyResult = await policyEngine.getPolicyApplicationResultsForUser(req.params.uid, req.params.orgId, externalServices[i].id, req.id);
+    const policyResult = await policyEngine.getPolicyApplicationResultsForUser((!req.params.uid || req.params.uid.startsWith('inv-')) ? undefined : req.params.uid , req.params.orgId, externalServices[i].id, req.id);
     if (!policyResult.serviceAvailableToUser) {
       servicesNotAvailableThroughPolicies.push(externalServices[i].id);
     }
