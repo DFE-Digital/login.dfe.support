@@ -60,7 +60,8 @@ const getPageOfUserAudits = async (userId, pageNumber) => {
   const rows = await db.query('SELECT AuditLogs.*, AuditLogMeta.[key], AuditLogMeta.[value] ' +
     `FROM (SELECT * FROM AuditLogs ALPage ${queryWhere} ` +
     `ORDER BY ALPage.[createdAt] DESC OFFSET ${skip} ROWS FETCH NEXT 25 ROWS ONLY) AuditLogs ` +
-    `LEFT JOIN AuditLogMeta ON AuditLogs.id = AuditLogMeta.auditId`, queryOpts);
+    `LEFT JOIN AuditLogMeta ON AuditLogs.id = AuditLogMeta.auditId ` +
+    `ORDER BY AuditLogs.[createdAt] DESC`, queryOpts);
 
   const entities = [];
   let currentEntity;
