@@ -40,6 +40,7 @@ const getViewModel = async (req) => {
     serviceRoles,
     currentService,
     totalNumberOfServices,
+    cancelLink: req.session.user.isAddService ? `/users/${userId}/organisations` : `/users/${userId}/services`,
   };
 };
 
