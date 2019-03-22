@@ -221,23 +221,6 @@ describe('when getting users service details', () => {
     });
   });
 
-  it('then it should get last login for each org/service', async () => {
-    await getServices(req, res);
-
-    expect(getClientIdForServiceId.mock.calls).toHaveLength(3);
-    expect(getClientIdForServiceId.mock.calls[0][0]).toBe('83f00ace-f1a0-4338-8784-fa14f5943e5a');
-    expect(getClientIdForServiceId.mock.calls[1][0]).toBe('3ff78432-fb20-4ef7-83de-35b3fbb95159');
-    expect(getClientIdForServiceId.mock.calls[2][0]).toBe('ae58ed71-4e0f-48d4-8577-4cf6f1b7d299');
-
-    expect(getUserLoginAuditsForService.mock.calls).toHaveLength(3);
-    expect(getUserLoginAuditsForService.mock.calls[0][1]).toBe('client1');
-    expect(getUserLoginAuditsForService.mock.calls[1][1]).toBe('client2');
-    expect(getUserLoginAuditsForService.mock.calls[2][1]).toBe('client3');
-
-    expect(res.render.mock.calls[0][1].organisations[0].services[0].lastLogin).toEqual(new Date('2018-02-01T09:00:00.000Z'));
-    expect(res.render.mock.calls[0][1].organisations[0].services[1].lastLogin).toEqual(new Date('2018-02-01T10:00:00.000Z'));
-    expect(res.render.mock.calls[0][1].organisations[1].services[0].lastLogin).toEqual(new Date('2018-02-01T11:00:00.000Z'));
-  });
 
   it('then it should get token for each org/service', async () => {
     await getServices(req, res);
