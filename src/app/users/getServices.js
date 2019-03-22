@@ -2,8 +2,6 @@ const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 const { getUser, getUserDevices, getInvitation } = require('./../../infrastructure/directories');
-const { getClientIdForServiceId } = require('./../../infrastructure/serviceMapping');
-const { getUserLoginAuditsForService } = require('./../../infrastructure/audit');
 const logger = require('./../../infrastructure/logger');
 
 const getOrganisations = async (userId, correlationId) => {
@@ -55,31 +53,7 @@ const getOrganisations = async (userId, correlationId) => {
 
   return organisations;
 };
-const getLastLoginForService = async (userId, serviceId) => {
-  if (userId.startsWith('inv-')) {
-    return null;
-  }
 
-  const clientId = await getClientIdForServiceId(serviceId);
-  if (!clientId) {
-    return null;
-  }
-
-  let lastLogin = null;
-  let hasMorePages = true;
-  let pageNumber = 1;
-  while (hasMorePages && !lastLogin) {
-    const page = await getUserLoginAuditsForService(userId, clientId, pageNumber);
-    const successLogin = page.audits.find(x => x.success);
-    if (successLogin) {
-      lastLogin = new Date(successLogin.timestamp);
-    }
-
-    pageNumber++;
-    hasMorePages = pageNumber <= page.numberOfPages;
-  }
-  return lastLogin;
-};
 const getToken = async (userId, serviceId, correlationId) => {
   if (userId.startsWith('inv-')) {
     const invitation = await getInvitation(userId.substr(4), correlationId);
@@ -142,7 +116,6 @@ const action = async (req, res) => {
     }
     for (let j = 0; j < organisationDetails[i].services.length; j++) {
       const svc = Object.assign({}, organisationDetails[i].services[j]);
-      svc.lastLogin = await getLastLoginForService(user.id, svc.id, req.id);
       svc.token = await getToken(user.id, svc.id, req.id);
       org.services.push(svc);
     }
