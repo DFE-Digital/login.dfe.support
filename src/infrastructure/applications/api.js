@@ -34,12 +34,12 @@ const getServiceById = async (id) => {
   }
 };
 
-const getAllServices = async () => {
+const getPageOfService = async (pageNumber, pageSize) => {
   const token = await jwtStrategy(config.applications.service).getBearerToken();
   try {
     const client = await rp({
       method: 'GET',
-      uri: `${config.applications.service.url}/services`,
+      uri: `${config.applications.service.url}/services?page=${pageNumber}&pageSize=${pageSize}`,
       headers: {
         authorization: `bearer ${token}`,
       },
@@ -54,7 +54,25 @@ const getAllServices = async () => {
   }
 };
 
+const getAllServices = async () => {
+  const services = [];
+
+  let pageNumber = 1;
+  let numberOfPages = undefined;
+  while (numberOfPages === undefined || pageNumber <= numberOfPages) {
+    const page = await getPageOfService(pageNumber, 50);
+
+    services.push(...page.services);
+
+    numberOfPages = page.numberOfPages;
+    pageNumber += 1;
+  }
+
+  return { services };
+};
+
 module.exports = {
   getServiceById,
+  getPageOfService,
   getAllServices,
 };
