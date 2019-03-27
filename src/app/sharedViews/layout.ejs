@@ -45,6 +45,12 @@
 
 <div class="wrapper">
 
+    <%if(app.environmentBannerMessage) {%>
+    <div class="environment-banner">
+        <div><%=app.environmentBannerMessage%></div>
+    </div>
+    <%}%>
+
     <header id="global-header" class="with-proposition">
         <div class="header-wrapper">
             <div class="identity"><b>DfE Sign-in</b> Support Console</div>
@@ -65,7 +71,6 @@
             </ul>
         </nav>
     </div>
-
 
     <main id="content" tabindex="-1">
 

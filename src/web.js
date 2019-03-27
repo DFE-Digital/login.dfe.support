@@ -64,6 +64,7 @@ const init = async () => {
     },
     app: {
       title: 'DfE Sign-in Support Console',
+      environmentBannerMessage: config.hostingEnvironment.environmentBannerMessage,
     },
   });
 
