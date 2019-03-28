@@ -2,14 +2,14 @@ const { createInvite } = require('./../../infrastructure/directories');
 const { putSingleServiceIdentifierForUser } = require('./../../infrastructure/organisations');
 const { addInvitationService } = require('./../../infrastructure/access');
 const { getClientIdForServiceId } = require('./../../infrastructure/serviceMapping');
-const { getOidcClientById } = require('./../../infrastructure/hotConfig');
+const { getServiceById } = require('./../../infrastructure/applications');
 const config = require('./../../infrastructure/config');
 const logger = require('./../../infrastructure/logger');
 
 const getKeyToSuccessOriginForInvite = async () => {
   const clientId = await getClientIdForServiceId(config.serviceMapping.key2SuccessServiceId);
-  const client = await getOidcClientById(clientId);
-  const redirectUri = client.redirect_uris[0];
+  const client = await getServiceById(clientId);
+  const redirectUri = client.relyingParty.redirect_uris[0];
   return {
     clientId,
     redirectUri,

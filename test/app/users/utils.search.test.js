@@ -130,7 +130,9 @@ describe('When processing a user search request', () => {
 
       expect(seachForUsers.mock.calls).toHaveLength(1);
       expect(seachForUsers.mock.calls[0][4]).toMatchObject({
-        organisationType: ['org1', 'org2'],
+        organisationCategories: ['org1', 'org2'],
+        services: [],
+        accountStatus: []
       });
     });
 
@@ -152,7 +154,9 @@ describe('When processing a user search request', () => {
 
       expect(seachForUsers.mock.calls).toHaveLength(1);
       expect(seachForUsers.mock.calls[0][4]).toMatchObject({
-        service: ['svc1', 'svc2'],
+        services: ['svc1', 'svc2'],
+        accountStatus: [],
+        organisationCategories: [],
       });
     });
   });
