@@ -12,13 +12,13 @@ jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/serviceMapping');
 jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/access');
-jest.mock('./../../../src/infrastructure/hotConfig');
+jest.mock('./../../../src/infrastructure/applications');
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
 const { createInvite } = require('./../../../src/infrastructure/directories');
 const { getClientIdForServiceId } = require('./../../../src/infrastructure/serviceMapping');
 const { addInvitationService } = require('./../../../src/infrastructure/access');
-const { getOidcClientById } = require('./../../../src/infrastructure/hotConfig');
+const { getServiceById } = require('./../../../src/infrastructure/applications');
 const postConfirmNewK2sUser = require('./../../../src/app/users/postConfirmNewK2sUser');
 
 describe('when confirming the details of a new K2S user', () => {
@@ -48,16 +48,18 @@ describe('when confirming the details of a new K2S user', () => {
 
     getClientIdForServiceId.mockReset().mockReturnValue('kts-rp');
 
-    getOidcClientById.mockReset().mockReturnValue({
+    getServiceById.mockReset().mockReturnValue({
       client_id: 'kts-rp',
       client_secret: 'some-secure-secret',
-      redirect_uris: [
-        'https://key.to.success.test',
-        'https://client.one/register/complete',
-      ],
-      post_logout_redirect_uris: [
-        'https://client.one/signout/complete',
-      ],
+      relyingParty: {
+        redirect_uris: [
+          'https://key.to.success.test',
+          'https://client.one/register/complete',
+        ],
+        post_logout_redirect_uris: [
+          'https://client.one/signout/complete',
+        ],
+      }
     })
   });
 
