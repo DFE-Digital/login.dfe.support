@@ -199,6 +199,10 @@ const updateDeviceInSearch = async (device, correlationId) => {
   await callApi(`/devices/${device.device.serialNumber}`, 'PATCH', body, correlationId);
 };
 
+const updateIndex = async (userId, body, correlationId) => {
+  await callApi(`/users/${userId}`, 'PATCH', body, correlationId);
+};
+
 module.exports = {
   seachForUsers,
   getSearchDetailsForUserById,
@@ -207,4 +211,5 @@ module.exports = {
   searchForDevices,
   getSearchDetailsForDeviceBySerialNumber,
   updateDeviceInSearch,
+  updateIndex,
 };

@@ -1,10 +1,12 @@
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
 jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
 jest.mock('./../../../src/infrastructure/organisations');
+jest.mock('./../../../src/infrastructure/search');
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
 const postEditPermissions = require('./../../../src/app/users/postEditPermissions');
 const { addInvitationOrganisation, setUserAccessToOrganisation } = require('./../../../src/infrastructure/organisations');
+const { getSearchDetailsForUserById } = require('./../../../src/infrastructure/search');
 
 const res = getResponseMock();
 
@@ -33,6 +35,18 @@ describe('when editing a users permission level', () => {
       },
     });
     res.mockResetAll();
+    getSearchDetailsForUserById.mockReset();
+    getSearchDetailsForUserById.mockReturnValue({
+      organisations: [
+        {
+          id: "org1",
+          name: "organisationId",
+          categoryId: "004",
+          statusId: 1,
+          roleId: 0
+        },
+      ]
+    });
   });
 
   it('then it should edit org permission for invitation if request for invitation', async () => {

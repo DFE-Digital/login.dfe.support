@@ -6,10 +6,12 @@ jest.mock('./../../../src/infrastructure/organisations', () => {
     deleteUserOrganisation: jest.fn(),
   };
 });
+jest.mock('./../../../src/infrastructure/search');
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
 const postDeleteOrganisation = require('./../../../src/app/users/postDeleteOrganisation');
 const { deleteInvitationOrganisation, deleteUserOrganisation } = require('./../../../src/infrastructure/organisations');
+const { getSearchDetailsForUserById } = require('./../../../src/infrastructure/search');
 
 const res = getResponseMock();
 
@@ -35,6 +37,18 @@ describe('when removing a users access to an organisation', () => {
       },
     });
     res.mockResetAll();
+    getSearchDetailsForUserById.mockReset();
+    getSearchDetailsForUserById.mockReturnValue({
+      organisations: [
+        {
+          id: "org1",
+          name: "organisationId",
+          categoryId: "004",
+          statusId: 1,
+          roleId: 0
+        },
+      ]
+    });
   });
 
   it('then it should delete org for invitation if request for invitation', async () => {
