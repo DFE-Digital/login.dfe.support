@@ -2,6 +2,7 @@ const logger = require('./../../infrastructure/logger');
 const { deleteUserOrganisation, deleteInvitationOrganisation } = require('./../../infrastructure/organisations');
 const { getAllServicesForUserInOrg } = require('./utils');
 const { removeServiceFromInvitation, removeServiceFromUser } = require('./../../infrastructure/access');
+const { getSearchDetailsForUserById, updateIndex } = require('./../../infrastructure/search');
 
 const deleteInvitationOrg = async (uid, req) => {
   const invitationId =  uid.substr(4);
@@ -32,6 +33,15 @@ const postDeleteOrganisation = async (req, res) => {
     }
     await deleteUserOrg(uid, req);
   }
+
+  //patch search index
+  const searchDetails = await getSearchDetailsForUserById(uid);
+  const currentOrgDetails = searchDetails.organisations;
+  const organisations = currentOrgDetails.filter(org => org.id !== organisationId);
+  const patchBody = {
+    organisations
+  };
+  await updateIndex(uid, patchBody, req.id);
 
   const fullname = `${req.session.user.firstName} ${req.session.user.lastName}`;
   const org = req.session.org.name;
