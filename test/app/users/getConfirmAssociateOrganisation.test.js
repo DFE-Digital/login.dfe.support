@@ -1,10 +1,12 @@
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
 jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
 jest.mock('./../../../src/infrastructure/organisations');
+jest.mock('./../../../src/infrastructure/search');
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
-const { addInvitationOrganisation } = require('./../../../src/infrastructure/organisations');
+const { addInvitationOrganisation, getOrganisationById } = require('./../../../src/infrastructure/organisations');
 const getConfirmAssociateOrganisation = require('./../../../src/app/users/getConfirmAssociateOrganisation');
+const { getSearchDetailsForUserById } = require('./../../../src/infrastructure/search');
 
 const res = getResponseMock();
 
@@ -24,7 +26,25 @@ describe('when confirming new organisation association', () => {
         },
       },
     });
-
+    getOrganisationById.mockReset();
+    getOrganisationById.mockReturnValue({
+      'id': "orgid",
+      "name": 'orgname',
+      'Category': "010",
+      'Status': 1,
+    });
+    getSearchDetailsForUserById.mockReset();
+    getSearchDetailsForUserById.mockReturnValue({
+      organisations: [
+        {
+          id: "org1",
+          name: "organisationId",
+          categoryId: "004",
+          statusId: 1,
+          roleId: 0
+        },
+      ]
+    });
     res.mockResetAll();
 
     addInvitationOrganisation.mockReset();
