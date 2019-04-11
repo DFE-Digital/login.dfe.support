@@ -132,7 +132,6 @@ const schema = new SimpleSchema({
   audit: auditSchema,
   serviceMapping: serviceMappingSchema,
   devices: schemas.apiClient,
-  hotConfig: schemas.apiClient,
   schedules: schedulesSchema,
   toggles: togglesSchema,
   notifications: notificationsSchema
