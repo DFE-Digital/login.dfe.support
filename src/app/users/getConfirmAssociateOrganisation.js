@@ -1,5 +1,6 @@
 const logger = require('./../../infrastructure/logger');
-const { addInvitationOrganisation, setUserAccessToOrganisation } = require('./../../infrastructure/organisations');
+const { addInvitationOrganisation, setUserAccessToOrganisation, getOrganisationById } = require('./../../infrastructure/organisations');
+const { getSearchDetailsForUserById, updateIndex } = require('./../../infrastructure/search');
 
 const addOrganisationToInvitation = async (uid, req) => {
   const invitationId = uid.substr(4);
@@ -47,6 +48,23 @@ const getConfirmAssociateOrganisation = async (req, res) => {
   } else {
     await addOrganisationToUser(uid, req);
   }
+
+  // patch search with new org
+  const newOrgById = await getOrganisationById(req.session.user.organisationId, req.id);
+  const newOrgForSearch = {
+    id: newOrgById.id,
+    name: newOrgById.name,
+    categoryId: newOrgById.Category,
+    statusId: newOrgById.Status,
+    roleId: req.session.user.permission,
+  };
+  const searchDetails = await getSearchDetailsForUserById(uid);
+  const organisations = searchDetails.organisations;
+  organisations.push(newOrgForSearch);
+  const patchBody = {
+    organisations
+  };
+  await updateIndex(uid, patchBody, req.id);
 
   const permissionName = req.session.user.permission === 10000 ? 'approver' : 'end user';
   res.flash('info', `${req.session.user.firstName} ${req.session.user.lastName} now has ${permissionName} access to ${req.session.user.organisationName}`);
