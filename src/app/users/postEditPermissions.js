@@ -1,5 +1,6 @@
 const logger = require('./../../infrastructure/logger');
 const { setUserAccessToOrganisation, addInvitationOrganisation } = require('./../../infrastructure/organisations');
+const { getSearchDetailsForUserById, updateIndex } = require('./../../infrastructure/search');
 
 const validatePermissions = (req) => {
   const validPermissions = [0, 10000];
@@ -45,6 +46,21 @@ const postEditPermissions = async (req, res) => {
   } else {
     await editUserPermissions(uid, req, model);
   }
+
+  // patch search index
+  const userSearchDetails = await getSearchDetailsForUserById(uid);
+  const currentOrgDetails = userSearchDetails.organisations;
+  const organisations = currentOrgDetails.map( org => {
+    if (org.id === req.params.id) {
+      return Object.assign({}, org, {roleId:model.selectedLevel})
+    }
+    return org
+  });
+  const patchBody = {
+    organisations
+  };
+  await updateIndex(uid, patchBody, req.id);
+
   const fullname = model.userFullName;
   const organisationName = model.organisationName;
   const permissionName = model.selectedLevel === 10000 ? 'approver' : 'end user';
