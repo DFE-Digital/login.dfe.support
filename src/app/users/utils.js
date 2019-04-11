@@ -26,7 +26,7 @@ const buildFilters = (paramsSource) => {
 
   const selectedOrganisationTypes = unpackMultiSelect(paramsSource.organisationType);
   if (selectedOrganisationTypes) {
-    filter.organisationType = selectedOrganisationTypes
+    filter.organisationCategories = selectedOrganisationTypes
   }
 
   const selectedAccountStatuses = unpackMultiSelect(paramsSource.accountStatus);
@@ -36,7 +36,7 @@ const buildFilters = (paramsSource) => {
 
   const selectedServices = unpackMultiSelect(paramsSource.service);
   if (selectedServices) {
-    filter.service = selectedServices
+    filter.services = selectedServices
   }
 
   return Object.keys(filter).length > 0 ? filter : undefined;
