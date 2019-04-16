@@ -1,10 +1,10 @@
 'use strict';
 
-const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
+const { getUserOrganisationsV2, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 
 const getNaturalIdentifiers = async (req) => {
   const userId = req.params.uid;
-  const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisations(req.params.uid, req.id);
+  const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisationsV2(req.params.uid, req.id);
   for (let i= 0; i < userOrganisations.length; i++) {
     const org = userOrganisations[i];
     if (org.organisation) {
