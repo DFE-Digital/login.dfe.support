@@ -31,6 +31,11 @@
                                 <%= org.organisation.address %>
                             </span>
                             <% } %>
+                            <% if (org.organisation.status) { %>
+                                <span class="form-hint">
+                                <%= org.organisation.status.name %>
+                            </span>
+                            <% } %>
                         </label>
                     </div>
                     <% } %>
