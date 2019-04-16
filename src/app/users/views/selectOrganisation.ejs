@@ -20,7 +20,10 @@
                     <div class="multiple-choice">
                         <input id="<%= org.organisation.id %>" type="radio" name="selectedOrganisation" value="<%= org.organisation.id %>">
                         <label for="<%= org.organisation.id %>">
-                            <span class="form-label-bold"><%= org.organisation.name %></span>
+                            <span class="form-label-bold">
+                                <%= org.organisation.name %>
+                                (<%= org.organisation.status ? org.organisation.status.name : ''%>)
+                            </span>
                             <% if (org.naturalIdentifiers) { %>
                                 <span class="form-hint">
                                 <%= org.naturalIdentifiers.join(', ') %>
@@ -29,11 +32,6 @@
                             <% if (org.organisation.address && org.organisation.address !== 'Not recorded') { %>
                                 <span class="form-hint">
                                 <%= org.organisation.address %>
-                            </span>
-                            <% } %>
-                            <% if (org.organisation.status) { %>
-                                <span class="form-hint">
-                                <%= org.organisation.status.name %>
                             </span>
                             <% } %>
                         </label>
