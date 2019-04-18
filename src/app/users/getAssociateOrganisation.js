@@ -3,7 +3,7 @@ const getAssociateOrganisation = async (req, res) => {
     csrfToken: req.csrfToken(),
     criteria: '',
     results: undefined,
-    currentPage: 1,
+    page: 1,
     numberOfPages: 1,
     numberOfResults: 1,
     firstRecordNumber: 1,
