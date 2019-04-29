@@ -41,6 +41,10 @@ const getUserOrganisations = async (userId, correlationId) => {
   return await callOrganisationsApi(`organisations/associated-with-user/${userId}`, 'GET', undefined, correlationId);
 };
 
+const getUserOrganisationsV2 = async (userId, correlationId) => {
+  return await callOrganisationsApi(`organisations/v2/associated-with-user/${userId}`, 'GET', undefined, correlationId);
+};
+
 const getInvitationOrganisations = async (invitationId, correlationId) => {
   return await callOrganisationsApi(`invitations/v2/${invitationId}`, 'GET', undefined, correlationId);
 };
@@ -178,4 +182,5 @@ module.exports = {
   listInvitationServices,
   deleteUserOrganisation,
   deleteInvitationOrganisation,
+  getUserOrganisationsV2,
 };
