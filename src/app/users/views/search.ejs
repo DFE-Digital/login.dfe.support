@@ -28,19 +28,19 @@ const paginationModel = {
 if (organisationTypes && organisationTypes.length > 0) {
     const selected = organisationTypes.filter(x => x.isSelected);
     selected.forEach((item) => {
-      paginationModel.data.push({ key: 'organisationType', value: item.id });
+      paginationModel.data.push({ key: 'organisationCategories', value: item.id });
     });
 }
 if (accountStatuses && accountStatuses.length > 0) {
     const selected = accountStatuses.filter(x => x.isSelected);
     selected.forEach((item) => {
-        paginationModel.data.push({ key: 'accountStatus', value: item.id });
+        paginationModel.data.push({ key: 'statusId', value: item.id });
     });
 }
 if (services && services.length > 0) {
     const selected = services.filter(x => x.isSelected);
     selected.forEach((item) => {
-        paginationModel.data.push({ key: 'service', value: item.id });
+        paginationModel.data.push({ key: 'services', value: item.id });
     });
 }
 %>
