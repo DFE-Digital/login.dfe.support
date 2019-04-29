@@ -22,7 +22,7 @@
                         <label for="<%= org.organisation.id %>">
                             <span class="form-label-bold">
                                 <%= org.organisation.name %>
-                                (<%= org.organisation.status ? org.organisation.status.name : ''%>)
+                                <%= org.organisation.status ? `(${org.organisation.status.name})` : ''%>
                             </span>
                             <% if (org.naturalIdentifiers) { %>
                                 <span class="form-hint">
