@@ -10,25 +10,25 @@ const postAssociateOrganisation = async (req, res) => {
     return res.redirect('organisation-permissions');
   }
 
-  const criteria = req.body.criteria;
-  const currentPage = req.body.page;
+  const inputSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
+  const criteria = inputSource.criteria || '';
+  let pageNumber = parseInt(inputSource.page) || 1;
+  if (isNaN(pageNumber)) {
+    pageNumber = 1;
+  }
 
-  const searchResult = await searchOrganisations(criteria, undefined, currentPage, req.id);
+  const searchResult = await searchOrganisations(criteria, undefined, pageNumber, req.id);
   const results = searchResult.organisations;
   const numberOfPages = searchResult.totalNumberOfPages;
   const numberOfResults = searchResult.totalNumberOfRecords;
-  const firstRecordNumber = ((currentPage - 1) * 25) + 1;
-  let lastRecordNumber = (firstRecordNumber + (currentPage === numberOfPages ? results.length : 25)) - 1;
 
   return sendResult(req, res, 'users/views/associateOrganisation', {
     csrfToken: req.csrfToken(),
     criteria,
     results,
-    currentPage,
+    page: pageNumber,
     numberOfPages,
     numberOfResults,
-    firstRecordNumber,
-    lastRecordNumber,
     canSkip: req.params.uid ? false : true,
   });
 };
