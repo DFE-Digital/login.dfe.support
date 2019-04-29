@@ -11,6 +11,21 @@
         <p class="lede">Search for the organisation the new user should be associated with  </p>
     </div>
 </div>
+
+<%
+const paginationModel = {
+    method: 'post',
+    csrfToken,
+    currentPage: locals.page,
+    numberOfPages: locals.numberOfPages,
+    totalNumberOfResults: locals.numberOfResults,
+    numberOfResultsOnPage: locals.results ? locals.results.length : 0,
+    data: [
+        { key: 'criteria', value: locals.criteria },
+    ]
+}
+%>
+
 <div class="grid-row">
     <div class="col-6">
         <div class="search-field">
@@ -32,22 +47,11 @@
 <%if(results && results.length > 0) {%>
 
 <%if (numberOfPages > 1) {%>
-<div class="row meta">
-    <div class="col-5">
-        <p>Showing <%=firstRecordNumber%> - <%=lastRecordNumber%> of <b><%=numberOfResults%></b> organisations</p>
-    </div>
-    <div class="col-4">
-
-        <div class="pagination" data-criteria="<%=criteria%>" data-sort="name" data-sortdir="asc"
-             data-current="<%=currentPage%>" data-total="<%=numberOfPages%>" data-method="form" data-csrf="<%=csrfToken%>">
-        </div>
-
-    </div>
-</div>
+    <%- include('../../sharedViews/pagination', paginationModel); %>
 <%}%>
 
 <div class="grid-row">
-    <div class="col-9">
+    <div class="col-12">
         <ol class="search-results">
             <%for (let i = 0; i < results.length; i += 1) {%>
             <%const org = results[i];%>
@@ -88,24 +92,12 @@
         </ol>
     </div>
 </div>
-<%if(results && results.length > 0) {%>
+
 <%if (numberOfPages > 1) {%>
-<div class="row meta">
-    <div class="col-5">
-        <p>Showing <%=firstRecordNumber%> - <%=lastRecordNumber%> of <b><%=numberOfResults%></b> organisations</p>
-    </div>
-    <div class="col-4">
-
-        <div class="pagination" data-criteria="<%=criteria%>" data-sort="name" data-sortdir="asc"
-             data-current="<%=currentPage%>" data-total="<%=numberOfPages%>" data-method="form" data-csrf="<%=csrfToken%>">
-        </div>
-
-    </div>
-</div>
-<%}%>
+    <%- include('../../sharedViews/pagination', paginationModel); %>
 <%}%>
 
-<%} else if (results) {%>
+<%} else if (results && results.length === 0) {%>
 <div class="grid-row">
     <div class="col-8">
         <div class="empty-state">
