@@ -80,6 +80,11 @@ const paginationModel = {
                         <dt>Type</dt>
                         <dd><%=(org.type ? org.type.name : org.category.name)%></dd>
                         <%}%>
+
+                        <% if (org.status && org.status.name) { %>
+                        <dt>Status</dt>
+                        <dd><%=org.status.name%></dd>
+                        <% } %>
                     </dl>
                 </article>
             </li>
