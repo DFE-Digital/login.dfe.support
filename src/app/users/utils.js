@@ -31,7 +31,7 @@ const buildFilters = (paramsSource) => {
 
   const selectedAccountStatuses = unpackMultiSelect(paramsSource.accountStatus);
   if (selectedAccountStatuses) {
-    filter.accountStatus = selectedAccountStatuses
+    filter.statusId = selectedAccountStatuses
   }
 
   const selectedServices = unpackMultiSelect(paramsSource.service);
