@@ -49,17 +49,19 @@ const postEditPermissions = async (req, res) => {
 
   // patch search index
   const userSearchDetails = await getSearchDetailsForUserById(uid);
-  const currentOrgDetails = userSearchDetails.organisations;
-  const organisations = currentOrgDetails.map( org => {
-    if (org.id === req.params.id) {
-      return Object.assign({}, org, {roleId:model.selectedLevel})
-    }
-    return org
-  });
-  const patchBody = {
-    organisations
-  };
-  await updateIndex(uid, patchBody, req.id);
+  if (userSearchDetails) {
+    const currentOrgDetails = userSearchDetails.organisations;
+    const organisations = currentOrgDetails.map( org => {
+      if (org.id === req.params.id) {
+        return Object.assign({}, org, {roleId:model.selectedLevel})
+      }
+      return org
+    });
+    const patchBody = {
+      organisations
+    };
+    await updateIndex(uid, patchBody, req.id);
+  }
 
   const fullname = model.userFullName;
   const organisationName = model.organisationName;
