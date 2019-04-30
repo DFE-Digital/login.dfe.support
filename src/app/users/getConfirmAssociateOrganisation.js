@@ -50,21 +50,23 @@ const getConfirmAssociateOrganisation = async (req, res) => {
   }
 
   // patch search with new org
-  const newOrgById = await getOrganisationById(req.session.user.organisationId, req.id);
-  const newOrgForSearch = {
-    id: newOrgById.id,
-    name: newOrgById.name,
-    categoryId: newOrgById.Category,
-    statusId: newOrgById.Status,
-    roleId: req.session.user.permission,
-  };
   const searchDetails = await getSearchDetailsForUserById(uid);
-  const organisations = searchDetails.organisations;
-  organisations.push(newOrgForSearch);
-  const patchBody = {
-    organisations
-  };
-  await updateIndex(uid, patchBody, req.id);
+  if (searchDetails) {
+    const organisations = searchDetails.organisations;
+    const newOrgById = await getOrganisationById(req.session.user.organisationId, req.id);
+    const newOrgForSearch = {
+      id: newOrgById.id,
+      name: newOrgById.name,
+      categoryId: newOrgById.Category,
+      statusId: newOrgById.Status,
+      roleId: req.session.user.permission,
+    };
+    organisations.push(newOrgForSearch);
+    const patchBody = {
+      organisations
+    };
+    await updateIndex(uid, patchBody, req.id);
+  }
 
   const permissionName = req.session.user.permission === 10000 ? 'approver' : 'end user';
   res.flash('info', `${req.session.user.firstName} ${req.session.user.lastName} now has ${permissionName} access to ${req.session.user.organisationName}`);
