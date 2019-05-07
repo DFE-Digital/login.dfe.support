@@ -1,7 +1,7 @@
 const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
-const { getUser, getUserDevices, getInvitation } = require('./../../infrastructure/directories');
+const { getUserDevices, getInvitation } = require('./../../infrastructure/directories');
 const logger = require('./../../infrastructure/logger');
 
 const getOrganisations = async (userId, correlationId) => {
@@ -10,25 +10,9 @@ const getOrganisations = async (userId, correlationId) => {
     return [];
   }
 
-  const userMap = [];
 
   const organisations = await Promise.all(orgServiceMapping.map(async (invitation) => {
     const services = await Promise.all(invitation.services.map(async (service) => {
-      const approvers = await Promise.all(invitation.approvers.map(async (approverId) => {
-        let approver = userMap.find(u => u.id === approverId);
-        if (!approver) {
-          const user = await getUser(approverId, correlationId);
-          if (!user) {
-            return null;
-          }
-          approver = {
-            id: approverId,
-            name: `${user.given_name} ${user.family_name}`,
-          };
-        }
-
-        return approver;
-      }));
 
       return {
         id: service.id,
@@ -36,7 +20,6 @@ const getOrganisations = async (userId, correlationId) => {
         userType: invitation.role,
         grantedAccessOn: service.requestDate ? new Date(service.requestDate) : null,
         lastLogin: null,
-        approvers: approvers.filter(x => x !== null),
         token: null,
       };
     }));
@@ -47,6 +30,7 @@ const getOrganisations = async (userId, correlationId) => {
       urn: invitation.organisation.urn,
       uid: invitation.organisation.uid,
       ukprn: invitation.organisation.ukprn,
+      status: invitation.organisation.status,
       services,
     };
   }));

@@ -46,7 +46,11 @@ describe('when getting users service details', () => {
       {
         organisation: {
           id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
-          name: 'Big School'
+          name: 'Big School',
+          status: {
+            id: 1,
+            name: 'open'
+          }
         },
         role: {
           id: 0,
@@ -72,7 +76,11 @@ describe('when getting users service details', () => {
       {
         organisation: {
           id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
-          name: 'Small School'
+          name: 'Small School',
+          status: {
+            id: 1,
+            name: 'open'
+          }
         },
         role: {
           id: 10000,
@@ -180,6 +188,10 @@ describe('when getting users service details', () => {
     expect(res.render.mock.calls[0][1].organisations[0]).toMatchObject({
       id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
       name: 'Big School',
+      status: {
+        id: 1,
+        name: 'open'
+      },
       services: [
         {
           id: '83f00ace-f1a0-4338-8784-fa14f5943e5a',
@@ -189,7 +201,6 @@ describe('when getting users service details', () => {
             name: 'End user'
           },
           grantedAccessOn: new Date('2018-01-18T10:46:59.385Z'),
-          approvers: [],
         },
         {
           id: '3ff78432-fb20-4ef7-83de-35b3fbb95159',
@@ -199,13 +210,16 @@ describe('when getting users service details', () => {
             name: 'End user'
           },
           grantedAccessOn: new Date('2018-01-18T10:56:59.385Z'),
-          approvers: [],
         },
       ]
     });
     expect(res.render.mock.calls[0][1].organisations[1]).toMatchObject({
       id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
       name: 'Small School',
+      status: {
+        id: 1,
+        name: 'open'
+      },
       services: [
         {
           id: 'ae58ed71-4e0f-48d4-8577-4cf6f1b7d299',
@@ -215,7 +229,6 @@ describe('when getting users service details', () => {
             name: 'Approver'
           },
           grantedAccessOn: new Date('2018-01-19T10:46:59.385Z'),
-          approvers: [],
         },
       ]
     });
