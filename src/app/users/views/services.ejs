@@ -11,6 +11,7 @@
         <section class="organisation">
             <header>
                 <h3 class="heading-small spacer-heading"><%=org.name%>
+                    <%= org.status ? `(${org.status.name})` : '' %>
                     <% if (org.naturalIdentifiers && org.naturalIdentifiers.length !== 0) { %>
                         (<%= org.naturalIdentifiers.join(', ') %>)
                     <% } %>

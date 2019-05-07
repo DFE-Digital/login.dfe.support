@@ -25,6 +25,10 @@
                             <div class="meta js-hidden">
                                 <div class="approvers">
                                     <dl class="inline condensed small-dt">
+                                        <% if (org.status && org.status.name) { %>
+                                        <dt><abbr title="Status">Status:</abbr></dt>
+                                        <dd><%=org.status.name%></dd>
+                                        <% } %>
                                         <% if (org.urn) { %>
                                         <dt><abbr title="Unique Reference Number">URN:</abbr></dt>
                                         <dd><%=org.urn%></dd>
