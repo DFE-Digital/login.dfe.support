@@ -22,7 +22,8 @@ describe('when associating user to organisations', () => {
           lastName: 'Howlett',
           email: 'logan@x-men.test',
         }
-      }
+      },
+      method: 'POST',
     });
 
     res.mockResetAll();
@@ -58,11 +59,9 @@ describe('when associating user to organisations', () => {
       results: [
         { id: 'org1' },
       ],
-      currentPage: 1,
+      page: 1,
       numberOfPages: 2,
       numberOfResults: 49,
-      firstRecordNumber: 1,
-      lastRecordNumber: 25,
       canSkip: true,
     });
   });

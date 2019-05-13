@@ -3,7 +3,7 @@ jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils')
 
 jest.mock('./../../../src/infrastructure/organisations');
 const { getRequestMock, getResponseMock } = require('./../../utils');
-const { getUserOrganisations } = require('./../../../src/infrastructure/organisations');
+const { getUserOrganisationsV2 } = require('./../../../src/infrastructure/organisations');
 const res = getResponseMock();
 
 describe('when selecting an organisation', () => {
@@ -25,8 +25,8 @@ describe('when selecting an organisation', () => {
     });
     res.mockResetAll();
 
-    getUserOrganisations.mockReset();
-    getUserOrganisations.mockReturnValue([
+    getUserOrganisationsV2.mockReset();
+    getUserOrganisationsV2.mockReturnValue([
       {
         organisation: {
           id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
