@@ -36,12 +36,14 @@ const postDeleteOrganisation = async (req, res) => {
 
   //patch search index
   const searchDetails = await getSearchDetailsForUserById(uid);
-  const currentOrgDetails = searchDetails.organisations;
-  const organisations = currentOrgDetails.filter(org => org.id !== organisationId);
-  const patchBody = {
-    organisations
-  };
-  await updateIndex(uid, patchBody, req.id);
+  if (searchDetails) {
+    const currentOrgDetails = searchDetails.organisations;
+    const organisations = currentOrgDetails.filter(org => org.id !== organisationId);
+    const patchBody = {
+      organisations
+    };
+    await updateIndex(uid, patchBody, req.id);
+  }
 
   const fullname = `${req.session.user.firstName} ${req.session.user.lastName}`;
   const org = req.session.org.name;
