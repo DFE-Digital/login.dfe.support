@@ -38,6 +38,7 @@ if (sequelizeTransport) {
 if (config.hostingEnvironment.applicationInsights) {
   appInsights.setup(config.hostingEnvironment.applicationInsights)
     .setAutoCollectConsole(false, false)
+    .setSendLiveMetrics(config.loggerSettings.aiSendLiveMetrics || false)
     .start();
   loggerConfig.transports.push(new AppInsightsTransport({
     client: appInsights.defaultClient,
