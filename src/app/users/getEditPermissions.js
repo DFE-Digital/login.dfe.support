@@ -31,6 +31,7 @@ const getEditPermissions = async (req, res) => {
   }
   return res.render('users/views/editPermissions', {
     csrfToken: req.csrfToken(),
+    backLink: true,
     organisation,
     role,
     userId: req.params.uid,
