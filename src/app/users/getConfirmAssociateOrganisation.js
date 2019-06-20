@@ -1,6 +1,7 @@
 const logger = require('./../../infrastructure/logger');
 const { addInvitationOrganisation, setUserAccessToOrganisation, getOrganisationById } = require('./../../infrastructure/organisations');
 const { getSearchDetailsForUserById, updateIndex } = require('./../../infrastructure/search');
+const { waitForIndexToUpdate } = require('./utils');
 
 const addOrganisationToInvitation = async (uid, req) => {
   const invitationId = uid.substr(4);
@@ -66,6 +67,7 @@ const getConfirmAssociateOrganisation = async (req, res) => {
       organisations
     };
     await updateIndex(uid, patchBody, req.id);
+    await waitForIndexToUpdate(uid, (updated) => updated.organisations.length === organisations.length)
   }
 
   const permissionName = req.session.user.permission === 10000 ? 'approver' : 'end user';

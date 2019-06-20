@@ -221,11 +221,15 @@ const createDevice = async (req) => {
 };
 
 const waitForIndexToUpdate = async (uid, updatedCheck) => {
-  const abandonTime = Date.now() + 2000;
+  const abandonTime = Date.now() + 10000;
   let hasBeenUpdated = false;
   while (!hasBeenUpdated && Date.now() < abandonTime) {
     const updated = await getSearchDetailsForUserById(uid);
-    hasBeenUpdated = updatedCheck(updated);
+    if (updatedCheck) {
+      hasBeenUpdated = updatedCheck(updated);
+    } else {
+      hasBeenUpdated = updated;
+    }
     if (!hasBeenUpdated) {
       await delay(200);
     }
