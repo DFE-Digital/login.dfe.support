@@ -1,6 +1,7 @@
 const { createInvite } = require('./../../infrastructure/directories');
 const { addInvitationOrganisation } = require('./../../infrastructure/organisations');
 const { createIndex } = require('./../../infrastructure/search');
+const { waitForIndexToUpdate } = require('./utils');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
 
@@ -32,10 +33,10 @@ const postConfirmNewUser = async (req, res) => {
     await addInvitationOrganisation(invitationId, req.session.user.organisationId, req.session.user.permission || 0, req.id);
   }
 
-  const createUserIndex = await createIndex(`inv-${invitationId}`, req.id);
-  if (!createUserIndex) {
-    logger.error(`Failed to create user in index inv-${invitationId}`, {correlationId: req.id});
-  }
+  await createIndex(`inv-${invitationId}`, req.id);
+
+  await waitForIndexToUpdate(`inv-${invitationId}`);
+
   logger.audit(`${req.user.email} (id: ${req.user.sub}) invited ${req.session.user.email}`,
     {
       type: 'support',
