@@ -28,7 +28,7 @@ const callApi = async (endpoint, method, body, correlationId) => {
     });
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
-    if (status === 404) {
+    if (status === 404 || e.statusCode === 400 || e.statusCode === 403) {
       return undefined;
     }
     throw e;
@@ -203,6 +203,13 @@ const updateIndex = async (userId, body, correlationId) => {
   await callApi(`/users/${userId}`, 'PATCH', body, correlationId);
 };
 
+const createIndex = async (id, correlationId) => {
+  const body = {
+    id
+  };
+  await callApi('/users/update-index', 'POST', body, correlationId);
+};
+
 module.exports = {
   seachForUsers,
   getSearchDetailsForUserById,
@@ -212,4 +219,5 @@ module.exports = {
   getSearchDetailsForDeviceBySerialNumber,
   updateDeviceInSearch,
   updateIndex,
+  createIndex,
 };
