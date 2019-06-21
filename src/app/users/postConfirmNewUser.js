@@ -1,5 +1,7 @@
 const { createInvite } = require('./../../infrastructure/directories');
 const { addInvitationOrganisation } = require('./../../infrastructure/organisations');
+const { createIndex } = require('./../../infrastructure/search');
+const { waitForIndexToUpdate } = require('./utils');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
 
@@ -30,6 +32,10 @@ const postConfirmNewUser = async (req, res) => {
   if (req.session.user.organisationId) {
     await addInvitationOrganisation(invitationId, req.session.user.organisationId, req.session.user.permission || 0, req.id);
   }
+
+  await createIndex(`inv-${invitationId}`, req.id);
+
+  await waitForIndexToUpdate(`inv-${invitationId}`);
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) invited ${req.session.user.email}`,
     {
