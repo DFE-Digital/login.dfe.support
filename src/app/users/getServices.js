@@ -2,6 +2,7 @@ const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 const { getUserDevices, getInvitation } = require('./../../infrastructure/directories');
+const { getAllServices } = require('./../../infrastructure/applications');
 const logger = require('./../../infrastructure/logger');
 
 const getOrganisations = async (userId, correlationId) => {
@@ -98,10 +99,16 @@ const action = async (req, res) => {
     if (ukprn) {
       org.naturalIdentifiers.push(`UKPRN: ${ukprn}`)
     }
+    const allServices = await getAllServices();
+    const externalServices = allServices.services.filter(x => x.isExternalService === true && !(x.relyingParty && x.relyingParty.params && x.relyingParty.params.hideSupport === 'true'));
+
     for (let j = 0; j < organisationDetails[i].services.length; j++) {
       const svc = Object.assign({}, organisationDetails[i].services[j]);
-      svc.token = await getToken(user.id, svc.id, req.id);
-      org.services.push(svc);
+      const isExternalService = externalServices.find(x => x.id === svc.id);
+      if (isExternalService) {
+        svc.token = await getToken(user.id, svc.id, req.id);
+        org.services.push(svc);
+      }
     }
     organisations.push(org);
   }
