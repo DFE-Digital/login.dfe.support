@@ -5,12 +5,20 @@ jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/serviceMapping');
 jest.mock('./../../../src/infrastructure/audit');
+jest.mock('./../../../src/infrastructure/applications', () => {
+  return {
+    getAllServices: jest.fn(),
+  };
+});
 jest.mock('ioredis');
+
 const { getUserDetails } = require('./../../../src/app/users/utils');
 const { getUserOrganisations } = require('./../../../src/infrastructure/organisations');
 const { getUserDevices } = require('./../../../src/infrastructure/directories');
 const { getClientIdForServiceId } = require('./../../../src/infrastructure/serviceMapping');
 const { getUserLoginAuditsForService } = require('./../../../src/infrastructure/audit');
+const { getAllServices } = require('./../../../src/infrastructure/applications');
+
 const getServices = require('./../../../src/app/users/getServices');
 
 describe('when getting users service details', () => {
@@ -164,7 +172,42 @@ describe('when getting users service details', () => {
             numberOfPages: 1,
           };
       }
-    })
+    });
+    getAllServices.mockReset();
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: '83f00ace-f1a0-4338-8784-fa14f5943e5a',
+          dateActivated: '10/10/2018',
+          name: 'some service',
+          status: 'active',
+          isExternalService: true,
+          relyingParty: {
+            params: {}
+          }
+        },
+        {
+         id: '3ff78432-fb20-4ef7-83de-35b3fbb95159',
+          dateActivated: '10/10/2018',
+          name: 'some other service',
+          status: 'active',
+          isExternalService: true,
+          relyingParty: {
+            params: {}
+          }
+        },
+        {
+          id: 'ae58ed71-4e0f-48d4-8577-4cf6f1b7d299',
+          dateActivated: '10/10/2018',
+          name: 'yet another service',
+          status: 'active',
+          isExternalService: true,
+          relyingParty: {
+            params: {}
+          }
+        }
+      ]
+    });
   });
 
   it('then it should get user details', async () => {

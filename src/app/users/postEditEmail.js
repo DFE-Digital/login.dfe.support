@@ -50,11 +50,12 @@ const updateUserEmail = async (req, model, user) => {
 
 const updateInvitationIndex = async (uid, newEmail, correlationId) => {
   const user = await getUserDetailsById(uid, correlationId);
+
   user.email = newEmail;
 
   await updateUserDetails(user);
 
-  await waitForIndexToUpdate(uid, (updated) => updated.email === newEmail);
+  await waitForIndexToUpdate(uid, (updated) => (updated ? updated.email : '') === newEmail);
 };
 const updateInvitationEmail = async (req, model, user) => {
   const invitationId = req.params.uid.substr(4);
