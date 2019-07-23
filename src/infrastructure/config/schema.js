@@ -111,6 +111,7 @@ const schedulesSchema = new SimpleSchema({
 
 const togglesSchema = new SimpleSchema({
   useGenericAddUser: Boolean,
+  canReactivateInvitations: Boolean,
 });
 
 const notificationsSchema = new SimpleSchema({
