@@ -51,7 +51,7 @@ describe('when reactivating an invite from the directories api', () => {
     expect(rp.mock.calls[0][0]).toMatchObject({
       body: {
         reason: 'invite deactivated by mistake',
-        deactivated: true,
+        deactivated: false,
       },
     });
   });
