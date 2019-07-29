@@ -35,6 +35,13 @@ describe('When processing a post for a user invitation reactivate request', () =
     updateUserDetails.mockReset();
   });
 
+  it('then the user is redirected to the services page', async () => {
+    await post(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe('services');
+  });
+
   test('then it updates the user setting the status to reactivated', async () => {
     await post(req, res);
 
