@@ -264,7 +264,7 @@ const reactivateInvite = async (id, reason, correlationId) => {
       },
       body: {
         reason: reason,
-        deactivated: true,
+        deactivated: false,
       },
       json: true,
     });
