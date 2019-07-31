@@ -10,8 +10,8 @@
 <div class="row">
     <div class="col-8">
         <h1 class="heading-xlarge">
+            <span class="heading-secondary"><%= organisation.category.name %></span>
             <%= organisation.name %>
-            <small><%= organisation.category.name %></small>
         </h1>
         <dl class="inline condensed">
             <% if (organisation.urn) { %>
