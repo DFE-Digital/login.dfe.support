@@ -135,7 +135,7 @@ const testData = {
       user1: {
         lastLogin: new Date(2018, 7, 6),
         lastStatusChange: undefined,
-        loginsInPast12Months: [{ timestamp: new Date(2018, 7, 4) }, { timestamp: new Date(2018, 7, 5) }, { timestamp: new Date(2018, 7, 6) }]
+        loginsInPast12Months: [{ timestamp: new Date(2019, 7, 4) }, { timestamp: new Date(2019, 7, 5) }, { timestamp: new Date(2019, 7, 6) }]
       },
     },
   },
