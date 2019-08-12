@@ -1,0 +1,19 @@
+<div class="row">
+    <div class="col-12">
+        <h1 class="heading-xlarge">
+            Confirm invitation reactivation
+        </h1>
+    </div>
+    <div class="col-12">
+        <form method="post" id="form-reactivate">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+
+            <p>Please confirm you would like to reactivate the invitation.</p>
+
+            <div class="form-submit submit-buttons">
+                <button type="submit" class="button">Reactivate</button>
+                <a href="services" name="cancel" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
