@@ -13,6 +13,21 @@
     </div>
 </div>
 <% } %>
+<% if(locals.user.status.id === -2) { %>
+    <div class="row">
+        <div class="col-12">
+            <div class="notification">
+                <p>
+                    This account invitation was deactivated
+                    <% if(locals.user.status.changedOn) { %>
+                    on <%= locals.moment(locals.user.status.changedOn).format('DD MMM YYYY') %>.
+                    <% } %>
+                    <a href="confirm-invitation-reactivation" class="action">Reactivate invitation</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <% } %>
 <% if(locals.user.pendingEmail) { %>
 <div class="notification notification-information" tabindex="0">
     <h2>Pending email address change</h2>
@@ -52,36 +67,36 @@
     </div>
     <div class="col-4">
         <% if(!locals.isInvitation) { %>
-        <aside>
-            <h2 class="heading-medium">Actions</h2>
-            <ul class="list">
-                <li><a href="associate-organisation">Add organisation</a></li>
-                <% if (locals.organisations.length > 0) { %>
-                    <li><a href="select-organisation">Add services</a></li>
-                <% } %>
-                <li><a href="edit-email">Change user's email address</a></li>
-                <% if(locals.user.status.id === 0) { %>
-                    <li><a href="confirm-reactivation">Reactivate user</a></li>
-                <% } else { %>
-                    <li><a href="confirm-deactivation">Deactivate user</a></li>
-                <% } %>
-                <li><a href="edit-profile">Edit user's details</a></li>
-                <li><a href="web-service-sync">Send WS Sync</a></li>
-            </ul>
-        </aside>
+            <aside>
+                <h2 class="heading-medium">Actions</h2>
+                <ul class="list">
+                    <li><a href="associate-organisation">Add organisation</a></li>
+                    <% if (locals.organisations.length > 0) { %>
+                        <li><a href="select-organisation">Add services</a></li>
+                    <% } %>
+                    <li><a href="edit-email">Change user's email address</a></li>
+                    <% if(locals.user.status.id === 0) { %>
+                        <li><a href="confirm-reactivation">Reactivate user</a></li>
+                    <% } else { %>
+                        <li><a href="confirm-deactivation">Deactivate user</a></li>
+                    <% } %>
+                    <li><a href="edit-profile">Edit user's details</a></li>
+                    <li><a href="web-service-sync">Send WS Sync</a></li>
+                </ul>
+            </aside>
         <% } else if (locals.isInvitation && !locals.user.deactivated) { %>
-        <aside>
-            <h2 class="heading-medium">Actions</h2>
-            <ul class="list">
-                <li><a href="associate-organisation">Add organisation</a></li>
-                <% if (locals.organisations.length > 0) { %>
-                    <li><a href="select-organisation">Add services</a></li>
-                <% } %>
-                <li><a href="edit-email">Change user's email address</a></li>
-                <li><a href="confirm-invitation-deactivation">Deactivate user</a></li>
-                <li><a href="resend-invitation"> Resend invitation email</a></li>
-            </ul>
-        </aside>
+            <aside>
+                <h2 class="heading-medium">Actions</h2>
+                <ul class="list">
+                    <li><a href="associate-organisation">Add organisation</a></li>
+                    <% if (locals.organisations.length > 0) { %>
+                        <li><a href="select-organisation">Add services</a></li>
+                    <% } %>
+                    <li><a href="edit-email">Change user's email address</a></li>
+                    <li><a href="confirm-invitation-deactivation">Deactivate user</a></li>
+                    <li><a href="resend-invitation"> Resend invitation email</a></li>
+                </ul>
+            </aside>
         <% } %>
     </div>
 </div>
