@@ -36,7 +36,11 @@
             <dd><%= organisation.legacyId %></dd>
 
             <dt class="label">Status:</dt>
-            <dd><%= organisation.status.name  || 'Unknown' %></dd>
+            <dd><%= organisation.status.name || 'Unknown' %></dd>
+            <% if (organisation.companyRegistrationNumber) { %>
+                <dt class="label">Company Number:</dt>
+                <dd><%= organisation.companyRegistrationNumber %></dd>
+            <% } %>
         </dl>
     </div>
     <div class="col-4">
