@@ -8,24 +8,24 @@
 
     <title><%= locals.title || (locals.app ? locals.app.title : null) || 'DfE Sign-in Support Console' %></title>
 
-    <link rel="stylesheet" href="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/css/govuk/fonts.css">
+    <link rel="stylesheet" href="<%= locals.urls.assets %>/css/govuk/fonts.css">
     <link rel="stylesheet"
-          href="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/css/govuk/govuk-template.css">
-    <link rel="stylesheet" href="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/css/screen.css">
+          href="<%= locals.urls.assets %>/css/govuk/govuk-template.css">
+    <link rel="stylesheet" href="<%= locals.urls.assets %>/css/screen.css">
 
-    <link rel="shortcut icon" href="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/images/favicon.ico"
+    <link rel="shortcut icon" href="<%= locals.urls.assets %>/images/favicon.ico"
           type="image/x-icon"/>
 
     <link rel="apple-touch-icon" sizes="180x180"
-          href="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/images/apple-icon-180x180.png">
+          href="<%= locals.urls.assets %>/images/apple-icon-180x180.png">
     <link rel="apple-touch-icon" sizes="167x167"
-          href="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/images/apple-icon-167x167.png">
+          href="<%= locals.urls.assets %>/images/apple-icon-167x167.png">
     <link rel="apple-touch-icon" sizes="152x152"
-          href="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/images/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" href="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/images/apple-icon.png">
+          href="<%= locals.urls.assets %>/images/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" href="<%= locals.urls.assets %>/images/apple-icon.png">
 
     <meta property="og:image"
-          content="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/images/opengraph-image.png">
+          content="<%= locals.urls.assets %>/images/opengraph-image.png">
 
 </head>
 <body class="support">
@@ -116,9 +116,9 @@
     </div>
 </footer>
 
-<script src="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/javascript/vendors/jquery.min.js"></script>
-<script src="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/javascript/vendors/select2.min.js"></script>
-<script src="https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/javascript/app.min.js"></script>
+<script src="<%= locals.urls.assets %>/javascript/vendors/jquery.min.js"></script>
+<script src="<%= locals.urls.assets %>/javascript/vendors/select2.min.js"></script>
+<script src="<%= locals.urls.assets %>/javascript/app.min.js"></script>
 
 </body>
 </html>
