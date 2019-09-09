@@ -1,0 +1,35 @@
+<% if (locals.flash.info) { %>
+    <div class="row">
+        <div class="col-12">
+            <div class="notification notification-success">
+                <%= locals.flash.info %>
+            </div>
+        </div>
+    </div>
+<% } %>
+
+<div class="row">
+    <div class="col-12">
+        <h1 class="heading-xlarge">
+            Requests
+        </h1>
+
+        <div class="pane">
+            <% if (locals.requests && locals.requests.length > 0) { %>
+                <% for (let i = 0; i < locals.requests.length; i++) { %>
+                <div class="requestV2">
+                    <p>
+                        Request from <b><%= locals.requests[i].usersEmail %></b> -
+                        <time datetime="<%= locals.requests[i].created_date %>"><%= moment(locals.requests[i].created_date).fromNow() %></time>
+                    </p>
+                    <a href="access-requests/<%= locals.requests[i].id %>" class="button-respond">Review request</a>
+                </div>
+                <% } %>
+            <% } else { %>
+                <div class="empty-state">
+                    <p>There are no outstanding requests.</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
