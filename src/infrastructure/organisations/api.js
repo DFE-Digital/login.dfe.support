@@ -160,6 +160,10 @@ const listInvitationServices = async (page, pageSize, correlationId) => {
   return callOrganisationsApi(`/invitations?page=${page}&pageSize=${pageSize}`, 'GET', undefined, correlationId);
 };
 
+const getAllRequestsForSupport = async (correlationId) => {
+  return callOrganisationsApi(`organisations/requests-for-support`, 'GET', undefined, correlationId);
+};
+
 module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -183,4 +187,5 @@ module.exports = {
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   getUserOrganisationsV2,
+  getAllRequestsForSupport
 };

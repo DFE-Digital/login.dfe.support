@@ -147,6 +147,10 @@ const listInvitationServices = async (page, pageSize, correlationId) => {
   return Promise.resolve([]);
 };
 
+const getAllRequestsForSupport = async (correlationId) => {
+  return Promise.resolve();
+};
+
 module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -168,4 +172,5 @@ module.exports = {
   listUserServices,
   listInvitationServices,
   getUserOrganisationsV2,
+  getAllRequestsForSupport
 };
