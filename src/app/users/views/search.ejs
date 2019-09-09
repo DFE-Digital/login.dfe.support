@@ -44,10 +44,10 @@ if (services && services.length > 0) {
 <% } %>
 
 <div class="row">
-    <div class="col-8">
+    <div class="col-6">
         <h1 class="heading-xlarge">Users</h1>
 
-        <form method="post">
+            <form method="post">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                 <input type="hidden" name="showFilters" value="<%= showFilters %>"/>
     
@@ -92,13 +92,13 @@ if (services && services.length > 0) {
 
     </div>
 
-    <div class="col-4">
+    <div class="col-4 pull-right">
         <aside>
             <h2 class="heading-medium">Actions</h2>
             <ul class="list">
                 <li><a href="/users/new-user">Invite user</a></li>
                 <li><a href="/users/new-k2s-user">Invite KtS user</a></li>
-                <li><a href="/organisations/view-requests">Invite KtS user</a></li>
+                <li><a href="/users/view-requests">View user requests</a></li>
             </ul>
         </aside>
     </div>    
