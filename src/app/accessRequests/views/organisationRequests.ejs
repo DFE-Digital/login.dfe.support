@@ -22,7 +22,7 @@
                         Request from <b><%= locals.requests[i].usersEmail %></b> -
                         <time datetime="<%= locals.requests[i].created_date %>"><%= moment(locals.requests[i].created_date).fromNow() %></time>
                     </p>
-                    <a href="access-requests/<%= locals.requests[i].id %>" class="button-respond">Review request</a>
+                    <a href="access-requests/<%= locals.requests[i].id %>/review" class="button-respond">Review request</a>
                 </div>
                 <% } %>
             <% } else { %>
