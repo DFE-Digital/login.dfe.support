@@ -22,14 +22,6 @@ const users = (csrf) => {
 
   router.get('/', csrf, asyncWrapper(getOrganisationRequests));
 
-  router.get('/request/:id', csrf, asyncWrapper(getRequest));
-  router.post('/request/:id', csrf, asyncWrapper(postRequest));
-
-  // Approve/Reject org requests
-  router.get('/:orgId/requests/:rid', csrf, asyncWrapper(getReviewOrganisationRequest));
-  router.post('/:orgId/requests/:rid', csrf, asyncWrapper(postReviewOrganisationRequest));
-  router.get('/:orgId/requests/:rid/rejected', csrf, asyncWrapper(getRejectOrganisationRequest));
-  router.post('/:orgId/requests/:rid/rejected', csrf, asyncWrapper(postRejectOrganisationRequest));
 
   return router;
 };
