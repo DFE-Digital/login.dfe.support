@@ -22,6 +22,7 @@ const users = (csrf) => {
 
   router.get('/', csrf, asyncWrapper(getOrganisationRequests));
 
+  router.get('/:rid/review', csrf, asyncWrapper(getReviewOrganisationRequest));
 
   return router;
 };

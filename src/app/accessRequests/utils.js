@@ -2,6 +2,7 @@ const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
 const accessRequests = require('../../infrastructure/accessRequests');
 const organisations = require('./../../infrastructure/organisations');
+const directories = require('./../../infrastructure/directories');
 const NotificationClient = require('login.dfe.notifications.client');
 
 const search = async (req) => {
@@ -109,8 +110,21 @@ const putUserInOrganisation = async (req) => {
   });
 };
 
+const getAndMapOrgRequest = async (req) => {
+  const request = await organisations.getRequestById(req.params.rid, req.id);
+  let mappedRequest;
+  if (request) {
+    const user = request.status.id === 0 || request.status.id === 2 ? await directories.getUser(request.user_id) : await directories.getUser(request.actioned_by);
+    const usersName = user ? `${user.given_name} ${user.family_name}` : '';
+    const usersEmail = user ? user.email : '';
+    mappedRequest = Object.assign({usersName, usersEmail}, request);
+  }
+  return mappedRequest;
+};
+
 module.exports = {
   search,
   getById,
   putUserInOrganisation,
+  getAndMapOrgRequest
 };
