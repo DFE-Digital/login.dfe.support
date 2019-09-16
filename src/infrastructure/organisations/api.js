@@ -164,6 +164,10 @@ const getAllRequestsForSupport = async (correlationId) => {
   return callOrganisationsApi(`organisations/requests-for-support`, 'GET', undefined, correlationId);
 };
 
+const getRequestById = async (requestId, correlationId) => {
+  return callOrganisationsApi(`organisations/requests/${requestId}`, 'GET', undefined, correlationId);
+};
+
 module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -187,5 +191,6 @@ module.exports = {
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   getUserOrganisationsV2,
-  getAllRequestsForSupport
+  getAllRequestsForSupport,
+  getRequestById,
 };
