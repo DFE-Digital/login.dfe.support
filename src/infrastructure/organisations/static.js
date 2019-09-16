@@ -151,6 +151,10 @@ const getAllRequestsForSupport = async (correlationId) => {
   return Promise.resolve();
 };
 
+const getRequestById = async (requestId, correlationId) => {
+  return Promise.resolve();
+};
+
 module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -172,5 +176,6 @@ module.exports = {
   listUserServices,
   listInvitationServices,
   getUserOrganisationsV2,
-  getAllRequestsForSupport
+  getAllRequestsForSupport,
+  getRequestById,
 };
