@@ -19,7 +19,27 @@ const get = async (req, res) => {
   })
 };
 
+const validate = async (req) => {
+  const request = await getAndMapOrgRequest(req);
+  const model = {
+    title: 'Reason for rejection - DfE Sign-in',
+    backLink: `/access-requests`,
+    cancelLink: `/access-requests`,
+    reason: req.body.reason,
+    request,
+    validationMessages: {},
+  };
+  if (model.reason.length > 1000) {
+    model.validationMessages.reason = 'Reason cannot be longer than 1000 characters';
+  } else if (model.request.status.id === -1 || model.request.status.id === 1) {
+    model.validationMessages.reason = `Request already actioned by ${model.request.usersEmail}`
+  }
+  return model;
+};
+
 const post = async (req, res) => {
+  const model = await validate(req);
+
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
     return res.render('accessRequests/views/rejectOrganisationRequest', model);
