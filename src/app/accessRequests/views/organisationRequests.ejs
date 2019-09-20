@@ -14,22 +14,37 @@
             Requests
         </h1>
 
-        <div class="pane">
-            <% if (locals.requests && locals.requests.length > 0) { %>
-                <% for (let i = 0; i < locals.requests.length; i++) { %>
-                <div class="requestV2">
-                    <p>
-                        Request from <b><%= locals.requests[i].usersEmail %></b> -
-                        <time datetime="<%= locals.requests[i].created_date %>"><%= moment(locals.requests[i].created_date).fromNow() %></time>
-                    </p>
-                    <a href="access-requests/<%= locals.requests[i].id %>/review" class="button-respond">Review request</a>
-                </div>
-                <% } %>
-            <% } else { %>
-                <div class="empty-state">
-                    <p>There are no outstanding requests.</p>
-                </div>
-            <% } %>
-        </div>
+        <% if (locals.requests && locals.requests.length > 0) { %>
+
+            <table class="data">
+                <thead>
+                <tr class="sortable">
+                    <th scope="col" class="cwp-15"><strong>Requested</strong> </th>
+                    <th scope="col" class="cwp-20"><strong>Requested organisation</strong> </th>
+                    <th scope="col" class="cwp-15"><strong>Requested by</strong> </th>
+                    <th scope="col" class="cwp-25"><strong>Requester email</strong> </th>
+                    <th scope="col" class="cwp-10"><strong>Status</strong> </th>
+                    <th scope="col" class="cwp-15 last"><strong>Action<strong> </th>
+                </tr>
+                </thead>
+                <tbody>
+                    <% for (let i = 0; i < locals.requests.length; i++) { %>
+                    <tr>
+                        <td><time datetime="<%= locals.requests[i].created_date %>"><%= moment(locals.requests[i].created_date).fromNow() %></time></td>
+                        <td><span class="breakable"><%= locals.requests[i].org_name %></span> </td>
+                        <td><span class="breakable"><%= locals.requests[i].usersName %></span> </td>
+                        <td><span class="breakable"><%= locals.requests[i].usersEmail %></span> </td>
+                        <td><span class="breakable"><%= locals.requests[i].status.name %></span> </td>
+                        <td><span class="breakable"><a href="access-requests/<%= locals.requests[i].id %>/review" class="button-respond">Review request</a></span> </td>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>        
+
+        <% } else { %>
+            <div class="empty-state">
+                <p>There are no outstanding requests.</p>
+            </div>
+        <% } %>
     </div>
 </div>

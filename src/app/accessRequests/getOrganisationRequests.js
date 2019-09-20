@@ -14,18 +14,25 @@ const getUserDetails = async (usersForApproval) => {
 };
 
 const getOrganisationRequests = async (req, res) => {
-  let requests = await getAllRequestsForSupport(req.id);
+  let requests = []
 
-  if (requests) {
-    const userList = await getUserDetails(requests) || [];
+  try {
+    requests = await getAllRequestsForSupport(req.id);
 
-    requests = requests.map((user) => {
-      const userFound = userList.find(c => c.sub.toLowerCase() === user.user_id.toLowerCase());
-      const usersEmail = userFound ? userFound.email : '';
-      return Object.assign({usersEmail}, user);
-    });
+    if (requests) {
+      const userList = await getUserDetails(requests) || [];
 
-    requests = sortBy(requests, ['created_date']);
+      requests = requests.map((user) => {
+        const userFound = userList.find(c => c.sub.toLowerCase() === user.user_id.toLowerCase());
+        const usersEmail = userFound ? userFound.email : '';
+        const usersName = userFound ? `${userFound.given_name} ${userFound.family_name}` : 'No Name Supplied';
+        return Object.assign({usersEmail}, {usersName}, user);
+      });
+
+      requests = sortBy(requests, ['created_date']);
+    }
+  } catch (e) {
+    throw new Error(`Failed to obtain Organisation requests requiring support: (correlationId: ${req.id}, error: ${e.message}`);
   }
 
   return res.render('accessRequests/views/organisationRequests', {
