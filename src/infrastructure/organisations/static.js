@@ -159,6 +159,9 @@ const updateRequestById = async (requestId, status, actionedBy, actionedReason, 
   return Promise.resolve();
 };
 
+const putUserInOrganisation = async(userId, orgId, role, correlationId) => {
+  return Promise.resolve();
+};
 
 module.exports = {
   getUserOrganisations,
@@ -184,4 +187,5 @@ module.exports = {
   getAllRequestsForSupport,
   getRequestById,
   updateRequestById,
+  putUserInOrganisation,
 };
