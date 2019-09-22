@@ -185,6 +185,10 @@ const updateRequestById = async (requestId, status, actionedBy, actionedReason, 
   return callOrganisationsApi(`organisations/requests/${requestId}`, 'PATCH', body, correlationId);
 };
 
+const putUserInOrganisation = async(userId, orgId, status, role, reason, correlationId) => {
+  return callOrganisationsApi(`organisations/${orgId}/users/${userId}`, 'PUT', {roleId:role, status, reason}, correlationId);
+};
+
 module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -211,4 +215,5 @@ module.exports = {
   getAllRequestsForSupport,
   getRequestById,
   updateRequestById,
+  putUserInOrganisation,
 };
