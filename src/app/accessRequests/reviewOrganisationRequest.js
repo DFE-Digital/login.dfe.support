@@ -24,6 +24,24 @@ const get = async (req, res) => {
   })
 };
 
+const validate = async (req) => {
+  const request = await getAndMapOrgRequest(req);
+  const model = {
+    title: 'Review request - DfE Sign-in',
+    backLink: `/access-requests`,
+    cancelLink: `/access-requests`,
+    request,
+    selectedResponse: req.body.selectedResponse,
+    validationMessages: {},
+  };
+  if (model.selectedResponse === undefined || model.selectedResponse === null) {
+    model.validationMessages.selectedResponse = 'Approve or Reject must be selected';
+  } else if (model.request.status.id === -1 || model.request.status.id === 1) {
+    model.validationMessages.selectedResponse = `Request already actioned by ${model.request.usersEmail}`
+  }
+  return model;
+};
+
 const post = async (req, res) => {
   const model = await validate(req);
 
