@@ -134,6 +134,7 @@ const seachForUsers = async (criteria, pageNumber, sortBy, sortDirection, filter
   }
 };
 
+// TODO: Add correllation ID
 const getSearchDetailsForUserById = async (id) => {
   try {
     const user = await callApi(`/users/${id}`, 'GET');
@@ -214,7 +215,6 @@ module.exports = {
   seachForUsers,
   getSearchDetailsForUserById,
   updateUserInSearch,
-
   searchForDevices,
   getSearchDetailsForDeviceBySerialNumber,
   updateDeviceInSearch,
