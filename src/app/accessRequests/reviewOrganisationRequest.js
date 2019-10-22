@@ -36,8 +36,8 @@ const validate = async (req) => {
   };
   if (model.selectedResponse === undefined || model.selectedResponse === null) {
     model.validationMessages.selectedResponse = 'Approve or Reject must be selected';
-  } else if (model.request.status.id === -1 || model.request.status.id === 1) {
-    model.validationMessages.selectedResponse = `Request already actioned by ${model.request.usersEmail}`
+  } else if (model.request.approverEmail) {
+    model.validationMessages.selectedResponse = `Request already actioned by ${model.request.approverEmail}`
   }
   return model;
 };

@@ -26,7 +26,8 @@ const getOrganisationRequests = async (req, res) => {
         const userFound = userList.find(c => c.sub.toLowerCase() === user.user_id.toLowerCase());
         const usersEmail = userFound ? userFound.email : '';
         const usersName = userFound ? `${userFound.given_name} ${userFound.family_name}` : 'No Name Supplied';
-        return Object.assign({usersEmail}, {usersName}, user);
+        const statusText = mapStatusForSupport(user.status);
+        return Object.assign({usersEmail}, {usersName}, {statusText}, user);
       });
 
       requests = sortBy(requests, ['created_date']);
@@ -40,6 +41,20 @@ const getOrganisationRequests = async (req, res) => {
     title: 'Requests - DfE Sign-in',
     requests,
   });
+};
+
+
+const mapStatusForSupport = (status) => {
+  switch (status.id) {
+    case 0:
+      return "Awaiting approver action";
+    case 2:
+        return `${status.name} - Escalated to support`;
+    case 3:
+        return `${status.name} - Escalated to support`;
+    default:
+      return status.name;
+  }
 };
 
 module.exports = getOrganisationRequests;
