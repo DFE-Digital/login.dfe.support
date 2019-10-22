@@ -22,8 +22,8 @@
                     <th scope="col" class="cwp-15"><strong>Requested</strong> </th>
                     <th scope="col" class="cwp-20"><strong>Requested organisation</strong> </th>
                     <th scope="col" class="cwp-15"><strong>Requested by</strong> </th>
-                    <th scope="col" class="cwp-25"><strong>Requester email</strong> </th>
-                    <th scope="col" class="cwp-10"><strong>Status</strong> </th>
+                    <th scope="col" class="cwp-20"><strong>Requester email</strong> </th>
+                    <th scope="col" class="cwp-15"><strong>Status</strong> </th>
                     <th scope="col" class="cwp-15 last"><strong>Action<strong> </th>
                 </tr>
                 </thead>
@@ -34,7 +34,7 @@
                         <td><span class="breakable"><%= locals.requests[i].org_name %></span> </td>
                         <td><span class="breakable"><%= locals.requests[i].usersName %></span> </td>
                         <td><span class="breakable"><%= locals.requests[i].usersEmail %></span> </td>
-                        <td><span class="breakable"><%= locals.requests[i].status.name %></span> </td>
+                        <td><span class="breakable"><%= locals.requests[i].statusText %></span> </td>
                         <td><span class="breakable"><a href="access-requests/<%= locals.requests[i].id %>/review" class="button-respond">Review request</a></span> </td>
                     </tr>
                     <% } %>

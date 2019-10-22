@@ -114,10 +114,13 @@ const getAndMapOrgRequest = async (req) => {
   const request = await organisations.getRequestById(req.params.rid, req.id);
   let mappedRequest;
   if (request) {
-    const user = request.status.id === 0 || request.status.id === 2 ? await directories.getUser(request.user_id) : await directories.getUser(request.actioned_by);
+    const approver = request.actioned_by != null ? await directories.getUser(request.actioned_by) : null;
+    const user = await directories.getUser(request.user_id);
     const usersName = user ? `${user.given_name} ${user.family_name}` : '';
     const usersEmail = user ? user.email : '';
-    mappedRequest = Object.assign({usersName, usersEmail}, request);
+    const approverName = approver ? `${approver.given_name} ${approver.family_name}` : '';
+    const approverEmail = approver ? approver.email : '';
+    mappedRequest = Object.assign({usersName, usersEmail, approverName, approverEmail}, request);
   }
   return mappedRequest;
 };
