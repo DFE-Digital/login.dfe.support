@@ -14,34 +14,35 @@
             Requests
         </h1>
 
-        <% if (locals.requests && locals.requests.length > 0) { %>
+        <table class="data">
+            <thead>
+            <tr class="sortable">
+                <th scope="col" class="cwp-15"><strong>Requested</strong> </th>
+                <th scope="col" class="cwp-20"><strong>Requested organisation</strong> </th>
+                <th scope="col" class="cwp-15"><strong>Requested by</strong> </th>
+                <th scope="col" class="cwp-20"><strong>Requester email</strong> </th>
+                <th scope="col" class="cwp-15"><strong>Status</strong> </th>
+                <th scope="col" class="cwp-15 last"><strong>Action<strong> </th>
+            </tr>
+            </thead>
 
-            <table class="data">
-                <thead>
-                <tr class="sortable">
-                    <th scope="col" class="cwp-15"><strong>Requested</strong> </th>
-                    <th scope="col" class="cwp-20"><strong>Requested organisation</strong> </th>
-                    <th scope="col" class="cwp-15"><strong>Requested by</strong> </th>
-                    <th scope="col" class="cwp-20"><strong>Requester email</strong> </th>
-                    <th scope="col" class="cwp-15"><strong>Status</strong> </th>
-                    <th scope="col" class="cwp-15 last"><strong>Action<strong> </th>
+            <tbody>
+                <% for (let i = 0; i < locals.requests.length; i++) { %>
+                <tr>
+                    <td><time datetime="<%= locals.requests[i].created_date %>"><%= moment(locals.requests[i].created_date).fromNow() %></time></td>
+                    <td><span class="breakable"><%= locals.requests[i].org_name %></span> </td>
+                    <td><span class="breakable"><%= locals.requests[i].usersName %></span> </td>
+                    <td><span class="breakable"><%= locals.requests[i].usersEmail %></span> </td>
+                    <td><span class="breakable"><%= locals.requests[i].statusText %></span> </td>
+                    <td><span class="breakable"><a href="access-requests/<%= locals.requests[i].id %>/review" class="button-respond">Review request</a></span> </td>
                 </tr>
-                </thead>
-                <tbody>
-                    <% for (let i = 0; i < locals.requests.length; i++) { %>
-                    <tr>
-                        <td><time datetime="<%= locals.requests[i].created_date %>"><%= moment(locals.requests[i].created_date).fromNow() %></time></td>
-                        <td><span class="breakable"><%= locals.requests[i].org_name %></span> </td>
-                        <td><span class="breakable"><%= locals.requests[i].usersName %></span> </td>
-                        <td><span class="breakable"><%= locals.requests[i].usersEmail %></span> </td>
-                        <td><span class="breakable"><%= locals.requests[i].statusText %></span> </td>
-                        <td><span class="breakable"><a href="access-requests/<%= locals.requests[i].id %>/review" class="button-respond">Review request</a></span> </td>
-                    </tr>
-                    <% } %>
-                </tbody>
-            </table>        
+                <% } %>
+            </tbody>
 
-        <% } else { %>
+        </table>        
+
+
+        <% if (locals.requests && locals.requests.length === 0) { %>
             <div class="empty-state">
                 <p>There are no outstanding requests.</p>
             </div>
