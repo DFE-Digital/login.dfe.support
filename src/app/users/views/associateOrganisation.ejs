@@ -72,6 +72,14 @@ const paginationModel = {
                         <dt>UID</dt>
                         <dd><%=org.uid%></dd>
                         <%}%>
+                        <% if (org.ukprn) { %>
+                        <dt>UKPRN</dt>
+                        <dd><%=org.ukprn%></dd>
+                        <% } %>
+                        <% if (org.legacyId) { %>
+                        <dt>Legacy ID</dt>
+                        <dd><%=org.legacyId%></dd>
+                        <% } %>
 
                         <dt>Address</dt>
                         <dd><%=org.address%></dd>
