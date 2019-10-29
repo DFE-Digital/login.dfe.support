@@ -1,5 +1,5 @@
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
-jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').configMockFactory());
+jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
 jest.mock('./../../../src/app/accessRequests/utils');
 jest.mock('./../../../src/app/users/utils');
 jest.mock('./../../../src/infrastructure/organisations');
@@ -11,17 +11,15 @@ const { post } = require('./../../../src/app/accessRequests/reviewOrganisationRe
 
 const res = getResponseMock();
 const { putUserInOrganisation, updateRequestById, getOrganisationById } = require('./../../../src/infrastructure/organisations');
-const { getById, updateIndex } = require('./../../../src/infrastructure/search');
-const orgUtils = require('./../../../src/app/accessRequests/utils');
+const { getSearchDetailsForUserById, updateIndex } = require('./../../../src/infrastructure/search');
+const { getAndMapOrgRequest } = require('./../../../src/app/accessRequests/utils');
 const logger = require('./../../../src/infrastructure/logger');
 const NotificationClient = require('login.dfe.notifications.client');
 
 const sendAccessRequest = jest.fn();
-NotificationClient.mockImplementation(() => {
-  return {
-    sendAccessRequest
-  };
-});
+NotificationClient.mockImplementation(() => ({
+  sendAccessRequest
+}));
 
 Date.now = jest.fn(() => '2019-01-02');
 
@@ -42,6 +40,7 @@ describe('when reviewing an organisation request', () => {
       },
     });
 
+    logger.audit.mockReset();
     putUserInOrganisation.mockReset();
     updateRequestById.mockReset();
 
@@ -63,13 +62,13 @@ describe('when reviewing an organisation request', () => {
       },
     });
 
-    getById.mockReset();
-    getById.mockReturnValue({
+    getSearchDetailsForUserById.mockReset();
+    getSearchDetailsForUserById.mockReturnValue({
       organisations: [],
     });
 
-    orgUtils.getAndMapOrgRequest.mockReset();
-    orgUtils.getAndMapOrgRequest.mockReturnValue({
+    getAndMapOrgRequest.mockReset();
+    getAndMapOrgRequest.mockReturnValue({
       usersName: 'John Doe',
       usersEmail: 'john.doe@email.com',
       id: 'requestId',
@@ -128,22 +127,24 @@ describe('when reviewing an organisation request', () => {
   });
 
   it('then it should render error if request already actioned', async () => {
-    orgUtils.getAndMapOrgRequest.mockReset().mockReturnValue({
+    getAndMapOrgRequest.mockReset().mockReturnValue({
       usersName: 'John Doe',
       usersEmail: 'john.doe@email.com',
+      approverName: 'Jane Doe',
+      approverEmail: 'jane.doe@email.com',
       id: 'requestId',
       org_id: 'org1',
       org_name: 'Org 1',
       user_id: 'userId',
       created_date: '2019-05-01',
       actioned_date: null,
-      actioned_by: null,
+      actioned_by: 'jane.doe@email.com',
       actioned_reason: null,
       reason: '',
       status: {
         id: 1,
         name: 'approved',
-      }
+      },
     });
 
     await post(req, res);
@@ -157,7 +158,7 @@ describe('when reviewing an organisation request', () => {
       cancelLink: '/access-requests',
       csrfToken: 'token',
       request: {
-        actioned_by: null,
+        actioned_by: 'jane.doe@email.com',
         actioned_date: null,
         actioned_reason: null,
         created_date: '2019-05-01',
@@ -167,16 +168,18 @@ describe('when reviewing an organisation request', () => {
         reason: '',
         status: {
           id: 1,
-          name: 'approved'
+          name: 'approved',
         },
         user_id: 'userId',
         usersEmail: 'john.doe@email.com',
-        usersName: 'John Doe'
+        usersName: 'John Doe',
+        approverName: 'Jane Doe',
+        approverEmail: 'jane.doe@email.com',
       },
       selectedResponse: 'approve',
       title: 'Review request - DfE Sign-in',
       validationMessages: {
-        selectedResponse: 'Request already actioned by john.doe@email.com'
+        selectedResponse: 'Request already actioned by jane.doe@email.com'
       },
     });
   });
@@ -187,7 +190,7 @@ describe('when reviewing an organisation request', () => {
     await post(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('requestId/rejected');
+    expect(res.redirect.mock.calls[0][0]).toBe('reject');
   });
 
   it('then it should put the user in the organisation if approved', async () => {
@@ -214,8 +217,8 @@ describe('when reviewing an organisation request', () => {
   });
 
   it('then it should update the search index with the new org', async () => {
+    await post(req, res);
 
-    await post(req,res);
     expect(updateIndex.mock.calls).toHaveLength(1);
     expect(updateIndex.mock.calls[0][0]).toBe('userId');
     expect(updateIndex.mock.calls[0][1]).toEqual(
@@ -255,6 +258,6 @@ describe('when reviewing an organisation request', () => {
     await post(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('/approvals/org1/users/userId/services');
+    expect(res.redirect.mock.calls[0][0]).toBe('/access-requests');
   });
 });
