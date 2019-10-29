@@ -1,9 +1,9 @@
+jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
-
 jest.mock('./../../../src/app/accessRequests/utils');
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
-const { getAndMapOrgRequest } = require('./../../../src/app/accessRequests/utils');
+const orgUtils = require('./../../../src/app/accessRequests/utils');
 const { get } = require('./../../../src/app/accessRequests/reviewOrganisationRequest');
 
 const res = getResponseMock();
@@ -17,26 +17,29 @@ describe('when reviewing an organisation request', () => {
         sub: 'user1',
       },
       params: {
-        orgId: 'org1'
+        orgId: 'org1',
       },
     });
-    getAndMapOrgRequest.mockReset().mockReturnValue({
-      usersName: 'John Doe',
-      usersEmail: 'john.doe@email.com',
-      id: 'requestId',
-      org_id: 'org1',
-      org_name: 'Org 1',
-      user_id: 'userId',
-      created_date: '2019-05-01',
-      actioned_date: null,
-      actioned_by: null,
-      actioned_reason: null,
-      reason: '',
-      status: {
-        id: 0,
-        name: 'Pending'
-      }
-    });
+
+    orgUtils.getAndMapOrgRequest
+      .mockReset()
+      .mockReturnValue({
+        usersName: 'John Doe',
+        usersEmail: 'john.doe@email.com',
+        id: 'requestId',
+        org_id: 'org1',
+        org_name: 'Org 1',
+        user_id: 'userId',
+        created_date: '2019-05-01',
+        actioned_date: null,
+        actioned_by: null,
+        actioned_reason: null,
+        reason: '',
+        status: {
+          id: 0,
+          name: 'Pending',
+        },
+      });
     res.mockResetAll();
   });
 
@@ -50,8 +53,8 @@ describe('when reviewing an organisation request', () => {
   it('then it should get the mapped request', async () => {
     await get(req, res);
 
-    expect(getAndMapOrgRequest.mock.calls).toHaveLength(1);
-    expect(getAndMapOrgRequest.mock.calls[0][0]).toBe(req);
+    expect(orgUtils.getAndMapOrgRequest.mock.calls).toHaveLength(1);
+    expect(orgUtils.getAndMapOrgRequest.mock.calls[0][0]).toBe(req);
   });
 
   it('then it should include csrf token', async () => {
@@ -80,9 +83,9 @@ describe('when reviewing an organisation request', () => {
         reason: '',
         status: {
           id: 0,
-          name: 'Pending'
-        }
-      }
+          name: 'Pending',
+        },
+      },
     });
   });
 });

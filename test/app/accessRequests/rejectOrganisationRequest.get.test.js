@@ -40,7 +40,7 @@ describe('when rejecting an organisation request', () => {
     await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      backLink: true
+      backLink: '/access-requests',
     });
   });
 
@@ -48,7 +48,7 @@ describe('when rejecting an organisation request', () => {
     await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      cancelLink: '/access-requests/org1/requests'
+      cancelLink: '/access-requests',
     });
   });
 });

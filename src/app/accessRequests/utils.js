@@ -103,24 +103,24 @@ const putUserInOrganisation = async (req) => {
     editedUser: userId,
     userId: req.user.sub,
     userEmail: req.user.email,
-    role: role,
+    role,
     reason,
     orgId,
-    status: req.body.approve_reject
+    status: req.body.approve_reject,
   });
 };
 
 const getAndMapOrgRequest = async (req) => {
   const request = await organisations.getRequestById(req.params.rid, req.id);
+  const user = await directories.getUser(request.user_id);
   let mappedRequest;
   if (request) {
     const approver = request.actioned_by != null ? await directories.getUser(request.actioned_by) : null;
-    const user = await directories.getUser(request.user_id);
     const usersName = user ? `${user.given_name} ${user.family_name}` : '';
     const usersEmail = user ? user.email : '';
     const approverName = approver ? `${approver.given_name} ${approver.family_name}` : '';
     const approverEmail = approver ? approver.email : '';
-    mappedRequest = Object.assign({usersName, usersEmail, approverName, approverEmail}, request);
+    mappedRequest = Object.assign({usersName, usersEmail, approverName, approverEmail }, request);
   }
   return mappedRequest;
 };
@@ -129,5 +129,5 @@ module.exports = {
   search,
   getById,
   putUserInOrganisation,
-  getAndMapOrgRequest
+  getAndMapOrgRequest,
 };
