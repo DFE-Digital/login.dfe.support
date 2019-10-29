@@ -16,20 +16,20 @@ const get = async (req, res) => {
   return res.render('accessRequests/views/reviewOrganisationRequest', {
     csrfToken: req.csrfToken(),
     title: 'Review request - DfE Sign-in',
-    backLink: `/access-requests`,
-    cancelLink: `/access-requests`,
+    backLink: '/access-requests',
+    cancelLink: '/access-requests',
     request,
     selectedResponse: null,
     validationMessages: {},
-  })
+  });
 };
 
 const validate = async (req) => {
   const request = await getAndMapOrgRequest(req);
   const model = {
     title: 'Review request - DfE Sign-in',
-    backLink: `/access-requests`,
-    cancelLink: `/access-requests`,
+    backLink: '/access-requests',
+    cancelLink: '/access-requests',
     request,
     selectedResponse: req.body.selectedResponse,
     validationMessages: {},
@@ -37,7 +37,7 @@ const validate = async (req) => {
   if (model.selectedResponse === undefined || model.selectedResponse === null) {
     model.validationMessages.selectedResponse = 'Approve or Reject must be selected';
   } else if (model.request.approverEmail) {
-    model.validationMessages.selectedResponse = `Request already actioned by ${model.request.approverEmail}`
+    model.validationMessages.selectedResponse = `Request already actioned by ${model.request.approverEmail}`;
   }
   return model;
 };
@@ -51,18 +51,18 @@ const post = async (req, res) => {
   }
 
   if (model.selectedResponse === 'reject') {
-    return res.redirect(`reject`)
+    return res.redirect('reject');
   }
-  
-  try { 
+
+  try {
     // patch search index with organisation added to user
     const getAllUserDetails = await getSearchDetailsForUserById(model.request.user_id);
     const organisation = await getOrganisationById(model.request.org_id, req.id);
 
     if (!getAllUserDetails) {
-      logger.error(`Failed to find user ${model.request.user_id} when confirming change of organisations`, {correlationId: req.id});
+      logger.error(`Failed to find user ${model.request.user_id} when confirming change of organisations`, { correlationId: req.id });
     } else if (!organisation) {
-      logger.error(`Failed to find organisation ${model.request.org_id} when confirming change of organisations`, {correlationId: req.id})
+      logger.error(`Failed to find organisation ${model.request.org_id} when confirming change of organisations`, { correlationId: req.id });
     } else {
       const currentOrganisationDetails = getAllUserDetails.organisations;
       const newOrgDetails = {
@@ -78,17 +78,17 @@ const post = async (req, res) => {
       };
       currentOrganisationDetails.push(newOrgDetails);
       await updateIndex(model.request.user_id, currentOrganisationDetails, null, req.id);
-      await waitForIndexToUpdate(model.request.user_id, (updated) => updated.organisations.length === currentOrganisationDetails.length);
+      await waitForIndexToUpdate(model.request.user_id, updated => updated.organisations.length === currentOrganisationDetails.length);
     }
-  
+
     const actionedDate = Date.now();
     await putUserInOrganisation(model.request.user_id, model.request.org_id, 0, null, req.id);
     await updateRequestById(model.request.id, 1, req.user.sub, null, actionedDate, req.id);
 
-    //send approved email
+    // send approved email
     await notificationClient.sendAccessRequest(model.request.usersEmail, model.request.usersName, organisation.name, true, null);
-  
-    //audit organisation approved
+
+    // audit organisation approved
     logger.audit(`${req.user.email} (id: ${req.user.sub}) approved organisation request for ${model.request.org_id})`, {
       type: 'approver',
       subType: 'approved-org',
@@ -99,13 +99,13 @@ const post = async (req, res) => {
         oldValue: undefined,
         newValue: model.request.org_id,
       }],
-    });    
+    });
   } catch (e) {
     throw new Error(`Failed to put user in organisation: (correlationId: ${req.id}, userId: ${req.user.sub}, requesterId: ${model.request.user_id}, requestedOrgId: ${model.request.org_id}, error: ${e.message}`);
   }
 
   res.flash('info', `Request approved - an email has been sent to ${model.request.usersEmail}. You can now add services for this user.`);
-  return res.redirect(`/access-requests`);
+  return res.redirect('/access-requests');
 };
 
 module.exports = {

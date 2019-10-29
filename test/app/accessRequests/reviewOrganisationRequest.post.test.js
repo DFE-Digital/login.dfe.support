@@ -8,13 +8,14 @@ jest.mock('login.dfe.notifications.client');
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
 const { post } = require('./../../../src/app/accessRequests/reviewOrganisationRequest');
+
 const res = getResponseMock();
 const { putUserInOrganisation, updateRequestById, getOrganisationById } = require('./../../../src/infrastructure/organisations');
 const { getById, updateIndex } = require('./../../../src/infrastructure/search');
-const { getAndMapOrgRequest } = require('./../../../src/app/accessRequests/utils');
+const orgUtils = require('./../../../src/app/accessRequests/utils');
 const logger = require('./../../../src/infrastructure/logger');
-
 const NotificationClient = require('login.dfe.notifications.client');
+
 const sendAccessRequest = jest.fn();
 NotificationClient.mockImplementation(() => {
   return {
@@ -31,13 +32,13 @@ describe('when reviewing an organisation request', () => {
     req = getRequestMock({
       user: {
         sub: 'user1',
-        email: 'email@email.com'
+        email: 'email@email.com',
       },
       params: {
-        orgId: 'org1'
+        orgId: 'org1',
       },
       body: {
-        selectedResponse: 'approve'
+        selectedResponse: 'approve',
       },
     });
 
@@ -45,27 +46,30 @@ describe('when reviewing an organisation request', () => {
     updateRequestById.mockReset();
 
     sendAccessRequest.mockReset();
-    NotificationClient.mockImplementation(() => {
-      return {
-        sendAccessRequest,
-      };
-    });
-    getOrganisationById.mockReset().mockReturnValue({
+    NotificationClient.mockImplementation(() => ({
+      sendAccessRequest,
+    }));
+
+    getOrganisationById.mockReset();
+    getOrganisationById.mockReturnValue({
       id: 'org1',
       name: 'organisation two',
       category: {
-        'id': '001',
-        'name': 'Establishment'
+        id: '001',
+        name: 'Establishment',
       },
       status: {
-        id: 1
-      }
+        id: 1,
+      },
     });
+
     getById.mockReset();
     getById.mockReturnValue({
-      organisations: []
+      organisations: [],
     });
-    getAndMapOrgRequest.mockReset().mockReturnValue({
+
+    orgUtils.getAndMapOrgRequest.mockReset();
+    orgUtils.getAndMapOrgRequest.mockReturnValue({
       usersName: 'John Doe',
       usersEmail: 'john.doe@email.com',
       id: 'requestId',
@@ -79,8 +83,8 @@ describe('when reviewing an organisation request', () => {
       reason: '',
       status: {
         id: 0,
-        name: 'Pending'
-      }
+        name: 'Pending',
+      },
     });
     res.mockResetAll();
   });
@@ -95,8 +99,8 @@ describe('when reviewing an organisation request', () => {
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/reviewOrganisationRequest');
     expect(res.render.mock.calls[0][1]).toEqual({
-      backLink: true,
-      cancelLink: '/access-requests/org1/requests',
+      backLink: '/access-requests',
+      cancelLink: '/access-requests',
       csrfToken: 'token',
       request: {
         actioned_by: null,
@@ -109,22 +113,22 @@ describe('when reviewing an organisation request', () => {
         reason: '',
         status: {
           id: 0,
-          name: 'Pending'
+          name: 'Pending',
         },
         user_id: 'userId',
         usersEmail: 'john.doe@email.com',
-        usersName: 'John Doe'
+        usersName: 'John Doe',
       },
       selectedResponse: null,
       title: 'Review request - DfE Sign-in',
       validationMessages: {
-      selectedResponse: 'Approve or Reject must be selected'
-      }
+        selectedResponse: 'Approve or Reject must be selected',
+      },
     });
   });
 
   it('then it should render error if request already actioned', async () => {
-    getAndMapOrgRequest.mockReset().mockReturnValue({
+    orgUtils.getAndMapOrgRequest.mockReset().mockReturnValue({
       usersName: 'John Doe',
       usersEmail: 'john.doe@email.com',
       id: 'requestId',
@@ -138,7 +142,7 @@ describe('when reviewing an organisation request', () => {
       reason: '',
       status: {
         id: 1,
-        name: 'approved'
+        name: 'approved',
       }
     });
 
@@ -149,8 +153,8 @@ describe('when reviewing an organisation request', () => {
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/reviewOrganisationRequest');
     expect(res.render.mock.calls[0][1]).toEqual({
-      backLink: true,
-      cancelLink: '/access-requests/org1/requests',
+      backLink: '/access-requests',
+      cancelLink: '/access-requests',
       csrfToken: 'token',
       request: {
         actioned_by: null,
@@ -173,7 +177,7 @@ describe('when reviewing an organisation request', () => {
       title: 'Review request - DfE Sign-in',
       validationMessages: {
         selectedResponse: 'Request already actioned by john.doe@email.com'
-      }
+      },
     });
   });
 
@@ -224,7 +228,7 @@ describe('when reviewing an organisation request', () => {
         roleId: 0,
         statusId: 1,
         uid: undefined,
-        urn: undefined
+        urn: undefined,
       }]
     );
   });
@@ -242,8 +246,8 @@ describe('when reviewing an organisation request', () => {
       editedFields: [{
         name: 'new_organisation',
         newValue: 'org1',
-        oldValue: undefined
-      }]
+        oldValue: undefined,
+      }],
     });
   });
 

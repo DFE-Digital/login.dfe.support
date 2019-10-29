@@ -1,17 +1,18 @@
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
-jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').configMockFactory());
+jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
 jest.mock('./../../../src/app/accessRequests/utils');
 jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('login.dfe.notifications.client');
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
 const { post } = require('./../../../src/app/accessRequests/rejectOrganisationRequest');
-const res = getResponseMock();
-const { updateRequestById } = require('./../../../src/infrastructure/organisations');
-const { getAndMapOrgRequest } = require('./../../../src/app/accessRequests/utils');
-const logger = require('./../../../src/infrastructure/logger');
 
+const res = getResponseMock();
+const organisations = require('./../../../src/infrastructure/organisations');
+const orgUtils = require('./../../../src/app/accessRequests/utils');
+const logger = require('./../../../src/infrastructure/logger');
 const NotificationClient = require('login.dfe.notifications.client');
+
 const sendAccessRequest = jest.fn();
 NotificationClient.mockImplementation(() => {
   return {
@@ -25,7 +26,7 @@ const createString = (length) => {
   const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
   let str = '';
   for (let i = 0; i < length; i += 1) {
-    str = str + charset[Math.random() * charset.length];
+    str += charset[Math.random() * charset.length];
   }
   return str;
 };
@@ -37,24 +38,23 @@ describe('when rejecting an organisation request', () => {
     req = getRequestMock({
       user: {
         sub: 'user1',
-        email: 'email@email.com'
+        email: 'email@email.com',
       },
       params: {
-        orgId: 'org1'
+        orgId: 'org1',
       },
       body: {
-        reason: 'reason for rejection'
+        reason: 'reason for rejection',
       },
     });
-    updateRequestById.mockReset();
+    organisations.updateRequestById.mockReset();
 
     sendAccessRequest.mockReset();
-    NotificationClient.mockImplementation(() => {
-      return {
-        sendAccessRequest,
-      };
-    });
-    getAndMapOrgRequest.mockReset().mockReturnValue({
+    NotificationClient.mockImplementation(() => ({
+      sendAccessRequest,
+    }));
+
+    orgUtils.getAndMapOrgRequest.mockReset().mockReturnValue({
       usersName: 'John Doe',
       usersEmail: 'john.doe@email.com',
       id: 'requestId',
@@ -68,7 +68,7 @@ describe('when rejecting an organisation request', () => {
       reason: '',
       status: {
         id: 0,
-        name: 'Pending'
+        name: 'Pending',
       }
     });
 
@@ -76,7 +76,7 @@ describe('when rejecting an organisation request', () => {
   });
 
   it('then it should render error if request has been actioned', async () => {
-    getAndMapOrgRequest.mockReset().mockReturnValue({
+    orgUtils.getAndMapOrgRequest.mockReset().mockReturnValue({
       usersName: 'John Doe',
       usersEmail: 'john.doe@email.com',
       id: 'requestId',
@@ -90,18 +90,18 @@ describe('when rejecting an organisation request', () => {
       reason: '',
       status: {
         id: 1,
-        name: 'approved'
+        name: 'approved',
       }
     });
 
     await post(req, res);
 
-    expect(updateRequestById.mock.calls).toHaveLength(0);
+    expect(organisations.updateRequestById.mock.calls).toHaveLength(0);
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/rejectOrganisationRequest');
     expect(res.render.mock.calls[0][1]).toEqual({
-      backLink: true,
-      cancelLink: '/access-requests/org1/requests',
+      backLink: '/access-requests',
+      cancelLink: '/access-requests',
       csrfToken: 'token',
       request: {
         actioned_by: null,
@@ -114,11 +114,11 @@ describe('when rejecting an organisation request', () => {
         reason: '',
         status: {
           id: 1,
-          name: 'approved'
+          name: 'approved',
         },
         user_id: 'userId',
         usersEmail: 'john.doe@email.com',
-        usersName: 'John Doe'
+        usersName: 'John Doe',
       },
       reason: 'reason for rejection',
       title: 'Reason for rejection - DfE Sign-in',
@@ -133,12 +133,12 @@ describe('when rejecting an organisation request', () => {
 
     await post(req, res);
 
-    expect(updateRequestById.mock.calls).toHaveLength(0);
+    expect(organisations.updateRequestById.mock.calls).toHaveLength(0);
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/rejectOrganisationRequest');
     expect(res.render.mock.calls[0][1]).toEqual({
-      backLink: true,
-      cancelLink: '/access-requests/org1/requests',
+      backLink: '/access-requests',
+      cancelLink: '/access-requests',
       csrfToken: 'token',
       request: {
         actioned_by: null,
@@ -151,16 +151,16 @@ describe('when rejecting an organisation request', () => {
         reason: '',
         status: {
           id: 0,
-          name: 'Pending'
+          name: 'Pending',
         },
         user_id: 'userId',
         usersEmail: 'john.doe@email.com',
-        usersName: 'John Doe'
+        usersName: 'John Doe',
       },
       reason: req.body.reason,
       title: 'Reason for rejection - DfE Sign-in',
       validationMessages: {
-        reason: 'Reason cannot be longer than 1000 characters'
+        reason: 'Reason cannot be longer than 1000 characters',
       }
     });
   });
@@ -168,13 +168,13 @@ describe('when rejecting an organisation request', () => {
   it('then it should patch the request as rejected', async () => {
     await post(req, res);
 
-    expect(updateRequestById.mock.calls).toHaveLength(1);
-    expect(updateRequestById.mock.calls[0][0]).toBe('requestId');
-    expect(updateRequestById.mock.calls[0][1]).toBe(-1);
-    expect(updateRequestById.mock.calls[0][2]).toBe('user1');
-    expect(updateRequestById.mock.calls[0][3]).toBe('reason for rejection');
-    expect(updateRequestById.mock.calls[0][4]).toBe('2019-01-02');
-    expect(updateRequestById.mock.calls[0][5]).toBe('correlationId');
+    expect(organisations.updateRequestById.mock.calls).toHaveLength(1);
+    expect(organisations.updateRequestById.mock.calls[0][0]).toBe('requestId');
+    expect(organisations.updateRequestById.mock.calls[0][1]).toBe(-1);
+    expect(organisations.updateRequestById.mock.calls[0][2]).toBe('user1');
+    expect(organisations.updateRequestById.mock.calls[0][3]).toBe('reason for rejection');
+    expect(organisations.updateRequestById.mock.calls[0][4]).toBe('2019-01-02');
+    expect(organisations.updateRequestById.mock.calls[0][5]).toBe('correlationId');
   });
 
   it('then it should should audit rejected org request', async () => {
@@ -187,7 +187,7 @@ describe('when rejecting an organisation request', () => {
       subType: 'rejected-org',
       userId: 'user1',
       editedUser: 'userId',
-      reason: 'reason for rejection'
+      reason: 'reason for rejection',
     });
   });
 
@@ -195,6 +195,6 @@ describe('when rejecting an organisation request', () => {
     await post(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('/access-requests/org1/requests');
+    expect(res.redirect.mock.calls[0][0]).toBe('/access-requests');
   });
 });
