@@ -43,32 +43,32 @@ if (services && services.length > 0) {
     </div>
 <% } %>
 
-<div class="row">
+<div class="row row-spacer">
     <div class="col-6">
         <h1 class="heading-xlarge">Users</h1>
 
             <form method="post">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                 <input type="hidden" name="showFilters" value="<%= showFilters %>"/>
-    
+
                 <% for (let i = 0; i < organisationTypes.length; i += 1) { %>
                 <% if (organisationTypes[i].isSelected) { %>
                 <input name="organisationType" value="<%= organisationTypes[i].id %>" type="hidden">
                 <% } %>
                 <% } %>
-    
+
                 <% for (let i = 0; i < accountStatuses.length; i += 1) { %>
                 <% if (accountStatuses[i].isSelected) { %>
                 <input name="accountStatus" value="<%= accountStatuses[i].id %>" type="hidden">
                 <% } %>
                 <% } %>
-    
+
                 <% for (let i = 0; i < services.length; i += 1) { %>
                 <% if (services[i].isSelected) { %>
                 <input name="service" value="<%= services[i].id %>" type="hidden">
                 <% } %>
                 <% } %>
-    
+
                 <div class="search-field">
                     <fieldset class="search-input">
                         <label for="criteria" class="vh">Search by name, email or organisation</label>
@@ -98,10 +98,12 @@ if (services && services.length > 0) {
             <ul class="list">
                 <li><a href="/users/new-user">Invite user</a></li>
                 <li><a href="/users/new-k2s-user">Invite KtS user</a></li>
-                <li><a href="/access-requests">View user requests</a></li>
+                <% if (locals.canViewRequests) { %>
+                    <li><a href="/access-requests">View user requests</a></li>
+                <% } %>
             </ul>
         </aside>
-    </div>    
+    </div>
 </div>
 
 <div class="row">

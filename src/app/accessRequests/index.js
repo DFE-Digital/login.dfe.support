@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const { isLoggedIn, setCurrentArea } = require('../../infrastructure/utils');
+const { isLoggedIn, setCurrentArea, isRequestApprover } = require('../../infrastructure/utils');
 const logger = require('../../infrastructure/logger');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
 
@@ -18,14 +18,15 @@ const users = (csrf) => {
   logger.info('Mounting accessRequests routes');
 
   router.use(isLoggedIn);
+  router.use(isRequestApprover);
   router.use(setCurrentArea('accessRequests'));
 
   router.get('/', csrf, asyncWrapper(getOrganisationRequests));
 
   router.get('/:rid/review', csrf, asyncWrapper(getReviewOrganisationRequest));
   router.post('/:rid/review', csrf, asyncWrapper(postReviewOrganisationRequest));
-  router.get('/:rid/reject', csrf, asyncWrapper(getRejectOrganisationRequest)); 
-  router.post('/:rid/reject', csrf, asyncWrapper(postRejectOrganisationRequest)); 
+  router.get('/:rid/reject', csrf, asyncWrapper(getRejectOrganisationRequest));
+  router.post('/:rid/reject', csrf, asyncWrapper(postRejectOrganisationRequest));
 
   return router;
 };
