@@ -88,6 +88,7 @@ const doSearchAndBuildModel = async (req) => {
     sortBy: result.sortBy,
     sortOrder: result.sortOrder,
     useGenericAddUser: config.toggles.useGenericAddUser,
+    canViewRequests: req.user ? req.user.isRequestApprover : null,
   };
   const filtersModel = await getFiltersModel(req);
 
