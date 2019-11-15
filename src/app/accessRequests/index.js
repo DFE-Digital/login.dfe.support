@@ -19,7 +19,7 @@ const users = (csrf) => {
 
   router.use(isLoggedIn);
   router.use(isRequestApprover);
-  router.use(setCurrentArea('accessRequests'));
+  router.use(setCurrentArea('users'));
 
   router.get('/', csrf, asyncWrapper(getOrganisationRequests));
 

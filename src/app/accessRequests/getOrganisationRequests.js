@@ -13,8 +13,21 @@ const getUserDetails = async (usersForApproval) => {
   return await Account.getUsersByIdV2(distinctUserIds);
 };
 
+const mapStatusForSupport = (status) => {
+  switch (status.id) {
+    case 0:
+      return "Awaiting approver action";
+    case 2:
+      return `${status.name} - Escalated to support`;
+    case 3:
+      return `${status.name} - Escalated to support`;
+    default:
+      return status.name;
+  }
+};
+
 const getOrganisationRequests = async (req, res) => {
-  let requests = []
+  let requests = [];
 
   try {
     requests = await getAllRequestsForSupport(req.id);
@@ -41,20 +54,6 @@ const getOrganisationRequests = async (req, res) => {
     title: 'Requests - DfE Sign-in',
     requests,
   });
-};
-
-
-const mapStatusForSupport = (status) => {
-  switch (status.id) {
-    case 0:
-      return "Awaiting approver action";
-    case 2:
-        return `${status.name} - Escalated to support`;
-    case 3:
-        return `${status.name} - Escalated to support`;
-    default:
-      return status.name;
-  }
 };
 
 module.exports = getOrganisationRequests;
