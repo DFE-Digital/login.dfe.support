@@ -8,7 +8,7 @@ const { asyncWrapper } = require('login.dfe.express-error-handling');
 const {get: getSearch,post: postSearch} = require('./search');
 const {get: getRequest, post: postRequest} = require('./accessRequest');
 
-const getOrganisationRequests = require('./getOrganisationRequests');
+const { get: getOrganisationRequests, post: postOrganisationRequests } = require('./organisationRequests');
 const { get: getReviewOrganisationRequest, post: postReviewOrganisationRequest } = require('./reviewOrganisationRequest');
 const { get: getRejectOrganisationRequest, post: postRejectOrganisationRequest } = require('./rejectOrganisationRequest');
 
@@ -22,6 +22,7 @@ const users = (csrf) => {
   router.use(setCurrentArea('users'));
 
   router.get('/', csrf, asyncWrapper(getOrganisationRequests));
+  router.post('/', csrf, asyncWrapper(postOrganisationRequests));
 
   router.get('/:rid/review', csrf, asyncWrapper(getReviewOrganisationRequest));
   router.post('/:rid/review', csrf, asyncWrapper(postReviewOrganisationRequest));
