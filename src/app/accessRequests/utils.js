@@ -5,61 +5,32 @@ const organisations = require('./../../infrastructure/organisations');
 const directories = require('./../../infrastructure/directories');
 const NotificationClient = require('login.dfe.notifications.client');
 
+const unpackMultiSelect = (parameter) => {
+  if (!parameter) {
+    return [];
+  }
+  if (!(parameter instanceof Array)) {
+    return [parameter];
+  }
+  return parameter;
+};
+
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
-
-  let criteria = paramsSource.criteria;
-  if (!criteria) {
-    criteria = '';
-  }
 
   let page = paramsSource.page ? parseInt(paramsSource.page) : 1;
   if (isNaN(page)) {
     page = 1;
   }
+  const filterStatus = unpackMultiSelect(paramsSource.status);
 
-  let sortBy = paramsSource.sort ? paramsSource.sort.toLowerCase() : 'createddate';
-  let sortAsc = (paramsSource.sortdir ? paramsSource.sortdir : 'asc').toLowerCase() === 'asc';
-
-  const results = await accessRequests.search(criteria + '*', page, sortBy, sortAsc);
-  logger.audit(`${req.user.email} (id: ${req.user.sub}) searched for access requests in support using criteria "${criteria}"`, {
-    type: 'support',
-    subType: 'accessRequest-search',
-    userId: req.user.sub,
-    userEmail: req.user.email,
-    criteria: criteria,
-    pageNumber: page,
-    numberOfPages: results.numberOfPages,
-    sortedBy: sortBy,
-    sortDirection: sortAsc ? 'asc' : 'desc',
-  });
+  const results = await organisations.listRequests(page, filterStatus, req.id);
 
   return {
-    criteria,
     page,
-    sortBy,
-    sortOrder: sortAsc ? 'asc' : 'desc',
     numberOfPages: results.totalNumberOfPages,
-    totalNumberOfResults: results.totalNumberOfResults,
-    accessRequests: results.accessRequests,
-    sort: {
-      organisation: {
-        nextDirection: sortBy === 'organisation' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-        applied: sortBy === 'organisation',
-      },
-      email: {
-        nextDirection: sortBy === 'email' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-        applied: sortBy === 'email',
-      },
-      name: {
-        nextDirection: sortBy === 'name' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-        applied: sortBy === 'name',
-      },
-      createdDate: {
-        nextDirection: sortBy === 'createddate' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-        applied: sortBy === 'createddate',
-      },
-    }
+    totalNumberOfResults: results.totalNumberOfRecords,
+    accessRequests: results.requests,
   };
 };
 
@@ -125,9 +96,31 @@ const getAndMapOrgRequest = async (req) => {
   return mappedRequest;
 };
 
+const mapStatusForSupport = (status) => {
+  switch (status.id) {
+    case 0:
+      return { id: 0, name: 'Awaiting approver action' };
+    case 2:
+      return { id: 2, name: `${status.name} - Escalated to support` };
+    case 3:
+      return { id: 3, name: `${status.name} - Escalated to support` };
+    default:
+      return status.name;
+  }
+};
+
+const userStatusMap = [
+  { id: 0, name: 'Awaiting approver action' },
+  { id: 2, name: 'Overdue - Escalated to support' },
+  { id: 3, name: 'No Approvers - Escalated to support' },
+];
+
 module.exports = {
   search,
   getById,
   putUserInOrganisation,
   getAndMapOrgRequest,
+  mapStatusForSupport,
+  unpackMultiSelect,
+  userStatusMap,
 };

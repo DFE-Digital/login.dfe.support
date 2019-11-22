@@ -160,8 +160,16 @@ const listInvitationServices = async (page, pageSize, correlationId) => {
   return callOrganisationsApi(`/invitations?page=${page}&pageSize=${pageSize}`, 'GET', undefined, correlationId);
 };
 
-const getAllRequestsForSupport = async (correlationId) => {
-  return callOrganisationsApi(`organisations/requests-for-support`, 'GET', undefined, correlationId);
+const listRequests = async (page, filterStates, correlationId) => {
+  let uri = `organisations/requests?page=${page}`;
+  if (filterStates && filterStates.length > 0) {
+    filterStates.forEach((status) => {
+      uri += `&filterstatus=${status}`;
+    });
+  } else {
+    uri += `&filterstatus=0&filterstatus=2&filterstatus=3`
+  }
+  return callOrganisationsApi(uri, 'GET', undefined, correlationId);
 };
 
 const getRequestById = async (requestId, correlationId) => {
@@ -212,7 +220,7 @@ module.exports = {
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   getUserOrganisationsV2,
-  getAllRequestsForSupport,
+  listRequests,
   getRequestById,
   updateRequestById,
   putUserInOrganisation,
