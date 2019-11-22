@@ -1,0 +1,91 @@
+<div class="grid-row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Review request
+        </h1>
+        <p class="lede">Review these details before adding <%= locals.request.usersName %>
+            to <%= locals.request.org_name %>.</p>
+
+        <dl class="app-check-your-answers app-check-your-answers--short">
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__title">
+                    Request details
+                </dt>
+                <dd class="app-check-your-answers__answer"></dd>
+            </div>
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__question">
+                    Name
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%= locals.request.usersName %>
+                </dd>
+            </div>
+
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__question">
+                    Email Address
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%= locals.request.usersEmail %>
+                </dd>
+            </div>
+
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__question">
+                    Date
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%= locals.moment(locals.request.created_date).format('DD MMM YYYY') %>
+                </dd>
+            </div>
+
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__question">
+                    Organisation
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%= locals.request.org_name %>
+                </dd>
+            </div>
+
+            <% if (locals.request.reason) { %>
+            <div class="app-check-your-answers__contents">
+                <dt class="app-check-your-answers__question">
+                    Reason
+                </dt>
+                <dd class="app-check-your-answers__answer">
+                    <%= locals.request.reason %>
+                </dd>
+            </div>
+            <% } %>
+        </dl>
+
+        <form method="post">
+            <div class="form-group <%= (locals.validationMessages.selectedResponse !== undefined) ? 'form-group-error' : '' %>">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <fieldset class="inline">
+                    <% if (locals.validationMessages.selectedResponse !== undefined) { %>
+                    <p class="error-message"
+                       id="validation-selected-organisation"><%= locals.validationMessages.selectedResponse %></p>
+                    <% } %>
+                    <legend>
+                        <h2 class="heading-small">Your response</h2>
+                    </legend>
+                    <div class="multiple-choice">
+                        <input id="approve" type="radio" name="selectedResponse" value="approve">
+                        <label for="approve">Approve</label>
+                    </div>
+                    <div class="multiple-choice" data-target="panel-message-2">
+                        <input id="reject" type="radio" name="selectedResponse" value="reject">
+                        <label for="reject">Reject</label>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="form-submit submit-buttons">
+                <button type="submit" class="button">Confirm</button>
+                <a href="<%= locals.cancelLink %>" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
