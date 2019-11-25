@@ -63,7 +63,7 @@
     "eslint": "^6.5.1",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
-    "ioredis-mock": "^4.18.4",
+    "ioredis-mock": "2.4.1",
     "jest": "^24.9.0",
     "jest-cli": "^24.9.0",
     "node-mocks-http": "^1.6.6"
