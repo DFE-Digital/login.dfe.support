@@ -31,7 +31,7 @@ const dbOpts = {
   dialect: config.audit.params.dialect,
   operatorsAliases: Op,
   dialectOptions: {
-    encrypt: config.audit.params.encrypt || false,
+      encrypt: config.audit.params.encrypt || true,
   },
   logging: false,
 };
