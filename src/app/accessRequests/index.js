@@ -11,6 +11,7 @@ const {get: getRequest, post: postRequest} = require('./accessRequest');
 const { get: getOrganisationRequests, post: postOrganisationRequests } = require('./organisationRequests');
 const { get: getReviewOrganisationRequest, post: postReviewOrganisationRequest } = require('./reviewOrganisationRequest');
 const { get: getRejectOrganisationRequest, post: postRejectOrganisationRequest } = require('./rejectOrganisationRequest');
+const { get: getSelectPermissionLevel, post: postSelectPermissionLevel } = require('./selectPermissionLevel');
 
 const router = express.Router({ mergeParams: true });
 
@@ -28,6 +29,8 @@ const users = (csrf) => {
   router.post('/:rid/review', csrf, asyncWrapper(postReviewOrganisationRequest));
   router.get('/:rid/reject', csrf, asyncWrapper(getRejectOrganisationRequest));
   router.post('/:rid/reject', csrf, asyncWrapper(postRejectOrganisationRequest));
+  router.get('/:rid/approve', csrf, asyncWrapper(getSelectPermissionLevel));
+  router.post('/:rid/approve', csrf, asyncWrapper(postSelectPermissionLevel));
 
   return router;
 };
