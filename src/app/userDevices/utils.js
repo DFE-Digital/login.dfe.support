@@ -101,7 +101,6 @@ const getUserTokenDetails = async (req, params) => {
     return null;
   }
 
-  // const result = await userDevices.getByUserId(uid);
   let auditRecords = [];
   if (result) {
     auditRecords = await getTokenAudits(uid, serialNumber, pageNumber, result.name);
@@ -311,14 +310,11 @@ const deactivateToken = async (req) => {
       deviceSerialNumber: serialNumber,
     });
   } else {
-
-    // const result = await userDevices.getByUserId(serialNumber, 'serialNumber');
     const result = await getSearchDetailsForDeviceBySerialNumber(serialNumber, correlationId);
     result.device.status = 'Deactivated';
     result.id = null;
     result.name = null;
     result.organisation = null;
-    // await userDevices.updateIndex([result]);
     await updateDeviceInSearch(result, correlationId);
 
     logger.audit(`${req.user.email} (id: ${req.user.sub}) Deactivated token with serial number "${serialNumber}"`, {
