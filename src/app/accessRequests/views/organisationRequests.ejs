@@ -1,0 +1,127 @@
+<% if (locals.flash.info) { %>
+    <div class="row">
+        <div class="col-12">
+            <div class="notification notification-success">
+                <%= locals.flash.info %>
+            </div>
+        </div>
+    </div>
+<% } %>
+
+<%
+const paginationModel = {
+    method: 'post',
+    csrfToken,
+    currentPage: locals.page,
+    numberOfPages: locals.numberOfPages,
+    totalNumberOfResults: locals.totalNumberOfResults,
+    numberOfResultsOnPage: locals.requests.length,
+    data: [
+        { key: 'criteria', value: locals.criteria },
+        { key: 'sort', value: locals.sortBy },
+        { key: 'sortDir', value: locals.sortOrder },
+        { key: 'showFilters', value: locals.showFilters }
+    ]
+}
+if (requestStatuses && requestStatuses.length > 0) {
+    const selected = requestStatuses.filter(x => x.isSelected);
+    selected.forEach((item) => {
+        paginationModel.data.push({ key: 'status', value: item.id });
+    });
+}
+%>
+
+<div class="row row-spacer">
+    <div class="col-6">
+        <h1 class="heading-xlarge">
+            Requests
+        </h1>
+        <form method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <input type="hidden" name="showFilters" value="<%= showFilters %>"/>
+
+            <% for (let i = 0; i < requestStatuses.length; i += 1) { %>
+                <% if (requestStatuses[i].isSelected) { %>
+                    <input name="requestStatus" value="<%= requestStatuses[i].id %>" type="hidden">
+                <% } %>
+            <% } %>
+        </form>
+        <form method="post" class="show-filters">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <input type="hidden" name="page" value="<%= page %>"/>
+            <input type="hidden" name="showFilters" value="<%= !showFilters %>"/>
+            <button type="submit" class="button-link filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <% if (showFilters) { %>
+        <div class="col-4">
+            <form method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <input type="hidden" name="page" value="<%= page %>"/>
+                <input type="hidden" name="showFilters" value="true"/>
+
+                <div class="filter-box">
+                    <div class="container-head js-container-head">
+                        <div class="option-select-label">
+                            Request status
+                        </div>
+                    </div>
+                    <div role="group" aria-labelledby="option-select-title-request-status" class="options-container"
+                         id="request-status">
+                        <div class="js-auto-height-inner">
+                            <% for (let i = 0; i < requestStatuses.length; i += 1) { %>
+                                <label>
+                                    <input name="status" value="<%= requestStatuses[i].id %>"
+                                           type="checkbox" <%= (requestStatuses[i].isSelected ? 'checked="checked"' : '') %>>
+                                    <%= requestStatuses[i].name %>
+                                </label>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="button-secondary">Apply filter</button>
+
+            </form>
+        </div>
+    <% } %>
+    <div class="col-<%= (showFilters ? 8 : 12) %>">
+        <%- include('../../sharedViews/pagination', paginationModel); %>
+        <table class="data">
+            <thead>
+            <tr class="sortable">
+                <th scope="col" class="cwp-15">Requested</th>
+                <th scope="col" class="cwp-20">Requested organisation</th>
+                <th scope="col" class="cwp-15">Requested by</th>
+                <th scope="col" class="cwp-20">Requester email</th>
+                <th scope="col" class="cwp-15">Status</th>
+                <th scope="col" class="cwp-15 last">Action</th>
+            </tr>
+            </thead>
+
+            <tbody>
+                <% if (locals.requests && locals.requests.length === 0) { %>
+                    <tr>
+                        <td colspan="6"><span class="empty-state">There are no outstanding requests.</span></td>
+                    </tr>
+                <% } else { %>
+                <% for (let i = 0; i < locals.requests.length; i++) { %>
+                    <tr>
+                        <td><time datetime="<%= locals.requests[i].created_date %>"><%= moment(locals.requests[i].created_date).fromNow() %></time></td>
+                        <td><span class="breakable"><%= locals.requests[i].org_name %></span> </td>
+                        <td><span class="breakable"><%= locals.requests[i].usersName %></span> </td>
+                        <td><span class="breakable"><%= locals.requests[i].usersEmail %></span> </td>
+                        <td><span class="breakable"><%= locals.requests[i].statusText.name %></span> </td>
+                        <td><span class="breakable"><a href="access-requests/<%= locals.requests[i].id %>/review" class="button-respond">Review request</a></span> </td>
+                    </tr>
+                    <% } %>
+                <% } %>
+            </tbody>
+
+        </table>
+        <%- include('../../sharedViews/pagination', paginationModel); %>
+    </div>
+</div>
