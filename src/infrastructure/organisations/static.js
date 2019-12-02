@@ -159,7 +159,7 @@ const updateRequestById = async (requestId, status, actionedBy, actionedReason, 
   return Promise.resolve();
 };
 
-const putUserInOrganisation = async(userId, orgId, role, correlationId) => {
+const putUserInOrganisation = async(userId, orgId, status, role, reason, correlationId) => {
   return Promise.resolve();
 };
 

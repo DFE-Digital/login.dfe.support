@@ -79,13 +79,15 @@ describe('when rejecting an organisation request', () => {
     orgUtils.getAndMapOrgRequest.mockReset().mockReturnValue({
       usersName: 'John Doe',
       usersEmail: 'john.doe@email.com',
+      approverName: 'John Approver',
+      approverEmail: 'john.approver@email.com',
       id: 'requestId',
       org_id: 'org1',
       org_name: 'Org 1',
       user_id: 'userId',
       created_date: '2019-05-01',
-      actioned_date: null,
-      actioned_by: null,
+      actioned_date: '2019-05-01',
+      actioned_by: 'john.approver@email.com',
       actioned_reason: null,
       reason: '',
       status: {
@@ -100,12 +102,12 @@ describe('when rejecting an organisation request', () => {
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/rejectOrganisationRequest');
     expect(res.render.mock.calls[0][1]).toEqual({
-      backLink: '/access-requests',
+      backLink: true,
       cancelLink: '/access-requests',
       csrfToken: 'token',
       request: {
-        actioned_by: null,
-        actioned_date: null,
+        actioned_by: 'john.approver@email.com',
+        actioned_date: '2019-05-01',
         actioned_reason: null,
         created_date: '2019-05-01',
         id: 'requestId',
@@ -119,6 +121,8 @@ describe('when rejecting an organisation request', () => {
         user_id: 'userId',
         usersEmail: 'john.doe@email.com',
         usersName: 'John Doe',
+        approverName: 'John Approver',
+        approverEmail: 'john.approver@email.com',
       },
       reason: 'reason for rejection',
       title: 'Reason for rejection - DfE Sign-in',
@@ -137,7 +141,7 @@ describe('when rejecting an organisation request', () => {
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/rejectOrganisationRequest');
     expect(res.render.mock.calls[0][1]).toEqual({
-      backLink: '/access-requests',
+      backLink: true,
       cancelLink: '/access-requests',
       csrfToken: 'token',
       request: {
