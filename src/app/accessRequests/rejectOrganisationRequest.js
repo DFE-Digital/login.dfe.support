@@ -12,7 +12,7 @@ const get = async (req, res) => {
   return res.render('accessRequests/views/rejectOrganisationRequest', {
     csrfToken: req.csrfToken(),
     title: 'Reason for rejection - DfE Sign-in',
-    backLink: `/access-requests`,
+    backLink: true,
     cancelLink: `/access-requests`,
     reason: '',
     validationMessages: {},
@@ -23,7 +23,7 @@ const validate = async (req) => {
   const request = await getAndMapOrgRequest(req);
   const model = {
     title: 'Reason for rejection - DfE Sign-in',
-    backLink: `/access-requests`,
+    backLink: true,
     cancelLink: `/access-requests`,
     reason: req.body.reason,
     request,
@@ -31,7 +31,7 @@ const validate = async (req) => {
   };
   if (model.reason.length > 1000) {
     model.validationMessages.reason = 'Reason cannot be longer than 1000 characters';
-  } else if (model.request.status.id === -1 || model.request.status.id === 1) {
+  } else if (model.request.approverEmail) {
     model.validationMessages.reason = `Request already actioned by ${model.request.usersEmail}`
   }
   return model;
