@@ -12,7 +12,7 @@ const webServiceSync = require('./webServiceSync');
 const router = express.Router({ mergeParams: true });
 
 const users = (csrf) => {
-  logger.info('Mounting user routes');
+  logger.info('Mounting organisations routes');
 
   router.use(isLoggedIn);
   router.use(setCurrentArea('organisations'));
