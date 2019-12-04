@@ -127,7 +127,6 @@ const putSingleServiceIdentifierForUser = async (userId, serviceId, orgId, value
 
 const searchOrganisations = async (criteria, filterByCategories, filterByStatus, pageNumber, correlationId) => {
   let uri = `organisations?search=${criteria}&page=${pageNumber}`;
-
   if (filterByCategories) {
     uri += filterByCategories.map(f => `&filtercategory=${f}`).join('');
   }
