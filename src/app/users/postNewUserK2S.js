@@ -15,7 +15,7 @@ const getLocalAutorities = async (correlationId) => {
   let hasMorePages = true;
   const localAuthorities = [];
   while (hasMorePages) {
-    const page = await searchOrganisations('', ['002'], pageNumber, correlationId);
+    const page = await searchOrganisations('', ['002'],undefined, pageNumber, correlationId);
 
     if (page.organisations.length > 0) {
       localAuthorities.push(...page.organisations);
