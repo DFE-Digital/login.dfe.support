@@ -125,12 +125,13 @@ const putSingleServiceIdentifierForUser = async (userId, serviceId, orgId, value
   return result === undefined;
 };
 
-const searchOrganisations = async (criteria, filterByCategories, pageNumber, correlationId) => {
+const searchOrganisations = async (criteria, filterByCategories, filterByStatus, pageNumber, correlationId) => {
   let uri = `organisations?search=${criteria}&page=${pageNumber}`;
   if (filterByCategories) {
-    filterByCategories.forEach((category) => {
-      uri += `&filtercategory=${category}`;
-    });
+    uri += filterByCategories.map(f => `&filtercategory=${f}`).join('');
+  }
+  if (filterByStatus) {
+    uri += filterByStatus.map(f => `&filterstatus=${f}`).join('');
   }
   return await callOrganisationsApi(uri, 'GET', undefined, correlationId);
 };
@@ -158,6 +159,10 @@ const listUserServices = async (page, pageSize, correlationId) => {
 
 const listInvitationServices = async (page, pageSize, correlationId) => {
   return callOrganisationsApi(`/invitations?page=${page}&pageSize=${pageSize}`, 'GET', undefined, correlationId);
+};
+
+const listOrganisationStatus = async (correlationId) => {
+  return callOrganisationsApi('organisations/states', 'GET', undefined);
 };
 
 const listRequests = async (page, filterStates, correlationId) => {
@@ -224,4 +229,5 @@ module.exports = {
   getRequestById,
   updateRequestById,
   putUserInOrganisation,
+  listOrganisationStatus,
 };
