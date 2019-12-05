@@ -15,6 +15,8 @@ const orgsResult = {
   ],
   totalNumberOfPages: 10,
   totalNumberOfResults: 99,
+  organisationStatuses: [],
+  organisationTypes: [],
 };
 
 describe('when searching for organisations', () => {
@@ -46,6 +48,9 @@ describe('when searching for organisations', () => {
         numberOfPages: orgsResult.totalNumberOfPages,
         totalNumberOfResults: orgsResult.totalNumberOfRecords,
         organisations: orgsResult.organisations,
+        organisationTypes: orgsResult.organisationTypes,
+        organisationStatuses: orgsResult.organisationStatuses,
+        showFilters: false,
       });
     });
 
@@ -61,7 +66,7 @@ describe('when searching for organisations', () => {
       await action(req, res);
 
       expect(searchOrganisations).toHaveBeenCalledTimes(1);
-      expect(searchOrganisations).toHaveBeenCalledWith('org1', undefined, 2, req.id);
+      expect(searchOrganisations).toHaveBeenCalledWith('org1', [],[], 2, req.id);
     });
 
     it(`then it should search orgs with no criteria if none specified (${method} / ${dataLocation})`, async () => {
@@ -76,7 +81,7 @@ describe('when searching for organisations', () => {
       await action(req, res);
 
       expect(searchOrganisations).toHaveBeenCalledTimes(1);
-      expect(searchOrganisations).toHaveBeenCalledWith('', undefined, 2, req.id);
+      expect(searchOrganisations).toHaveBeenCalledWith('', [],[], 2, req.id);
     });
 
     it(`then it should request page 1 if no page specified (${method} / ${dataLocation})`, async () => {
@@ -91,7 +96,7 @@ describe('when searching for organisations', () => {
       await action(req, res);
 
       expect(searchOrganisations).toHaveBeenCalledTimes(1);
-      expect(searchOrganisations).toHaveBeenCalledWith('org1', undefined, 1, req.id);
+      expect(searchOrganisations).toHaveBeenCalledWith('org1', [],[], 1, req.id);
     });
 
   });
