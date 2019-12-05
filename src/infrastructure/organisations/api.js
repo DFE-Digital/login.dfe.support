@@ -225,5 +225,9 @@ module.exports = {
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   getUserOrganisationsV2,
+  listRequests,
+  getRequestById,
+  updateRequestById,
+  putUserInOrganisation,
   listOrganisationStatus,
 };
