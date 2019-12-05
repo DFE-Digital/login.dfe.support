@@ -165,6 +165,43 @@ const listOrganisationStatus = async (correlationId) => {
   return callOrganisationsApi('organisations/states', 'GET', undefined);
 };
 
+const listRequests = async (page, filterStates, correlationId) => {
+  let uri = `organisations/requests?page=${page}`;
+  if (filterStates && filterStates.length > 0) {
+    filterStates.forEach((status) => {
+      uri += `&filterstatus=${status}`;
+    });
+  } else {
+    uri += `&filterstatus=0&filterstatus=2&filterstatus=3`
+  }
+  return callOrganisationsApi(uri, 'GET', undefined, correlationId);
+};
+
+const getRequestById = async (requestId, correlationId) => {
+  return callOrganisationsApi(`organisations/requests/${requestId}`, 'GET', undefined, correlationId);
+};
+
+const updateRequestById = async (requestId, status, actionedBy, actionedReason, actionedAt, correlationId) => {
+  const body = {};
+  if (status) {
+    body.status = status
+  }
+  if (actionedBy) {
+    body.actioned_by = actionedBy
+  }
+  if (actionedReason) {
+    body.actioned_reason = actionedReason
+  }
+  if (actionedAt) {
+    body.actioned_at = actionedAt
+  }
+  return callOrganisationsApi(`organisations/requests/${requestId}`, 'PATCH', body, correlationId);
+};
+
+const putUserInOrganisation = async(userId, orgId, status, role, reason, correlationId) => {
+  return callOrganisationsApi(`organisations/${orgId}/users/${userId}`, 'PUT', {roleId:role, status, reason}, correlationId);
+};
+
 module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
