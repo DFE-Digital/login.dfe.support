@@ -6,7 +6,7 @@
         <form method="post" id="form-deactivate">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <fieldset>
-                <legend><p>Please give the reason why you have rejected this request. This will be recorded for audit purposes and not shared with the requester.</p></legend>
+                <legend><p>Please give the reason why you have rejected this request. This will be recorded for audit purposes and shared with the requester.</p></legend>
                 <div class="form-group <%= (locals.validationMessages.reason !== undefined) ? 'form-group-error' : '' %>">
                     <label class="form-label" for="reason">Reason for rejection (optional) </label>
                     <% if (locals.validationMessages.reason !== undefined) { %>
