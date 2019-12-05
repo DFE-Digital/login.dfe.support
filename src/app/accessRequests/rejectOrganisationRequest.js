@@ -49,7 +49,7 @@ const post = async (req, res) => {
   await updateRequestById(model.request.id, -1, req.user.sub, model.reason, actionedDate, req.id);
 
   //send rejected email
-  await notificationClient.sendAccessRequest(model.request.usersEmail, model.request.usersName, model.request.org_name, false, null);
+  await notificationClient.sendAccessRequest(model.request.usersEmail, model.request.usersName, model.request.org_name, false, model.reason);
 
   //audit organisation rejected
   logger.audit(`${req.user.email} (id: ${req.user.sub}) rejected organisation request for ${model.request.org_id})`, {
