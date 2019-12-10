@@ -14,6 +14,21 @@ const paginationModel = {
     numberOfResultsOnPage: locals.organisations.length,
     data: [
         { key: 'criteria', value: locals.criteria },
+        { key: 'sort', value: locals.sortBy },
+        { key: 'sortDir', value: locals.sortOrder },
+        { key: 'showFilters', value: locals.showFilters },
+        { key: 'organisationType', value: locals.organisationTypes.reduce((result, element) => {
+                if(element.isSelected) {
+                    result.push(element.id);
+                }
+                return result;
+            }, [])},
+        { key: 'organisationStatus', value: locals.organisationStatuses.reduce((result, element) => {
+                if(element.isSelected) {
+                    result.push(element.id);
+                }
+                return result;
+            }, [])},
     ]
 }
 %>
@@ -22,6 +37,7 @@ const paginationModel = {
     <div class="col-6">
         <form method="post">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <input type="hidden" name="showFilters" value="<%= showFilters %>"/>
 
             <div class="search-field">
                 <fieldset class="search-input">
@@ -34,6 +50,13 @@ const paginationModel = {
                 </fieldset>
             </div>
         </form>
+        <form method="post" class="show-filters">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <input type="hidden" name="criteria" value="<%= criteria %>"/>
+            <input type="hidden" name="page" value="<%= page %>"/>
+            <input type="hidden" name="showFilters" value="<%= !showFilters %>"/>
+            <button type="submit" class="button-link filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
+        </form>
     </div>
 
     <div class="col-6">
@@ -43,38 +66,91 @@ const paginationModel = {
 </div>
 
 
+
 <div class="row">
-    <div class="col-12">
-        <%- include('../../sharedViews/pagination', paginationModel); %>
-        <table class="data">
-            <thead>
-            <tr class="sortable">
-                <th scope="col" class="cwp-35">Name</th>
-                <th scope="col" class="cwp-20">Type</th>
-                <th scope="col" class="cwp-10">URN</th>
-                <th scope="col" class="cwp-10">UID</th>
-                <th scope="col" class="cwp-10">UKPRN</th>
-                <th scope="col" class="cwp-10">Status</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% if(locals.organisations.length === 0 && locals.criteria) { %>
-                <tr>
-                    <td colspan="6"><span class="empty-state">No organisations found</span></td>
-                </tr>
-            <% } %>
-            <% for (let i = 0; i < locals.organisations.length; i++) { %>
-                <tr>
-                    <td><a href="/organisations/<%= organisations[i].id %>/"><%= organisations[i].name %></a></td>
-                    <td><%= organisations[i].category.name %></td>
-                    <td><%= organisations[i].urn %></td>
-                    <td><%= organisations[i].uid %></td>
-                    <td><%= organisations[i].ukprn %></td>
-                    <td><%= organisations[i].status.name %></td>
-                </tr>
-            <% } %>
-            </tbody>
-        </table>
-        <%- include('../../sharedViews/pagination', paginationModel); %>
-    </div>
+    <% if (showFilters) { %>
+        <div class="col-4">
+            <form method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <input type="hidden" name="criteria" value="<%= criteria %>"/>
+                <input type="hidden" name="page" value="<%= page %>"/>
+                <input type="hidden" name="showFilters" value="true"/>
+
+                <div class="filter-box">
+                    <div class="container-head js-container-head">
+                        <div class="option-select-label">
+                            Organisation type
+                        </div>
+                    </div>
+                    <div role="group" aria-labelledby="option-select-title-organisationtype" class="options-container"
+                         id="organisationtypes">
+                        <div class="js-auto-height-inner">
+                            <% for (let i = 0; i < organisationTypes.length; i += 1) { %>
+                                <label>
+                                    <input name="organisationType" value="<%= organisationTypes[i].id %>"
+                                           type="checkbox" <%= (organisationTypes[i].isSelected ? 'checked="checked"' : '') %>>
+                                    <%= organisationTypes[i].name %>
+                                </label>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-box">
+                    <div class="container-head js-container-head">
+                        <div class="option-select-label">
+                            Organisation Status
+                        </div>
+                    </div>
+                    <div role="group" aria-labelledby="option-select-title-organisationstatus" class="options-container"
+                         id="organisationStatuses">
+                        <div class="js-auto-height-inner">
+                            <% for (let i = 0; i < organisationStatuses.length; i += 1) { %>
+                                <label>
+                                    <input name="organisationStatus" value="<%= organisationStatuses[i].id %>"
+                                           type="checkbox" <%= (organisationStatuses[i].isSelected ? 'checked="checked"' : '') %>>
+                                    <%= organisationStatuses[i].name %>
+                                </label>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+                <button class="button-secondary">Apply filter</button>
+            </form>
+        </div>
+    <% } %>
+        <div class="col-<%= (showFilters ? 8 : 12) %>">
+                <%- include('../../sharedViews/pagination', paginationModel); %>
+                <table class="data">
+                    <thead>
+                    <tr class="sortable">
+                        <th scope="col" class="cwp-35">Name</th>
+                        <th scope="col" class="cwp-20">Type</th>
+                        <th scope="col" class="cwp-10">URN</th>
+                        <th scope="col" class="cwp-10">UID</th>
+                        <th scope="col" class="cwp-10">UKPRN</th>
+                        <th scope="col" class="cwp-10">Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% if(locals.organisations.length === 0 && locals.criteria) { %>
+                        <tr>
+                            <td colspan="6"><span class="empty-state">No organisations found</span></td>
+                        </tr>
+                    <% } %>
+                    <% for (let i = 0; i < locals.organisations.length; i++) { %>
+                        <tr>
+                            <td><a href="/organisations/<%= organisations[i].id %>/"><%= organisations[i].name %></a></td>
+                            <td><%= organisations[i].category.name %></td>
+                            <td><%= organisations[i].urn %></td>
+                            <td><%= organisations[i].uid %></td>
+                            <td><%= organisations[i].ukprn %></td>
+                            <td><%= organisations[i].status.name %></td>
+                        </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+                <%- include('../../sharedViews/pagination', paginationModel); %>
+
+        </div>
 </div>
