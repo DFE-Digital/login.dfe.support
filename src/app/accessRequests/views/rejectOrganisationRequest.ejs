@@ -3,7 +3,7 @@
         <h1 class="heading-xlarge">
             Reason for rejection
         </h1>
-        <form method="post" id="form-deactivate">
+        <form method="post" id="form-deactivate" class="prevent-form-double-submission">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <fieldset>
                 <legend><p>Please give the reason why you have rejected this request. This will be recorded for audit purposes and shared with the requester.</p></legend>
