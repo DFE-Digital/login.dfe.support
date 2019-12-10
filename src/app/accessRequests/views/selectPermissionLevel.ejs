@@ -8,7 +8,7 @@
 </div>
 <div class="grid-row">
     <div class="col-6">
-        <form method="post">
+        <form method="post" class="prevent-form-double-submission">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
             <div class="form-group <%= (locals.validationMessages.selectedLevel !== undefined) ? 'form-group-error' : '' %>">
                 <fieldset>
