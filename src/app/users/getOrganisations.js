@@ -1,10 +1,11 @@
 const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
-const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
+const { getUserOrganisations, getInvitationOrganisations, getPendingRequestsAssociatedWithUser } = require('./../../infrastructure/organisations');
 const { getUsersByIdV2 } = require('./../../infrastructure/directories');
 const logger = require('./../../infrastructure/logger');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
+const sortBy = require('lodash/sortBy');
 
 const getApproverDetails = async (organisations, correlationId) => {
   const allApproverIds = flatten(organisations.map((org) => org.approvers));
@@ -44,15 +45,26 @@ const getOrganisations = async (userId, correlationId) => {
   return organisations;
 };
 
+const getPendingRequests = async (userId, correlationId) => {
+  const pendingUserRequests = await getPendingRequestsAssociatedWithUser(userId, correlationId) || [];
+  return pendingUserRequests.map((request) => ({
+    id: request.org_id,
+    name: request.org_name,
+    urn: request.urn,
+    ukprn: request.ukprn,
+    uid: request.uid,
+    status: request.org_status,
+    requestDate: request.created_date,
+    requestId: request.id,
+  }))
+};
+
 const action = async (req, res) => {
   const user = await getUserDetails(req);
   const organisationDetails = await getOrganisations(user.id, req.id);
-
-  const organisations = [];
-  for (let i = 0; i < organisationDetails.length; i++) {
-    const org = organisationDetails[i];
-    organisations.push(org);
-  }
+  const organisationRequests = await getPendingRequests(user.id, req.id);
+  const allOrgs = organisationDetails.concat(organisationRequests);
+  const sortedOrgs = sortBy(allOrgs, 'name');
 
   req.session.user = {
     firstName: user.firstName,
@@ -71,7 +83,7 @@ const action = async (req, res) => {
   sendResult(req, res, 'users/views/organisations', {
     csrfToken: req.csrfToken(),
     user,
-    organisations,
+    organisations: sortedOrgs,
     isInvitation: req.params.uid.startsWith('inv-'),
   });
 };

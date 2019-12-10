@@ -7,7 +7,7 @@ jest.mock('./../../../src/infrastructure/serviceMapping');
 jest.mock('./../../../src/infrastructure/audit');
 jest.mock('ioredis');
 const { getUserDetails } = require('./../../../src/app/users/utils');
-const { getUserOrganisations } = require('./../../../src/infrastructure/organisations');
+const { getUserOrganisations, getPendingRequestsAssociatedWithUser } = require('./../../../src/infrastructure/organisations');
 const { getUsersByIdV2 } = require('./../../../src/infrastructure/directories');
 const { getClientIdForServiceId } = require('./../../../src/infrastructure/serviceMapping');
 const { getUserLoginAuditsForService } = require('./../../../src/infrastructure/audit');
@@ -131,6 +131,18 @@ describe('when getting users organisation details', () => {
         { sub: 'user11', given_name: 'User', family_name: 'Eleven', email: 'user.eleven@unit.tests' },
       ]
     );
+    getPendingRequestsAssociatedWithUser.mockReset();
+    getPendingRequestsAssociatedWithUser.mockReturnValue([{
+      id: 'requestId',
+      org_id: 'organisationId',
+      org_name: 'organisationName',
+      user_id: 'user2',
+      status: {
+        id: 0,
+        name: 'pending',
+      },
+      created_date: '2019-08-12',
+    }]);
   });
 
   it('then it should get user details', async () => {
@@ -143,14 +155,18 @@ describe('when getting users organisation details', () => {
     });
   });
 
-  it('then it should get organisations mapping for user', async () => {
+  it('then it should get organisations and requests mapping for user', async () => {
     await getOrganisations(req, res);
 
     expect(getUserOrganisations.mock.calls).toHaveLength(1);
     expect(getUserOrganisations.mock.calls[0][0]).toBe('user1');
     expect(getUserOrganisations.mock.calls[0][1]).toBe('correlationId');
 
-    expect(res.render.mock.calls[0][1].organisations).toHaveLength(2);
+    expect(getPendingRequestsAssociatedWithUser.mock.calls).toHaveLength(1);
+    expect(getPendingRequestsAssociatedWithUser.mock.calls[0][0]).toBe('user1');
+    expect(getPendingRequestsAssociatedWithUser.mock.calls[0][1]).toBe('correlationId');
+
+    expect(res.render.mock.calls[0][1].organisations).toHaveLength(3);
     expect(res.render.mock.calls[0][1].organisations[0]).toMatchObject({
       id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
       name: 'Great Big School',
@@ -159,5 +175,11 @@ describe('when getting users organisation details', () => {
       id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
       name: 'Little Tiny School',
     });
+    expect(res.render.mock.calls[0][1].organisations[2]).toMatchObject({
+      id: 'organisationId',
+      name: 'organisationName',
+      requestId: 'requestId',
+    });
   });
+
 });
