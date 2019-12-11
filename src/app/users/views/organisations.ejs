@@ -15,7 +15,11 @@
     <tbody>
         <% for (let o = 0; o < locals.organisations.length; o++) { %>
         <% const org = locals.organisations[o];%>
+            <% if (org.requestDate) { %>
+            <tr class="pending">
+            <% } else { %>
             <tr>
+            <% }%>
                 <td> <%=org.name%> <br>
                     <article class="organisation-services" style="margin-bottom: 0">
                         <section class="organisation">
@@ -44,7 +48,7 @@
                                         <dd><%=org.ukprn%></dd>
                                         <% } %>
 
-                                        <% if (org.approvers.length > 0) { %>
+                                        <% if (org.approvers && org.approvers.length > 0) { %>
                                             <dt>Approvers:</dt>
                                             <dd>
                                                 <ul>
@@ -66,9 +70,15 @@
                 <% if (org.role) { %>
                 <td><%=org.role.name%></td>
                 <% } else { %>
-                <td>Unknown</td>
+                    <td>
+                        Requested <br> <%= locals.moment(org.requestDate).format('DD/MM/YYYY') %>
+                    </td>
                 <% } %>
-                <td><a href="/users/<%=user.id%>/organisations/<%=org.id%>/edit-permission"> Edit permission level</a> </td>
+                <% if (org.requestDate) { %>
+                <td><a href="/access-requests/<%=org.requestId%>/review">Review request</a> </td>
+                <% } else { %>
+                <td><a href="/users/<%=user.id%>/organisations/<%=org.id%>/edit-permission">Edit permission level</a> </td>
+                <% } %>
             </tr>
         <%}%>
     </tbody>
