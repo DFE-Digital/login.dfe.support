@@ -37,7 +37,7 @@ if (upperWindowBound < pages) {
         <p>Showing <%= lowerEndRecords %> - <%= upperEndRecords %> of <b><%= locals.totalNumberOfResults %></b> rows</p>
     </div>
     <div class="col-6">
-        <% if (locals.numberOfPages > 1) { %>
+        <% if (locals.numberOfPages >= 1) { %>
         <div class="pagination">
             <ul>
                 <% for (let i = 0; i < pageBracketLeft.length; i++) { %>

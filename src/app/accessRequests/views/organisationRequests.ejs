@@ -20,14 +20,14 @@ const paginationModel = {
         { key: 'criteria', value: locals.criteria },
         { key: 'sort', value: locals.sortBy },
         { key: 'sortDir', value: locals.sortOrder },
-        { key: 'showFilters', value: locals.showFilters }
+        { key: 'showFilters', value: locals.showFilters },
+        { key: 'status', value: locals.requestStatuses.reduce((result, element) => {
+                if(element.isSelected) {
+                    result.push(element.id);
+                }
+                return result;
+            }, [])},
     ]
-}
-if (requestStatuses && requestStatuses.length > 0) {
-    const selected = requestStatuses.filter(x => x.isSelected);
-    selected.forEach((item) => {
-        paginationModel.data.push({ key: 'status', value: item.id });
-    });
 }
 %>
 
