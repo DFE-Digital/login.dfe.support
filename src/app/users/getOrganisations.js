@@ -62,7 +62,7 @@ const getPendingRequests = async (userId, correlationId) => {
 const action = async (req, res) => {
   const user = await getUserDetails(req);
   const organisationDetails = await getOrganisations(user.id, req.id);
-  const organisationRequests = await getPendingRequests(user.id, req.id);
+  const organisationRequests = !user.id.startsWith('inv-') ? await getPendingRequests(user.id, req.id) : [];
   const allOrgs = organisationDetails.concat(organisationRequests);
   const sortedOrgs = sortBy(allOrgs, 'name');
 
