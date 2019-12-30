@@ -4,7 +4,7 @@ jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/search');
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
-const { addInvitationOrganisation, getOrganisationById } = require('./../../../src/infrastructure/organisations');
+const { addInvitationOrganisation, getOrganisationById, getPendingRequestsAssociatedWithUser } = require('./../../../src/infrastructure/organisations');
 const getConfirmAssociateOrganisation = require('./../../../src/app/users/getConfirmAssociateOrganisation');
 const { getSearchDetailsForUserById } = require('./../../../src/infrastructure/search');
 
@@ -45,6 +45,18 @@ describe('when confirming new organisation association', () => {
         },
       ]
     });
+    getPendingRequestsAssociatedWithUser.mockReset();
+    getPendingRequestsAssociatedWithUser.mockReturnValue([{
+      id: 'requestId',
+      org_id: 'organisationId',
+      org_name: 'organisationName',
+      user_id: 'user2',
+      status: {
+        id: 0,
+        name: 'pending',
+      },
+      created_date: '2019-08-12',
+    }]);
     res.mockResetAll();
 
     addInvitationOrganisation.mockReset();
@@ -60,6 +72,14 @@ describe('when confirming new organisation association', () => {
     expect(addInvitationOrganisation.mock.calls[0][1]).toBe('org1');
     expect(addInvitationOrganisation.mock.calls[0][2]).toBe(10000);
     expect(addInvitationOrganisation.mock.calls[0][3]).toBe('correlationId');
+  });
+
+  it('then it should get the users pending requests', async () => {
+    await getConfirmAssociateOrganisation(req, res);
+
+    expect(getPendingRequestsAssociatedWithUser.mock.calls).toHaveLength(1);
+    expect(getPendingRequestsAssociatedWithUser.mock.calls[0][0]).toBe('user1');
+    expect(getPendingRequestsAssociatedWithUser.mock.calls[0][1]).toBe('correlationId');
   });
 
   it('then it should redirect back to users profile view', async () => {
