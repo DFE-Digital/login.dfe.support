@@ -217,7 +217,7 @@ describe('when selecting a permission level', () => {
       selectedLevel: 0,
       title: 'Select permission level - DfE Sign-in',
       validationMessages: {
-        reason: 'Request already actioned by john.doe@email.com'
+        reason: 'Request already actioned by jane.doe@email.com'
       },
     });
   });
