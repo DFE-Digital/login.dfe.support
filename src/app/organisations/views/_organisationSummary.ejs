@@ -29,6 +29,22 @@
                 <dd><%= organisation.ukprn %></dd>
             <% } %>
 
+            <% if (organisation.establishmentNumber) { %>
+                <dt class="label">Establishment number:</dt>
+                <dd><%= organisation.establishmentNumber %></dd>
+            <% } %>
+
+            <% if (organisation.localAuthority) { %>
+                <dt class="label">Local authority:</dt>
+                <dd>
+                    <% if (organisation.localAuthority.name && organisation.localAuthority.code) { %>
+                        <a href="/organisations/<%= organisation.localAuthority.id %>/users"><%= organisation.localAuthority.name %></a> (<%= organisation.localAuthority.code %>)
+                    <% } else { %>
+                        Unknown
+                    <% } %>
+                </dd>
+            <% } %>
+
             <dt class="label">Address:</dt>
             <dd><%= organisation.address || 'Not Recorded' %></dd>
 
