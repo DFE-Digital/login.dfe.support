@@ -1,5 +1,5 @@
 const logger = require('./../../infrastructure/logger');
-const { addInvitationOrganisation, setUserAccessToOrganisation, getOrganisationById } = require('./../../infrastructure/organisations');
+const { addInvitationOrganisation, setUserAccessToOrganisation, getOrganisationById, getPendingRequestsAssociatedWithUser, updateRequestById } = require('./../../infrastructure/organisations');
 const { getSearchDetailsForUserById, updateIndex } = require('./../../infrastructure/search');
 const { waitForIndexToUpdate } = require('./utils');
 
@@ -26,6 +26,13 @@ const addOrganisationToUser = async (uid, req) => {
   const permissionId = req.session.user.permission;
 
   await setUserAccessToOrganisation(uid, organisationId, permissionId, req.id);
+
+  const pendingOrgRequests = await getPendingRequestsAssociatedWithUser(uid, req.id);
+  const requestForOrg = pendingOrgRequests.find(x => x.org_id === organisationId);
+  if (requestForOrg) {
+    // mark request as approved if outstanding for same org
+    await updateRequestById(requestForOrg.id, 1, req.user.sub, null, Date.now(), req.id);
+  }
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) added organisation ${organisationName} (id: ${organisationId}) to user for ${req.session.user.email} (id: ${uid})`, {
     type: 'support',
