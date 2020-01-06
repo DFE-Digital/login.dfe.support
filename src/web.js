@@ -97,7 +97,7 @@ const init = async () => {
   app.use(cookieParser());
   app.use(sanitization({
     sanitizer: (key, value) => {
-      const fieldToNotSanitize = ['email-subject', 'email-contents','criteria', 'email', 'firstName', 'lastName'];
+      const fieldToNotSanitize = ['email-subject', 'email-contents','criteria', 'email', 'firstName', 'lastName', 'reason'];
       if (fieldToNotSanitize.find(x => x.toLowerCase() === key.toLowerCase())) {
         return value;
       }
