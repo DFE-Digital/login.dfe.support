@@ -32,7 +32,7 @@ const validate = async (req) => {
   if (model.reason.length > 1000) {
     model.validationMessages.reason = 'Reason cannot be longer than 1000 characters';
   } else if (model.request.approverEmail) {
-    model.validationMessages.reason = `Request already actioned by ${model.request.usersEmail}`
+    model.validationMessages.reason = `Request already actioned by ${model.request.approverEmail}`
   }
   return model;
 };
