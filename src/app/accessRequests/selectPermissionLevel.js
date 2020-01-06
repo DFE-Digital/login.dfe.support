@@ -69,16 +69,20 @@ const post = async (req, res) => {
       const newOrgDetails = {
         id: organisation.id,
         name: organisation.name,
-        urn: organisation.urn || undefined,
-        uid: organisation.uid || undefined,
-        establishmentNumber: organisation.establishmentNumber || undefined,
+        urn: organisation.URN || undefined,
+        uid: organisation.UID || undefined,
+        UKPRN: organisation.UKPRN || undefined,
+        establishmentNumber: organisation.EstablishmentNumber || undefined,
         laNumber: organisation.localAuthority ? organisation.localAuthority.code : undefined,
-        categoryId: organisation.category != null ? organisation.category.id : undefined,
-        statusId: organisation.status != null ? organisation.status.id : undefined,
-        roleId: 0,
+        categoryId: organisation.Category,
+        statusId: organisation.Status,
+        roleId: model.selectedLevel,
       };
       currentOrganisationDetails.push(newOrgDetails);
-      await updateIndex(model.request.user_id, currentOrganisationDetails, null, req.id);
+      const patchBody = {
+        organisations: currentOrganisationDetails,
+      };
+      await updateIndex(model.request.user_id, patchBody, null, req.id);
       await waitForIndexToUpdate(model.request.user_id, updated => updated.organisations.length === currentOrganisationDetails.length);
     }
 
