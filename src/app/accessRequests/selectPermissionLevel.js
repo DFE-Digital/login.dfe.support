@@ -42,7 +42,7 @@ const validate = async (req) => {
   } else if (validPermissionLevels.find(x => x === model.selectedLevel) === undefined) {
     model.validationMessages.selectedLevel = 'A permission level must be selected';
   } else if (model.request.approverEmail) {
-    model.validationMessages.reason = `Request already actioned by ${model.request.usersEmail}`
+    model.validationMessages.reason = `Request already actioned by ${model.request.approverEmail}`
   }
 
   return model;
