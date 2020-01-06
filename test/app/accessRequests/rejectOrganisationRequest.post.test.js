@@ -127,7 +127,7 @@ describe('when rejecting an organisation request', () => {
       reason: 'reason for rejection',
       title: 'Reason for rejection - DfE Sign-in',
       validationMessages: {
-        reason: 'Request already actioned by john.doe@email.com'
+        reason: 'Request already actioned by john.approver@email.com'
       }
     });
   });

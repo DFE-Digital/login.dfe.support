@@ -53,13 +53,8 @@ describe('when selecting a permission level', () => {
     getOrganisationById.mockReturnValue({
       id: 'org1',
       name: 'organisation two',
-      category: {
-        id: '001',
-        name: 'Establishment',
-      },
-      status: {
-        id: 1,
-      },
+      Category: '001',
+      Status: 1,
     });
 
     getSearchDetailsForUserById.mockReset();
@@ -217,7 +212,7 @@ describe('when selecting a permission level', () => {
       selectedLevel: 0,
       title: 'Select permission level - DfE Sign-in',
       validationMessages: {
-        reason: 'Request already actioned by john.doe@email.com'
+        reason: 'Request already actioned by jane.doe@email.com'
       },
     });
   });
@@ -249,8 +244,8 @@ describe('when selecting a permission level', () => {
 
     expect(updateIndex.mock.calls).toHaveLength(1);
     expect(updateIndex.mock.calls[0][0]).toBe('userId');
-    expect(updateIndex.mock.calls[0][1]).toEqual(
-      [{
+    expect(updateIndex.mock.calls[0][1]).toEqual({
+      organisations: [{
         categoryId: '001',
         establishmentNumber: undefined,
         id: 'org1',
@@ -261,7 +256,7 @@ describe('when selecting a permission level', () => {
         uid: undefined,
         urn: undefined,
       }]
-    );
+    });
   });
 
   it('then it should should audit approved org request', async () => {
