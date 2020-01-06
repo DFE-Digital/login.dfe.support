@@ -37,7 +37,7 @@
             <% if (organisation.localAuthority) { %>
                 <dt class="label">Local authority:</dt>
                 <dd>
-                    <% if (organisation.localAuthority.name && organisation.localAuthority.code) { %>
+                    <% if (organisation.localAuthority.name && organisation.localAuthority.code && organisation.localAuthority.id) { %>
                         <a href="/organisations/<%= organisation.localAuthority.id %>/users"><%= organisation.localAuthority.name %></a> (<%= organisation.localAuthority.code %>)
                     <% } else { %>
                         Unknown
