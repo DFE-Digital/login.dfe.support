@@ -273,7 +273,7 @@ const reactivateInvite = async (id, reason, correlationId) => {
   }
 };
 
-const createInvite = async (givenName, familyName, email, digipassSerialNumber, clientId, redirectUri, correlationId, overrides) => {
+const createInvite = async (givenName, familyName, email, digipassSerialNumber, clientId, redirectUri, correlationId, overrides, permission) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   const body = {
@@ -286,6 +286,7 @@ const createInvite = async (givenName, familyName, email, digipassSerialNumber, 
     },
     selfStarted: false,
     overrides,
+    isApprover : (permission && permission === 10000)? true: false,
   };
   if (digipassSerialNumber) {
     body.device = {
