@@ -27,7 +27,7 @@ const postConfirmNewUser = async (req, res) => {
 
 
 
-  const invitationId = await createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email, null, clientId, redirectUri, req.id, emailOverrides);
+  const invitationId = await createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email, null, clientId, redirectUri, req.id, emailOverrides, req.session.user.permission);
 
   if (req.session.user.organisationId) {
     await addInvitationOrganisation(invitationId, req.session.user.organisationId, req.session.user.permission || 0, req.id);
