@@ -1,5 +1,5 @@
 const { createInvite } = require('./../../infrastructure/directories');
-const { addInvitationOrganisation } = require('./../../infrastructure/organisations');
+const { addInvitationOrganisation, getOrganisationById } = require('./../../infrastructure/organisations');
 const { createIndex } = require('./../../infrastructure/search');
 const { waitForIndexToUpdate } = require('./utils');
 const logger = require('./../../infrastructure/logger');
@@ -17,17 +17,19 @@ const postConfirmNewUser = async (req, res) => {
     emailOverrides.body = req.body['email-contents'];
   }
 
-  if(req.body['redirect-choice'] !== 'Approve') {
+  if (req.body['redirect-choice'] !== 'Approve') {
     clientId = clientOverrides[0];
     redirectUri = clientOverrides[1];
   } else {
     clientId = 'services';
     redirectUri = `${config.hostingEnvironment.servicesUrl}/auth/cb`;
   }
+  let organisation = null;
+  if (req.session.user.organisationId){
+    organisation = await getOrganisationById(req.session.user.organisationId, req.id);
+  }
 
-  const organisation = await getOrganisationById(req.session.user.organisationId, req.id);
-
-  const invitationId = await createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email, null, clientId, redirectUri, req.id, emailOverrides, req.session.user.permission, organisation.name);
+  const invitationId = await createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email, null, clientId, redirectUri, req.id, emailOverrides, req.session.user.permission, organisation?organisation.name:null);
 
   if (req.session.user.organisationId) {
     await addInvitationOrganisation(invitationId, req.session.user.organisationId, req.session.user.permission || 0, req.id);
