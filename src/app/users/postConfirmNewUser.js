@@ -25,9 +25,9 @@ const postConfirmNewUser = async (req, res) => {
     redirectUri = `${config.hostingEnvironment.servicesUrl}/auth/cb`;
   }
 
+  const organisation = await getOrganisationById(req.session.user.organisationId, req.id);
 
-
-  const invitationId = await createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email, null, clientId, redirectUri, req.id, emailOverrides, req.session.user.permission);
+  const invitationId = await createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email, null, clientId, redirectUri, req.id, emailOverrides, req.session.user.permission, organisation.name);
 
   if (req.session.user.organisationId) {
     await addInvitationOrganisation(invitationId, req.session.user.organisationId, req.session.user.permission || 0, req.id);
