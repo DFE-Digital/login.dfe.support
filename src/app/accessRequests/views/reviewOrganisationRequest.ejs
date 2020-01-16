@@ -45,7 +45,7 @@
                     Organisation
                 </dt>
                 <dd class="app-check-your-answers__answer">
-                    <%= locals.request.org_name %>
+                    <%= locals.request.org_name %> <% if (locals.request.uniqueOrgId){ %> <br/>( <%=locals.request.uniqueOrgId%> )<%}%>
                 </dd>
             </div>
 

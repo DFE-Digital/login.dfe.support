@@ -83,6 +83,7 @@ const putUserInOrganisation = async (req) => {
 
 const getAndMapOrgRequest = async (req) => {
   const request = await organisations.getRequestById(req.params.rid, req.id);
+  const organisation = await organisations.getOrganisationByIdV2(request.org_id, req.id);
   const user = await directories.getUser(request.user_id);
   let mappedRequest;
   if (request) {
@@ -91,7 +92,10 @@ const getAndMapOrgRequest = async (req) => {
     const usersEmail = user ? user.email : '';
     const approverName = approver ? `${approver.given_name} ${approver.family_name}` : '';
     const approverEmail = approver ? approver.email : '';
-    mappedRequest = Object.assign({usersName, usersEmail, approverName, approverEmail }, request);
+    const uniqueOrgId = organisation.urn?'URN:'+organisation.urn:organisation.ukprn?'UKPRN:'+organisation.ukprn:organisation.uid?
+        'UID:'+organisation.uid:organisation.legacyId?'Legacy Id:'+organisation.legacyId:organisation.establishmentNumber?
+            'Establishment Number:'+organisation.establishmentNumber:null;
+    mappedRequest = Object.assign({usersName, usersEmail, approverName, approverEmail, uniqueOrgId }, request);
   }
   return mappedRequest;
 };
