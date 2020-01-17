@@ -75,6 +75,11 @@ const post = async (req, res) => {
   if (!(selectedRoles instanceof Array)) {
     selectedRoles = [req.body.role];
   }
+
+  if(!haveRolesBeenUpdated(req, currentService, selectedRoles)){
+    return res.redirect(`/users/${userId}/services`);
+  }
+
   req.session.user.services[currentService].roles = selectedRoles;
 
   const policyValidationResult = await policyEngine.validate(userId.startsWith('inv-') ? undefined : userId, req.params.orgId, req.params.sid, selectedRoles, req.id);
@@ -91,6 +96,15 @@ const post = async (req, res) => {
     return res.redirect(`/users/${req.params.uid}/organisations/${req.params.orgId}/confirm`);
   }
 };
+
+const haveRolesBeenUpdated= (req, currentService, selectedRoles) => {
+  if(req.session.user.services
+    && req.session.user.services[currentService].roles
+    && req.session.user.services[currentService].roles.length === selectedRoles.length){
+      return false;
+  }
+  return true;
+}
 
 module.exports = {
   get,
