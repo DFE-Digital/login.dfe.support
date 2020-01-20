@@ -18,7 +18,7 @@ const validate = async (req) => {
   const request = await getAndMapOrgRequest(req);
   const model = {
     title: 'Review request - DfE Sign-in',
-    backLink: '/access-requests',
+    backLink: true,
     cancelLink: '/access-requests',
     request,
     selectedResponse: req.body.selectedResponse,
