@@ -24,7 +24,7 @@ describe('when selecting the roles for a service', () => {
           services: [
             {
               serviceId: 'service1',
-              roles: [],
+              roles: [{ 0: "somerole"}],
             }
           ]
         },
@@ -46,11 +46,11 @@ describe('when selecting the roles for a service', () => {
     req.session.user.services = [
       {
         serviceId: 'service1',
-        roles: [],
+        roles: [ { 0: "somedifferentrole"}],
       },
       {
         serviceId: 'service2',
-        roles: [],
+        roles: [{ 0: "somedifferentrole"}],
       }
     ];
     await postAssociateRoles(req, res);
