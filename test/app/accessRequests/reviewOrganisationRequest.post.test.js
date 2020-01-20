@@ -98,7 +98,7 @@ describe('when reviewing an organisation request', () => {
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/reviewOrganisationRequest');
     expect(res.render.mock.calls[0][1]).toEqual({
-      backLink: '/access-requests',
+      backLink: true,
       cancelLink: '/access-requests',
       csrfToken: 'token',
       request: {
@@ -154,7 +154,7 @@ describe('when reviewing an organisation request', () => {
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/reviewOrganisationRequest');
     expect(res.render.mock.calls[0][1]).toEqual({
-      backLink: '/access-requests',
+      backLink: true,
       cancelLink: '/access-requests',
       csrfToken: 'token',
       request: {
