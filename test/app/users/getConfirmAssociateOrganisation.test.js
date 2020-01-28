@@ -8,10 +8,17 @@ const { addInvitationOrganisation, getOrganisationById, getPendingRequestsAssoci
 const getConfirmAssociateOrganisation = require('./../../../src/app/users/getConfirmAssociateOrganisation');
 const { getSearchDetailsForUserById } = require('./../../../src/infrastructure/search');
 
+jest.mock('login.dfe.notifications.client');
+const notificationClient = require('login.dfe.notifications.client');
+
 const res = getResponseMock();
 
 describe('when confirming new organisation association', () => {
   let req;
+  const expectedEmailAddress = 'test@test.com';
+  const expectedFirstName = 'test';
+  const expectedLastName = 'name';
+  const expectedOrgName = 'Organisation One';
 
   beforeEach(() => {
     req = getRequestMock({
@@ -20,6 +27,9 @@ describe('when confirming new organisation association', () => {
       },
       session: {
         user: {
+          email: expectedEmailAddress,
+          firstName: expectedFirstName,
+          lastName: expectedLastName,
           organisationId: 'org1',
           organisationName: 'Organisation One',
           permission: 10000,
@@ -60,6 +70,11 @@ describe('when confirming new organisation association', () => {
     res.mockResetAll();
 
     addInvitationOrganisation.mockReset();
+
+    sendUserAddedToOrganisationStub = jest.fn();
+    notificationClient.mockReset().mockImplementation(() => ({
+      sendUserAddedToOrganisation: sendUserAddedToOrganisationStub,
+    }));
   });
 
   it('then it should add org to invitation if request for invitation', async () => {
@@ -87,5 +102,17 @@ describe('when confirming new organisation association', () => {
 
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe('/users/user1/services');
+  });
+
+  it('then it should send an email notification to user', async () => {
+    await getConfirmAssociateOrganisation(req, res);
+
+    expect(sendUserAddedToOrganisationStub.mock.calls).toHaveLength(1);
+
+    expect(sendUserAddedToOrganisationStub.mock.calls[0][0]).toBe(expectedEmailAddress);
+    expect(sendUserAddedToOrganisationStub.mock.calls[0][1]).toBe(expectedFirstName);
+    expect(sendUserAddedToOrganisationStub.mock.calls[0][2]).toBe(expectedLastName);
+    expect(sendUserAddedToOrganisationStub.mock.calls[0][3]).toBe(expectedOrgName);
+  
   });
 });

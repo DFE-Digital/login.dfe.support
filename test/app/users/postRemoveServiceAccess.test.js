@@ -21,11 +21,21 @@ const { getRequestMock, getResponseMock } = require('./../../utils');
 const { getServiceById } = require('./../../../src/infrastructure/applications');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../../src/infrastructure/organisations');
 const { removeServiceFromInvitation, removeServiceFromUser } = require('./../../../src/infrastructure/access');
+
+jest.mock('login.dfe.notifications.client');
+const notificationClient = require('login.dfe.notifications.client');
+
 const res = getResponseMock();
 
 describe('when removing access to a service', () => {
   let req;
   let postRemoveService;
+  let organisationName = ['Great Big School','Little Tiny School'];
+
+  const expectedEmailAddress = 'test@test.com';
+  const expectedFirstName = 'test';
+  const expectedLastName = 'name';
+  const expectedServiceName = 'service name';
 
   beforeEach(() => {
     req = getRequestMock({
@@ -55,13 +65,13 @@ describe('when removing access to a service', () => {
       {
         organisation: {
           id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
-          name: 'Great Big School'
+          name: organisationName[0]
         },
       },
       {
         organisation: {
           id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
-          name: 'Little Tiny School'
+          name: organisationName[1]
         },
       },
     ]);
@@ -70,13 +80,13 @@ describe('when removing access to a service', () => {
       {
         organisation: {
           id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
-          name: 'Great Big School'
+          name: organisationName[0]
         },
       },
       {
         organisation: {
           id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
-          name: 'Little Tiny School'
+          name: organisationName[1]
         },
       },
     ]);
@@ -91,6 +101,11 @@ describe('when removing access to a service', () => {
     });
 
     postRemoveService = require('./../../../src/app/users/removeServiceAccess').post;
+
+    sendUserPermissionChangedStub = jest.fn();
+    notificationClient.mockReset().mockImplementation(() => ({
+      sendUserPermissionChanged: sendUserPermissionChangedStub,
+    }));
   });
 
   it('then it should redirect to user details if no user in session', async () => {
@@ -155,8 +170,21 @@ describe('when removing access to a service', () => {
   it('then a flash message is shown to the user', async () => {
     await postRemoveService(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(1);
+    expect(res.flash.mock.calls).toHaveLength(2);
     expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe('service name has been removed for Great Big School');
+    expect(res.flash.mock.calls[0][1]).toBe(`Email notification of service service name has been removed for  ${organisationName[0]}, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
+  });
+
+  it('then it should send an email notification to user', async () => {
+    await postRemoveService(req, res);
+
+    expect(sendUserServiceRemovedStub.mock.calls).toHaveLength(1);
+
+    expect(sendUserServiceRemovedStub.mock.calls[0][0]).toBe(expectedEmailAddress);
+    expect(sendUserServiceRemovedStub.mock.calls[0][1]).toBe(expectedFirstName);
+    expect(sendUserServiceRemovedStub.mock.calls[0][2]).toBe(expectedLastName);
+    expect(sendUserServiceRemovedStub.mock.calls[0][3]).toBe(expectedServiceName);
+    expect(sendUserServiceRemovedStub.mock.calls[0][4]).toBe(organisationName[0]);
+  
   });
 });

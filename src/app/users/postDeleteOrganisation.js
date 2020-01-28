@@ -1,4 +1,6 @@
 const logger = require('./../../infrastructure/logger');
+const config = require('./../../infrastructure/config');
+const NotificationClient = require('login.dfe.notifications.client');
 const { deleteUserOrganisation, deleteInvitationOrganisation } = require('./../../infrastructure/organisations');
 const { getAllServicesForUserInOrg } = require('./utils');
 const { removeServiceFromInvitation, removeServiceFromUser } = require('./../../infrastructure/access');
@@ -9,7 +11,7 @@ const deleteInvitationOrg = async (uid, req) => {
   const organisationId = req.params.id;
   await deleteInvitationOrganisation(invitationId, organisationId);
 };
-
+ 
 const deleteUserOrg = async (uid, req) => {
   const organisationId = req.params.id;
   await deleteUserOrganisation(uid, organisationId);
@@ -32,6 +34,11 @@ const postDeleteOrganisation = async (req, res) => {
       await removeServiceFromUser(uid, service.id, organisationId, req.id);
     }
     await deleteUserOrg(uid, req);
+    const notificationClient = new NotificationClient({
+      connectionString: config.notifications.connectionString,
+    });
+    await notificationClient.sendUserRemovedFromOrganisation(req.session.user.email, req.session.user.firstName, req.session.user.lastName, req.session.org.name);
+    res.flash('info', `Email notification of user been removed from  ${req.session.org.name}, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
   }
 
   //patch search index
