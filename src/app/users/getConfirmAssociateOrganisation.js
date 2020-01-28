@@ -1,4 +1,6 @@
 const logger = require('./../../infrastructure/logger');
+const config = require('./../../infrastructure/config');
+const NotificationClient = require('login.dfe.notifications.client');
 const { addInvitationOrganisation, setUserAccessToOrganisation, getOrganisationById, getPendingRequestsAssociatedWithUser, updateRequestById } = require('./../../infrastructure/organisations');
 const { getSearchDetailsForUserById, updateIndex } = require('./../../infrastructure/search');
 const { waitForIndexToUpdate } = require('./utils');
@@ -55,6 +57,11 @@ const getConfirmAssociateOrganisation = async (req, res) => {
     await addOrganisationToInvitation(uid, req);
   } else {
     await addOrganisationToUser(uid, req);
+    const notificationClient = new NotificationClient({
+      connectionString: config.notifications.connectionString,
+    });
+    await notificationClient.sendUserAddedToOrganisation(req.session.user.email, req.session.user.firstName, req.session.user.lastName, req.session.user.organisationName);
+    res.flash('info', `Email notification of user associated with ${req.session.user.organisationName} sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
   }
 
   // patch search with new org
@@ -77,8 +84,7 @@ const getConfirmAssociateOrganisation = async (req, res) => {
     await waitForIndexToUpdate(uid, (updated) => updated.organisations.length === organisations.length)
   }
 
-  const permissionName = req.session.user.permission === 10000 ? 'approver' : 'end user';
-  res.flash('info', `${req.session.user.firstName} ${req.session.user.lastName} now has ${permissionName} access to ${req.session.user.organisationName}`);
+  
   return res.redirect(`/users/${uid}/services`);
 };
 

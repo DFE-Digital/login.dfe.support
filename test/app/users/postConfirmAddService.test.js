@@ -13,11 +13,18 @@ jest.mock('./../../../src/infrastructure/access', () => {
 const { getRequestMock, getResponseMock } = require('./../../utils');
 const { addUserService, addInvitationService, updateInvitationService, updateUserService } = require('./../../../src/infrastructure/access');
 const logger = require('./../../../src/infrastructure/logger');
+
+jest.mock('login.dfe.notifications.client');
+const notificationClient = require('login.dfe.notifications.client');
 const res = getResponseMock();
 
 describe('when adding new services to a user', () => {
   let req;
   let postConfirmAddService;
+
+  const expectedEmailAddress = 'test@test.com';
+  const expectedFirstName = 'test';
+  const expectedLastName = 'name';
 
   beforeEach(() => {
     req = getRequestMock({
@@ -46,6 +53,11 @@ describe('when adding new services to a user', () => {
     addUserService.mockReset();
 
     postConfirmAddService = require('./../../../src/app/users/confirmAddService').post;
+    sendServiceAddedStub = jest.fn();
+    notificationClient.mockReset().mockImplementation(() => ({
+      sendServiceAdded: sendServiceAddedStub,
+    }));
+   
   });
 
   it('then it should redirect to user details if no user in session', async () => {
@@ -155,17 +167,27 @@ describe('when adding new services to a user', () => {
     req.session.user.isAddService = true;
     await postConfirmAddService(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(1);
+    expect(res.flash.mock.calls).toHaveLength(2);
     expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`Services successfully added`)
+    expect(res.flash.mock.calls[0][1]).toBe(`Email notification of added services, sent to test name`)
   });
 
   it('then a flash message is displayed showing service has been edited if isAddService is false', async () => {
     await postConfirmAddService(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(1);
+    expect(res.flash.mock.calls).toHaveLength(2);
     expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`${req.session.user.services[0].name} updated successfully`)
+    expect(res.flash.mock.calls[0][1]).toBe(`Email notification of added services, sent to test name`)
   });
 
+  it('then it should send an email notification to user', async () => {
+    await postConfirmAddService(req, res);
+
+    expect(sendServiceAddedStub.mock.calls).toHaveLength(1);
+
+    expect(sendServiceAddedStub.mock.calls[0][0]).toBe(expectedEmailAddress);
+    expect(sendServiceAddedStub.mock.calls[0][1]).toBe(expectedFirstName);
+    expect(sendServiceAddedStub.mock.calls[0][2]).toBe(expectedLastName);
+  
+  });
 });

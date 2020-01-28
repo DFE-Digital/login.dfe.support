@@ -1,4 +1,6 @@
 const logger = require('./../../infrastructure/logger');
+const config = require('./../../infrastructure/config');
+const NotificationClient = require('login.dfe.notifications.client');
 const { setUserAccessToOrganisation, addInvitationOrganisation } = require('./../../infrastructure/organisations');
 const { getSearchDetailsForUserById, updateIndex } = require('./../../infrastructure/search');
 
@@ -40,11 +42,18 @@ const postEditPermissions = async (req, res) => {
     model.csrfToken = req.csrfToken();
     return res.render('users/views/editPermissions', model);
   }
-  const uid = req.params.uid;
+  const uid = req.params.uid; 
+  const permissionName = model.selectedLevel === 10000 ? 'approver' : 'end user';
+  
   if (uid.startsWith('inv-')) {
     await editInvitationPermissions(uid, req, model);
   } else {
     await editUserPermissions(uid, req, model);
+    const notificationClient = new NotificationClient({
+      connectionString: config.notifications.connectionString,
+    });    
+    await notificationClient.sendUserPermissionChanged(req.session.user.email, req.session.user.firstName, req.session.user.lastName, model.organisationName, permissionName);
+    res.flash('info', `Email notification of user permission changed to ${permissionName}, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
   }
 
   // patch search index
@@ -65,7 +74,6 @@ const postEditPermissions = async (req, res) => {
 
   const fullname = model.userFullName;
   const organisationName = model.organisationName;
-  const permissionName = model.selectedLevel === 10000 ? 'approver' : 'end user';
   logger.audit(`${req.user.email} (id: ${req.user.sub}) edited permission level to ${permissionName} for organisation ${organisationName} (id: ${req.params.id}) for user ${req.session.user.email} (id: ${uid})`, {
     type: 'support',
     subType: 'user-org-permission-edited',
