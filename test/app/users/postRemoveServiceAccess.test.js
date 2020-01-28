@@ -102,9 +102,9 @@ describe('when removing access to a service', () => {
 
     postRemoveService = require('./../../../src/app/users/removeServiceAccess').post;
 
-    sendUserPermissionChangedStub = jest.fn();
+    sendUserServiceRemovedStub = jest.fn();
     notificationClient.mockReset().mockImplementation(() => ({
-      sendUserPermissionChanged: sendUserPermissionChangedStub,
+      sendUserServiceRemoved: sendUserServiceRemovedStub,
     }));
   });
 
