@@ -6,8 +6,8 @@ const get = async (req, res) => {
   return res.render('accessRequests/views/reviewOrganisationRequest', {
     csrfToken: req.csrfToken(),
     title: 'Review request - DfE Sign-in',
-    backLink: '/access-requests',
-    cancelLink: '/access-requests',
+    backLink: true,
+    cancelLink: request._cancelLink,
     request,
     selectedResponse: null,
     validationMessages: {},
