@@ -95,7 +95,8 @@ const getAndMapOrgRequest = async (req) => {
     const uniqueOrgId = organisation.urn?'URN:'+organisation.urn:organisation.ukprn?'UKPRN:'+organisation.ukprn:organisation.uid?
         'UID:'+organisation.uid:organisation.legacyId?'Legacy Id:'+organisation.legacyId:organisation.establishmentNumber?
             'Establishment Number:'+organisation.establishmentNumber:null;
-    mappedRequest = Object.assign({usersName, usersEmail, approverName, approverEmail, uniqueOrgId }, request);
+    const _cancelLink = req.headers.referer;
+    mappedRequest = Object.assign({usersName, usersEmail, approverName, approverEmail, uniqueOrgId, _cancelLink }, request);
   }
   return mappedRequest;
 };
