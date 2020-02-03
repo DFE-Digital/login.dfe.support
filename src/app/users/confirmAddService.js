@@ -1,5 +1,7 @@
 'use strict';
 const { getAllServices } = require('./../../infrastructure/applications');
+const config = require('./../../infrastructure/config');
+const NotificationClient = require('login.dfe.notifications.client');
 const { listRolesOfService, addInvitationService, addUserService, updateInvitationService, updateUserService } = require('./../../infrastructure/access');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 const logger = require('./../../infrastructure/logger');
@@ -60,6 +62,13 @@ const post = async (req, res) => {
       } else {
         req.session.user.isAddService ? await addUserService(uid, service.serviceId, organisationId, service.roles, req.id) : await updateUserService(uid, service.serviceId, organisationId, service.roles, req.id);
       }
+    }
+    if(req.session.user.services.length > 0 && !uid.startsWith('inv-')){
+      const notificationClient = new NotificationClient({
+        connectionString: config.notifications.connectionString,
+      });      
+      await notificationClient.sendServiceAdded(req.session.user.email, req.session.user.firstName, req.session.user.lastName);
+      res.flash('info', `Email notification of added services, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
     }
   }
 
