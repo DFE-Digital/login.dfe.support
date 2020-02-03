@@ -61,7 +61,7 @@ const getConfirmAssociateOrganisation = async (req, res) => {
       connectionString: config.notifications.connectionString,
     });
     await notificationClient.sendUserAddedToOrganisation(req.session.user.email, req.session.user.firstName, req.session.user.lastName, req.session.user.organisationName);
-    res.flash('info', `Email notification of user associated with ${req.session.user.organisationName} sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
+    res.flash('info', `${req.session.user.email} added to organisation`);
   }
 
   // patch search with new org
