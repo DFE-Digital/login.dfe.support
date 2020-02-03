@@ -8,6 +8,8 @@ jest.mock('./../../../src/infrastructure/organisations', () => {
 });
 jest.mock('./../../../src/infrastructure/search');
 
+jest.mock('login.dfe.notifications.client');
+const notificationClient = require('login.dfe.notifications.client');
 const { getRequestMock, getResponseMock } = require('./../../utils');
 const postDeleteOrganisation = require('./../../../src/app/users/postDeleteOrganisation');
 const { deleteInvitationOrganisation, deleteUserOrganisation } = require('./../../../src/infrastructure/organisations');
@@ -17,6 +19,10 @@ const res = getResponseMock();
 
 describe('when removing a users access to an organisation', () => {
   let req;
+  const expectedEmailAddress = 'logan@x-men.test';
+  const expectedFirstName = 'James';
+  const expectedLastName = 'Howlett';
+  const expectedOrgName = 'X-Men';
 
   beforeEach(() => {
     req = getRequestMock({
@@ -26,13 +32,13 @@ describe('when removing a users access to an organisation', () => {
       },
       session: {
         user: {
-          firstName: 'James',
-          lastName: 'Howlett',
-          email: 'logan@x-men.test',
+          firstName: expectedFirstName,
+          lastName: expectedLastName,
+          email: expectedEmailAddress,
         },
         org: {
           organisationId: 'org1',
-          name: 'X-Men',
+          name: expectedOrgName,
         },
       },
     });
@@ -49,6 +55,10 @@ describe('when removing a users access to an organisation', () => {
         },
       ]
     });
+    sendUserRemovedFromOrganisationStub = jest.fn();
+    notificationClient.mockReset().mockImplementation(() => ({
+      sendUserRemovedFromOrganisation: sendUserRemovedFromOrganisationStub,
+    }));
   });
 
   it('then it should delete org for invitation if request for invitation', async () => {
@@ -76,4 +86,17 @@ describe('when removing a users access to an organisation', () => {
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe(`/users/${req.params.uid}/organisations`);
   });
+
+  it('then it should send an email notification to user', async () => {
+    await postDeleteOrganisation(req, res);
+
+    expect(sendUserRemovedFromOrganisationStub.mock.calls).toHaveLength(1);
+
+    expect(sendUserRemovedFromOrganisationStub.mock.calls[0][0]).toBe(expectedEmailAddress);
+    expect(sendUserRemovedFromOrganisationStub.mock.calls[0][1]).toBe(expectedFirstName);
+    expect(sendUserRemovedFromOrganisationStub.mock.calls[0][2]).toBe(expectedLastName);
+    expect(sendUserRemovedFromOrganisationStub.mock.calls[0][3]).toBe(expectedOrgName);
+  
+  });
+
 });

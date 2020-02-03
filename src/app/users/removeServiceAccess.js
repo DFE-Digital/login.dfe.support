@@ -1,6 +1,8 @@
 'use strict';
 
 const logger = require('./../../infrastructure/logger');
+const config = require('./../../infrastructure/config');
+const NotificationClient = require('login.dfe.notifications.client');
 const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 const { getServiceById } = require('./../../infrastructure/applications');
@@ -45,6 +47,11 @@ const post = async (req, res) => {
     await removeServiceFromInvitation(uid.substr(4), serviceId, organisationId, req.id);
   } else {
     await removeServiceFromUser(uid, serviceId, organisationId, req.id);
+    const notificationClient = new NotificationClient({
+      connectionString: config.notifications.connectionString,
+    });
+    await notificationClient.sendUserServiceRemoved(req.session.user.email, req.session.user.firstName, req.session.user.lastName, service.name,organisationDetails.organisation.name);
+    res.flash('info', `Email notification of service ${service.name} has been removed for  ${organisationDetails.organisation.name}, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
   }
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) removed service ${service.name} for organisation id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`, {

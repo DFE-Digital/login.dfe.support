@@ -10,9 +10,15 @@ const loggerMockFactory = () => {
 const configMockFactory = (customConfig) => {
   return Object.assign({
     hostingEnvironment: {
-      agentKeepAlive: {},
+      agentKeepAlive: {
+        maxSockets: 123,
+        maxFreeSockets: 123,
+        timeout: 123,
+        keepAliveTimeout: 123,
+      },
       env: 'test-run',
     },
+   
     cache: {
       type: 'static',
     },
@@ -34,8 +40,11 @@ const configMockFactory = (customConfig) => {
     applications: {
       type: 'static',
     },
-    notifications:{
-      connectionString: 'test',
+    redis: {
+      url: 'http://orgs.api.test',
+    },
+    notifications: {
+      connectionString: '',
     },
     access:{
       type: 'static',

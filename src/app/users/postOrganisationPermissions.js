@@ -18,7 +18,7 @@ const validate = (req) => {
   return model;
 };
 
-const postOrganisationPermissions = (req, res) => {
+const postOrganisationPermissions = async (req, res) => {
   const model = validate(req);
 
   if (Object.keys(model.validationMessages).length > 0) {
