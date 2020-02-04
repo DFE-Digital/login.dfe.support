@@ -51,8 +51,7 @@ const post = async (req, res) => {
       connectionString: config.notifications.connectionString,
     });
     await notificationClient.sendUserServiceRemoved(req.session.user.email, req.session.user.firstName, req.session.user.lastName, service.name,organisationDetails.organisation.name);
-    res.flash('info', `Email notification of service ${service.name} has been removed for  ${organisationDetails.organisation.name}, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
-  }
+   }
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) removed service ${service.name} for organisation id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`, {
     type: 'support',
@@ -66,7 +65,7 @@ const post = async (req, res) => {
       newValue: undefined,
     }],
   });
-  res.flash('info', `${service.name} has been removed for ${organisationDetails.organisation.name}`);
+  res.flash('info', `${service.name} successfully removed`);
   return res.redirect(`/users/${uid}/services`)
 };
 

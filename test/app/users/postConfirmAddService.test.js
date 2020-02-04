@@ -25,6 +25,7 @@ describe('when adding new services to a user', () => {
   const expectedEmailAddress = 'test@test.com';
   const expectedFirstName = 'test';
   const expectedLastName = 'name';
+  const expectedService = 'Services';
 
   beforeEach(() => {
     req = getRequestMock({
@@ -167,17 +168,17 @@ describe('when adding new services to a user', () => {
     req.session.user.isAddService = true;
     await postConfirmAddService(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(2);
+    expect(res.flash.mock.calls).toHaveLength(1);
     expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`Email notification of added services, sent to test name`)
+    expect(res.flash.mock.calls[0][1]).toBe(`${expectedService} successfully added`)
   });
 
   it('then a flash message is displayed showing service has been edited if isAddService is false', async () => {
     await postConfirmAddService(req, res);
 
-    expect(res.flash.mock.calls).toHaveLength(2);
+    expect(res.flash.mock.calls).toHaveLength(1);
     expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe(`Email notification of added services, sent to test name`)
+    expect(res.flash.mock.calls[0][1]).toBe(`${req.session.user.services[0].name} updated successfully`)
   });
 
   it('then it should send an email notification to user', async () => {

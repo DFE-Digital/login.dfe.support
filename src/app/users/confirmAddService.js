@@ -68,7 +68,6 @@ const post = async (req, res) => {
         connectionString: config.notifications.connectionString,
       });      
       await notificationClient.sendServiceAdded(req.session.user.email, req.session.user.firstName, req.session.user.lastName);
-      res.flash('info', `Email notification of added services, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
     }
   }
 

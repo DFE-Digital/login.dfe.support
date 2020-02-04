@@ -53,8 +53,7 @@ const postEditPermissions = async (req, res) => {
       connectionString: config.notifications.connectionString,
     });    
     await notificationClient.sendUserPermissionChanged(req.session.user.email, req.session.user.firstName, req.session.user.lastName, model.organisationName, permissionName);
-    res.flash('info', `Email notification of user permission changed to ${permissionName}, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
-  }
+   }
 
   // patch search index
   const userSearchDetails = await getSearchDetailsForUserById(uid);
@@ -86,7 +85,7 @@ const postEditPermissions = async (req, res) => {
       newValue: permissionName,
     }],
   });
-  res.flash('info', `${fullname} now has ${permissionName} access to ${organisationName} `);
+  res.flash('info', `${req.session.user.email} now has ${permissionName} access`);
   return res.redirect(`/users/${uid}/organisations`);
 };
 
