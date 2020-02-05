@@ -38,7 +38,6 @@ const postDeleteOrganisation = async (req, res) => {
       connectionString: config.notifications.connectionString,
     });
     await notificationClient.sendUserRemovedFromOrganisation(req.session.user.email, req.session.user.firstName, req.session.user.lastName, req.session.org.name);
-    res.flash('info', `Email notification of user been removed from  ${req.session.org.name}, sent to ${req.session.user.firstName} ${req.session.user.lastName}`);
   }
 
   //patch search index
