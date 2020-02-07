@@ -61,7 +61,7 @@ const post = async (req, res) => {
   });
 
   res.flash('info', `Request rejected - an email has been sent to ${model.request.usersEmail}.`);
-  return res.redirect(`/access-requests`);
+  return res.redirect(`/users/${model.request.user_id}/organisations`);
 
 
 };
