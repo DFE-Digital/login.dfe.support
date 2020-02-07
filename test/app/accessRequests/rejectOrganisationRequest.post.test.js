@@ -199,6 +199,6 @@ describe('when rejecting an organisation request', () => {
     await post(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('/access-requests');
+    expect(res.redirect.mock.calls[0][0]).toBe('/users/userId/organisations');
   });
 });
