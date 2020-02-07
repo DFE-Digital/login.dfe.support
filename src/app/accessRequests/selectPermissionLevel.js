@@ -110,7 +110,7 @@ const post = async (req, res) => {
   }
 
   res.flash('info', `Request approved - an email has been sent to ${model.request.usersEmail}. You can now add services for this user.`);
-  return res.redirect('/access-requests');
+  return res.redirect(`/users/${model.request.user_id}/organisations`);
 };
 
 module.exports = {
