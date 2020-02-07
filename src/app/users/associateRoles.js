@@ -100,10 +100,10 @@ const post = async (req, res) => {
 
 const haveRolesBeenUpdated= (req, currentService, selectedRoles) => {
   if(req.session.user.services
-    && req.session.user.services[currentService].roles){
+    && (req.session.user.services[currentService].roles && req.session.user.services[currentService].roles.length > 0)){
       return _.isEqual(req.session.user.services[currentService].roles.sort(),selectedRoles.sort());;
   }
-  return true;
+  return false;
 }
 
 module.exports = {
