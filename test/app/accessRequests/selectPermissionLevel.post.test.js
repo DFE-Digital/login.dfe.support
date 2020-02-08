@@ -34,6 +34,7 @@ describe('when selecting a permission level', () => {
       },
       params: {
         orgId: 'org1',
+        from: 'organisation'
       },
       body: {
         selectedLevel: 0,
@@ -113,6 +114,7 @@ describe('when selecting a permission level', () => {
         usersEmail: 'john.doe@email.com',
         usersName: 'John Doe',
       },
+      requestFrom: 'organisation',
       selectedLevel: undefined,
       title: 'Select permission level - DfE Sign-in',
       validationMessages: {
@@ -151,6 +153,7 @@ describe('when selecting a permission level', () => {
         usersEmail: 'john.doe@email.com',
         usersName: 'John Doe',
       },
+      requestFrom: 'organisation',
       selectedLevel: 1000000,
       title: 'Select permission level - DfE Sign-in',
       validationMessages: {
@@ -173,6 +176,7 @@ describe('when selecting a permission level', () => {
       actioned_date: null,
       actioned_by: 'jane.doe@email.com',
       actioned_reason: null,
+      requestFrom: 'organisation',
       reason: '',
       status: {
         id: 1,
@@ -199,6 +203,7 @@ describe('when selecting a permission level', () => {
         org_id: 'org1',
         org_name: 'Org 1',
         reason: '',
+        requestFrom: 'organisation',
         status: {
           id: 1,
           name: 'approved',
@@ -209,6 +214,7 @@ describe('when selecting a permission level', () => {
         approverName: 'Jane Doe',
         approverEmail: 'jane.doe@email.com',
       },
+      requestFrom: 'organisation',
       selectedLevel: 0,
       title: 'Select permission level - DfE Sign-in',
       validationMessages: {
