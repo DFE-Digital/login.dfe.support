@@ -24,6 +24,7 @@ const validate = async (req) => {
   const model = {
     title: 'Reason for rejection - DfE Sign-in',
     backLink: true,
+    requestFrom: req.params.from,
     cancelLink: `/access-requests`,
     reason: req.body.reason,
     request,
@@ -61,9 +62,10 @@ const post = async (req, res) => {
   });
 
   res.flash('info', `Request rejected - an email has been sent to ${model.request.usersEmail}.`);
-  return res.redirect(`/access-requests`);
-
-
+  if(model.requestFrom && model.requestFrom === "organisation")
+    return res.redirect(`/users/${model.request.user_id}/organisations`);
+  else
+    return res.redirect('/access-requests');
 };
 
 module.exports = {

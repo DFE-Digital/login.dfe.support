@@ -25,12 +25,12 @@ const users = (csrf) => {
   router.get('/', csrf, asyncWrapper(getOrganisationRequests));
   router.post('/', csrf, asyncWrapper(postOrganisationRequests));
 
-  router.get('/:rid/review', csrf, asyncWrapper(getReviewOrganisationRequest));
-  router.post('/:rid/review', csrf, asyncWrapper(postReviewOrganisationRequest));
-  router.get('/:rid/reject', csrf, asyncWrapper(getRejectOrganisationRequest));
-  router.post('/:rid/reject', csrf, asyncWrapper(postRejectOrganisationRequest));
-  router.get('/:rid/approve', csrf, asyncWrapper(getSelectPermissionLevel));
-  router.post('/:rid/approve', csrf, asyncWrapper(postSelectPermissionLevel));
+  router.get('/:rid/:from?/review', csrf, asyncWrapper(getReviewOrganisationRequest));
+  router.post('/:rid/:from?/review', csrf, asyncWrapper(postReviewOrganisationRequest));
+  router.get('/:rid/:from?/reject', csrf, asyncWrapper(getRejectOrganisationRequest));
+  router.post('/:rid/:from?/reject', csrf, asyncWrapper(postRejectOrganisationRequest));
+  router.get('/:rid/:from?/approve', csrf, asyncWrapper(getSelectPermissionLevel));
+  router.post('/:rid/:from?/approve', csrf, asyncWrapper(postSelectPermissionLevel));
 
   return router;
 };
