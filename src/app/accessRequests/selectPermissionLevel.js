@@ -32,6 +32,7 @@ const validate = async (req) => {
     request,
     title: 'Select permission level - DfE Sign-in',
     backLink: true,
+    requestFrom: req.params.from,
     cancelLink: `/access-requests`,
     selectedLevel: isNaN(level) ? undefined : level,
     validationMessages: {},
@@ -110,7 +111,10 @@ const post = async (req, res) => {
   }
 
   res.flash('info', `Request approved - an email has been sent to ${model.request.usersEmail}. You can now add services for this user.`);
-  return res.redirect('/access-requests');
+  if(model.requestFrom && model.requestFrom === "organisation")
+    return res.redirect(`/users/${model.request.user_id}/organisations`);
+  else
+    return res.redirect('/access-requests');
 };
 
 module.exports = {
