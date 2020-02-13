@@ -19,7 +19,13 @@ const getServiceById = async (id) => {
   return Promise.resolve(clients.find(c => c.client_id.toLowerCase() === id.toLowerCase()));
 };
 
+
+const isSupportEmailNotificationAllowed = async () => {
+  return Promise.resolve([]);
+}
+
 module.exports = {
   getServiceById,
   getAllServices,
+  isSupportEmailNotificationAllowed
 };
