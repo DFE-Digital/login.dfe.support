@@ -5,7 +5,7 @@ const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
 const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
-const { getServiceById } = require('./../../infrastructure/applications');
+const { getServiceById, isSupportEmailNotificationAllowed } = require('./../../infrastructure/applications');
 
 const get = async (req, res) => {
   const userId = req.params.uid;
@@ -42,16 +42,17 @@ const post = async (req, res) => {
   const service = await getServiceById(req.params.sid, req.id);
   const userOrganisations = uid.startsWith('inv-') ? await getInvitationOrganisations(uid.substr(4), req.id) : await getUserOrganisations(uid, req.id);
   const organisationDetails = userOrganisations.find(x => x.organisation.id === req.params.orgId);
+  const isEmailAllowed = await isSupportEmailNotificationAllowed();
 
   if(uid.startsWith('inv-')) {
     await removeServiceFromInvitation(uid.substr(4), serviceId, organisationId, req.id);
   } else {
     await removeServiceFromUser(uid, serviceId, organisationId, req.id);
-    const notificationClient = new NotificationClient({
-      connectionString: config.notifications.connectionString,
-    });
-    await notificationClient.sendUserServiceRemoved(req.session.user.email, req.session.user.firstName, req.session.user.lastName, service.name,organisationDetails.organisation.name);
-   }
+    if(isEmailAllowed){
+      const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});
+      await notificationClient.sendUserServiceRemoved(req.session.user.email, req.session.user.firstName, req.session.user.lastName, service.name,organisationDetails.organisation.name);
+    } 
+  }
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) removed service ${service.name} for organisation id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`, {
     type: 'support',
