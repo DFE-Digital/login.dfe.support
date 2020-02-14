@@ -15,7 +15,7 @@ const get = async (req, res) => {
     request,
     title: 'Select permission level - DfE Sign-in',
     backLink: true,
-    cancelLink: `/access-requests`,
+    cancelLink: (req.params.from==='organisation')?`/access-requests/${req.params.rid}/${req.params.from}/review`:`/access-requests/${req.params.rid}/review`,
     selectedLevel: null,
     validationMessages: {},
   });
@@ -31,7 +31,7 @@ const validate = async (req) => {
     title: 'Select permission level - DfE Sign-in',
     backLink: true,
     requestFrom: req.params.from,
-    cancelLink: `/access-requests`,
+    cancelLink: (req.params.from==='organisation')?`/access-requests/${req.params.rid}/${req.params.from}/review`:`/access-requests/${req.params.rid}/review`,
     selectedLevel: isNaN(level) ? undefined : level,
     validationMessages: {},
   };
