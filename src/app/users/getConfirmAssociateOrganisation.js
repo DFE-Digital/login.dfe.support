@@ -4,6 +4,7 @@ const NotificationClient = require('login.dfe.notifications.client');
 const { addInvitationOrganisation, setUserAccessToOrganisation, getOrganisationById, getPendingRequestsAssociatedWithUser, updateRequestById } = require('./../../infrastructure/organisations');
 const { getSearchDetailsForUserById, updateIndex } = require('./../../infrastructure/search');
 const { waitForIndexToUpdate } = require('./utils');
+const { isSupportEmailNotificationAllowed } = require ('./../../infrastructure/applications');
 
 const addOrganisationToInvitation = async (uid, req) => {
   const invitationId = uid.substr(4);
@@ -52,15 +53,16 @@ const addOrganisationToUser = async (uid, req) => {
 
 const getConfirmAssociateOrganisation = async (req, res) => {
   const uid = req.params.uid;
+  const isEmailAllowed = await isSupportEmailNotificationAllowed();
 
   if (uid.startsWith('inv-')) {
     await addOrganisationToInvitation(uid, req);
   } else {
     await addOrganisationToUser(uid, req);
-    const notificationClient = new NotificationClient({
-      connectionString: config.notifications.connectionString,
-    });
-    await notificationClient.sendUserAddedToOrganisation(req.session.user.email, req.session.user.firstName, req.session.user.lastName, req.session.user.organisationName);
+    if(isEmailAllowed){
+      const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});
+      await notificationClient.sendUserAddedToOrganisation(req.session.user.email, req.session.user.firstName, req.session.user.lastName, req.session.user.organisationName);
+    }
     res.flash('info', `${req.session.user.email} added to organisation`);
   }
 
