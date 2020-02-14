@@ -95,7 +95,7 @@ describe('when selecting a permission level', () => {
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/selectPermissionLevel');
     expect(res.render.mock.calls[0][1]).toEqual({
       backLink: true,
-      cancelLink: '/access-requests',
+      cancelLink: "/access-requests/undefined/organisation/review",
       csrfToken: 'token',
       request: {
         actioned_by: null,
@@ -134,7 +134,7 @@ describe('when selecting a permission level', () => {
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/selectPermissionLevel');
     expect(res.render.mock.calls[0][1]).toEqual({
       backLink: true,
-      cancelLink: '/access-requests',
+      cancelLink: "/access-requests/undefined/organisation/review",
       csrfToken: 'token',
       request: {
         actioned_by: null,
@@ -192,7 +192,7 @@ describe('when selecting a permission level', () => {
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/selectPermissionLevel');
     expect(res.render.mock.calls[0][1]).toEqual({
       backLink: true,
-      cancelLink: '/access-requests',
+      cancelLink: "/access-requests/undefined/organisation/review",
       csrfToken: 'token',
       request: {
         actioned_by: 'jane.doe@email.com',

@@ -48,7 +48,7 @@ describe('when rejecting an organisation request', () => {
     await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      cancelLink: '/access-requests',
+      cancelLink: '/access-requests/undefined/review',
     });
   });
 });

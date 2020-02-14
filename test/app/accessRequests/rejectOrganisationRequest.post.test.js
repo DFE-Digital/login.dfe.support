@@ -103,7 +103,7 @@ describe('when rejecting an organisation request', () => {
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/rejectOrganisationRequest');
     expect(res.render.mock.calls[0][1]).toEqual({
       backLink: true,
-      cancelLink: '/access-requests',
+      cancelLink: "/access-requests/undefined/review",
       csrfToken: 'token',
       request: {
         actioned_by: 'john.approver@email.com',
@@ -142,7 +142,7 @@ describe('when rejecting an organisation request', () => {
     expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/rejectOrganisationRequest');
     expect(res.render.mock.calls[0][1]).toEqual({
       backLink: true,
-      cancelLink: '/access-requests',
+      cancelLink: "/access-requests/undefined/review",
       csrfToken: 'token',
       request: {
         actioned_by: null,
