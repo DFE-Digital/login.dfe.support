@@ -5,10 +5,8 @@ const { getSearchDetailsForUserById, updateIndex } = require('./../../infrastruc
 const { waitForIndexToUpdate } = require('../users/utils');
 const { putUserInOrganisation, updateRequestById, getOrganisationById } = require('./../../infrastructure/organisations');
 const NotificationClient = require('login.dfe.notifications.client');
+const { isSupportEmailNotificationAllowed } = require ('./../../infrastructure/applications');
 
-const notificationClient = new NotificationClient({
-  connectionString: config.notifications.connectionString,
-});
 const get = async (req, res) => {
   const request = await getAndMapOrgRequest(req);
 
@@ -51,6 +49,7 @@ const validate = async (req) => {
 
 const post = async (req, res) => {
   const model = await validate(req);
+  const isEmailAllowed = await isSupportEmailNotificationAllowed();
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
@@ -92,7 +91,10 @@ const post = async (req, res) => {
     await updateRequestById(model.request.id, 1, req.user.sub, null, actionedDate, req.id);
 
     // send approved email
-    await notificationClient.sendAccessRequest(model.request.usersEmail, model.request.usersName, organisation.name, true, null);
+    if(isEmailAllowed){
+      const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});
+      await notificationClient.sendAccessRequest(model.request.usersEmail, model.request.usersName, organisation.name, true, null);
+    }
 
     // audit organisation approved
     logger.audit(`${req.user.email} (id: ${req.user.sub}) approved organisation request for ${model.request.org_id})`, {

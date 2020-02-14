@@ -5,6 +5,7 @@ const { deleteUserOrganisation, deleteInvitationOrganisation } = require('./../.
 const { getAllServicesForUserInOrg } = require('./utils');
 const { removeServiceFromInvitation, removeServiceFromUser } = require('./../../infrastructure/access');
 const { getSearchDetailsForUserById, updateIndex } = require('./../../infrastructure/search');
+const { isSupportEmailNotificationAllowed } = require ('./../../infrastructure/applications');
 
 const deleteInvitationOrg = async (uid, req) => {
   const invitationId =  uid.substr(4);
@@ -21,6 +22,7 @@ const postDeleteOrganisation = async (req, res) => {
   const uid = req.params.uid;
   const organisationId = req.params.id;
   const servicesForUserInOrg = await getAllServicesForUserInOrg(uid, organisationId, req.id);
+  const isEmailAllowed = await isSupportEmailNotificationAllowed();
 
   if (uid.startsWith('inv-')) {
     for (let i = 0; i < servicesForUserInOrg.length; i++) {
@@ -34,10 +36,10 @@ const postDeleteOrganisation = async (req, res) => {
       await removeServiceFromUser(uid, service.id, organisationId, req.id);
     }
     await deleteUserOrg(uid, req);
-    const notificationClient = new NotificationClient({
-      connectionString: config.notifications.connectionString,
-    });
-    await notificationClient.sendUserRemovedFromOrganisation(req.session.user.email, req.session.user.firstName, req.session.user.lastName, req.session.org.name);
+    if(isEmailAllowed){
+      const notificationClient = new NotificationClient({ connectionString: config.notifications.connectionString});
+      await notificationClient.sendUserRemovedFromOrganisation(req.session.user.email, req.session.user.firstName, req.session.user.lastName, req.session.org.name);
+    }
   }
 
   //patch search index

@@ -1,5 +1,5 @@
 'use strict';
-const { getAllServices } = require('./../../infrastructure/applications');
+const { getAllServices, isSupportEmailNotificationAllowed } = require('./../../infrastructure/applications');
 const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
 const { listRolesOfService, addInvitationService, addUserService, updateInvitationService, updateUserService } = require('./../../infrastructure/access');
@@ -52,6 +52,7 @@ const post = async (req, res) => {
     return res.redirect(`/users/${uid}/organisations`);
   }
 
+  const isEmailAllowed = await isSupportEmailNotificationAllowed();
   const organisationId = req.params.orgId;
   if (req.session.user.services) {
     for (let i = 0; i < req.session.user.services.length; i++) {
@@ -63,10 +64,8 @@ const post = async (req, res) => {
         req.session.user.isAddService ? await addUserService(uid, service.serviceId, organisationId, service.roles, req.id) : await updateUserService(uid, service.serviceId, organisationId, service.roles, req.id);
       }
     }
-    if(req.session.user.services.length > 0 && !uid.startsWith('inv-')){
-      const notificationClient = new NotificationClient({
-        connectionString: config.notifications.connectionString,
-      });      
+    if(req.session.user.services.length > 0 && !uid.startsWith('inv-') && isEmailAllowed){
+      const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});      
       await notificationClient.sendServiceAdded(req.session.user.email, req.session.user.firstName, req.session.user.lastName);
     }
   }

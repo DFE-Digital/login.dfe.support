@@ -3,6 +3,7 @@ const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
 const { setUserAccessToOrganisation, addInvitationOrganisation } = require('./../../infrastructure/organisations');
 const { getSearchDetailsForUserById, updateIndex } = require('./../../infrastructure/search');
+const { isSupportEmailNotificationAllowed } = require ('./../../infrastructure/applications');
 
 const validatePermissions = (req) => {
   const validPermissions = [0, 10000];
@@ -44,15 +45,16 @@ const postEditPermissions = async (req, res) => {
   }
   const uid = req.params.uid; 
   const permissionName = model.selectedLevel === 10000 ? 'approver' : 'end user';
-  
+  const isEmailAllowed = await isSupportEmailNotificationAllowed();
+
   if (uid.startsWith('inv-')) {
     await editInvitationPermissions(uid, req, model);
   } else {
     await editUserPermissions(uid, req, model);
-    const notificationClient = new NotificationClient({
-      connectionString: config.notifications.connectionString,
-    });    
-    await notificationClient.sendUserPermissionChanged(req.session.user.email, req.session.user.firstName, req.session.user.lastName, model.organisationName, permissionName);
+    if(isEmailAllowed){
+      const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});    
+      await notificationClient.sendUserPermissionChanged(req.session.user.email, req.session.user.firstName, req.session.user.lastName, model.organisationName, permissionName);
+    }
    }
 
   // patch search index

@@ -6,8 +6,10 @@ jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/applications', () => {
   return {
     getServiceById: jest.fn(),
+    isSupportEmailNotificationAllowed: jest.fn()
   };
 });
+
 
 jest.mock('./../../../src/infrastructure/access', () => {
   return {
@@ -18,7 +20,7 @@ jest.mock('./../../../src/infrastructure/access', () => {
 
 const logger = require('./../../../src/infrastructure/logger');
 const { getRequestMock, getResponseMock } = require('./../../utils');
-const { getServiceById } = require('./../../../src/infrastructure/applications');
+const { getServiceById, isSupportEmailNotificationAllowed } = require('./../../../src/infrastructure/applications');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../../src/infrastructure/organisations');
 const { removeServiceFromInvitation, removeServiceFromUser } = require('./../../../src/infrastructure/access');
 
@@ -98,6 +100,13 @@ describe('when removing access to a service', () => {
       name: 'service name',
       status: 'active',
       isExternalService: true,
+    });
+
+    isSupportEmailNotificationAllowed.mockReset();
+    isSupportEmailNotificationAllowed.mockReturnValue({
+      type: 'email',
+      serviceName: 'support',
+      flag: 1
     });
 
     postRemoveService = require('./../../../src/app/users/removeServiceAccess').post;
