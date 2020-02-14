@@ -2,12 +2,16 @@ const { getAndMapOrgRequest } = require('./utils');
 
 const get = async (req, res) => {
   const request = await getAndMapOrgRequest(req);
-
+if(req.params.from==='organisation'){
+  req._cancelLink = `/users/${request.user_id}/organisations`
+}else{
+  req._cancelLink = '/access-requests';
+}
   return res.render('accessRequests/views/reviewOrganisationRequest', {
     csrfToken: req.csrfToken(),
     title: 'Review request - DfE Sign-in',
     backLink: true,
-    cancelLink: request._cancelLink,
+    cancelLink: req._cancelLink,
     request,
     selectedResponse: null,
     validationMessages: {},
@@ -16,10 +20,15 @@ const get = async (req, res) => {
 
 const validate = async (req) => {
   const request = await getAndMapOrgRequest(req);
+  if(req.params.from==='organisation'){
+    req._cancelLink = `/users/${request.user_id}/organisations`;
+  }else{
+    req._cancelLink = '/access-requests';
+  }
   const model = {
     title: 'Review request - DfE Sign-in',
     backLink: true,
-    cancelLink: '/access-requests',
+    cancelLink:req._cancelLink ,
     request,
     selectedResponse: req.body.selectedResponse,
     validationMessages: {},

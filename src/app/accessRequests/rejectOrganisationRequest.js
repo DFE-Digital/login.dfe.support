@@ -9,11 +9,12 @@ const notificationClient = new NotificationClient({
 });
 
 const get = async (req, res) => {
+
   return res.render('accessRequests/views/rejectOrganisationRequest', {
     csrfToken: req.csrfToken(),
     title: 'Reason for rejection - DfE Sign-in',
     backLink: true,
-    cancelLink: `/access-requests`,
+    cancelLink: (req.params.from==='organisation')?`/access-requests/${req.params.rid}/${req.params.from}/review`:`/access-requests/${req.params.rid}/review`,
     reason: '',
     validationMessages: {},
   })
@@ -25,7 +26,7 @@ const validate = async (req) => {
     title: 'Reason for rejection - DfE Sign-in',
     backLink: true,
     requestFrom: req.params.from,
-    cancelLink: `/access-requests`,
+    cancelLink: (req.params.from==='organisation')?`/access-requests/${req.params.rid}/${req.params.from}/review`:`/access-requests/${req.params.rid}/review`,
     reason: req.body.reason,
     request,
     validationMessages: {},
