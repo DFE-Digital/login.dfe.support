@@ -2,7 +2,6 @@ const logger = require('./infrastructure/logger');
 const config = require('./infrastructure/config');
 const http = require('http');
 const https = require('https');
-const KeepAliveAgent = require('agentkeepalive');
 const express = require('express');
 const healthCheck = require('login.dfe.healthcheck');
 
@@ -12,18 +11,7 @@ const configSchema = require('./infrastructure/config/schema');
 
 configSchema.validate();
 
-http.GlobalAgent = new KeepAliveAgent({
-  maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
-  maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
-  timeout: config.hostingEnvironment.agentKeepAlive.timeout,
-  keepAliveTimeout: config.hostingEnvironment.agentKeepAlive.keepAliveTimeout,
-});
-https.GlobalAgent = new KeepAliveAgent({
-  maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
-  maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
-  timeout: config.hostingEnvironment.agentKeepAlive.timeout,
-  keepAliveTimeout: config.hostingEnvironment.agentKeepAlive.keepAliveTimeout,
-});
+https.globalAgent.maxSockets = http.globalAgent.maxSockets = config.hostingEnvironment.agentKeepAlive.maxSockets || 50;
 
 
 logger.info('Initialising audit');

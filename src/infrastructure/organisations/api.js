@@ -1,14 +1,6 @@
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const config = require('./../config');
-const KeepAliveAgent = require('agentkeepalive').HttpsAgent;
-const rp = require('login.dfe.request-promise-retry').defaults({
-  agent: new KeepAliveAgent({
-    maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
-    maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
-    timeout: config.hostingEnvironment.agentKeepAlive.timeout,
-    keepAliveTimeout: config.hostingEnvironment.agentKeepAlive.keepAliveTimeout,
-  }),
-});
+const rp = require('login.dfe.request-promise-retry');
 
 const callOrganisationsApi = async (endpoint, method, body, correlationId) => {
   const token = await jwtStrategy(config.organisations.service).getBearerToken();
@@ -136,12 +128,12 @@ const searchOrganisations = async (criteria, filterByCategories, filterByStatus,
   return await callOrganisationsApi(uri, 'GET', undefined, correlationId);
 };
 
-const setUserAccessToOrganisation = async (userId, organisationId, roleId, correlationId, status, reason,) => {
-  const body = { roleId, status,reason };
+const setUserAccessToOrganisation = async (userId, organisationId, roleId, correlationId, status, reason, ) => {
+  const body = { roleId, status, reason };
   return await callOrganisationsApi(`organisations/${organisationId}/users/${userId}`, 'PUT', body, correlationId);
 };
 
-const deleteUserOrganisation = async (userId, organisationId, correlationId)  => {
+const deleteUserOrganisation = async (userId, organisationId, correlationId) => {
   return callOrganisationsApi(`organisations/${organisationId}/users/${userId}`, 'DELETE', correlationId);
 };
 
@@ -198,12 +190,12 @@ const updateRequestById = async (requestId, status, actionedBy, actionedReason, 
   return callOrganisationsApi(`organisations/requests/${requestId}`, 'PATCH', body, correlationId);
 };
 
-const putUserInOrganisation = async(userId, orgId, status, role, reason, correlationId) => {
-  return callOrganisationsApi(`organisations/${orgId}/users/${userId}`, 'PUT', {roleId:role, status, reason}, correlationId);
+const putUserInOrganisation = async (userId, orgId, status, role, reason, correlationId) => {
+  return callOrganisationsApi(`organisations/${orgId}/users/${userId}`, 'PUT', { roleId: role, status, reason }, correlationId);
 };
 
 const getPendingRequestsAssociatedWithUser = async (userId, correlationId) => {
-  return callOrganisationsApi(`organisations/requests-for-user/${userId}`,'GET', undefined, correlationId);
+  return callOrganisationsApi(`organisations/requests-for-user/${userId}`, 'GET', undefined, correlationId);
 };
 
 module.exports = {
