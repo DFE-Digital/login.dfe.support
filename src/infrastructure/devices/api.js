@@ -1,13 +1,5 @@
 const config = require('./../config');
-const KeepAliveAgent = require('agentkeepalive').HttpsAgent;
-const rp = require('login.dfe.request-promise-retry').defaults({
-  agent: new KeepAliveAgent({
-    maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
-    maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
-    timeout: config.hostingEnvironment.agentKeepAlive.timeout,
-    keepAliveTimeout: config.hostingEnvironment.agentKeepAlive.keepAliveTimeout,
-  }),
-});
+const rp = require('login.dfe.request-promise-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 
 
@@ -93,7 +85,7 @@ const syncDigipassToken = async (serialNumber, code1, code2) => {
   }
 };
 
-const getDeviceUnlockCode = async (serialNumber,code, correlationId) => {
+const getDeviceUnlockCode = async (serialNumber, code, correlationId) => {
   const token = await jwtStrategy(config.devices.service).getBearerToken();
 
   try {
@@ -109,10 +101,10 @@ const getDeviceUnlockCode = async (serialNumber,code, correlationId) => {
 
     return Object.values(Object.keys(device)
       .filter(key => code === key)
-      .reduce((obj,key) => {
-      obj[key] = device[key];
-      return obj;
-    },{}))[0] || undefined;
+      .reduce((obj, key) => {
+        obj[key] = device[key];
+        return obj;
+      }, {}))[0] || undefined;
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
     if (status === 401) {
@@ -133,7 +125,7 @@ const deactivateToken = async (serialNumber, reason, correlationId) => {
         authorization: `Bearer ${token}`,
         'x-correlation-id': correlationId,
       },
-      body :{
+      body: {
         reason: reason,
       },
       json: true,
@@ -145,7 +137,7 @@ const deactivateToken = async (serialNumber, reason, correlationId) => {
     if (status === 401) {
       return null;
     }
-    if(status === 404) {
+    if (status === 404) {
       return false;
     }
     throw e;
