@@ -19,26 +19,15 @@ const flash = require('express-flash-2');
 const setCorrelationId = require('express-mw-correlation-id');
 const registerRoutes = require('./routes');
 const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
-const KeepAliveAgent = require('agentkeepalive');
 const configSchema = require('./infrastructure/config/schema');
 
 configSchema.validate();
 
+https.globalAgent.maxSockets = http.globalAgent.maxSockets = config.hostingEnvironment.agentKeepAlive.maxSockets || 50;
+
 if (config.hostingEnvironment.applicationInsights) {
   appInsights.setup(config.hostingEnvironment.applicationInsights).start();
 }
-http.GlobalAgent = new KeepAliveAgent({
-  maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
-  maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
-  timeout: config.hostingEnvironment.agentKeepAlive.timeout,
-  keepAliveTimeout: config.hostingEnvironment.agentKeepAlive.keepAliveTimeout,
-});
-https.GlobalAgent = new KeepAliveAgent({
-  maxSockets: config.hostingEnvironment.agentKeepAlive.maxSockets,
-  maxFreeSockets: config.hostingEnvironment.agentKeepAlive.maxFreeSockets,
-  timeout: config.hostingEnvironment.agentKeepAlive.timeout,
-  keepAliveTimeout: config.hostingEnvironment.agentKeepAlive.keepAliveTimeout,
-});
 
 const init = async () => {
   const csrf = csurf({
@@ -97,7 +86,7 @@ const init = async () => {
   app.use(cookieParser());
   app.use(sanitization({
     sanitizer: (key, value) => {
-      const fieldToNotSanitize = ['email-subject', 'email-contents','criteria', 'email', 'firstName', 'lastName', 'reason'];
+      const fieldToNotSanitize = ['email-subject', 'email-contents', 'criteria', 'email', 'firstName', 'lastName', 'reason'];
       if (fieldToNotSanitize.find(x => x.toLowerCase() === key.toLowerCase())) {
         return value;
       }
