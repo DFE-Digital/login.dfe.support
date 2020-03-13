@@ -2,7 +2,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/organisations');
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
-const { searchOrganisations, getOrganisationById } = require('./../../../src/infrastructure/organisations');
+const { searchOrganisations, getOrganisationById, getCategories } = require('./../../../src/infrastructure/organisations');
 const postAssociateOrganisation = require('./../../../src/app/users/postAssociateOrganisation');
 
 const res = getResponseMock();
@@ -27,7 +27,7 @@ describe('when associating user to organisations', () => {
     });
 
     res.mockResetAll();
-
+    
     searchOrganisations.mockReset().mockReturnValue({
       organisations: [
         { id: 'org1' },
@@ -40,6 +40,8 @@ describe('when associating user to organisations', () => {
       id: 'org1',
       name: 'Organisation One',
     });
+    
+    getCategories.mockReset().mockReturnValue(['001','002','003'])
   });
 
   it('then it should return search results for organisations', async () => {
