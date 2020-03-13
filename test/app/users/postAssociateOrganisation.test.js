@@ -2,7 +2,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/organisations');
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
-const { searchOrganisations, getOrganisationById } = require('./../../../src/infrastructure/organisations');
+const { searchOrganisations, getOrganisationById, getCategories } = require('./../../../src/infrastructure/organisations');
 const postAssociateOrganisation = require('./../../../src/app/users/postAssociateOrganisation');
 
 const res = getResponseMock();
@@ -27,7 +27,7 @@ describe('when associating user to organisations', () => {
     });
 
     res.mockResetAll();
-
+    
     searchOrganisations.mockReset().mockReturnValue({
       organisations: [
         { id: 'org1' },
@@ -40,6 +40,10 @@ describe('when associating user to organisations', () => {
       id: 'org1',
       name: 'Organisation One',
     });
+    
+    getCategories.mockReset().mockReturnValue([{
+      id:'001'
+    }]);
   });
 
   it('then it should return search results for organisations', async () => {
@@ -47,7 +51,6 @@ describe('when associating user to organisations', () => {
 
     expect(searchOrganisations.mock.calls).toHaveLength(1);
     expect(searchOrganisations.mock.calls[0][0]).toBe('something');
-    expect(searchOrganisations.mock.calls[0][1]).toBeUndefined();
     expect(searchOrganisations.mock.calls[0][2]).toBeUndefined();
     expect(searchOrganisations.mock.calls[0][3]).toBe(1);
     expect(searchOrganisations.mock.calls[0][4]).toBe('correlationId');
