@@ -1,4 +1,4 @@
-const { searchOrganisations, getOrganisationById } = require('./../../infrastructure/organisations');
+const { searchOrganisations, getOrganisationById ,getCategories } = require('./../../infrastructure/organisations');
 const { sendResult } = require('./../../infrastructure/utils');
 
 const postAssociateOrganisation = async (req, res) => {
@@ -17,7 +17,15 @@ const postAssociateOrganisation = async (req, res) => {
     pageNumber = 1;
   }
 
-  const searchResult = await searchOrganisations(criteria, undefined,undefined, pageNumber, req.id);
+  const retrieveOrganisationCategories = async () => {
+    const orgCategories = await getCategories();
+    return orgCategories.map((cat) => { return cat.id }).filter((id) => {
+      return  id !== '004';
+    })
+  }
+  
+  const searchCategories = await retrieveOrganisationCategories();
+  const searchResult = await searchOrganisations(criteria, searchCategories,undefined, pageNumber, req.id);
   const results = searchResult.organisations;
   const numberOfPages = searchResult.totalNumberOfPages;
   const numberOfResults = searchResult.totalNumberOfRecords;
