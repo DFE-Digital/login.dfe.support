@@ -47,10 +47,16 @@ const unpackMultiSelect = (parameter) => {
   return parameter;
 };
 
+const filterOutCategories = (orgCategories) => {
+  return orgCategories.map((cat) => { return cat.id }).filter((id) => {
+    return id !== '004';
+  })
+}
+
 const doSearchAndBuildModel = async (req) => {
   const inputSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
   const criteria = inputSource.criteria ? inputSource.criteria.trim() : '';
-  const orgTypes = unpackMultiSelect(inputSource.organisationType);
+  const orgTypes = filterOutCategories(unpackMultiSelect(inputSource.organisationType));
   const orgStatuses = unpackMultiSelect(inputSource.organisationStatus);
   let pageNumber = parseInt(inputSource.page) || 1;
   if (isNaN(pageNumber)) {
