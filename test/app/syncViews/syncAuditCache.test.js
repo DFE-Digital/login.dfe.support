@@ -18,7 +18,7 @@ describe('when syncing audit cache', () => {
     audit.cache.getStatsForUser.mockReset().mockReturnValue({
       userId: 'user1',
       loginsInPast12Months: [
-        { timestamp: new Date(2019, 3, 18) },
+        { timestamp: new Date(2019, 4, 18) },
       ],
       lastLogin: new Date(2019, 3, 18),
     });
@@ -46,8 +46,8 @@ describe('when syncing audit cache', () => {
       timestamp: new Date(2019, 3, 25)
     }];
     audit.getAllAuditsSince.mockImplementationOnce(() => batch1)
-      .mockImplementationOnce(() => batch2)
-      .mockImplementation(() => []);
+        .mockImplementationOnce(() => batch2)
+        .mockImplementation(() => []);
 
     await syncAuditCache();
 
@@ -60,10 +60,10 @@ describe('when syncing audit cache', () => {
       userId: 'user1',
       type: 'sign-in',
       subType: 'username-password',
-      timestamp: new Date(2019, 3, 24)
+      timestamp: new Date(2019, 4, 24)
     }];
     audit.getAllAuditsSince.mockImplementationOnce(() => batch1)
-      .mockImplementation(() => []);
+        .mockImplementation(() => []);
 
     await syncAuditCache();
 
@@ -72,10 +72,10 @@ describe('when syncing audit cache', () => {
     expect(audit.cache.update.mock.calls[0][0][0]).toEqual({
       userId: 'user1',
       loginsInPast12Months: [
-        { timestamp: new Date(2019, 3, 18) },
-        { timestamp: new Date(2019, 3, 24) },
+        { timestamp: new Date(2019, 4, 18) },
+        { timestamp: new Date(2019, 4, 24) },
       ],
-      lastLogin: new Date(2019, 3, 24),
+      lastLogin: new Date(2019, 4, 24),
     });
   });
 
@@ -84,15 +84,15 @@ describe('when syncing audit cache', () => {
       userId: 'user1',
       type: 'sign-in',
       subType: 'username-password',
-      timestamp: new Date(2019, 3, 24)
+      timestamp: new Date(2019, 4, 24)
     }, {
       userId: 'user1',
       type: 'sign-in',
       subType: 'username-password',
-      timestamp: new Date(2019, 3, 25)
+      timestamp: new Date(2019, 4, 25)
     }];
     audit.getAllAuditsSince.mockImplementationOnce(() => batch1)
-      .mockImplementation(() => []);
+        .mockImplementation(() => []);
 
     await syncAuditCache();
 
@@ -101,11 +101,11 @@ describe('when syncing audit cache', () => {
     expect(audit.cache.update.mock.calls[0][0][0]).toEqual({
       userId: 'user1',
       loginsInPast12Months: [
-        { timestamp: new Date(2019, 3, 18) },
-        { timestamp: new Date(2019, 3, 24) },
-        { timestamp: new Date(2019, 3, 25) },
+        { timestamp: new Date(2019, 4, 18) },
+        { timestamp: new Date(2019, 4, 24) },
+        { timestamp: new Date(2019, 4, 25) },
       ],
-      lastLogin: new Date(2019, 3, 25),
+      lastLogin: new Date(2019, 4, 25),
     });
   });
 
@@ -127,7 +127,7 @@ describe('when syncing audit cache', () => {
       timestamp: new Date(2018, 3, 26)
     }];
     audit.getAllAuditsSince.mockImplementationOnce(() => batch1)
-      .mockImplementation(() => []);
+        .mockImplementation(() => []);
 
     await syncAuditCache();
 
@@ -143,7 +143,7 @@ describe('when syncing audit cache', () => {
       timestamp: new Date(2018, 3, 24)
     }];
     audit.getAllAuditsSince.mockImplementationOnce(() => batch1)
-      .mockImplementation(() => []);
+        .mockImplementation(() => []);
 
     await syncAuditCache();
 
@@ -156,15 +156,15 @@ describe('when syncing audit cache', () => {
       userId: 'user1',
       type: 'sign-in',
       subType: 'username-password',
-      timestamp: new Date(2019, 3, 24)
+      timestamp: new Date(2019, 4, 24)
     }, {
       userId: 'user1',
       type: 'sign-in',
       subType: 'username-password',
-      timestamp: new Date(2019, 3, 25)
+      timestamp: new Date(2019, 4, 25)
     }];
     audit.getAllAuditsSince.mockImplementationOnce(() => batch1)
-      .mockImplementation(() => []);
+        .mockImplementation(() => []);
     audit.cache.getStatsForUser.mockReturnValue(null);
 
     await syncAuditCache();
@@ -174,10 +174,10 @@ describe('when syncing audit cache', () => {
     expect(audit.cache.update.mock.calls[0][0][0]).toEqual({
       userId: 'user1',
       loginsInPast12Months: [
-        { timestamp: new Date(2019, 3, 24) },
-        { timestamp: new Date(2019, 3, 25) },
+        { timestamp: new Date(2019, 4, 24) },
+        { timestamp: new Date(2019, 4, 25) },
       ],
-      lastLogin: new Date(2019, 3, 25),
+      lastLogin: new Date(2019, 4, 25),
     });
   });
 
@@ -186,18 +186,18 @@ describe('when syncing audit cache', () => {
       userId: 'user1',
       type: 'sign-in',
       subType: 'username-password',
-      timestamp: new Date(2019, 3, 24)
+      timestamp: new Date(2019, 4, 24)
     },{
       editedUser: 'user1',
       type: 'support',
       subType: 'user-edit',
-      timestamp: new Date(2019, 3, 20),
+      timestamp: new Date(2019, 4, 20),
       editedFields: [
         { name: 'status' }
       ]
     }];
     audit.getAllAuditsSince.mockImplementationOnce(() => batch1)
-      .mockImplementation(() => []);
+        .mockImplementation(() => []);
 
     await syncAuditCache();
 
@@ -206,11 +206,11 @@ describe('when syncing audit cache', () => {
     expect(audit.cache.update.mock.calls[0][0][0]).toEqual({
       userId: 'user1',
       loginsInPast12Months: [
-        { timestamp: new Date(2019, 3, 18) },
-        { timestamp: new Date(2019, 3, 24) },
+        { timestamp: new Date(2019, 4, 18) },
+        { timestamp: new Date(2019, 4, 24) },
       ],
-      lastLogin: new Date(2019, 3, 24),
-      lastStatusChange: new Date(2019, 3, 20),
+      lastLogin: new Date(2019, 4, 24),
+      lastStatusChange: new Date(2019, 4, 20),
     });
   });
 });
