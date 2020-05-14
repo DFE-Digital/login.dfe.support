@@ -9,9 +9,8 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
   },
 }));
 
-const rp = jest.fn();
-const requestPromise = require('login.dfe.request-promise-retry');
-requestPromise.defaults.mockReturnValue(rp);
+
+const rp  = require('login.dfe.request-promise-retry');
 
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { deviceExists } = require('./../../../src/infrastructure/devices/api');
@@ -35,55 +34,52 @@ describe('when getting a page of digipass tokens from the devices api', () => {
     })
   });
 
-  it('should pass', () => {
-    expect(true).toBe(true);
+
+  it('then it should call digipass resource with serial number', async () => {
+    await deviceExists('123456789', correlationId);
+
+    expect(rp.mock.calls).toHaveLength(1);
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      method: 'GET',
+      uri: 'http://devices.test/digipass/123456789',
+    });
   });
 
-  // it('then it should call digipass resource with serial number', async () => {
-  //   await deviceExists('123456789', correlationId);
+  it('then it should use the token from jwt strategy as bearer token', async () => {
+    await deviceExists('123456789', correlationId);
 
-  //   expect(rp.mock.calls).toHaveLength(1);
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     method: 'GET',
-  //     uri: 'http://devices.test/digipass/123456789',
-  //   });
-  // });
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      headers: {
+        authorization: 'bearer token',
+      },
+    });
+  });
 
-  // it('then it should use the token from jwt strategy as bearer token', async () => {
-  //   await deviceExists('123456789', correlationId);
+  it('then it should include the correlation id', async () => {
+    await deviceExists('123456789', correlationId);
 
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     headers: {
-  //       authorization: 'bearer token',
-  //     },
-  //   });
-  // });
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      headers: {
+        'x-correlation-id': correlationId,
+      },
+    });
+  });
 
-  // it('then it should include the correlation id', async () => {
-  //   await deviceExists('123456789', correlationId);
+  it('then true is returned if api returns 204', async () => {
+    const actual = await deviceExists('123456789', correlationId);
 
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     headers: {
-  //       'x-correlation-id': correlationId,
-  //     },
-  //   });
-  // });
+    expect(actual).toBe(true);
+  });
 
-  // it('then true is returned if api returns 204', async () => {
-  //   const actual = await deviceExists('123456789', correlationId);
+  it('then true is returned if api returns 404', async () => {
+    rp.mockImplementation(() => {
+      return {
+        statusCode: 404,
+      };
+    });
 
-  //   expect(actual).toBe(true);
-  // });
+    const actual = await deviceExists('123456789', correlationId);
 
-  // it('then true is returned if api returns 404', async () => {
-  //   rp.mockImplementation(() => {
-  //     return {
-  //       statusCode: 404,
-  //     };
-  //   });
-
-  //   const actual = await deviceExists('123456789', correlationId);
-
-  //   expect(actual).toBe(false);
-  // });
+    expect(actual).toBe(false);
+  });
 });
