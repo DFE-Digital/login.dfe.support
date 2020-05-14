@@ -14,9 +14,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
   },
 }));
 
-const rp = jest.fn();
-const requestPromise = require('login.dfe.request-promise-retry');
-requestPromise.defaults.mockReturnValue(rp);
+const rp  = require('login.dfe.request-promise-retry');
 
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { getOrganisationUsersForApproval } = require('./../../../src/infrastructure/organisations/api');
@@ -46,49 +44,46 @@ describe('when getting a page of organisations users for approval from api', () 
     })
   });
 
-  it('should pass', () => {
-    expect(true).toBe(true);
+
+  it('then it should call organisations resource with page number', async () => {
+    await getOrganisationUsersForApproval(2, correlationId);
+
+    expect(rp.mock.calls).toHaveLength(1);
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      method: 'GET',
+      uri: 'http://organisations.test/organisations/users-for-approval?page=2',
+    });
   });
 
-  // it('then it should call organisations resource with page number', async () => {
-  //   await getOrganisationUsersForApproval(2, correlationId);
+  it('then it should use the token from jwt strategy as bearer token', async () => {
+    await getOrganisationUsersForApproval(2, correlationId);
 
-  //   expect(rp.mock.calls).toHaveLength(1);
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     method: 'GET',
-  //     uri: 'http://organisations.test/organisations/users-for-approval?page=2',
-  //   });
-  // });
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      headers: {
+        authorization: 'bearer token',
+      },
+    });
+  });
 
-  // it('then it should use the token from jwt strategy as bearer token', async () => {
-  //   await getOrganisationUsersForApproval(2, correlationId);
+  it('then it should include the correlation id', async () => {
+    await getOrganisationUsersForApproval(2, correlationId);
 
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     headers: {
-  //       authorization: 'bearer token',
-  //     },
-  //   });
-  // });
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      headers: {
+        'x-correlation-id': correlationId,
+      },
+    });
+  });
 
-  // it('then it should include the correlation id', async () => {
-  //   await getOrganisationUsersForApproval(2, correlationId);
+  it('then it should return page of orgs from api', async () => {
+    const actual = await getOrganisationUsersForApproval(2, correlationId);
 
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     headers: {
-  //       'x-correlation-id': correlationId,
-  //     },
-  //   });
-  // });
-
-  // it('then it should return page of orgs from api', async () => {
-  //   const actual = await getOrganisationUsersForApproval(2, correlationId);
-
-  //   expect(actual).not.toBeNull();
-  //   expect(actual.totalNumberOfPages).toBe(2);
-  //   expect(actual.organisations).toHaveLength(1);
-  //   expect(actual.organisations[0]).toMatchObject({
-  //     id: 'org1',
-  //     name: 'org one',
-  //   });
-  // });
+    expect(actual).not.toBeNull();
+    expect(actual.totalNumberOfPages).toBe(2);
+    expect(actual.organisations).toHaveLength(1);
+    expect(actual.organisations[0]).toMatchObject({
+      id: 'org1',
+      name: 'org one',
+    });
+  });
 });
