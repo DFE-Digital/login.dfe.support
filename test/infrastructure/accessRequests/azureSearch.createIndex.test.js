@@ -29,10 +29,6 @@ describe('when creating an index in azure search', () => {
     createIndex = require('./../../../src/infrastructure/accessRequests/azureSearch').createIndex;
   });
 
-  it('should pass', () => {
-    expect(true).toBe(true);
-  });
-
   it('then it should put new index using new index name in uri', async () => {
     await createIndex();
 
