@@ -14,6 +14,7 @@ jest.mock('uuid/v4', () => {
   return jest.fn().mockReturnValue('some-uuid');
 });
 
+
 const users = [
   {
     id: 'user1',
