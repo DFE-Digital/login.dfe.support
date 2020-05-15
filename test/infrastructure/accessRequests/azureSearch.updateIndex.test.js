@@ -31,10 +31,7 @@ const accessRequests = [
   },
 ];
 
-const rp = jest.fn();
-const requestPromise = require('login.dfe.request-promise-retry');
-requestPromise.defaults.mockReturnValue(rp);
-
+const rp = require('login.dfe.request-promise-retry');
 
 describe('when updating an index with new data in azure search', () => {
   let updateIndex;
@@ -45,59 +42,56 @@ describe('when updating an index with new data in azure search', () => {
     updateIndex = require('./../../../src/infrastructure/accessRequests/azureSearch').updateIndex;
   });
 
-  it('should pass', () => {
-    expect(true).toBe(true);
+
+  it('then it should post to index docs access requests', async () => {
+    await updateIndex(accessRequests, 'new-index-name');
+    expect(rp.mock.calls).toHaveLength(1);
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      method: 'POST',
+      uri: 'https://test-search.search.windows.net/indexes/new-index-name/docs/index?api-version=2016-09-01'
+    });
   });
 
-  // it('then it should post to index docs access requests', async () => {
-  //   await updateIndex(accessRequests, 'new-index-name');
-  //   expect(rp.mock.calls).toHaveLength(1);
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     method: 'POST',
-  //     uri: 'https://test-search.search.windows.net/indexes/new-index-name/docs/index?api-version=2016-09-01'
-  //   });
-  // });
+  it('then it should include the api key from config', async () => {
+    await updateIndex(accessRequests, 'new-index-name');
 
-  // it('then it should include the api key from config', async () => {
-  //   await updateIndex(accessRequests, 'new-index-name');
+    expect(rp.mock.calls).toHaveLength(1);
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      headers: {
+        'api-key': 'some-key',
+      },
+    });
+  });
 
-  //   expect(rp.mock.calls).toHaveLength(1);
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     headers: {
-  //       'api-key': 'some-key',
-  //     },
-  //   });
-  // });
+  it('then it should include access requests in body of request', async () => {
+    await updateIndex(accessRequests, 'new-index-name');
 
-  // it('then it should include access requests in body of request', async () => {
-  //   await updateIndex(accessRequests, 'new-index-name');
+    expect(rp.mock.calls).toHaveLength(1);
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      body: {
+        value: [
+          {
+            '@search.action': 'upload',
+            userOrgId: 'user1org1',
+            userId: 'user1',
+            orgId: 'org1',
+            name: 'User One',
+            nameSearch: 'userone',
+            email: 'user.one@unit.test',
+            emailSearch: 'user.oneunit.test',
+            organisationName: 'Hogwarts School of Witchcraft and Wizardry',
+            orgAddress: 'my address',
+            orgIdentifier: 'URN: 222222',
+            createdDate: new Date('2018-11-01T20:00:00.000Z').getTime(),
+          }
+        ]
+      },
+    });
+  });
 
-  //   expect(rp.mock.calls).toHaveLength(1);
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     body: {
-  //       value: [
-  //         {
-  //           '@search.action': 'upload',
-  //           userOrgId: 'user1org1',
-  //           userId: 'user1',
-  //           orgId: 'org1',
-  //           name: 'User One',
-  //           nameSearch: 'userone',
-  //           email: 'user.one@unit.test',
-  //           emailSearch: 'user.oneunit.test',
-  //           organisationName: 'Hogwarts School of Witchcraft and Wizardry',
-  //           orgAddress: 'my address',
-  //           orgIdentifier: 'URN: 222222',
-  //           createdDate: new Date('2018-11-01T20:00:00.000Z').getTime(),
-  //         }
-  //       ]
-  //     },
-  //   });
-  // });
+  it('then if there are no users to update the endpoint is not called', async () => {
+    await updateIndex([], 'new-index-name');
 
-  // it('then if there are no users to update the endpoint is not called', async () => {
-  //   await updateIndex([], 'new-index-name');
-
-  //   expect(rp.mock.calls).toHaveLength(0);
-  // });
+    expect(rp.mock.calls).toHaveLength(0);
+  });
 });

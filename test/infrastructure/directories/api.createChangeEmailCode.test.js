@@ -8,9 +8,8 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
     },
   },
 }));
-const rp = jest.fn();
-const requestPromise = require('login.dfe.request-promise-retry');
-requestPromise.defaults.mockReturnValue(rp);
+
+const rp = require('login.dfe.request-promise-retry');
 
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { createChangeEmailCode } = require('./../../../src/infrastructure/directories/api');
@@ -41,52 +40,49 @@ describe('when creating a change email code in the directories api', () => {
     })
   });
 
-  it('should pass', () => {
-    expect(true).toBe(true);
+
+  it('then it should call user codes resource with uid', async () => {
+    await createChangeEmailCode(userId, newEmailAddress, clientId, redirectUri, correlationId);
+
+    expect(rp.mock.calls).toHaveLength(1);
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      method: 'PUT',
+      uri: 'http://directories.test/usercodes/upsert',
+    });
   });
 
-  // it('then it should call user codes resource with uid', async () => {
-  //   await createChangeEmailCode(userId, newEmailAddress, clientId, redirectUri, correlationId);
+  it('then it should use the token from jwt strategy as bearer token', async () => {
+    await createChangeEmailCode(userId, newEmailAddress, clientId, redirectUri, correlationId);
 
-  //   expect(rp.mock.calls).toHaveLength(1);
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     method: 'PUT',
-  //     uri: 'http://directories.test/usercodes/upsert',
-  //   });
-  // });
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      headers: {
+        authorization: 'bearer token',
+      },
+    });
+  });
 
-  // it('then it should use the token from jwt strategy as bearer token', async () => {
-  //   await createChangeEmailCode(userId, newEmailAddress, clientId, redirectUri, correlationId);
+  it('then it should include the correlation id', async () => {
+    await createChangeEmailCode(userId, newEmailAddress, clientId, redirectUri, correlationId);
 
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     headers: {
-  //       authorization: 'bearer token',
-  //     },
-  //   });
-  // });
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      headers: {
+        'x-correlation-id': correlationId,
+      },
+    });
+  });
 
-  // it('then it should include the correlation id', async () => {
-  //   await createChangeEmailCode(userId, newEmailAddress, clientId, redirectUri, correlationId);
+  it('then it will include userid, code type, email address, client id and redirect uri in the body', async () => {
+    await createChangeEmailCode(userId, newEmailAddress, clientId, redirectUri, correlationId);
 
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     headers: {
-  //       'x-correlation-id': correlationId,
-  //     },
-  //   });
-  // });
-
-  // it('then it will include userid, code type, email address, client id and redirect uri in the body', async () => {
-  //   await createChangeEmailCode(userId, newEmailAddress, clientId, redirectUri, correlationId);
-
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     body: {
-  //       uid: userId,
-  //       clientId,
-  //       redirectUri,
-  //       codeType: 'changeemail',
-  //       email: newEmailAddress,
-  //       selfInvoked: false,
-  //     },
-  //   });
-  // });
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      body: {
+        uid: userId,
+        clientId,
+        redirectUri,
+        codeType: 'changeemail',
+        email: newEmailAddress,
+        selfInvoked: false,
+      },
+    });
+  });
 });
