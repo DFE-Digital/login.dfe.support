@@ -9,9 +9,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
   },
 }));
 
-const rp = jest.fn();
-const requestPromise = require('login.dfe.request-promise-retry');
-requestPromise.defaults.mockReturnValue(rp);
+const rp  = require('login.dfe.request-promise-retry');
 
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { putSingleServiceIdentifierForUser } = require('./../../../src/infrastructure/organisations/api');
@@ -40,41 +38,38 @@ describe('when getting a users services mapping from api', () => {
     })
   });
 
-  it('should pass', () => {
-    expect(true).toBe(true);
+
+  it('then it should call put on organisation identifiers resource with user id, service id and orgid', async () => {
+    await putSingleServiceIdentifierForUser(userId, serviceId,orgId, '123456', correlationId);
+
+    expect(rp.mock.calls).toHaveLength(1);
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      method: 'PUT',
+      uri: `http://organisations.test/organisations/${orgId}/services/${serviceId}/identifiers/${userId}`,
+      body: {
+        id_key: 'k2s-id',
+        id_value: '123456',
+      }
+    });
   });
 
-  // it('then it should call put on organisation identifiers resource with user id, service id and orgid', async () => {
-  //   await putSingleServiceIdentifierForUser(userId, serviceId,orgId, '123456', correlationId);
+  it('then it should use the token from jwt strategy as bearer token', async () => {
+    await putSingleServiceIdentifierForUser(userId, serviceId,orgId, '123456', correlationId);
 
-  //   expect(rp.mock.calls).toHaveLength(1);
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     method: 'PUT',
-  //     uri: `http://organisations.test/organisations/${orgId}/services/${serviceId}/identifiers/${userId}`,
-  //     body: {
-  //       id_key: 'k2s-id',
-  //       id_value: '123456',
-  //     }
-  //   });
-  // });
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      headers: {
+        authorization: 'bearer token',
+      },
+    });
+  });
 
-  // it('then it should use the token from jwt strategy as bearer token', async () => {
-  //   await putSingleServiceIdentifierForUser(userId, serviceId,orgId, '123456', correlationId);
+  it('then it should include the correlation id', async () => {
+    await putSingleServiceIdentifierForUser(userId, serviceId,orgId, '123456', correlationId);
 
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     headers: {
-  //       authorization: 'bearer token',
-  //     },
-  //   });
-  // });
-
-  // it('then it should include the correlation id', async () => {
-  //   await putSingleServiceIdentifierForUser(userId, serviceId,orgId, '123456', correlationId);
-
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     headers: {
-  //       'x-correlation-id': correlationId,
-  //     },
-  //   });
-  // });
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      headers: {
+        'x-correlation-id': correlationId,
+      },
+    });
+  });
 });

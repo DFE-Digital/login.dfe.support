@@ -9,9 +9,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
   },
 }));
 
-const rp = jest.fn();
-const requestPromise = require('login.dfe.request-promise-retry');
-requestPromise.defaults.mockReturnValue(rp);
+const rp  = require('login.dfe.request-promise-retry');
 
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { getInvitation } = require('./../../../src/infrastructure/directories/api');
@@ -42,37 +40,34 @@ describe('when getting a page of users from directories api', () => {
     })
   });
 
-  it('should pass', () => {
-    expect(true).toBe(true);
+
+  it('then it should call invitations resource with invitation id', async () => {
+    await getInvitation(invitationId, correlationId);
+
+    expect(rp.mock.calls).toHaveLength(1);
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      method: 'GET',
+      uri: 'http://directories.test/invitations/invite1',
+    });
   });
 
-  // it('then it should call invitations resource with invitation id', async () => {
-  //   await getInvitation(invitationId, correlationId);
+  it('then it should use the token from jwt strategy as bearer token', async () => {
+    await getInvitation(invitationId, correlationId);
 
-  //   expect(rp.mock.calls).toHaveLength(1);
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     method: 'GET',
-  //     uri: 'http://directories.test/invitations/invite1',
-  //   });
-  // });
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      headers: {
+        authorization: 'bearer token',
+      },
+    });
+  });
 
-  // it('then it should use the token from jwt strategy as bearer token', async () => {
-  //   await getInvitation(invitationId, correlationId);
+  it('then it should include the correlation id', async () => {
+    await getInvitation(invitationId, correlationId);
 
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     headers: {
-  //       authorization: 'bearer token',
-  //     },
-  //   });
-  // });
-
-  // it('then it should include the correlation id', async () => {
-  //   await getInvitation(invitationId, correlationId);
-
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     headers: {
-  //       'x-correlation-id': correlationId,
-  //     },
-  //   });
-  // });
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      headers: {
+        'x-correlation-id': correlationId,
+      },
+    });
+  });
 });
