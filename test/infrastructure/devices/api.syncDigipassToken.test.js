@@ -24,10 +24,8 @@ jest.mock('login.dfe.jwt-strategies', () => {
   });
 });
 
-const rp = jest.fn();
-const requestPromise = require('login.dfe.request-promise-retry');
-requestPromise.defaults.mockReturnValue(rp);
 
+const rp = require('login.dfe.request-promise-retry');
 
 const { syncDigipassToken } = require('./../../../src/infrastructure/devices/api');
 
@@ -41,77 +39,74 @@ describe('when syncing a digipass token', () => {
     rp.mockReturnValue({ valid: true });
   });
 
-  it('should pass', () => {
-    expect(true).toBe(true);
+
+  it('then it should post to the digipass sync url for the serial number', async () => {
+    await syncDigipassToken(serialNumber, code1, code2);
+
+    expect(rp.mock.calls.length).toBe(1);
+    expect(rp.mock.calls[0][0].method).toBe('POST');
+    expect(rp.mock.calls[0][0].uri).toBe('https://device.login.dfe.test/digipass/1234509876/sync');
   });
 
-  // it('then it should post to the digipass sync url for the serial number', async () => {
-  //   await syncDigipassToken(serialNumber, code1, code2);
+  it('then it should authorize the request', async () => {
+    await syncDigipassToken(serialNumber, code1, code2);
 
-  //   expect(rp.mock.calls.length).toBe(1);
-  //   expect(rp.mock.calls[0][0].method).toBe('POST');
-  //   expect(rp.mock.calls[0][0].uri).toBe('https://device.login.dfe.test/digipass/1234509876/sync');
-  // });
+    expect(rp.mock.calls.length).toBe(1);
+    expect(rp.mock.calls[0][0].headers.authorization).toBe('Bearer token');
+  });
 
-  // it('then it should authorize the request', async () => {
-  //   await syncDigipassToken(serialNumber, code1, code2);
+  it('then it should post the consecutive sync codes in the body', async () => {
+    await syncDigipassToken(serialNumber, code1, code2);
 
-  //   expect(rp.mock.calls.length).toBe(1);
-  //   expect(rp.mock.calls[0][0].headers.authorization).toBe('Bearer token');
-  // });
+    expect(rp.mock.calls.length).toBe(1);
+    expect(rp.mock.calls[0][0].body).toMatchObject({
+      code1,
+      code2,
+    });
+  });
 
-  // it('then it should post the consecutive sync codes in the body', async () => {
-  //   await syncDigipassToken(serialNumber, code1, code2);
+  it('then it should return valid from response', async () => {
+    const actual = await syncDigipassToken(serialNumber, code1, code2);
 
-  //   expect(rp.mock.calls.length).toBe(1);
-  //   expect(rp.mock.calls[0][0].body).toMatchObject({
-  //     code1,
-  //     code2,
-  //   });
-  // });
+    expect(actual).toBe(true);
+  });
 
-  // it('then it should return valid from response', async () => {
-  //   const actual = await syncDigipassToken(serialNumber, code1, code2);
+  it('then it should return null if there is a 400 response from the devices api', async () => {
+    rp.mockImplementation(() => {
+      const err = new Error('Some error');
+      err.statusCode = 400;
+      throw err;
+    });
 
-  //   expect(actual).toBe(true);
-  // });
+    const actual = await syncDigipassToken(serialNumber, code1, code2);
 
-  // it('then it should return null if there is a 400 response from the devices api', async () => {
-  //   rp.mockImplementation(() => {
-  //     const err = new Error('Some error');
-  //     err.statusCode = 400;
-  //     throw err;
-  //   });
+    expect(actual).toBeNull();
+  });
 
-  //   const actual = await syncDigipassToken(serialNumber, code1, code2);
+  it('then it should return null if there is a 404 response from the devices api', async () => {
+    rp.mockImplementation(() => {
+      const err = new Error('Some error');
+      err.statusCode = 404;
+      throw err;
+    });
 
-  //   expect(actual).toBeNull();
-  // });
+    const actual = await syncDigipassToken(serialNumber, code1, code2);
 
-  // it('then it should return null if there is a 404 response from the devices api', async () => {
-  //   rp.mockImplementation(() => {
-  //     const err = new Error('Some error');
-  //     err.statusCode = 404;
-  //     throw err;
-  //   });
+    expect(actual).toBeNull();
+  });
 
-  //   const actual = await syncDigipassToken(serialNumber, code1, code2);
+  it('then it should throw an error if there is a non-400/404 response from the devices api', async () => {
+    rp.mockImplementation(() => {
+      const err = new Error('Some error');
+      err.statusCode = 500;
+      throw err;
+    });
 
-  //   expect(actual).toBeNull();
-  // });
-
-  // it('then it should throw an error if there is a non-400/404 response from the devices api', async () => {
-  //   rp.mockImplementation(() => {
-  //     const err = new Error('Some error');
-  //     err.statusCode = 500;
-  //     throw err;
-  //   });
-
-  //   try {
-  //     await syncDigipassToken(serialNumber, code1, code2);
-  //     throw new Error('No error thrown!');
-  //   } catch (e) {
-  //     expect(e.message).toBe('Some error');
-  //   }
-  // });
+    try {
+      await syncDigipassToken(serialNumber, code1, code2);
+      throw new Error('No error thrown!');
+    } catch (e) {
+      expect(e.message).toBe('Some error');
+    }
+  });
 });

@@ -9,9 +9,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
   },
 }));
 
-const rp = jest.fn();
-const requestPromise = require('login.dfe.request-promise-retry');
-requestPromise.defaults.mockReturnValue(rp);
+const rp = require('login.dfe.request-promise-retry');
 
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { getDeviceUnlockCode } = require('./../../../src/infrastructure/devices/api');
@@ -36,55 +34,52 @@ describe('when getting an unlock code from the devices api', () => {
     })
   });
 
-  it('should pass', () => {
-    expect(true).toBe(true);
+
+  it('then it should call digipass resource with serial number', async () => {
+    await getDeviceUnlockCode('123456789','unlock1', correlationId);
+
+    expect(rp.mock.calls).toHaveLength(1);
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      method: 'GET',
+      uri: 'http://devices.test/digipass/123456789?fields=unlock1',
+    });
   });
 
-  // it('then it should call digipass resource with serial number', async () => {
-  //   await getDeviceUnlockCode('123456789','unlock1', correlationId);
+  it('then it should use the token from jwt strategy as bearer token', async () => {
+    await getDeviceUnlockCode('123456789','unlock1', correlationId);
 
-  //   expect(rp.mock.calls).toHaveLength(1);
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     method: 'GET',
-  //     uri: 'http://devices.test/digipass/123456789?fields=unlock1',
-  //   });
-  // });
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      headers: {
+        authorization: 'bearer token',
+      },
+    });
+  });
 
-  // it('then it should use the token from jwt strategy as bearer token', async () => {
-  //   await getDeviceUnlockCode('123456789','unlock1', correlationId);
+  it('then it should include the correlation id', async () => {
+    await getDeviceUnlockCode('123456789','unlock1', correlationId);
 
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     headers: {
-  //       authorization: 'bearer token',
-  //     },
-  //   });
-  // });
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      headers: {
+        'x-correlation-id': correlationId,
+      },
+    });
+  });
 
-  // it('then it should include the correlation id', async () => {
-  //   await getDeviceUnlockCode('123456789','unlock1', correlationId);
+  it('then the unlock code 1 is returned in the resposne', async () => {
+    const actual = await getDeviceUnlockCode('123456789','unlock1', correlationId);
 
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     headers: {
-  //       'x-correlation-id': correlationId,
-  //     },
-  //   });
-  // });
+    expect(actual).toBe('1234567');
+  });
 
-  // it('then the unlock code 1 is returned in the resposne', async () => {
-  //   const actual = await getDeviceUnlockCode('123456789','unlock1', correlationId);
+  it('then the unlock code 2 is returned in the resposne', async () => {
+    const actual = await getDeviceUnlockCode('123456789','unlock2', correlationId);
 
-  //   expect(actual).toBe('1234567');
-  // });
+    expect(actual).toBe('7654321');
+  });
 
-  // it('then the unlock code 2 is returned in the resposne', async () => {
-  //   const actual = await getDeviceUnlockCode('123456789','unlock2', correlationId);
+  it('then if an invalid unlock code is filtered undefined is returned', async () => {
+    const actual = await getDeviceUnlockCode('123456789','unlock3', correlationId);
 
-  //   expect(actual).toBe('7654321');
-  // });
-
-  // it('then if an invalid unlock code is filtered undefined is returned', async () => {
-  //   const actual = await getDeviceUnlockCode('123456789','unlock3', correlationId);
-
-  //   expect(actual).toBe(undefined);
-  // });
+    expect(actual).toBe(undefined);
+  });
 });

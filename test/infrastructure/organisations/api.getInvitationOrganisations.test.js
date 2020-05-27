@@ -14,9 +14,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
   },
 }));
 
-const rp = jest.fn();
-const requestPromise = require('login.dfe.request-promise-retry');
-requestPromise.defaults.mockReturnValue(rp);
+const rp  = require('login.dfe.request-promise-retry');
 
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { getInvitationOrganisations } = require('./../../../src/infrastructure/organisations/api');
@@ -74,43 +72,40 @@ describe('when getting a page of organisations from api', () => {
     })
   });
 
-  it('should pass', () => {
-    expect(true).toBe(true);
+
+  it('then it should call invitations resource with invitation id', async () => {
+    await getInvitationOrganisations(invitationId, correlationId);
+
+    expect(rp.mock.calls).toHaveLength(1);
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      method: 'GET',
+      uri: 'http://organisations.test/invitations/v2/bb185bc5-ed6f-473f-9bbd-e1ef565306e0',
+    });
   });
 
-  // it('then it should call invitations resource with invitation id', async () => {
-  //   await getInvitationOrganisations(invitationId, correlationId);
+  it('then it should use the token from jwt strategy as bearer token', async () => {
+    await getInvitationOrganisations(invitationId, correlationId);
 
-  //   expect(rp.mock.calls).toHaveLength(1);
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     method: 'GET',
-  //     uri: 'http://organisations.test/invitations/v2/bb185bc5-ed6f-473f-9bbd-e1ef565306e0',
-  //   });
-  // });
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      headers: {
+        authorization: 'bearer token',
+      },
+    });
+  });
 
-  // it('then it should use the token from jwt strategy as bearer token', async () => {
-  //   await getInvitationOrganisations(invitationId, correlationId);
+  it('then it should include the correlation id', async () => {
+    await getInvitationOrganisations(invitationId, correlationId);
 
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     headers: {
-  //       authorization: 'bearer token',
-  //     },
-  //   });
-  // });
+    expect(rp.mock.calls[0][0]).toMatchObject({
+      headers: {
+        'x-correlation-id': correlationId,
+      },
+    });
+  });
 
-  // it('then it should include the correlation id', async () => {
-  //   await getInvitationOrganisations(invitationId, correlationId);
+  it('then it should invitation org mapping', async () => {
+    const actual = await getInvitationOrganisations(invitationId, correlationId);
 
-  //   expect(rp.mock.calls[0][0]).toMatchObject({
-  //     headers: {
-  //       'x-correlation-id': correlationId,
-  //     },
-  //   });
-  // });
-
-  // it('then it should invitation org mapping', async () => {
-  //   const actual = await getInvitationOrganisations(invitationId, correlationId);
-
-  //   expect(actual).toMatchObject(apiResponse);
-  // });
+    expect(actual).toMatchObject(apiResponse);
+  });
 });
