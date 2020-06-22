@@ -5,6 +5,7 @@ const NotificationClient = require('login.dfe.notifications.client');
 const { listRolesOfService, addInvitationService, addUserService, updateInvitationService, updateUserService } = require('./../../infrastructure/access');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 const logger = require('./../../infrastructure/logger');
+const { get } = require('lodash');
 
 const get = async (req, res) => {
   const userId = req.params.uid;
@@ -14,19 +15,26 @@ const get = async (req, res) => {
   const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisations(userId, req.id);
   const organisationDetails = userOrganisations.find(x => x.organisation.id === req.params.orgId);
 
-  const services = req.session.user.services.map(service => ({
-    id: service.serviceId,
-    name: '',
-    roles: service.roles,
-  }));
-  const allServices = await getAllServices(req.id);
-  for (let i = 0; i < services.length; i++) {
-    const service = services[i];
-    const serviceDetails = allServices.services.find(x => x.id === service.id);
-    const allRolesOfService = await listRolesOfService(service.id, req.id);
-    const roleDetails = allRolesOfService.filter(x => service.roles.find(y => y.toLowerCase() === x.id.toLowerCase()));
-    service.name = serviceDetails.name;
-    service.roles = roleDetails;
+  const userServices = get(req, 'session.user.services', []);
+
+  if (userServices.length) {
+    const services = userServices.map(service => ({
+      id: service.serviceId,
+      name: '',
+      roles: service.roles,
+    }));
+
+    const allServices = await getAllServices(req.id);
+    
+    for (let i = 0; i < services.length; i++) {
+      const service = services[i];
+      const serviceDetails = allServices.services.find(x => x.id === service.id);
+      const allRolesOfService = await listRolesOfService(service.id, req.id);
+      const roleDetails = allRolesOfService.filter(x => service.roles.find(y => y.toLowerCase() === x.id.toLowerCase()));
+      service.name = serviceDetails.name;
+      service.roles = roleDetails;
+    }
+
   }
 
   return res.render('users/views/confirmAddService', {
