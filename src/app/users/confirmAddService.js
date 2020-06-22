@@ -5,7 +5,7 @@ const NotificationClient = require('login.dfe.notifications.client');
 const { listRolesOfService, addInvitationService, addUserService, updateInvitationService, updateUserService } = require('./../../infrastructure/access');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 const logger = require('./../../infrastructure/logger');
-const { get } = require('lodash');
+const { get: getSafePath } = require('lodash');
 
 const get = async (req, res) => {
   const userId = req.params.uid;
@@ -15,7 +15,7 @@ const get = async (req, res) => {
   const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisations(userId, req.id);
   const organisationDetails = userOrganisations.find(x => x.organisation.id === req.params.orgId);
   
-  const userServices = get(req, 'session.user.services', []);
+  const userServices = getSafePath(req, 'session.user.services', []);
   const services = userServices.map(service => ({
     id: service.serviceId,
     name: '',
