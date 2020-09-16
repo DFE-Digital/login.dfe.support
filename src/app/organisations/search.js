@@ -48,7 +48,7 @@ const unpackMultiSelect = (parameter) => {
 };
 
 const filterOutCategories = (orgCategories) => {
-  return orgCategories.map((cat) => { return cat.id }).filter((id) => {
+  return orgCategories.map((cat) => { return cat }).filter((id) => {
     return id !== '004';
   })
 }
