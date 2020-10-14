@@ -127,7 +127,7 @@ const mapUserToSupportModel = (user, userFromSearch) => {
     organisations: userFromSearch.organisations,
     lastLogin: userFromSearch.lastLogin ? new Date(userFromSearch.lastLogin) : null,
     successfulLoginsInPast12Months: userFromSearch.numberOfSuccessfulLoginsInPast12Months,
-    status: mapUserStatus(userFromSearch.statusId, userFromSearch.statusLastChangedOn),
+    status: mapUserStatus(userFromSearch.status.id, userFromSearch.statusLastChangedOn),
     pendingEmail: userFromSearch.pendingEmail,
   };
 };
