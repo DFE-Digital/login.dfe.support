@@ -111,6 +111,11 @@
 
 <script src="<%= locals.urls.assets %>/javascript/vendors/jquery.min.js?version=<%= locals.assets.version %>"></script>
 <script src="<%= locals.urls.assets %>/javascript/vendors/select2.min.js?version=<%= locals.assets.version %>"></script>
+<script type="text/javascript" src="<%= locals.urls.assets %>/javascript/vendors/vendors.min.js?version=<%= locals.assets.version %>"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script>
+    window.gaTrackingId = '<%=locals.gaTrackingId || 'UA-114739594-1'%>';
+</script>
 <script src="<%= locals.urls.assets %>/javascript/app.min.js?version=<%= locals.assets.version %>"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=<%=locals.gaTrackingId || 'UA-114739594-1'%>"></script>
 
