@@ -4,7 +4,20 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-    
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Support",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/src/web.js",
+            "env": {
+                "settings": "config/login.dfe.support.local.json",
+                "NODE_TLS_REJECT_UNAUTHORIZED": "0"
+            },
+            "outputCapture": "std"
+        },
         {
             "type": "node",
             "request": "attach",
@@ -14,6 +27,5 @@
             "localRoot": "${workspaceFolder}",
             "remoteRoot": "/app"
         }
-
     ]
 }
