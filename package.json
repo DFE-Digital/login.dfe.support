@@ -34,7 +34,7 @@
     "express-mw-correlation-id": "^4.0.0",
     "helmet": "^3.21.2",
     "ioredis": "^3.2.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "login.dfe.async-retry": "git+https://github.com/DFE-Digital/login.dfe.async-retry.git#v1.1",
     "login.dfe.audit.winston-sequelize-transport": "github:DFE-Digital/login.dfe.audit.winston-sequelize-transport#v2.12",
     "login.dfe.config.schema.common": "git+https://github.com/DFE-Digital/login.dfe.config.schema.common.git#v1.8.1",
