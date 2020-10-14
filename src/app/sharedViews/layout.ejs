@@ -8,24 +8,18 @@
 
     <title><%= locals.title || (locals.app ? locals.app.title : null) || 'DfE Sign-in Support Console' %></title>
 
-    <link rel="stylesheet" href="<%= locals.urls.assets %>/css/govuk/fonts.css">
-    <link rel="stylesheet"
-          href="<%= locals.urls.assets %>/css/govuk/govuk-template.css">
-    <link rel="stylesheet" href="<%= locals.urls.assets %>/css/screen.css">
+    <link rel="stylesheet" href="<%= locals.urls.assets %>/css/govuk/fonts.css?version=<%= locals.assets.version %>">
+    <link rel="stylesheet" href="<%= locals.urls.assets %>/css/govuk/govuk-template.css?version=<%= locals.assets.version %>">
+    <link rel="stylesheet" href="<%= locals.urls.assets %>/css/screen.css?version=<%= locals.assets.version %>">
 
-    <link rel="shortcut icon" href="<%= locals.urls.assets %>/images/favicon.ico"
-          type="image/x-icon"/>
+    <link rel="shortcut icon" href="<%= locals.urls.assets %>/images/favicon.ico" type="image/x-icon"/>
 
-    <link rel="apple-touch-icon" sizes="180x180"
-          href="<%= locals.urls.assets %>/images/apple-icon-180x180.png">
-    <link rel="apple-touch-icon" sizes="167x167"
-          href="<%= locals.urls.assets %>/images/apple-icon-167x167.png">
-    <link rel="apple-touch-icon" sizes="152x152"
-          href="<%= locals.urls.assets %>/images/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="<%= locals.urls.assets %>/images/apple-icon-180x180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="<%= locals.urls.assets %>/images/apple-icon-167x167.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="<%= locals.urls.assets %>/images/apple-icon-152x152.png">
     <link rel="apple-touch-icon" href="<%= locals.urls.assets %>/images/apple-icon.png">
 
-    <meta property="og:image"
-          content="<%= locals.urls.assets %>/images/opengraph-image.png">
+    <meta property="og:image" content="<%= locals.urls.assets %>/images/opengraph-image.png">
 
 </head>
 <body class="support">
@@ -39,8 +33,7 @@
 </div>
 
 <div id="global-cookie-message">
-    <p>GOV.UK uses cookies to make the site simpler. <a href="https://www.gov.uk/help/cookies">Find out more about
-            cookies</a></p>
+    <p>GOV.UK uses cookies to make the site simpler. <a href="https://www.gov.uk/help/cookies">Find out more about cookies</a></p>
 </div>
 
 <div class="wrapper">
@@ -116,9 +109,10 @@
     </div>
 </footer>
 
-<script src="<%= locals.urls.assets %>/javascript/vendors/jquery.min.js"></script>
-<script src="<%= locals.urls.assets %>/javascript/vendors/select2.min.js"></script>
-<script src="<%= locals.urls.assets %>/javascript/app.min.js"></script>
+<script src="<%= locals.urls.assets %>/javascript/vendors/jquery.min.js?version=<%= locals.assets.version %>"></script>
+<script src="<%= locals.urls.assets %>/javascript/vendors/select2.min.js?version=<%= locals.assets.version %>"></script>
+<script src="<%= locals.urls.assets %>/javascript/app.min.js?version=<%= locals.assets.version %>"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=<%=locals.gaTrackingId || 'UA-114739594-1'%>"></script>
 
 </body>
 </html>

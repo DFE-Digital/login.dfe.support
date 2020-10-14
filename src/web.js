@@ -46,7 +46,7 @@ const init = async () => {
   }));
   app.use(setCorrelationId(true));
 
-  let assetsUrl = config.hostingEnvironment.assetsUrl || 'https://rawgit.com/DFE-Digital/dfe.ui.toolkit/master/dist/';
+  let assetsUrl = config.assets.url;
   assetsUrl = assetsUrl.endsWith('/') ? assetsUrl.substr(0, assetsUrl.length - 1) : assetsUrl;
   Object.assign(app.locals, {
     moment,
@@ -57,6 +57,10 @@ const init = async () => {
     app: {
       title: 'DfE Sign-in Support Console',
       environmentBannerMessage: config.hostingEnvironment.environmentBannerMessage,
+    },
+    gaTrackingId: config.hostingEnvironment.gaTrackingId,
+    assets: {
+      version: config.assets.version,
     },
   });
 
@@ -108,6 +112,7 @@ const init = async () => {
   const errorPageRenderer = ejsErrorPages.getErrorPageRenderer({
     help: config.hostingEnvironment.helpUrl,
     assets: assetsUrl,
+    assetsVersion: config.assets.version,
   }, config.hostingEnvironment.env === 'dev');
   app.use(getErrorHandler({
     logger,
