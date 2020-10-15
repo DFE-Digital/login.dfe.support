@@ -1,6 +1,6 @@
 const logger = require('./../../infrastructure/logger');
 const { seachForUsers, getSearchDetailsForUserById, updateUserInSearch } = require('./../../infrastructure/search');
-const { getInvitation, createUserDevice } = require('./../../infrastructure/directories');
+const { getInvitation, createUserDevice, getUser } = require('./../../infrastructure/directories');
 const { getServicesByUserId, getServicesByInvitationId } = require('./../../infrastructure/access');
 const { getServiceById } = require('./../../infrastructure/applications');
 const { mapUserStatus } = require('./../../infrastructure/utils');
@@ -114,6 +114,24 @@ const getUserDetails = async (req) => {
   return getUserDetailsById(req.params.uid, req.id);
 };
 
+const mapUserToSupportModel = (user, userFromSearch) => {
+  return {
+    id: user.sub,
+    name: `${user.given_name} ${user.family_name}`,
+    firstName: user.given_name,
+    lastName: user.family_name,
+    email: user.email,
+    organisation: userFromSearch.primaryOrganisation ? {
+      name: userFromSearch.primaryOrganisation
+    } : null,
+    organisations: userFromSearch.organisations,
+    lastLogin: userFromSearch.lastLogin ? new Date(userFromSearch.lastLogin) : null,
+    successfulLoginsInPast12Months: userFromSearch.numberOfSuccessfulLoginsInPast12Months,
+    status: mapUserStatus(userFromSearch.statusId, userFromSearch.statusLastChangedOn),
+    pendingEmail: userFromSearch.pendingEmail,
+  };
+};
+
 const getUserDetailsById = async (uid, correlationId) => {
   if (uid.startsWith('inv-')) {
     const invitation = await getInvitation(uid.substr(4), correlationId);
@@ -131,7 +149,9 @@ const getUserDetailsById = async (uid, correlationId) => {
       deactivated: invitation.deactivated
     };
   } else {
-    const user = await getSearchDetailsForUserById(uid);
+    const userSearch = await getSearchDetailsForUserById(uid);
+    const rawUser = await getUser(uid, correlationId);
+    const user = mapUserToSupportModel(rawUser, userSearch);
     const serviceDetails = await getServicesByUserId(uid, correlationId);
 
     const ktsDetails = serviceDetails ? serviceDetails.find((c) => c.serviceId.toLowerCase() === config.serviceMapping.key2SuccessServiceId.toLowerCase()) : undefined;
