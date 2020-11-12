@@ -74,10 +74,8 @@ const getFiltersModel = async (req) => {
   };
 };
 
-const doSearchAndBuildModel = async (req) => {
-  const result = await search(req);
-
-  const searchModel = {
+const buildModel = async (req, result = {}) => {
+  const model =  {
     csrfToken: req.csrfToken(),
     criteria: result.criteria,
     page: result.page,
@@ -92,13 +90,19 @@ const doSearchAndBuildModel = async (req) => {
   };
   const filtersModel = await getFiltersModel(req);
 
-  return Object.assign(searchModel, filtersModel);
+  return Object.assign(model, filtersModel);
+}
+
+const doSearchAndBuildModel = async (req) => {
+  const result = await search(req);
+  const model = await buildModel(req, result);
+  return model;
 };
 
 const get = async (req, res) => {
   clearNewUserSessionData(req);
 
-  const model = await doSearchAndBuildModel(req);
+  const model = await buildModel(req);
   sendResult(req, res, 'users/views/search', model);
 };
 

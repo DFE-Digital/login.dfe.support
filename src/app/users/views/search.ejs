@@ -5,7 +5,7 @@ const paginationModel = {
     currentPage: locals.page,
     numberOfPages: locals.numberOfPages,
     totalNumberOfResults: locals.totalNumberOfResults,
-    numberOfResultsOnPage: locals.users.length,
+    numberOfResultsOnPage: locals.users ? locals.users.length: undefined,
     data: [
         { key: 'criteria', value: locals.criteria },
         { key: 'sort', value: locals.sortBy },
@@ -87,7 +87,9 @@ if (services && services.length > 0) {
                 <input type="hidden" name="sort" value="<%= sortBy %>"/>
                 <input type="hidden" name="sortDir" value="<%= sortOrder %>"/>
                 <input type="hidden" name="showFilters" value="<%= !showFilters %>"/>
+                <% if (locals.users) { %>
                 <button type="submit" class="button-link filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
+                <% } %>
             </form>
 
     </div>
@@ -106,6 +108,7 @@ if (services && services.length > 0) {
     </div>
 </div>
 
+<% if (locals.users) { %>
 <div class="row">
     <% if (showFilters) { %>
     <div class="col-4">
@@ -263,5 +266,4 @@ if (services && services.length > 0) {
         <%- include('../../sharedViews/pagination', paginationModel); %>
     </div>
 </div>
-
-
+<% } %>
