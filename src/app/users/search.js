@@ -87,7 +87,7 @@ const buildModel = async (req, result = {}) => {
     sortOrder: result.sortOrder,
     useGenericAddUser: config.toggles.useGenericAddUser,
     canViewRequests: req.user ? req.user.isRequestApprover : null,
-    error: result.error
+    validationMessages: result.validationMessages || {}
   };
   const filtersModel = await getFiltersModel(req);
 

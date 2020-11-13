@@ -46,9 +46,11 @@ const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
 
   let criteria = paramsSource.criteria;
-  if (!criteria || criteria.length <= 4) {
+  if (!criteria || criteria.length < 4) {
     return {
-      error: 'Please enter at least 4 characters in the search criteria.'
+      validationMessages: {
+        criteria: 'Please enter at least 4 characters'
+      }
     };
   }
   let safeCriteria = criteria;
