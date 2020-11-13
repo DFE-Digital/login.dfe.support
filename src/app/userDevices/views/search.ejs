@@ -15,7 +15,7 @@ const paginationModel = {
     currentPage: locals.page,
     numberOfPages: locals.numberOfPages,
     totalNumberOfResults: locals.totalNumberOfResults,
-    numberOfResultsOnPage: locals.userDevices.length,
+    numberOfResultsOnPage: locals.userDevices ? locals.userDevices.length: undefined,
     data: [
         { key: 'criteria', value: locals.criteria },
         { key: 'sort', value: locals.sortBy },
@@ -28,7 +28,10 @@ const paginationModel = {
     <div class="col-6">
         <form method="POST">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <div class="search-field">
+            <div class="search-field form-group <%= (locals.validationMessages.criteria !== undefined) ? 'form-group-error' : '' %>">
+                <% if (locals.validationMessages.criteria !== undefined) { %>
+                    <p class="error-message" id="validation-service"><%=locals.validationMessages.criteria %></p>
+                <% } %>
                 <fieldset class="search-input">
                     <label for="criteria" class="vh">Search by assignee, serial number or organisation</label>
                     <input type="text" id="criteria" name="criteria" value="<%= criteria %>" class="form-control" placeholder="Search by assignee, serial number or organisation">
@@ -43,6 +46,8 @@ const paginationModel = {
 
     </div>
 </div>
+
+<% if (locals.userDevices) { %>
 
 <%- include('../../sharedViews/pagination', paginationModel); %>
 <div class="row">
@@ -105,3 +110,5 @@ const paginationModel = {
     </div>
 </div>
 <%- include('../../sharedViews/pagination', paginationModel); %>
+
+<% } %>
