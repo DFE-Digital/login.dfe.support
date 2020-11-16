@@ -1,6 +1,6 @@
 const { sendResult } = require('./../../infrastructure/utils');
 const { getOrganisationByIdV2 } = require('./../../infrastructure/organisations');
-const { seachForUsers } = require('./../../infrastructure/search');
+const { searchForUsers } = require('./../../infrastructure/search');
 
 const mapRole = (roleId) => {
   if (roleId === 10000) {
@@ -15,7 +15,7 @@ const render = async (req, res, dataSource) => {
     pageNumber = 1;
   }
 
-  const results = await seachForUsers('*', pageNumber, undefined, undefined, {
+  const results = await searchForUsers('*', pageNumber, undefined, undefined, {
     organisations: [organisation.id],
   });
 
