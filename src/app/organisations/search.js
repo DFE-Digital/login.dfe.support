@@ -53,9 +53,16 @@ const filterOutCategories = (orgCategories) => {
   })
 }
 
-const doSearchAndBuildModel = async (req) => {
+const search = async (req) => {
   const inputSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
   const criteria = inputSource.criteria ? inputSource.criteria.trim() : '';
+  if (!criteria || criteria.length < 4) {
+    return {
+      validationMessages: {
+        criteria: 'Please enter at least 4 characters'
+      }
+    };
+  }
   const orgTypes = filterOutCategories(unpackMultiSelect(inputSource.organisationType));
   const orgStatuses = unpackMultiSelect(inputSource.organisationStatus);
   let pageNumber = parseInt(inputSource.page) || 1;
@@ -64,8 +71,7 @@ const doSearchAndBuildModel = async (req) => {
   }
 
   const pageOfOrganisations = await searchOrganisations(criteria, orgTypes , orgStatuses, pageNumber, req.id);
-  const searchModel =  {
-    csrfToken: req.csrfToken(),
+  const result =  {
     criteria: criteria,
     page: pageNumber,
     numberOfPages: pageOfOrganisations.totalNumberOfPages,
@@ -73,13 +79,31 @@ const doSearchAndBuildModel = async (req) => {
     organisations: pageOfOrganisations.organisations,
   }
 
-  const filtersModel = await getFiltersModel(req);
+  return result;
+};
 
-  return Object.assign(searchModel, filtersModel);
+const buildModel = async (req, result = {}) => {
+  const model =  {
+    csrfToken: req.csrfToken(),
+    criteria: result.criteria,
+    page: result.page,
+    numberOfPages: result.numberOfPages,
+    totalNumberOfResults: result.totalNumberOfResults,
+    organisations: result.organisations,
+    validationMessages: result.validationMessages || {}
+  };
+  const filtersModel = await getFiltersModel(req);
+  return Object.assign(model, filtersModel);
+}
+
+const doSearchAndBuildModel = async (req) => {
+  const result = await search(req);
+  const model = await buildModel(req, result);
+  return model;
 };
 
 const get = async (req, res) => {
-  const model = await doSearchAndBuildModel(req);
+  const model = await buildModel(req);
   sendResult(req, res, 'organisations/views/search', model);
 };
 

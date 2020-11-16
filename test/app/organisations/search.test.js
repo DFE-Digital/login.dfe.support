@@ -19,86 +19,125 @@ const orgsResult = {
   organisationTypes: [],
 };
 
+let requestConfig;
+let req;
+
 describe('when searching for organisations', () => {
   beforeEach(() => {
     searchOrganisations.mockReset().mockReturnValue(orgsResult);
   });
 
-  [
-    { method: 'POST', dataLocation: 'body', action: search.post },
-    { method: 'GET', dataLocation: 'query', action: search.get },
-  ].forEach(({ method, dataLocation, action }) => {
+  describe('when method is GET', () => {
 
-    it(`then it should send page of organisations (${method} / ${dataLocation})`, async () => {
-      const req = getRequestMock({
-        method,
-      });
-      req[dataLocation] = {
-        criteria: 'org1',
-        page: 2,
-      };
+    beforeEach(() => {
+      requestConfig = { method: 'GET', dataLocation: 'query', action: search.get };
+      req = getRequestMock({ method: requestConfig.method });
+    });
 
-      await action(req, res);
-
+    it('then it should not search for organisations', async () => {
+      await requestConfig.action(req, res);
+      expect(searchOrganisations).not.toHaveBeenCalledTimes(1);
       expect(sendResult).toHaveBeenCalledTimes(1);
       expect(sendResult).toHaveBeenCalledWith(req, res, 'organisations/views/search', {
         csrfToken: req.csrfToken(),
-        criteria: 'org1',
-        page: 2,
-        numberOfPages: orgsResult.totalNumberOfPages,
-        totalNumberOfResults: orgsResult.totalNumberOfRecords,
-        organisations: orgsResult.organisations,
-        organisationTypes: orgsResult.organisationTypes,
-        organisationStatuses: orgsResult.organisationStatuses,
-        showFilters: false,
-      });
-    });
-
-    it(`then it should search orgs with criteria specified (${method} / ${dataLocation})`, async () => {
-      const req = getRequestMock({
-        method,
-      });
-      req[dataLocation] = {
-        criteria: 'org1',
-        page: 2,
-      };
-
-      await action(req, res);
-
-      expect(searchOrganisations).toHaveBeenCalledTimes(1);
-      expect(searchOrganisations).toHaveBeenCalledWith('org1', [],[], 2, req.id);
-    });
-
-    it(`then it should search orgs with no criteria if none specified (${method} / ${dataLocation})`, async () => {
-      const req = getRequestMock({
-        method,
-      });
-      req[dataLocation] = {
         criteria: undefined,
-        page: 2,
-      };
-
-      await action(req, res);
-
-      expect(searchOrganisations).toHaveBeenCalledTimes(1);
-      expect(searchOrganisations).toHaveBeenCalledWith('', [],[], 2, req.id);
-    });
-
-    it(`then it should request page 1 if no page specified (${method} / ${dataLocation})`, async () => {
-      const req = getRequestMock({
-        method,
-      });
-      req[dataLocation] = {
-        criteria: 'org1',
         page: undefined,
-      };
-
-      await action(req, res);
-
-      expect(searchOrganisations).toHaveBeenCalledTimes(1);
-      expect(searchOrganisations).toHaveBeenCalledWith('org1', [],[], 1, req.id);
+        numberOfPages: undefined,
+        totalNumberOfResults: undefined,
+        organisations: undefined,
+        organisationTypes: [],
+        organisationStatuses: [],
+        showFilters: false,
+        validationMessages: {}
+      });
     });
 
+  });
+
+  describe('when method is POST', () => {
+
+    beforeEach(() => {
+      requestConfig = { method: 'POST', dataLocation: 'body', action: search.post };
+      req = getRequestMock({ method: requestConfig.method });
+    });
+
+    describe('when search criteria is >= 4 characters', () => {
+
+      beforeEach(() => {
+        req[requestConfig.dataLocation] = {
+          criteria: 'org1',
+          page: 2,
+        };
+      });
+
+      it(`then it should send page of organisations`, async () => {
+  
+        await requestConfig.action(req, res);
+  
+        expect(sendResult).toHaveBeenCalledTimes(1);
+        expect(sendResult).toHaveBeenCalledWith(req, res, 'organisations/views/search', {
+          csrfToken: req.csrfToken(),
+          criteria: 'org1',
+          page: 2,
+          numberOfPages: orgsResult.totalNumberOfPages,
+          totalNumberOfResults: orgsResult.totalNumberOfRecords,
+          organisations: orgsResult.organisations,
+          organisationTypes: orgsResult.organisationTypes,
+          organisationStatuses: orgsResult.organisationStatuses,
+          showFilters: false,
+          validationMessages: {}
+        });
+      });
+  
+      it(`then it should search orgs with criteria specified`, async () => {
+  
+        await requestConfig.action(req, res);
+  
+        expect(searchOrganisations).toHaveBeenCalledTimes(1);
+        expect(searchOrganisations).toHaveBeenCalledWith('org1', [],[], 2, req.id);
+      });
+  
+      it(`then it should request page 1 if no page specified`, async () => {
+        req[requestConfig.dataLocation].page = undefined;
+  
+        await requestConfig.action(req, res);
+  
+        expect(searchOrganisations).toHaveBeenCalledTimes(1);
+        expect(searchOrganisations).toHaveBeenCalledWith('org1', [],[], 1, req.id);
+      });
+  
+    });
+
+    describe('when search criteria is >= 4 characters', () => {
+
+      beforeEach(() => {
+        req[requestConfig.dataLocation] = {
+          criteria: 'a'
+        };
+      });
+
+      it(`then it should not search orgs and return validation error`, async () => {
+  
+        await requestConfig.action(req, res);
+  
+        expect(searchOrganisations).not.toHaveBeenCalledTimes(1);
+        expect(sendResult).toHaveBeenCalledWith(req, res, 'organisations/views/search', {
+          csrfToken: req.csrfToken(),
+          criteria: undefined,
+          page: undefined,
+          numberOfPages: undefined,
+          totalNumberOfResults: undefined,
+          organisations: undefined,
+          organisationTypes: [],
+          organisationStatuses: [],
+          showFilters: false,
+          validationMessages: {
+            criteria: "Please enter at least 4 characters"
+          }
+        });
+      });
+
+    });
   });
 
 });

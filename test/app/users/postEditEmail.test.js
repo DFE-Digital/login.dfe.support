@@ -182,7 +182,7 @@ describe('when changing email address', () => {
     });
   });
 
-  describe('for an invitation', async () => {
+  describe('for an invitation', () => {
     beforeEach(() => {
       req.params.uid = 'inv-35f60ab3-e169-41ec-bc88-d80e1beef937';
 

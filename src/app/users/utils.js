@@ -1,5 +1,5 @@
 const logger = require('./../../infrastructure/logger');
-const { seachForUsers, getSearchDetailsForUserById, updateUserInSearch } = require('./../../infrastructure/search');
+const { searchForUsers, getSearchDetailsForUserById, updateUserInSearch } = require('./../../infrastructure/search');
 const { getInvitation, createUserDevice, getUser } = require('./../../infrastructure/directories');
 const { getServicesByUserId, getServicesByInvitationId } = require('./../../infrastructure/access');
 const { getServiceById } = require('./../../infrastructure/applications');
@@ -46,8 +46,12 @@ const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
 
   let criteria = paramsSource.criteria;
-  if (!criteria) {
-    criteria = '';
+  if (!criteria || criteria.length < 4) {
+    return {
+      validationMessages: {
+        criteria: 'Please enter at least 4 characters'
+      }
+    };
   }
   let safeCriteria = criteria;
   if (criteria.indexOf('-') !== -1) {
@@ -64,7 +68,7 @@ const search = async (req) => {
 
   const filter = buildFilters(paramsSource);
 
-  const results = await seachForUsers(criteria + '*', page, sortBy, sortAsc ? 'asc' : 'desc', filter);
+  const results = await searchForUsers(criteria + '*', page, sortBy, sortAsc ? 'asc' : 'desc', filter);
   logger.audit(`${req.user.email} (id: ${req.user.sub}) searched for users in support using criteria "${criteria}"`, {
     type: 'support',
     subType: 'user-search',
