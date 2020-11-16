@@ -21,10 +21,7 @@ describe('When processing a get to search for users', () => {
 
   beforeEach(() => {
     req = getRequestMock({
-      method: 'GET',
-      query: {
-        criteria: 'test',
-      },
+      method: 'GET'
     });
 
     res = getResponseMock();
@@ -66,39 +63,19 @@ describe('When processing a get to search for users', () => {
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: 'token',
     });
+    expect(utils.search).not.toHaveBeenCalled();
   });
 
-  test('then it should include criteria', async () => {
+  test('then it should include undefined values for search result properties as GET does not do a search anymore', async () => {
     await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      criteria: 'test',
-    });
-  });
-
-  test('then it includes the sort order and sort value', async () => {
-    await get(req, res);
-
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      sortBy: 'test',
-      sortOrder: 'desc'
-    });
-  });
-
-  test('then it should include page details', async () => {
-    await get(req, res);
-
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      page: 1,
-      numberOfPages: 3,
-    });
-  });
-
-  test('then it should include users', async () => {
-    await get(req, res);
-
-    expect(res.render.mock.calls[0][1]).toMatchObject({
-      users: usersSearchResult,
+      criteria: undefined,
+      sortBy: undefined,
+      sortOrder: undefined,
+      page: undefined,
+      numberOfPages: undefined,
+      users: undefined
     });
   });
 });
