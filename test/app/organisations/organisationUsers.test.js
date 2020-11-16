@@ -6,7 +6,7 @@ jest.mock('./../../../src/infrastructure/search');
 const { getRequestMock, getResponseMock } = require('./../../utils');
 const { sendResult } = require('./../../../src/infrastructure/utils');
 const { getOrganisationByIdV2 } = require('./../../../src/infrastructure/organisations');
-const { seachForUsers } = require('./../../../src/infrastructure/search');
+const { searchForUsers } = require('./../../../src/infrastructure/search');
 const organisationUsers = require('./../../../src/app/organisations/organisationUsers');
 
 const res = getResponseMock();
@@ -35,14 +35,13 @@ describe('when displaying organisation users', () => {
   beforeEach(() => {
     getOrganisationByIdV2.mockReset().mockReturnValue(orgResult);
 
-    seachForUsers.mockReset().mockReturnValue(usersResult);
+    searchForUsers.mockReset().mockReturnValue(usersResult);
   });
 
   [
     { method: 'POST', dataLocation: 'body', action: organisationUsers.post },
     { method: 'GET', dataLocation: 'query', action: organisationUsers.get },
   ].forEach(({ method, dataLocation, action }) => {
-
     it(`then it should send page of organisation users (${method} / ${dataLocation})`, async () => {
       const req = getRequestMock({
         method,
@@ -82,7 +81,7 @@ describe('when displaying organisation users', () => {
                 description: 'End User',
               },
             },
-          }
+          },
         ],
         numberOfPages: usersResult.numberOfPages,
         totalNumberOfResults: usersResult.totalNumberOfResults,
@@ -102,8 +101,8 @@ describe('when displaying organisation users', () => {
 
       await action(req, res);
 
-      expect(seachForUsers).toHaveBeenCalledTimes(1);
-      expect(seachForUsers).toHaveBeenCalledWith('*', 2, undefined, undefined, {
+      expect(searchForUsers).toHaveBeenCalledTimes(1);
+      expect(searchForUsers).toHaveBeenCalledWith('*', 2, undefined, undefined, {
         organisations: ['org-1'],
       });
     });
@@ -121,8 +120,8 @@ describe('when displaying organisation users', () => {
 
       await action(req, res);
 
-      expect(seachForUsers).toHaveBeenCalledTimes(1);
-      expect(seachForUsers).toHaveBeenCalledWith('*', 1, undefined, undefined, {
+      expect(searchForUsers).toHaveBeenCalledTimes(1);
+      expect(searchForUsers).toHaveBeenCalledWith('*', 1, undefined, undefined, {
         organisations: ['org-1'],
       });
     });
