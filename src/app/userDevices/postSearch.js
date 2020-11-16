@@ -14,6 +14,7 @@ const action = async (req, res) => {
     sort: result.sort,
     sortBy: result.sortBy,
     sortOrder: result.sortOrder,
+    validationMessages: result.validationMessages || {}
   });
 };
 

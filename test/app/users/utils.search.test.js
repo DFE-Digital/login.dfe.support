@@ -6,13 +6,13 @@ jest.mock('./../../../src/infrastructure/users', () => {
 });
 jest.mock('./../../../src/infrastructure/search', () => {
   return {
-    seachForUsers: jest.fn(),
+    searchForUsers: jest.fn(),
   };
 });
 jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
 
 const logger = require('./../../../src/infrastructure/logger');
-const { seachForUsers } = require('./../../../src/infrastructure/search');
+const { searchForUsers } = require('./../../../src/infrastructure/search');
 const { search } = require('./../../../src/app/users/utils');
 
 describe('When processing a user search request', () => {
@@ -35,7 +35,7 @@ describe('When processing a user search request', () => {
       ],
       numberOfPages: 3
     };
-    seachForUsers.mockReset().mockReturnValue(usersSearchResult);
+    searchForUsers.mockReset().mockReturnValue(usersSearchResult);
 
     logger.audit.mockReset();
   });
@@ -62,15 +62,20 @@ describe('When processing a user search request', () => {
       expect(actual).toMatchObject({
         users: usersSearchResult.users
       });
-      expect(seachForUsers.mock.calls[0][0]).toBe('test*');
+      expect(searchForUsers.mock.calls[0][0]).toBe('test*');
     });
 
-    test('then it should default search criteria to all if not supplied', async () => {
+    test('then it should not search and return validation error if criteria does not meet minimum length', async () => {
       req.body.criteria = '';
 
-      await search(req);
+      const result = await search(req);
 
-      expect(seachForUsers.mock.calls[0][0]).toBe('*');
+      expect(searchForUsers).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        validationMessages: {
+          criteria: 'Please enter at least 4 characters'
+        }
+      });
     });
 
     test('then it should include posted criteria', async () => {
@@ -87,7 +92,7 @@ describe('When processing a user search request', () => {
       expect(actual).toMatchObject({
         page: 1,
       });
-      expect(seachForUsers.mock.calls[0][1]).toBe(1);
+      expect(searchForUsers.mock.calls[0][1]).toBe(1);
     });
 
     test('then it should include number of pages from search result', async () => {
@@ -119,8 +124,8 @@ describe('When processing a user search request', () => {
 
       expect(actual.sort.name.nextDirection).toBe('desc');
       expect(actual.sort.name.applied).toBe(true);
-      expect(seachForUsers.mock.calls[0][2]).toBe('name');
-      expect(seachForUsers.mock.calls[0][3]).toBe('asc');
+      expect(searchForUsers.mock.calls[0][2]).toBe('name');
+      expect(searchForUsers.mock.calls[0][3]).toBe('asc');
     });
 
     test('then it should filter by organisation types if specified', async () => {
@@ -128,8 +133,8 @@ describe('When processing a user search request', () => {
 
       await search(req);
 
-      expect(seachForUsers.mock.calls).toHaveLength(1);
-      expect(seachForUsers.mock.calls[0][4]).toMatchObject({
+      expect(searchForUsers.mock.calls).toHaveLength(1);
+      expect(searchForUsers.mock.calls[0][4]).toMatchObject({
         organisationCategories: ['org1', 'org2'],
         services: [],
         statusId: []
@@ -141,8 +146,8 @@ describe('When processing a user search request', () => {
 
       await search(req);
 
-      expect(seachForUsers.mock.calls).toHaveLength(1);
-      expect(seachForUsers.mock.calls[0][4]).toMatchObject({
+      expect(searchForUsers.mock.calls).toHaveLength(1);
+      expect(searchForUsers.mock.calls[0][4]).toMatchObject({
         statusId: ['-1', '1'],
       });
     });
@@ -152,8 +157,8 @@ describe('When processing a user search request', () => {
 
       await search(req);
 
-      expect(seachForUsers.mock.calls).toHaveLength(1);
-      expect(seachForUsers.mock.calls[0][4]).toMatchObject({
+      expect(searchForUsers.mock.calls).toHaveLength(1);
+      expect(searchForUsers.mock.calls[0][4]).toMatchObject({
         services: ['svc1', 'svc2'],
         statusId: [],
         organisationCategories: [],
@@ -183,15 +188,20 @@ describe('When processing a user search request', () => {
       expect(actual).toMatchObject({
         users: usersSearchResult.users
       });
-      expect(seachForUsers.mock.calls[0][0]).toBe('test*');
+      expect(searchForUsers.mock.calls[0][0]).toBe('test*');
     });
 
-    test('then it should default search criteria to all if not supplied', async () => {
-      req.query.criteria = undefined;
+    test('then it should not search and return validation error if criteria does not meet minimum length', async () => {
+      req.query.criteria = '';
 
-      await search(req);
+      const result = await search(req);
 
-      expect(seachForUsers.mock.calls[0][0]).toBe('*');
+      expect(searchForUsers).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        validationMessages: {
+          criteria: 'Please enter at least 4 characters'
+        }
+      });
     });
 
     test('then it should include posted criteria', async () => {
@@ -208,7 +218,7 @@ describe('When processing a user search request', () => {
       expect(actual).toMatchObject({
         page: 1,
       });
-      expect(seachForUsers.mock.calls[0][1]).toBe(1);
+      expect(searchForUsers.mock.calls[0][1]).toBe(1);
     });
 
     test('then it should use page number from query if specified', async () => {
@@ -219,7 +229,7 @@ describe('When processing a user search request', () => {
       expect(actual).toMatchObject({
         page: 2,
       });
-      expect(seachForUsers.mock.calls[0][1]).toBe(2);
+      expect(searchForUsers.mock.calls[0][1]).toBe(2);
     });
 
     test('then it should include number of pages from search result', async () => {
@@ -251,8 +261,8 @@ describe('When processing a user search request', () => {
 
       expect(actual.sort.name.nextDirection).toBe('desc');
       expect(actual.sort.name.applied).toBe(true);
-      expect(seachForUsers.mock.calls[0][2]).toBe('name');
-      expect(seachForUsers.mock.calls[0][3]).toBe('asc');
+      expect(searchForUsers.mock.calls[0][2]).toBe('name');
+      expect(searchForUsers.mock.calls[0][3]).toBe('asc');
     });
 
     test('then it should use sort order specified', async () => {
@@ -263,8 +273,8 @@ describe('When processing a user search request', () => {
 
       expect(actual.sort.email.nextDirection).toBe('asc');
       expect(actual.sort.email.applied).toBe(true);
-      expect(seachForUsers.mock.calls[0][2]).toBe('email');
-      expect(seachForUsers.mock.calls[0][3]).toBe('desc');
+      expect(searchForUsers.mock.calls[0][2]).toBe('email');
+      expect(searchForUsers.mock.calls[0][3]).toBe('desc');
     });
   });
 });
