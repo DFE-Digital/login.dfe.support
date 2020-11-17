@@ -45,7 +45,7 @@ const buildFilters = (paramsSource) => {
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
 
-  let criteria = paramsSource.criteria;
+  let criteria = paramsSource.criteria ? paramsSource.criteria.trim() : '';
   if (!criteria || criteria.length < 4) {
     return {
       validationMessages: {
