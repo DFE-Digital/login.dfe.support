@@ -1,9 +1,9 @@
-const {logs, db} = require('./sequelize-schema');
 const Sequelize = require('sequelize');
-const {getUser} = require('./../../infrastructure/directories');
+const { logs, db } = require('./sequelize-schema');
+const { getUser } = require('./../../infrastructure/directories');
 
-const Op = Sequelize.Op;
-const QueryTypes = Sequelize.QueryTypes;
+const { Op } = Sequelize;
+const { QueryTypes } = Sequelize;
 const pageSize = 25;
 
 const mapAuditEntity = (auditEntity) => {
@@ -45,23 +45,34 @@ const getPageOfAudits = async (where, pageNumber) => {
     audits: auditLogs.map(mapAuditEntity),
     numberOfPages: Math.ceil(count / pageSize),
     numberOfRecords: count,
-  }
+  };
 };
 
 const getPageOfUserAudits = async (userId, pageNumber) => {
-  let queryWhere = `WHERE id IN (SELECT AL.id FROM AuditLogs AL LEFT JOIN AuditLogMeta ALM on AL.id = ALM.auditId ` +
-    `WHERE AL.userId = :userId OR (ALM.[key] IN ('editedUser', 'viewedUser') AND ALM.[value] = :userId))`;
+  const queryWhere = `
+    WHERE type != 'technical-audit'
+    AND id IN (
+      SELECT AL.id FROM AuditLogs AL LEFT JOIN AuditLogMeta ALM on AL.id = ALM.auditId
+        WHERE AL.userId = :userId OR (ALM.[key] IN ('editedUser', 'viewedUser') AND ALM.[value] = :userId)
+    )`;
   const queryOpts = {
     type: QueryTypes.SELECT,
-    replacements: {userId: userId},
+    replacements: { userId },
   };
   const skip = (pageNumber - 1) * pageSize;
-  const count = (await db.query(`SELECT COUNT(1) count FROM AuditLogs ALPage ${queryWhere};`, queryOpts))[0].count;
-  const rows = await db.query('SELECT AuditLogs.*, AuditLogMeta.[key], AuditLogMeta.[value] ' +
-    `FROM (SELECT * FROM AuditLogs ALPage ${queryWhere} ` +
-    `ORDER BY ALPage.[createdAt] DESC OFFSET ${skip} ROWS FETCH NEXT 25 ROWS ONLY) AuditLogs ` +
-    `LEFT JOIN AuditLogMeta ON AuditLogs.id = AuditLogMeta.auditId ` +
-    `ORDER BY AuditLogs.[createdAt] DESC`, queryOpts);
+  const { count } = (await db.query(`SELECT COUNT(1) count FROM AuditLogs ALPage ${queryWhere};`, queryOpts))[0];
+  const rows = await db.query(
+    `SELECT AuditLogs.*, AuditLogMeta.[key], AuditLogMeta.[value]
+      FROM (
+        SELECT * FROM AuditLogs ALPage
+        ${queryWhere}
+        ORDER BY ALPage.[createdAt] DESC
+        OFFSET ${skip} ROWS FETCH NEXT 25 ROWS ONLY
+      ) AuditLogs
+    LEFT JOIN AuditLogMeta ON AuditLogs.id = AuditLogMeta.auditId
+    ORDER BY AuditLogs.[createdAt] DESC`,
+    queryOpts,
+  );
 
   const entities = [];
   let currentEntity;
@@ -78,7 +89,7 @@ const getPageOfUserAudits = async (userId, pageNumber) => {
         timestamp: currentRow.createdAt,
         organisationId: currentRow.organisationId,
       };
-      entities.push(currentEntity)
+      entities.push(currentEntity);
     }
 
     if (currentRow.key) {
@@ -129,7 +140,7 @@ const getUserAudit = async (userId, pageNumber) => {
           key: {
             [Op.eq]: 'viewedUser',
           },
-        }
+        },
       ],
       value: {
         [Op.eq]: userId,
@@ -229,15 +240,14 @@ const getAuditEvent = (type, subType, unlockType) => {
   } else if (type === 'support' && subType === 'digipass-unlock') {
     event = `Unlock - UnlockType: "${unlockType}"`;
   } else if (type === 'support' && subType === 'digipass-deactivate') {
-    event = `Deactivate`;
+    event = 'Deactivate';
   } else if (type === 'support' && subType === 'digipass-assign') {
-    event = `Assigned`;
+    event = 'Assigned';
   }
   return event;
 };
 
 const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
-
   const where = {
     key: {
       [Op.eq]: 'deviceSerialNumber',
@@ -248,7 +258,7 @@ const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
   };
   const metaSubQuery = db.dialect.QueryGenerator.selectQuery('AuditLogMeta', {
     attributes: ['AuditId'],
-    where
+    where,
   }).slice(0, -1);
 
   const rawAudits = await getPageOfAudits({
@@ -266,15 +276,15 @@ const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
     };
   }
 
-  let auditRecords = [];
+  const auditRecords = [];
 
   for (let i = 0; i < rawAudits.audits.length; i++) {
-    let audit = rawAudits.audits[i];
+    const audit = rawAudits.audits[i];
 
     auditRecords.push({
       date: new Date(audit.timestamp),
       name: audit.userId ? (audit.userId === userId ? userName : await getUserName(audit.userId)) : audit.userEmail,
-      success: audit.success === "0" ? 'Failure' : 'Success',
+      success: audit.success === '0' ? 'Failure' : 'Success',
       event: getAuditEvent(audit.type, audit.subType, audit.unlockType),
     });
   }
@@ -282,7 +292,7 @@ const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
   return {
     audits: auditRecords,
     numberOfPages: rawAudits.numberOfPages,
-    numberOfRecords: rawAudits.numberOfRecords
+    numberOfRecords: rawAudits.numberOfRecords,
   };
 };
 
