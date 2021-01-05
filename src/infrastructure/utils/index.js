@@ -7,6 +7,7 @@ const auditSorter = require('./auditSorter');
 const patchChangeHistory = require('./patchChangeHistory');
 const asyncMapLimit = require('./asyncMapLimit');
 const isRequestApprover = require('./isRequestApprover');
+const setUserContext = require('./setUserContext');
 
 module.exports = {
   isLoggedIn,
@@ -19,4 +20,5 @@ module.exports = {
   patchChangeHistory,
   asyncMapLimit,
   isRequestApprover,
+  setUserContext
 };
