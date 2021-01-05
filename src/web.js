@@ -8,6 +8,7 @@ const expressLayouts = require('express-ejs-layouts');
 const csurf = require('csurf');
 const http = require('http');
 const https = require('https');
+const fs = require('fs');
 const path = require('path');
 const config = require('./infrastructure/config');
 const helmet = require('helmet');
@@ -19,8 +20,6 @@ const setCorrelationId = require('express-mw-correlation-id');
 const registerRoutes = require('./routes');
 const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
 const configSchema = require('./infrastructure/config/schema');
-const uuid = require('uuid/v4');
-const { setUserContext } = require('./infrastructure/utils');
 
 configSchema.validate();
 
@@ -82,7 +81,6 @@ const init = async () => {
   }));
   app.use((req, res, next) => {
     req.session.now = Date.now();
-    req.session.gaClientId = req.session.gaClientId || uuid();
     next();
   });
 
@@ -105,7 +103,6 @@ const init = async () => {
   app.set('views', path.resolve(__dirname, 'app'));
   app.use(expressLayouts);
   app.set('layout', 'sharedViews/layout');
-  app.use(setUserContext);
 
   await oidc.init(app);
 
