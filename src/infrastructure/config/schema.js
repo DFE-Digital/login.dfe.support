@@ -134,7 +134,8 @@ const schema = new SimpleSchema({
   devices: schemas.apiClient,
   schedules: schedulesSchema,
   toggles: togglesSchema,
-  notifications: notificationsSchema
+  notifications: notificationsSchema,
+  assets: schemas.assets,
 });
 
 module.exports.validate = () => {

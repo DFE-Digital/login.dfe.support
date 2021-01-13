@@ -8,9 +8,13 @@ const { deleteUserDevice } = require('./../../infrastructure/directories');
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
 
-  let criteria = paramsSource.criteria;
-  if (!criteria) {
-    criteria = '';
+  let criteria = paramsSource.criteria ? paramsSource.criteria.trim() : '';
+  if (!criteria || criteria.length < 4) {
+    return {
+      validationMessages: {
+        criteria: 'Please enter at least 4 characters'
+      }
+    };
   }
 
   let page = paramsSource.page ? parseInt(paramsSource.page) : 1;

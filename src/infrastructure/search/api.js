@@ -99,7 +99,7 @@ const mapSupportDeviceSortByToSearchApi = (supportSortBy) => {
 };
 
 
-const seachForUsers = async (criteria, pageNumber, sortBy, sortDirection, filters) => {
+const searchForUsers = async (criteria, pageNumber, sortBy, sortDirection, filters) => {
   try {
     let endpoint = `/users?criteria=${criteria}&page=${pageNumber}`;
     if (sortBy) {
@@ -204,7 +204,7 @@ const createIndex = async (id, correlationId) => {
 };
 
 module.exports = {
-  seachForUsers,
+  searchForUsers,
   getSearchDetailsForUserById,
   updateUserInSearch,
   searchForDevices,
