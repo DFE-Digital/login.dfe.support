@@ -11,7 +11,7 @@ const paginationModel = {
     currentPage: locals.page,
     numberOfPages: locals.numberOfPages,
     totalNumberOfResults: locals.totalNumberOfResults,
-    numberOfResultsOnPage: locals.organisations.length,
+    numberOfResultsOnPage: locals.organisations ? locals.organisations.length: undefined,
     data: [
         { key: 'criteria', value: locals.criteria },
         { key: 'sort', value: locals.sortBy },
@@ -39,7 +39,10 @@ const paginationModel = {
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <input type="hidden" name="showFilters" value="<%= showFilters %>"/>
 
-            <div class="search-field">
+            <div class="search-field form-group <%= (locals.validationMessages.criteria !== undefined) ? 'form-group-error' : '' %>">
+                <% if (locals.validationMessages.criteria !== undefined) { %>
+                    <p class="error-message" id="validation-service"><%=locals.validationMessages.criteria %></p>
+                <% } %>
                 <fieldset class="search-input">
                     <label for="criteria" class="vh">Search by name, urn, uid or ukprn</label>
                     <input type="text" id="criteria" name="criteria" value="<%= criteria %>" class="form-control"
@@ -55,7 +58,9 @@ const paginationModel = {
             <input type="hidden" name="criteria" value="<%= criteria %>"/>
             <input type="hidden" name="page" value="<%= page %>"/>
             <input type="hidden" name="showFilters" value="<%= !showFilters %>"/>
-            <button type="submit" class="button-link filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
+            <% if (locals.organisations) { %>
+                <button type="submit" class="button-link filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
+            <% } %>
         </form>
     </div>
 
@@ -66,6 +71,7 @@ const paginationModel = {
 </div>
 
 
+<% if (locals.organisations) { %>
 
 <div class="row">
     <% if (showFilters) { %>
@@ -154,3 +160,5 @@ const paginationModel = {
 
         </div>
 </div>
+
+<% } %>
