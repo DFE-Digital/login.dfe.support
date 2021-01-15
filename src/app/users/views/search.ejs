@@ -91,6 +91,7 @@ if (services && services.length > 0) {
                 <input type="hidden" name="sort" value="<%= sortBy %>"/>
                 <input type="hidden" name="sortDir" value="<%= sortOrder %>"/>
                 <input type="hidden" name="showFilters" value="<%= !showFilters %>"/>
+                <input type="hidden" name="isFilterToggle" value="true"/>
                 <button type="submit" class="button-link filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
             </form>
 
