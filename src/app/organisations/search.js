@@ -56,11 +56,18 @@ const filterOutCategories = (orgCategories) => {
 const search = async (req) => {
   const inputSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
   const criteria = inputSource.criteria ? inputSource.criteria.trim() : '';
-  if (!criteria || criteria.length < 4) {
+
+  /**
+   * Check minimum characters in search criteria if:
+   * - user is not using the filters toggle (to open or close)
+   * AND
+   * - filters are not visible
+   */
+  if (inputSource.isFilterToggle !== 'true' && inputSource.showFilters !== 'true' && (!criteria || criteria.length < 4)) {
     return {
       validationMessages: {
-        criteria: 'Please enter at least 4 characters'
-      }
+        criteria: 'Please enter at least 4 characters',
+      },
     };
   }
   const orgTypes = filterOutCategories(unpackMultiSelect(inputSource.organisationType));
