@@ -39,6 +39,18 @@ const paginationModel = {
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <input type="hidden" name="showFilters" value="<%= showFilters %>"/>
 
+            <% for (let i = 0; i < organisationTypes.length; i += 1) { %>
+            <% if (organisationTypes[i].isSelected) { %>
+            <input name="organisationType" value="<%= organisationTypes[i].id %>" type="hidden">
+            <% } %>
+            <% } %>
+
+            <% for (let i = 0; i < organisationStatuses.length; i += 1) { %>
+            <% if (organisationStatuses[i].isSelected) { %>
+            <input name="organisationStatus" value="<%= organisationStatuses[i].id %>" type="hidden">
+            <% } %>
+            <% } %>
+
             <div class="search-field form-group <%= (locals.validationMessages.criteria !== undefined) ? 'form-group-error' : '' %>">
                 <% if (locals.validationMessages.criteria !== undefined) { %>
                     <p class="error-message" id="validation-service"><%=locals.validationMessages.criteria %></p>
@@ -58,9 +70,8 @@ const paginationModel = {
             <input type="hidden" name="criteria" value="<%= criteria %>"/>
             <input type="hidden" name="page" value="<%= page %>"/>
             <input type="hidden" name="showFilters" value="<%= !showFilters %>"/>
-            <% if (locals.organisations) { %>
-                <button type="submit" class="button-link filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
-            <% } %>
+            <input type="hidden" name="isFilterToggle" value="true"/>
+            <button type="submit" class="button-link filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
         </form>
     </div>
 
@@ -69,9 +80,6 @@ const paginationModel = {
         </div>
     </div>
 </div>
-
-
-<% if (locals.organisations) { %>
 
 <div class="row">
     <% if (showFilters) { %>
@@ -125,6 +133,7 @@ const paginationModel = {
             </form>
         </div>
     <% } %>
+    <% if (locals.organisations) { %>
         <div class="col-<%= (showFilters ? 8 : 12) %>">
                 <%- include('../../sharedViews/pagination', paginationModel); %>
                 <table class="data">
@@ -159,6 +168,5 @@ const paginationModel = {
                 <%- include('../../sharedViews/pagination', paginationModel); %>
 
         </div>
+    <% } %>
 </div>
-
-<% } %>

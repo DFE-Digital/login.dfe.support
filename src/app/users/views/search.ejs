@@ -91,9 +91,8 @@ if (services && services.length > 0) {
                 <input type="hidden" name="sort" value="<%= sortBy %>"/>
                 <input type="hidden" name="sortDir" value="<%= sortOrder %>"/>
                 <input type="hidden" name="showFilters" value="<%= !showFilters %>"/>
-                <% if (locals.users) { %>
+                <input type="hidden" name="isFilterToggle" value="true"/>
                 <button type="submit" class="button-link filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
-                <% } %>
             </form>
 
     </div>
@@ -112,7 +111,6 @@ if (services && services.length > 0) {
     </div>
 </div>
 
-<% if (locals.users) { %>
 <div class="row">
     <% if (showFilters) { %>
     <div class="col-4">
@@ -188,6 +186,7 @@ if (services && services.length > 0) {
         </form>
     </div>
     <% } %>
+    <% if (locals.users) { %>
     <div class="col-<%= (showFilters ? 8 : 12) %>">
         <%- include('../../sharedViews/pagination', paginationModel); %>
         <table class="data">
@@ -269,5 +268,5 @@ if (services && services.length > 0) {
         </table>
         <%- include('../../sharedViews/pagination', paginationModel); %>
     </div>
+    <% } %>
 </div>
-<% } %>
