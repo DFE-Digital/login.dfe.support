@@ -47,7 +47,13 @@ const search = async (req) => {
 
   let criteria = paramsSource.criteria ? paramsSource.criteria.trim() : '';
 
-  if (paramsSource.showFilters !== 'true' && paramsSource.isFilterToggle !== 'true' && (!criteria || criteria.length < 4)) {
+  /**
+   * Check minimum characters in search criteria if:
+   * - user is not using the filters toggle (to open or close)
+   * AND
+   * - filters are not visible
+   */
+  if (paramsSource.isFilterToggle !== 'true' && paramsSource.showFilters !== 'true' && (!criteria || criteria.length < 4)) {
     return {
       validationMessages: {
         criteria: 'Please enter at least 4 characters',
