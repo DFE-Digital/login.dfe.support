@@ -46,13 +46,21 @@ const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
 
   let criteria = paramsSource.criteria ? paramsSource.criteria.trim() : '';
-  if (!criteria || criteria.length < 4) {
+
+  /**
+   * Check minimum characters in search criteria if:
+   * - user is not using the filters toggle (to open or close)
+   * AND
+   * - filters are not visible
+   */
+  if (paramsSource.isFilterToggle !== 'true' && paramsSource.showFilters !== 'true' && (!criteria || criteria.length < 4)) {
     return {
       validationMessages: {
-        criteria: 'Please enter at least 4 characters'
-      }
+        criteria: 'Please enter at least 4 characters',
+      },
     };
   }
+
   let safeCriteria = criteria;
   if (criteria.indexOf('-') !== -1) {
     criteria = "\"" + criteria + "\"";
