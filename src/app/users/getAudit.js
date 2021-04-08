@@ -25,6 +25,10 @@ const describeAuditEvent = async (audit, req) => {
     return description;
   }
 
+  if (audit.type === 'Sign-out') {
+    return audit.type;
+  }
+
   if (audit.type === 'support' && audit.subType === 'user-edit') {
     const viewedUser = audit.editedUser ? await getUserDetails({ params: { uid: audit.editedUser } }) : '';
     const editedStatusTo = audit.editedFields && audit.editedFields.find(x => x.name === 'status');
@@ -117,19 +121,29 @@ const getAudit = async (req, res) => {
     return res.status(400).send();
   }
   const pageOfAudits = await getPageOfUserAudits(user.id, pageNumber);
-  let audits = [];
+  const audits = [];
 
   for (let i = 0; i < pageOfAudits.audits.length; i++) {
-    let audit = pageOfAudits.audits[i];
+    const audit = pageOfAudits.audits[i];
     let service = null;
     let organisation = null;
-    if (audit.client) {
-      const serviceId = await getCachedServiceIdForClientId(audit.client);
-      if(serviceId) {
+    let clientId = audit.client;
+    if (!clientId) {
+      const regex = /Authenticated .*? for (.+)/i;
+      const match = regex.exec(audit.message);
+      if (match !== null && match.length === 2) {
+        clientId = match[1];
+      }
+    }
+    if (clientId) {
+      clientId = clientId.replace(/"/g, '');
+
+      const serviceId = await getCachedServiceIdForClientId(clientId);
+      if (serviceId) {
         service = await getCachedServiceById(serviceId, req.id);
       } else {
-        logger.info(`User audit tab - No service mapping for client ${audit.client} using client id`);
-        service = { name: audit.client };
+        logger.info(`User audit tab - No service mapping for client ${clientId} using client id`);
+        service = { name: clientId };
       }
     }
     if (audit.organisationId) {
