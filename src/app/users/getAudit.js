@@ -129,6 +129,7 @@ const getAudit = async (req, res) => {
     let organisation = null;
     let clientId = audit.client;
     if (!clientId) {
+      // try and extract client id from the message as we don't always have metadata available
       const regex = /Authenticated .*? for (.+)/i;
       const match = regex.exec(audit.message);
       if (match !== null && match.length === 2) {
@@ -136,6 +137,7 @@ const getAudit = async (req, res) => {
       }
     }
     if (clientId) {
+      // remove double quotes as new audit logger is adding them to string values
       clientId = clientId.replace(/"/g, '');
 
       const serviceId = await getCachedServiceIdForClientId(clientId);
