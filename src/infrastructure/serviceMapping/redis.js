@@ -21,7 +21,7 @@ const getClientIdForServiceId = async (serviceId) => {
 const getServiceIdForClientId = async (clientId) => {
   const mapping = await getAll();
   const serviceMap = mapping.find(x => x.clientId === clientId);
-  return serviceMap? serviceMap.serviceId : null;
+  return serviceMap ? serviceMap.serviceId : null;
 };
 
 module.exports = {
