@@ -55,7 +55,7 @@
     "passport": "^0.4.0",
     "request": "^2.88.0",
     "sequelize": "^4.44.3",
-    "simpl-schema": "^1.5.6",
+    "simpl-schema": "^1.10.2",
     "tedious": "^2.6.4",
     "uuid": "^3.2.0",
     "winston": "^2.4.3"
