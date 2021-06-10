@@ -93,6 +93,9 @@ const getPageOfUserAudits = async (userId, pageNumber) => {
     }
 
     if (currentRow.key) {
+      if (currentRow.key === 'userId' && currentRow.value ){
+        currentRow.value = currentRow.value.replace(/['"]+/g, '');
+      }
       const isJson = currentRow.key === 'editedFields';
       currentEntity[currentRow.key] = isJson ? JSON.parse(currentRow.value) : currentRow.value;
     }
