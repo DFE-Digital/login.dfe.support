@@ -1,5 +1,5 @@
-const { searchOrganisations, getOrganisationById ,getCategories } = require('./../../infrastructure/organisations');
-const { sendResult } = require('./../../infrastructure/utils');
+const { searchOrganisations, getOrganisationById ,getCategories } = require('../../infrastructure/organisations');
+const { sendResult } = require('../../infrastructure/utils');
 
 const postAssociateOrganisation = async (req, res) => {
   const selectedOrganisationId = req.body.selectedOrganisation;
@@ -19,11 +19,9 @@ const postAssociateOrganisation = async (req, res) => {
 
   const retrieveOrganisationCategories = async () => {
     const orgCategories = await getCategories();
-    return orgCategories.map((cat) => { return cat.id }).filter((id) => {
-      return  id !== '004';
-    })
-  }
-  
+    return orgCategories.map((cat) => cat.id);
+  };
+
   const searchCategories = await retrieveOrganisationCategories();
   const searchResult = await searchOrganisations(criteria, searchCategories,undefined, pageNumber, req.id);
   const results = searchResult.organisations;
@@ -37,7 +35,7 @@ const postAssociateOrganisation = async (req, res) => {
     page: pageNumber,
     numberOfPages,
     numberOfResults,
-    canSkip: req.params.uid ? false : true,
+    canSkip: !req.params.uid,
   });
 };
 
