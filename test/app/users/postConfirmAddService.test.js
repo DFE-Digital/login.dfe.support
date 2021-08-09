@@ -1,8 +1,15 @@
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
 jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
-
+jest.mock('./../../../src/infrastructure/organisations');
+jest.mock('./../../../src/infrastructure/applications', () => {
+  return {
+    getAllServices: jest.fn(),
+    isSupportEmailNotificationAllowed: jest.fn()
+  };
+});
 jest.mock('./../../../src/infrastructure/access', () => {
   return {
+    listRolesOfService: jest.fn(),
     addInvitationService: jest.fn(),
     addUserService: jest.fn(),
     updateUserService: jest.fn(),
@@ -11,7 +18,10 @@ jest.mock('./../../../src/infrastructure/access', () => {
 });
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
-const { addUserService, addInvitationService, updateInvitationService, updateUserService } = require('./../../../src/infrastructure/access');
+const { listRolesOfService, addUserService, addInvitationService, updateInvitationService, updateUserService } = require('./../../../src/infrastructure/access');
+const { getAllServices, isSupportEmailNotificationAllowed } = require('./../../../src/infrastructure/applications');
+const { getUserOrganisations, getInvitationOrganisations } = require('./../../../src/infrastructure/organisations');
+
 const logger = require('./../../../src/infrastructure/logger');
 
 jest.mock('login.dfe.notifications.client');
@@ -52,13 +62,78 @@ describe('when adding new services to a user', () => {
     res.mockResetAll();
     addInvitationService.mockReset();
     addUserService.mockReset();
-
     postConfirmAddService = require('./../../../src/app/users/confirmAddService').post;
+
+    getAllServices.mockReset();
+    getAllServices.mockReturnValue({
+      services: [{
+        id: 'service1',
+        dateActivated: '10/10/2018',
+        name: 'service name',
+        status: 'active',
+        isExternalService: true,
+        relyingParty: {
+          params: {}
+        }
+      }]
+    });
+
+    isSupportEmailNotificationAllowed.mockReset();
+    isSupportEmailNotificationAllowed.mockReturnValue({
+      type: 'email',
+      serviceName: 'support',
+      flag: 1
+    });
+
+    getUserOrganisations.mockReset();
+    getUserOrganisations.mockReturnValue([
+      {
+        organisation: {
+          id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
+          name: 'Great Big School'
+        },
+      },
+      {
+        organisation: {
+          id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
+          name: 'Little Tiny School'
+        },
+      },
+    ]);
+
+    getInvitationOrganisations.mockReset();
+    getInvitationOrganisations.mockReturnValue([
+      {
+        organisation: {
+          id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
+          name: 'Great Big School'
+        },
+      },
+      {
+        organisation: {
+          id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
+          name: 'Little Tiny School'
+        },
+      },
+    ]);
+
+    listRolesOfService.mockReset();
+    listRolesOfService.mockReturnValue([{
+      code: 'role_code',
+      id: 'role_id',
+      name: 'role_name',
+      status: {
+        id: 'status_id'
+      },
+    }]);
+
     sendServiceAddedStub = jest.fn();
+    sendServiceRequestApprovedStub = jest.fn();
+
     notificationClient.mockReset().mockImplementation(() => ({
+      sendServiceRequestApproved: sendServiceRequestApprovedStub,
       sendServiceAdded: sendServiceAddedStub,
     }));
-   
   });
 
   it('then it should redirect to user details if no user in session', async () => {
@@ -184,11 +259,14 @@ describe('when adding new services to a user', () => {
   it('then it should send an email notification to user', async () => {
     await postConfirmAddService(req, res);
 
-    expect(sendServiceAddedStub.mock.calls).toHaveLength(1);
+    expect(listRolesOfService.mock.calls).toHaveLength(1);
+    expect(listRolesOfService.mock.calls[0][0]).toBe('service1');
+    expect(listRolesOfService.mock.calls[0][1]).toBe('correlationId');
 
-    expect(sendServiceAddedStub.mock.calls[0][0]).toBe(expectedEmailAddress);
-    expect(sendServiceAddedStub.mock.calls[0][1]).toBe(expectedFirstName);
-    expect(sendServiceAddedStub.mock.calls[0][2]).toBe(expectedLastName);
+    expect(sendServiceRequestApprovedStub.mock.calls).toHaveLength(1);
+    expect(sendServiceRequestApprovedStub.mock.calls[0][0]).toBe(expectedEmailAddress);
+    expect(sendServiceRequestApprovedStub.mock.calls[0][1]).toBe(expectedFirstName);
+    expect(sendServiceRequestApprovedStub.mock.calls[0][2]).toBe(expectedLastName);
   
   });
 });
