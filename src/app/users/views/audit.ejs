@@ -1,5 +1,14 @@
 <%- include('summaryPartial', {area: 'audit', user: locals.user}); %>
 
+<div class="row meta">
+    <div class="col-12">
+        <% if (!locals.updateInProgress) {%>
+            <button class="button" style="margin-bottom: 1.25em;">Update and refresh</button>
+        <%} else {%>
+            <button class="button" style="margin-bottom: 1.25em;" disabled>Update and refresh</button> <label>Processing Update</label>
+        <% } %>
+    </div>
+</div>
 
 <%
 const paginationModel = {
