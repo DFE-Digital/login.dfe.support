@@ -2,11 +2,13 @@
 
 <div class="row meta">
     <div class="col-12">
-        <% if (!locals.updateInProgress) {%>
-            <button class="button" style="margin-bottom: 1.25em;">Update and refresh</button>
-        <%} else {%>
-            <button class="button" style="margin-bottom: 1.25em;" disabled>Update and refresh</button> <label>Processing Update</label>
-        <% } %>
+        <form method="GET">
+            <% if (!locals.updateInProgress) {%>
+                <button class="button" style="margin-bottom: 1.25em;" type="submit">Update and refresh</button>
+            <%} else {%>
+                <button class="button" style="margin-bottom: 1.25em;" disabled>Processing Update</button>
+            <% } %>
+        </form>
     </div>
 </div>
 
