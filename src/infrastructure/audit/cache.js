@@ -99,6 +99,8 @@ const getStatsForUser = async (userId) => {
 
 const getAuditRefreshStatus = () => redis.get('AuditRefreshInProgress');
 
+const changeAuditStatus = () => redis.set('AuditRefreshInProgress', 1);
+
 module.exports = {
   init,
   getDateOfLastAuditRecord,
@@ -106,4 +108,5 @@ module.exports = {
   update,
   getStatsForUser,
   getAuditRefreshStatus,
+  changeAuditStatus,
 };
