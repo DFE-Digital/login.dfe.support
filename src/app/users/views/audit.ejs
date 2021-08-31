@@ -2,7 +2,8 @@
 
 <div class="row meta">
     <div class="col-12">
-        <form method="GET">
+        <form method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <% if (!locals.updateInProgress) {%>
                 <button class="button" style="margin-bottom: 1.25em;" type="submit">Update and refresh</button>
             <%} else {%>
