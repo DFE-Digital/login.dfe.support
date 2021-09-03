@@ -92,7 +92,7 @@
         },
         "subnetPrefix": {
             "type": "string",
-            "defaultValue": "svc-sn",
+            "defaultValue": "sup-sn-1",
             "metadata": {
                 "description": "Prefix of the subnet to integrate the app service with"
             }
@@ -169,7 +169,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(parameters('templatesBaseUri'), 'Shared/app-service.json')]",
+                    "uri": "[concat(parameters('templatesBaseUri'), 'Shared/app-service-azure-config.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
