@@ -169,7 +169,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(parameters('templatesBaseUri'), 'Shared/app-service-azure-config.json')]",
+                    "uri": "[concat(parameters('templatesBaseUri'), 'Shared/app-service.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
