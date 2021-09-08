@@ -103,6 +103,20 @@
             "metadata": {
                 "description": "Add app settings to support virtual network private endpoints"
             }
+        },
+        "auditHttpTriggerInvokeUrl": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Audit HTTP trigger invoke URL"
+            }
+        },
+        "auditHttpTriggerFunctionKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Audit HTTP triger Function Key"
+            }
         }
     },
     "variables": {
@@ -169,7 +183,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(parameters('templatesBaseUri'), 'Shared/app-service.json')]",
+                    "uri": "[concat(parameters('templatesBaseUri'), 'Shared/app-service-azure-config.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -199,6 +213,12 @@
                     },
                     "certificateThumbprint": {
                         "value": "[reference(concat(parameters('appServiceName'), '-certificate')).outputs.certificateThumbprint.value]"
+                    },
+                    "additionalAppSettings": {
+                        "value": {
+                            "AUDIT_HTTP_TRIGGER_URL": "[parameters('auditHttpTriggerInvokeUrl')]",
+                            "AUDIT_HTTP_TRIGGER_KEY": "[parameters('auditHttpTriggerFunctionKey')]"
+                        }
                     },
                     "subnetResourceId": {
                         "value": "[variables('serviceSubnetResourceId')]"
