@@ -1,19 +1,17 @@
-const config = require('./../config');
 const rp = require('login.dfe.request-promise-retry');
-const jwtStrategy = require('login.dfe.jwt-strategies');
 
 const updateAuditLogs = async () => {
-  const token = await jwtStrategy(config.directories.service).getBearerToken();
-
   try {
     await rp({
-      method: 'POST',
-      uri: `${config.audit.service.url}/`,
+      method: 'GET',
+      uri: `${process.env.AUDIT_HTTP_TRIGGER_URL}/?code=${process.env.AUDIT_HTTP_TRIGGER_KEY}`,
       headers: {
-        authorization: `bearer ${token}`,
+        code: process.env.AUDIT_HTTP_TRIGGER_KEY,
       },
       json: true,
     });
+
+    return true;
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
     if (status === 404) {
