@@ -5,12 +5,11 @@ if (config.audit.type === 'static') {
   adapter = require('./static');
 } else if (config.audit.type === 'sequelize') {
   adapter = require('./sequelize');
-} else if (config.audit.type === 'api') {
-  adapter = require('./api');
 } else {
   throw new Error(`Invalid audit type ${config.audit.type} in config`);
 }
 
 adapter.cache = require('./cache');
+adapter.api = require('./api');
 
 module.exports = adapter;

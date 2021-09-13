@@ -1,7 +1,8 @@
-const { cache } = require('./../../infrastructure/audit');
+const { cache, api } = require('./../../infrastructure/audit');
 
 const postUpdateAuditLog = async (req, res) => {
   await cache.changeAuditStatus();
+  await api.updateAuditLogs();
   res.redirect(`/users/${req.params.uid}/audit`);
 };
 
