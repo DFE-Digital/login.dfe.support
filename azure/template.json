@@ -97,11 +97,11 @@
                 "description": "Prefix of the subnet to integrate the app service with"
             }
         },
-        "enablePrivateEndpoint": {
+        "vnetRouteAllEnabled": {
             "type": "bool",
             "defaultValue": false,
             "metadata": {
-                "description": "Add app settings to support virtual network private endpoints"
+                "description": "Enable the Route All setting to route all traffic through the vnet"
             }
         },
         "auditHttpTriggerInvokeUrl": {
@@ -223,8 +223,8 @@
                     "subnetResourceId": {
                         "value": "[variables('serviceSubnetResourceId')]"
                     },
-                    "enablePrivateEndpointSupport": {
-                        "value": "[parameters('enablePrivateEndpoint')]"
+                    "vnetRouteAllEnabled": {
+                        "value": "[parameters('vnetRouteAllEnabled')]"
                     }
                 }
             },
