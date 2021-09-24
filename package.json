@@ -54,9 +54,9 @@
     "openid-client": "^1.20.0",
     "passport": "^0.4.1",
     "request": "^2.88.2",
-    "sequelize": "^4.44.4",
+    "sequelize": "^6.3.3",
     "simpl-schema": "^1.12.0",
-    "tedious": "^2.7.1",
+    "tedious": "^8.3.0",
     "uuid": "^3.4.0",
     "winston": "^2.4.5"
   },
