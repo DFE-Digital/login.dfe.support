@@ -45,6 +45,7 @@ const postEditPermissions = require('./postEditPermissions');
 const getDeleteOrganisation = require('./getDeleteOrganisation');
 const postDeleteOrganisation = require('./postDeleteOrganisation');
 const getSecureAccess = require('./getSecureAccessDetails');
+const postUpdateAuditLog = require('./postUpdateAuditLog');
 const { get: getAssociateServices, post: postAssociateServices } = require('./associateServices');
 const { get: getSelectOrganisation, post: postSelectOrganisation }  = require('./selectOrganisation');
 const { get: getAssociateRoles, post: postAssociateRoles } = require('./associateRoles');
@@ -137,6 +138,7 @@ const users = (csrf) => {
 
   router.get('/:uid/organisations/:orgId/confirm', csrf, asyncWrapper(getConfirmAddService));
   router.post('/:uid/organisations/:orgId/confirm', csrf, asyncWrapper(postConfirmAddService));
+  router.post('/:uid/audit', csrf, asyncWrapper(postUpdateAuditLog));
 
   return router;
 };
