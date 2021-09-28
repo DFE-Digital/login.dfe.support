@@ -5,7 +5,7 @@
         <form method="POST">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <% if (!locals.updateInProgress) {%>
-                <button class="button" style="margin-bottom: 1.25em;" type="submit">Update and refresh</button>
+                <button class="button" style="margin-bottom: 1.25em;" type="submit" onclick="this.form.submit(); this.disabled=true; this.innerText='Processing Update';">Update and refresh</button>
             <%} else {%>
                 <button class="button" style="margin-bottom: 1.25em;" disabled>Processing Update</button>
             <% } %>
