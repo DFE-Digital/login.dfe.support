@@ -64,8 +64,6 @@ const post = async (req, res) => {
 
   if (req.session.user.services) {
     const allServices = await getAllServices();
-    const userOrganisations = await getUserOrganisations(uid, req.id);
-    const organisationDetails = userOrganisations.find(x => x.organisation.id === organisationId);
 
     for (let i = 0; i < req.session.user.services.length; i++) {
       const service = req.session.user.services[i];
@@ -77,6 +75,8 @@ const post = async (req, res) => {
       }
 
       if(!uid.startsWith('inv-') && isEmailAllowed){
+        const userOrganisations = await getUserOrganisations(uid, req.id);
+        const organisationDetails = userOrganisations.find(x => x.organisation.id === organisationId);
         const serviceDetails = allServices.services.find(x => x.id === service.serviceId);
         const allRolesOfService = await listRolesOfService(service.serviceId, req.id);
         const roleDetails = allRolesOfService.filter(x => service.roles.find(y => y.toLowerCase() === x.id.toLowerCase()));
