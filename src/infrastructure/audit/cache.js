@@ -97,10 +97,13 @@ const getStatsForUser = async (userId) => {
   return Promise.resolve(stats);
 };
 
+const getAuditRefreshStatus = () => redis.get('AuditRefreshInProgress');
+
 module.exports = {
   init,
   getDateOfLastAuditRecord,
   setDateOfLastAuditRecord,
   update,
   getStatsForUser,
+  getAuditRefreshStatus,
 };

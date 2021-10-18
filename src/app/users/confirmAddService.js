@@ -61,7 +61,12 @@ const post = async (req, res) => {
 
   const isEmailAllowed = await isSupportEmailNotificationAllowed();
   const organisationId = req.params.orgId;
+
   if (req.session.user.services) {
+    const allServices = await getAllServices();
+    const userOrganisations = await getUserOrganisations(uid, req.id);
+    const organisationDetails = userOrganisations.find(x => x.organisation.id === organisationId);
+
     for (let i = 0; i < req.session.user.services.length; i++) {
       const service = req.session.user.services[i];
       if (uid.startsWith('inv-')) {
@@ -70,10 +75,22 @@ const post = async (req, res) => {
       } else {
         req.session.user.isAddService ? await addUserService(uid, service.serviceId, organisationId, service.roles, req.id) : await updateUserService(uid, service.serviceId, organisationId, service.roles, req.id);
       }
-    }
-    if(req.session.user.services.length > 0 && !uid.startsWith('inv-') && isEmailAllowed){
-      const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});      
-      await notificationClient.sendServiceAdded(req.session.user.email, req.session.user.firstName, req.session.user.lastName);
+
+      if(!uid.startsWith('inv-') && isEmailAllowed){
+        const serviceDetails = allServices.services.find(x => x.id === service.serviceId);
+        const allRolesOfService = await listRolesOfService(service.serviceId, req.id);
+        const roleDetails = allRolesOfService.filter(x => service.roles.find(y => y.toLowerCase() === x.id.toLowerCase()));
+  
+        const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});
+        await notificationClient.sendServiceRequestApproved(
+          req.session.user.email, 
+          req.session.user.firstName, 
+          req.session.user.lastName, 
+          organisationDetails.organisation.name,
+          serviceDetails.name,
+          roleDetails.map(i => i.name)
+        );
+      }
     }
   }
 
