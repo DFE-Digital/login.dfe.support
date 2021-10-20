@@ -10,5 +10,6 @@ if (config.audit.type === 'static') {
 }
 
 adapter.cache = require('./cache');
+adapter.api = require('./api');
 
 module.exports = adapter;

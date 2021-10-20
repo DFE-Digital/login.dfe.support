@@ -1,6 +1,6 @@
 const { sendResult, mapUserStatus } = require('./../../infrastructure/utils');
-const { getUserDetails } = require('./utils');
-const { getUserAudit, getPageOfUserAudits } = require('./../../infrastructure/audit');
+const { getUserDetailsById } = require('./utils');
+const { getPageOfUserAudits, cache } = require('./../../infrastructure/audit');
 const logger = require('./../../infrastructure/logger');
 const { getServiceIdForClientId } = require('./../../infrastructure/serviceMapping');
 const { getServiceById } = require('./../../infrastructure/applications');
@@ -8,6 +8,16 @@ const { getOrganisationById, getUserOrganisations } = require('./../../infrastru
 
 let cachedServiceIds = {};
 let cachedServices  = {};
+let cachedUsers = {};
+
+const getCachedUserById = async (userId, reqId) => {
+  let key = `${userId}:${reqId}`;
+  if (!(key in cachedUsers)) {
+    const user = await getUserDetailsById(userId, reqId);
+    cachedUsers[key] = user;
+  }
+  return cachedUsers[key];
+};
 
 const describeAuditEvent = async (audit, req) => {
   const isCurrentUser = audit.userId.toLowerCase() === req.params.uid.toLowerCase();
@@ -30,7 +40,7 @@ const describeAuditEvent = async (audit, req) => {
   }
 
   if (audit.type === 'support' && audit.subType === 'user-edit') {
-    const viewedUser = audit.editedUser ? await getUserDetails({ params: { uid: audit.editedUser } }) : '';
+    const viewedUser = audit.editedUser ? await getCachedUserById(audit.editedUser, req.id) : '';
     const editedStatusTo = audit.editedFields && audit.editedFields.find(x => x.name === 'status');
     if (editedStatusTo && editedStatusTo.newValue === 0) {
       const newStatus = mapUserStatus(editedStatusTo.newValue);
@@ -49,7 +59,7 @@ const describeAuditEvent = async (audit, req) => {
   }
 
   if (audit.type === 'support' && audit.subType === 'user-view') {
-    const viewedUser = audit.viewedUser ?  await getUserDetails({ params: { uid: audit.viewedUser } }) : '';
+    const viewedUser = audit.viewedUser ?  await getCachedUserById(audit.viewedUser, req.id) : '';
     return `Viewed user ${viewedUser.firstName} ${viewedUser.lastName}`;
   }
 
@@ -76,18 +86,18 @@ const describeAuditEvent = async (audit, req) => {
   if (audit.type === 'support' && audit.subType === 'user-org-deleted') {
     const organisationId = audit.editedFields && audit.editedFields.find(x => x.name === 'new_organisation');
     const organisation = await getOrganisationById(organisationId.oldValue);
-    const viewedUser = await getUserDetails({ params: { uid: audit.editedUser } });
+    const viewedUser = await getCachedUserById(audit.editedUser, req.id);
     return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName}`
   }
   if (audit.type === 'support' && audit.subType === 'user-org') {
     const organisationId = audit.editedFields && audit.editedFields.find(x => x.name === 'new_organisation');
     const organisation = await getOrganisationById(organisationId.newValue);
-    const viewedUser = await getUserDetails({ params: { uid: audit.editedUser } });
+    const viewedUser = await getCachedUserById(audit.editedUser, req.id);
     return `Added organisation: ${organisation.name} for user ${viewedUser.firstName} ${viewedUser.lastName}`
   }
   if (audit.type === 'support' && audit.subType === 'user-org-permission-edited') {
     const editedFields = audit.editedFields && audit.editedFields.find(x => x.name === 'edited_permission');
-    const viewedUser = await getUserDetails({ params: { uid: audit.editedUser } });
+    const viewedUser = await getCachedUserById(audit.editedUser, req.id);
     return `Edited permission level to ${editedFields.newValue} for user ${viewedUser.firstName} ${viewedUser.lastName} in organisation ${editedFields.organisation}`
   }
 
@@ -95,25 +105,27 @@ const describeAuditEvent = async (audit, req) => {
 };
 
 const getCachedServiceIdForClientId = async (client) => {
-  if (!(client in cachedServiceIds)){
+  if (!(client in cachedServiceIds)) {
     cachedServiceIds[client] = await getServiceIdForClientId(client);
   }
-  return cachedServiceIds[client]
+  return cachedServiceIds[client];
 };
 
 const getCachedServiceById = async (serviceId, reqId) => {
   let key = `${serviceId}:${reqId}`;
-  if (!(key in cachedServices)){
-    const service = getServiceById(serviceId);
+  if (!(key in cachedServices)) {
+    const service = await getServiceById(serviceId);
     cachedServices[key] = service;
   }
-  return cachedServices[key]
+  return cachedServices[key];
 };
 
 const getAudit = async (req, res) => {
   cachedServiceIds = {};
-  cachedServices  = {};
-  const user = await getUserDetails(req);
+  cachedServices = {};
+  cachedUsers = {};
+
+  const user = await getCachedUserById(req.params.uid, req.id);
   const userOrganisations = await getUserOrganisations(req.params.uid, req.id);
 
   const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
@@ -122,6 +134,7 @@ const getAudit = async (req, res) => {
   }
   const pageOfAudits = await getPageOfUserAudits(user.id, pageNumber);
   const audits = [];
+  const updateInProgress = await cache.getAuditRefreshStatus() === '1';
 
   for (let i = 0; i < pageOfAudits.audits.length; i++) {
     const audit = pageOfAudits.audits[i];
@@ -162,7 +175,7 @@ const getAudit = async (req, res) => {
       service,
       organisation,
       result: audit.success === undefined ? true : audit.success,
-      user: audit.userId.toLowerCase() === user.id.toLowerCase() ? user : await getUserDetails({ params: { uid: audit.userId.toUpperCase() } }),
+      user: audit.userId.toLowerCase() === user.id.toLowerCase() ? user : await getCachedUserById(audit.userId.toUpperCase(), req.id),
     });
   }
 
@@ -170,10 +183,11 @@ const getAudit = async (req, res) => {
     csrfToken: req.csrfToken(),
     user,
     organisations: userOrganisations,
-    audits: audits,
+    audits,
     numberOfPages: pageOfAudits.numberOfPages,
     page: pageNumber,
     totalNumberOfResults: pageOfAudits.numberOfRecords,
+    updateInProgress,
   });
 };
 
