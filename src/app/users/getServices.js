@@ -39,7 +39,7 @@ const getOrganisations = async (userId, correlationId) => {
   return organisations;
 };
 
-const getToken = async (userId, serviceId, correlationId) => {
+const getToken = async (userId, correlationId) => {
   if (userId.startsWith('inv-')) {
     const invitation = await getInvitation(userId.substr(4), correlationId);
     let serialNumber = invitation.tokenSerialNumber;
@@ -82,6 +82,9 @@ const getToken = async (userId, serviceId, correlationId) => {
 const action = async (req, res) => {
   const user = await getUserDetails(req);
   const organisationDetails = await getOrganisations(user.id, req.id);
+  const token = await getToken(user.id, req.id);
+  const allServices = await getAllServices();
+  const externalServices = allServices.services.filter(x => x.isExternalService === true && !(x.relyingParty && x.relyingParty.params && x.relyingParty.params.hideSupport === 'true'));
 
   const organisations = [];
   for (let i = 0; i < organisationDetails.length; i++) {
@@ -99,14 +102,12 @@ const action = async (req, res) => {
     if (ukprn) {
       org.naturalIdentifiers.push(`UKPRN: ${ukprn}`)
     }
-    const allServices = await getAllServices();
-    const externalServices = allServices.services.filter(x => x.isExternalService === true && !(x.relyingParty && x.relyingParty.params && x.relyingParty.params.hideSupport === 'true'));
 
     for (let j = 0; j < organisationDetails[i].services.length; j++) {
       const svc = Object.assign({}, organisationDetails[i].services[j]);
       const isExternalService = externalServices.find(x => x.id === svc.id);
       if (isExternalService) {
-        svc.token = await getToken(user.id, svc.id, req.id);
+        svc.token = token;
         org.services.push(svc);
       }
     }
