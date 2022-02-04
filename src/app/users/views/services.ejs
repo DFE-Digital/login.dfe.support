@@ -10,7 +10,7 @@
     <article class="organisation-services">
         <section class="organisation">
             <header>
-                <h3 class="heading-small spacer-heading"><%=org.name%>
+                <h3 class="heading-small spacer-heading text-break"><%=org.name%>
                     <%= org.status ? `(${org.status.name})` : '' %>
                     <% if (org.naturalIdentifiers && org.naturalIdentifiers.length !== 0) { %>
                         (<%= org.naturalIdentifiers.join(', ') %>)
@@ -18,8 +18,8 @@
                 </h3>
             </header>
         </section>
+        
         <section class="services">
-
             <table class="data no-borders">
                 <thead>
                 <tr>
@@ -40,7 +40,7 @@
                     <%} else {%>
                     <td>Pending</td>
                     <%}%>
-                    <td>
+                    <td class="text-break">
                         <%if (service.token && service.token.serialNumber) {%>
                         <% if (locals.user.id.startsWith('inv-')) {%>
                         <%=service.token ? service.token.serialNumber : ''%>
@@ -61,7 +61,7 @@
 <%}%>
 
 <% if (!hasServices) { %>
-<div class="empty-state">
+<div class="empty-state text-break">
     <p><%= user.name %> is not associated with any services</p>
 </div>
 <% } %>
