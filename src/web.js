@@ -39,7 +39,7 @@ const init = async () => {
 
   const app = express();
 
-  if (config.hostingEnvironment.hstsMaxAge) {
+   if (config.hostingEnvironment.hstsMaxAge) {
     app.use(helmet({
       noCache: true,
       frameguard: {
@@ -58,7 +58,7 @@ const init = async () => {
       },
     }));
   }
-
+ 
   app.use(setCorrelationId(true));
 
   let assetsUrl = config.assets.url;
