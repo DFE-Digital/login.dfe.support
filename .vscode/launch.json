@@ -7,14 +7,25 @@
       {
           "type": "node",
           "request": "launch",
-          "name": "Launch Orgs",
-          "skipFiles": ["<node_internals>/**"],
-          "env": {
-            "settings": "${workspaceFolder}/config/login.dfe.support.dev.json",
-            "NODE_TLS_REJECT_UNAUTHORIZED": "0"
-          },
+          "name": "Launch Support",
+          "skipFiles": [
+              "<node_internals>/**"
+          ],
           "program": "${workspaceFolder}/src/web.js",
+          "env": {
+              "settings": "config/login.dfe.support.dev.json",
+              "NODE_TLS_REJECT_UNAUTHORIZED": "0"
+          },
           "outputCapture": "std"
-        },
+      },
+      {
+          "type": "node",
+          "request": "attach",
+          "name": "Attach to Docker",
+          "address": "127.0.0.1",
+          "port": 5099,
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "/app"
+      }
   ]
 }
