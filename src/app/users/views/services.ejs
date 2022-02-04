@@ -33,8 +33,8 @@
                 <%for(let s = 0; s < org.services.length; s++) {%>
                 <%const service = org.services[s];%>
                 <tr>
-                    <td><a href="organisations/<%=org.id%>/services/<%=service.id%>"><%=service.name%></a></td>
-                    <td><%=service.userType.name%></td>
+                    <td class="text-break"><a href="organisations/<%=org.id%>/services/<%=service.id%>"><%=service.name%></a></td>
+                    <td class="text-break"><%=service.userType.name%></td>
                     <%if(service.grantedAccessOn) {%>
                     <td><%=locals.moment(service.grantedAccessOn).format('DD MMM YYYY')%></td>
                     <%} else {%>
