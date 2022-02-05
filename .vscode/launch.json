@@ -13,7 +13,7 @@
           ],
           "program": "${workspaceFolder}/src/web.js",
           "env": {
-              "settings": "config/login.dfe.support.dev.json",
+              "settings": "config/login.dfe.support.local.json",
               "NODE_TLS_REJECT_UNAUTHORIZED": "0"
           },
           "outputCapture": "std"
