@@ -1,58 +1,61 @@
 <% if(locals.user.status.id === 0) { %>
-<div class="row">
-    <div class="col-12">
-        <div class="notification">
-            <p>
-                This account was deactivated
-                <% if(locals.user.status.changedOn) { %>
-                on <%= locals.moment(locals.user.status.changedOn).format('DD MMM YYYY') %>.
-                <% } %>
-                <a href="confirm-reactivation" class="action">Reactivate</a>
-            </p>
+    <div class="row">
+        <div class="col-12">
+            <div class="notification">
+                <p>
+                    This account was deactivated
+                    <% if(locals.user.status.changedOn) { %>
+                    on <%= locals.moment(locals.user.status.changedOn).format('DD MMM YYYY') %>.
+                    <% } %>
+                    <a href="confirm-reactivation" class="action">Reactivate</a>
+                </p>
+            </div>
         </div>
     </div>
-</div>
 <% } %>
+
 <% if(locals.user.status.id === -2) { %>
     <div class="row">
         <div class="col-12">
             <div class="notification">
                 <p>
-                    This account invitation was deactivated
+                    <%= locals.flash.info %>
                     <% if(locals.user.status.changedOn) { %>
                     on <%= locals.moment(locals.user.status.changedOn).format('DD MMM YYYY') %>.
                     <% } %>
-                    <a href="confirm-invitation-reactivation" class="action">Reactivate invitation</a>
+                    <a href="confirm-invitation-reactivation" class="action">Reactivate</a>
                 </p>
             </div>
         </div>
     </div>
-    <% } %>
-<% if(locals.user.pendingEmail) { %>
-<div class="notification notification-information" tabindex="0">
-    <h2>Pending email address change</h2>
-    <p>Waiting for <%= user.name %> to confirm the new email address of <%= user.pendingEmail %>.</p>
-    <p>
-    <form method="post" action="cancel-change-email">
-        <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-        <button class="button-text">Cancel change email</button>
-    </form>
-    </p>
-</div>
 <% } %>
+
+<% if(locals.user.pendingEmail) { %>
+    <div class="notification notification-information" tabindex="0">
+        <h2>Pending email address change</h2>
+        <p>Awaiting confirmation of email address change to <%= user.pendingEmail %>.</p>
+        <p>
+        <form method="post" action="cancel-change-email">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <button class="button-text">Cancel</button>
+        </form>
+        </p>
+    </div>
+<% } %>
+
 <% if (locals.flash.info) { %>
-<div class="row">
-    <div class="col-12">
-        <div class="notification notification-success">
-            <%= locals.flash.info %>
+    <div class="row">
+        <div class="col-12">
+            <div class="notification notification-success">
+                <%= locals.flash.info %>
+            </div>
         </div>
     </div>
-</div>
 <% } %>
 
 <div class="row">
     <div class="col-8">
-        <h1 class="heading-xlarge">
+        <h1 class="heading-xlarge text-break">
             <span class="heading-secondary"><%= user.email %></span>
             <%= user.name %>
         </h1>
@@ -126,3 +129,4 @@
 
     </ul>
 </nav>
+    
