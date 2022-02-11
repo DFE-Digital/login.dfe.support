@@ -26,38 +26,43 @@ const paginationModel = {
 <%- include('../../sharedViews/pagination', paginationModel); %>
 
 <style>
-	.text-smaller-right-padding{
+	.text-smaller-right-padding-5px{
 		padding: 0 5px 0 0;
 		font-size: smaller;
 	}
-	.text-smaller{
-		font-size: smaller;
+	.border-bottom-gray-1px{
+		border-bottom: 1px solid #bfc1c3;
 	}
-</style>
-
+	.border-bottom-black-2px{
+		border-bottom: 2px solid #0b0c0c;
+	}
+	.unresponsive-cell-200px{
+	  max-width: 200px;
+	}
+	.unresponsive-cell-300px{
+	  max-width: 300px;
+	}
+</style>  
 <div class="col-12 text-break"> 
-	<div class="row data">
-		<div class="col-2 text-smaller-right-padding">Date</div>
-		<div class="col-3 text-smaller-right-padding">Event</div>
-		<div class="col-1 text-smaller-right-padding">Service</div>
-		<div class="col-2 text-smaller-right-padding">Organisation</div>
-		<div class="col-1 text-smaller-right-padding">Result</div>
-		<div class="col-3 text-smaller-right-padding">User</div>
+	<div class="row data border-bottom-black-2px">
+		<div class="col-2 text-smaller-right-padding-5px">Date</div>
+		<div class="col-3 text-smaller-right-padding-5px">Event</div>
+		<div class="col-1 text-smaller-right-padding-5px">Service</div>
+		<div class="col-2 text-smaller-right-padding-5px">Organisation</div>
+		<div class="col-1 text-smaller-right-padding-5px">Result</div>
+		<div class="col-3 text-smaller-right-padding-5px">User</div>
 	</div>
-        
-    <hr />
 		
 	<% for(let a = 0;a < locals.audits.length; a++) { %>
 	<% const audit = locals.audits[a]; %>
-		<div class="row data">
-			<div class="col-2 text-smaller-right-padding"><%= locals.moment(audit.timestamp).format('DD/MMM/YYYY HH:mm:ss') %></div>
-			<div class="col-3 text-smaller-right-padding"><%= audit.event.description %>&nbsp;</div>
-			<div class="col-1 text-smaller-right-padding"><%= audit.service ? audit.service.name : '' %>&nbsp;</div>
-			<div class="col-2 text-smaller-right-padding"><%= audit.organisation ? audit.organisation.name: '' %>&nbsp;</div>
-			<div class="col-1 text-smaller-right-padding"><%= audit.result ? 'Success' : 'Failure' %></div>
-			<div class="col-3 text-smaller-right-padding"><%= audit.user ? audit.user.name : '' %>&nbsp;</div>
+		<div class="row data border-bottom-gray-1px">
+			<div class="col-2 text-smaller-right-padding-5px"><%= locals.moment(audit.timestamp).format('DD/MMM/YYYY HH:mm:ss') %></div>
+			<div class="col-3 text-smaller-right-padding-5px"><%= audit.event.description %>&nbsp;</div>
+			<div class="col-1 text-smaller-right-padding-5px"><%= audit.service ? audit.service.name : '' %>&nbsp;</div>
+			<div class="col-2 text-smaller-right-padding-5px"><%= audit.organisation ? audit.organisation.name: '' %>&nbsp;</div>
+			<div class="col-1 text-smaller-right-padding-5px"><%= audit.result ? 'Success' : 'Failure' %></div>
+			<div class="col-3 text-smaller-right-padding-5px"><%= audit.user ? audit.user.name : '' %>&nbsp;</div>
 		</div>
-		<hr />
 	<% } %>
 </div>
 
