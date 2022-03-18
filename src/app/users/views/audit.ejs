@@ -14,13 +14,13 @@
 </div>
 
 <%
-const paginationModel = {
-    currentPage: locals.page,
-    numberOfPages: locals.numberOfPages,
-    totalNumberOfResults: locals.totalNumberOfResults,
-    numberOfResultsOnPage: locals.audits.length,
-    data: [],
-};
+	const paginationModel = {
+		currentPage: locals.page,
+		numberOfPages: locals.numberOfPages,
+		totalNumberOfResults: locals.totalNumberOfResults,
+		numberOfResultsOnPage: locals.audits.length,
+		data: [],
+	};
 %>
 
 <%- include('../../sharedViews/pagination', paginationModel); %>
@@ -33,8 +33,8 @@ const paginationModel = {
 		<div class="col-2 text-smaller-right-padding-5px">Organisation</div>
 		<div class="col-1 text-smaller-right-padding-5px">Result</div>
 		<div class="col-3 text-smaller-right-padding-5px">User</div>
-	</div>
-		
+	</div>		
+	
 	<% for(let a = 0;a < locals.audits.length; a++) { %>
 	<% const audit = locals.audits[a]; %>
 		<div class="row data border-bottom-gray-1px">
