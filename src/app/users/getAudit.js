@@ -6,6 +6,7 @@ const { getServiceIdForClientId } = require('./../../infrastructure/serviceMappi
 const { getServiceById } = require('./../../infrastructure/applications');
 const { getOrganisationById, getUserOrganisations } = require('./../../infrastructure/organisations');
 
+
 let cachedServiceIds = {};
 let cachedServices  = {};
 let cachedUsers = {};
@@ -99,6 +100,38 @@ const describeAuditEvent = async (audit, req) => {
     const editedFields = audit.editedFields && audit.editedFields.find(x => x.name === 'edited_permission');
     const viewedUser = await getCachedUserById(audit.editedUser, req.id);
     return `Edited permission level to ${editedFields.newValue} for user ${viewedUser.firstName} ${viewedUser.lastName} in organisation ${editedFields.organisation}`
+  }
+  // deleted service
+  if (audit.type === 'support' && audit.subType === 'user-service-deleted') {
+    const serviceId = audit.editedFields && audit.editedFields.find(x => x.name === 'remove_service');
+    const service = await getServiceById(serviceId.oldValue);
+    const viewedUser = await getCachedUserById(audit.editedUser, req.id);
+    return `Deleted service: ''${service.name}'' for user  ${viewedUser.firstName} ${viewedUser.lastName}`
+  }
+  // added service with roles (ids')
+  if (audit.type === 'support' && audit.subType === 'user-services-added') {
+    const serviceId = audit.editedFields && audit.editedFields.find(x => x.name === 'add_services');
+
+    let msg = '';
+    for (let i = 0; i < serviceId.newValue.length; i++) {
+      if(0 < msg.length) { msg = msg + ', '; }
+      const service = await getServiceById(serviceId.newValue[i].serviceId);
+      msg = msg + `''${service.name}''`;
+
+      const addedRoles = serviceId.newValue[i].roles;
+      if(0 < addedRoles.length)
+      {
+        msg = msg + ` - roles: `;
+        for(let j = 0; j < addedRoles.length; j++)
+        {
+          let addedRoleId = addedRoles[j];
+          msg = msg + `${addedRoleId};`;
+        }
+      }
+    }
+
+    const viewedUser = await getCachedUserById(audit.editedUser, req.id);
+    return `Added service: ${msg} for user ${viewedUser.firstName} ${viewedUser.lastName}`
   }
 
   return `${audit.type} / ${audit.subType}`;
