@@ -63,7 +63,7 @@ const post = async (req, res) => {
     editedFields: [{
       name: 'remove_service',
       oldValue: serviceId,
-      newValue: undefined,
+      newValue: req.session.user.services, 
     }],
   });
   res.flash('info', `${service.name} successfully removed`);
