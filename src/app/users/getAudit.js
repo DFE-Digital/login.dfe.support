@@ -155,42 +155,35 @@ const describeAuditEvent = async (audit, req) => {
   if (audit.type === 'support' && audit.subType === 'user-service-updated') {
     const serviceId = audit.editedFields && audit.editedFields.find(x => x.name === 'update_service');
     let msg = '';
-    if(serviceId.newValue === undefined)
-    {
-      const service = await getServiceById(serviceId.oldValue);
-      msg = msg + `'${service.name}' - no roles; `;
-    }
-    else
-    {
-      for (let i = 0; i < serviceId.newValue.length; i++) {
-        if(0 < msg.length) { msg = msg + ', '; }
-        const service = await getServiceById(serviceId.newValue[i].serviceId);
-        const postUpdateRoles = serviceId.newValue[i].roles;
-        msg = msg + `'${service.name}'`;
-        if(0 === postUpdateRoles.length)
+    for (let i = 0; i < serviceId.newValue.length; i++) {
+      if(0 < msg.length) { msg = msg + ', '; }
+      const service = await getServiceById(serviceId.newValue[i].serviceId);
+      const postUpdateRoles = serviceId.newValue[i].roles;
+      msg = msg + `'${service.name}'`;
+      if(0 === postUpdateRoles.length)
+      {
+        msg = msg + ` - no roles; `;
+      }
+      else
+      {
+        msg = msg + ` - post-update roles: `;
+        const allRolesOfService = await listRolesOfService(service.id, req.id);
+        for(let j = 0; j < postUpdateRoles.length; j++)
         {
-          msg = msg + ` - no roles; `;
-        }
-        else
-        {
-          msg = msg + ` - post-update roles: `;
-          const allRolesOfService = await listRolesOfService(service.id, req.id);
-          for(let j = 0; j < postUpdateRoles.length; j++)
+          let postUpdateRoleId = postUpdateRoles[j];
+          const role = allRolesOfService.find(x => x.id.toLowerCase() === postUpdateRoleId.toLowerCase());
+          if(role === undefined)
           {
-            let postUpdateRoleId = postUpdateRoles[j];
-            const role = allRolesOfService.find(x => x.id.toLowerCase() === postUpdateRoleId.toLowerCase());
-            if(role === undefined)
-            {
-              msg = msg + `'${postUpdateRoleId}'; `;
-            }
-            else
-            {
-              msg = msg + `'${role.name}'; `;
-            }
+            msg = msg + `'${postUpdateRoleId}'; `;
+          }
+          else
+          {
+            msg = msg + `'${role.name}'; `;
           }
         }
       }
     }
+    
     const viewedUser = await getCachedUserById(audit.editedUser, req.id);
     return `Updated service: ${msg} for user  ${viewedUser.firstName} ${viewedUser.lastName}`
   }
