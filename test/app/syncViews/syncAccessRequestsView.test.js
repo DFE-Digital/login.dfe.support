@@ -5,12 +5,12 @@ jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/audit/cache');
 jest.mock('./../../../src/infrastructure/audit');
-jest.mock('uuid/v4');
+jest.mock('uuid');
 
 const accessRequests = require('./../../../src/infrastructure/accessRequests');
 const directories = require('./../../../src/infrastructure/directories');
 const organisations = require('./../../../src/infrastructure/organisations');
-const uuid = require('uuid/v4');
+const {v4:uuid} = require('uuid');
 const syncAccessRequests = require('./../../../src/app/syncViews/syncAccessRequestsView');
 
 const user1 = {

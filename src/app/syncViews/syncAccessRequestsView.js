@@ -2,7 +2,7 @@ const accessRequests = require('./../../infrastructure/accessRequests');
 const logger = require('./../../infrastructure/logger');
 const directories = require('./../../infrastructure/directories');
 const organisations = require('./../../infrastructure/organisations');
-const uuid = require('uuid/v4');
+const {v4:uuid} = require('uuid');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
 
