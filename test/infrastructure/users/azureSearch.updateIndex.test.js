@@ -10,9 +10,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
   },
 }));
 jest.mock('login.dfe.request-promise-retry');
-jest.mock('uuid/v4', () => {
-  return jest.fn().mockReturnValue('some-uuid');
-});
+jest.mock('uuid', () => ({v4: jest.fn().mockReturnValue('some-uuid')}));
 
 
 const users = [

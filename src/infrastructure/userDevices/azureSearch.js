@@ -2,7 +2,7 @@
 
 const Redis = require('ioredis');
 const config = require('./../config');
-const uuid = require('uuid/v4');
+const {v4:uuid} = require('uuid');
 const azureSearch = require('./../azureSearch');
 
 const client = new Redis(config.cache.params.indexPointerConnectionString);

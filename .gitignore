@@ -62,7 +62,6 @@ typings/
 
 # Dev env
 /config/
-!/config/login.dfe.support.dev.json
 
 .idea/workspace.xml
 .idea/watcherTasks.xml

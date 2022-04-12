@@ -1,7 +1,7 @@
 const schedule = require('node-schedule');
 const logger = require('./infrastructure/logger');
 const config = require('./infrastructure/config');
-const uuid = require('uuid/v4');
+const {v4:uuid} = require('uuid');
 
 const { syncFullUsersView, syncDiffUsersView, syncUserDevicesView, syncAuditCache } = require('./app/syncViews');
 const { tidyIndexes } = require('./app/tidyIndexes');

@@ -6,7 +6,7 @@ jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/audit/cache');
 jest.mock('./../../../src/infrastructure/audit');
 jest.mock('./../../../src/infrastructure/devices');
-jest.mock('uuid/v4');
+jest.mock('uuid');
 jest.mock('ioredis');
 
 const userDevices = require('./../../../src/infrastructure/userDevices');
@@ -14,7 +14,7 @@ const directories = require('./../../../src/infrastructure/directories');
 const organisations = require('./../../../src/infrastructure/organisations');
 const audit = require('./../../../src/infrastructure/audit');
 const devices = require('./../../../src/infrastructure/devices');
-const uuid = require('uuid/v4');
+const {v4:uuid} = require('uuid');
 const syncUserDevicesView = require('./../../../src/app/syncViews/syncUserDevicesView');
 
 const user1 = {

@@ -4,7 +4,7 @@ const directories = require('./../../infrastructure/directories');
 const organisations = require('./../../infrastructure/organisations');
 const { getServicesByUserId } = require('./../../infrastructure/access');
 const { cache: auditCache } = require('./../../infrastructure/audit');
-const uuid = require('uuid/v4');
+const {v4:uuid} = require('uuid');
 const { mapUserStatus } = require('./../../infrastructure/utils');
 const { filter } = require('lodash');
 

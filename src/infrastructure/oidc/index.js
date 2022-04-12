@@ -1,14 +1,17 @@
 /* eslint-disable no-param-reassign */
 const config = require('../config');
 const passport = require('passport');
-const { Strategy, Issuer } = require('openid-client');
+const { Strategy, Issuer, custom } = require('openid-client');
 const logger = require('../logger');
 const { getUserSupportClaims } = require('./../supportClaims');
 const asyncRetry = require('login.dfe.async-retry');
 
+custom.setHttpOptionsDefaults({
+  timeout: 10000
+})
+
 const getPassportStrategy = async () => {
 
-  Issuer.defaultHttpOptions = { timeout: 10000 };
   const issuer = await asyncRetry(async () => await Issuer.discover(config.identifyingParty.url), asyncRetry.strategies.apiStrategy);
 
   const client = new issuer.Client({
@@ -16,7 +19,7 @@ const getPassportStrategy = async () => {
     client_secret: config.identifyingParty.clientSecret,
   });
   if (config.identifyingParty.clockTolerance && config.identifyingParty.clockTolerance > 0) {
-    client.CLOCK_TOLERANCE = config.identifyingParty.clockTolerance;
+    client[custom.clock_tolerance] = config.identifyingParty.clockTolerance;
   }
 
   return new Strategy({
@@ -31,7 +34,7 @@ const getPassportStrategy = async () => {
         userInfo.id = userInfo.sub;
         userInfo.name = userInfo.sub;
         userInfo.id_token = tokenset.id_token;
-        Object.assign(userInfo, tokenset.claims);
+        Object.assign(userInfo, tokenset.claims());
         done(null, userInfo);
       })
       .catch((err) => {
