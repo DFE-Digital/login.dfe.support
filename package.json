@@ -24,7 +24,7 @@
   "dependencies": {
     "agentkeepalive": "^3.5.2",
     "applicationinsights": "^1.8.10",
-    "async": "^2.6.3",
+    "async": "^2.6.4",
     "body-parser": "^1.20.0",
     "cookie-parser": "^1.4.5",
     "cookie-session": "^2.0.0-rc.1",
