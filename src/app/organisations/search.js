@@ -57,24 +57,26 @@ const search = async (req) => {
    * AND
    * - filters are not visible
    */
-  console.log("@@")
-  const organisationRegex = /^[a-zA-Z0-9\s-'&(),.@\\/:]{1,256}$/;
-  if (inputSource.isFilterToggle !== 'true' && inputSource.showFilters !== 'true') {
-    if (!criteria || criteria.length < 4) {
-      return {
-        validationMessages: {
-          criteria: 'Please enter at least 4 characters',
-        },
-      };
-    }
-    if (!organisationRegex.test(criteria)) {
-      return {
-        validationMessages: {
-          criteria: 'Special characters cannot be used',
-        },
-      };
-    }
+  if (inputSource.isFilterToggle !== 'true' && inputSource.showFilters !== 'true' && (!criteria || criteria.length < 4)) {
+    return {
+      validationMessages: {
+        criteria: 'Please enter at least 4 characters',
+      },
+    };
   }
+
+  /**
+   * Check that the criteria does not contain any special characters
+   */
+  const organisationRegex = /^[a-zA-Z0-9\s-'&(),.@\\/:]{1,256}$/;
+  if (!organisationRegex.test(criteria)) {
+    return {
+      validationMessages: {
+        criteria: 'Special characters cannot be used',
+      },
+    };
+  }
+
   const orgTypes = unpackMultiSelect(inputSource.organisationType);
   const orgStatuses = unpackMultiSelect(inputSource.organisationStatus);
   let pageNumber = parseInt(inputSource.page) || 1;
