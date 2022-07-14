@@ -63,8 +63,8 @@ const search = async (req) => {
   /**
    * Check that the criteria does not contain any special characters
    */
-  const usernameRegex = /^[^±!£$%^&*+§¡€#¢§¶•ªº«\\/<>?:;|=.,]{1,256}$/i;
-  if (!usernameRegex.test(criteria)) {
+  const userRegex = /^[a-zA-Z0-9\s-'&(),.@\\/:]{1,256}$/;
+  if (!userRegex.test(criteria)) {
     return {
       validationMessages: {
         criteria: 'Special characters cannot be used',
