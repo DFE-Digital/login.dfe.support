@@ -60,6 +60,17 @@ const search = async (req) => {
       },
     };
   }
+  /**
+   * Check that the criteria does not contain any special characters
+   */
+  const usernameRegex = /^[^±!£$%^&*+§¡€#¢§¶•ªº«\\/<>?:;|=.,]{1,256}$/i;
+  if (!usernameRegex.test(criteria)) {
+    return {
+      validationMessages: {
+        criteria: 'Special characters cannot be used',
+      },
+    };
+  }
 
   let safeCriteria = criteria;
   if (criteria.indexOf('-') !== -1) {
