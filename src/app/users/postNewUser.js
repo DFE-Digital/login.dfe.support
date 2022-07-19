@@ -3,7 +3,7 @@ const { getUser } = require('./../../infrastructure/directories');
 const { emailPolicy } = require('login.dfe.validation');
 
 const validateInput = async (req) => {
-  const nameRegEx = /^[^±!@£$%^&*_+§¡€#¢§¶•ªº«\\/<>?:;|=.,]{1,60}$/i;
+  const nameRegEx = /^[^±!@£$%^&*_+§¡€#¢§¶•ªº«\\/<>?:;|=.,~"]{1,60}$/i;
   const model = {
     firstName: req.body.firstName || '',
     lastName: req.body.lastName || '',
