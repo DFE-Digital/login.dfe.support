@@ -46,7 +46,7 @@ const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
   let criteria = paramsSource.criteria ? paramsSource.criteria.trim() : '';
 
-  const userRegex = /^[^±!£$%^&*+§¡€#¢§¶•ªº«\\/<>?:;|=,]{1,256}$/i;
+  const userRegex = /^[^±!£$%^&*+§¡€#¢§¶•ªº«\\/<>?:;|=,~"]{1,256}$/i;
   let filteredError;
   /**
    * Check minimum characters and special characters in search criteria if:
