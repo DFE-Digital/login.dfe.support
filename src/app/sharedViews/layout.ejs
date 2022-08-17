@@ -107,12 +107,26 @@
             </ul>
         </nav>
     </div>
+    <div class="session-timeout-overlay">
+        <div class="session-timeout-modal">
+          <h3>Your session will time out in <span id="minutes">5</span> minutes <span id="seconds"></span> seconds </h3>
+          <p>if you do not respond, we will sign you out. We do this to keep your information safe.</p>
+          <button id="modal-signin" class="govuk-button dialog-button js-dialog-close" data-module="govuk-button">Stay signed in</button>
+          <button id="modal-signout" class="govuk-button govuk-button--secondary" data-module="govuk-button">Sign out now</button>    
+        </div>
+    </div>
 </footer>
 
 <script src="<%= locals.urls.assets %>/gds-upgrade/javascript/vendors/jquery.min.js?version=<%= locals.assets.version %>"></script>
 <script src="<%= locals.urls.assets %>/gds-upgrade/javascript/vendors/select2.min.js?version=<%= locals.assets.version %>"></script>
 <script type="text/javascript" src="<%= locals.urls.assets %>/gds-upgrade/javascript/vendors/vendors.min.js?version=<%= locals.assets.version %>"></script>
 <script src="<%= locals.urls.assets %>/gds-upgrade/javascript/app.min.js?version=<%= locals.assets.version %>"></script>
+<script>
 
+    <% if (locals.isLoggedIn) { %>
+        sessionTimeout();
+        <% } %> 
+        
+</script>
 </body>
 </html>
