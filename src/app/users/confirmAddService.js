@@ -88,7 +88,10 @@ const post = async (req, res) => {
           organisationDetails.organisation.name,
           serviceDetails.name,
           roleDetails.map(i => i.name),
-          organisationDetails.role.name,
+          {
+            id: organisationDetails.role.id,
+            name: organisationDetails.role.name,
+          },
         );
       }
     }

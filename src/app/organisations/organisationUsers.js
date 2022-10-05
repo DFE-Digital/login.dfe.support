@@ -6,7 +6,7 @@ const mapRole = (roleId) => {
   if (roleId === 10000) {
     return { id: 10000, description: 'Approver' };
   }
-  return { id: 1, description: 'End User' };
+  return { id: 0, description: 'End User' };
 };
 const render = async (req, res, dataSource) => {
   const organisation = await getOrganisationByIdV2(req.params.id, req.id);

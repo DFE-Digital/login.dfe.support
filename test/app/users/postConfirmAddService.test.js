@@ -39,7 +39,10 @@ describe('when adding new services to a user', () => {
   const expectedOrgName = 'Great Big School';
   const expectedServiceName = 'service name';
   const expectedRoles = [];
-  const expectedPermissionName = 'End user';
+  const expectedPermission = {
+    id: 0,
+    name: 'End user',
+  };
 
   beforeEach(() => {
     req = getRequestMock({
@@ -292,6 +295,6 @@ describe('when adding new services to a user', () => {
     expect(sendServiceRequestApprovedStub.mock.calls[0][3]).toBe(expectedOrgName);
     expect(sendServiceRequestApprovedStub.mock.calls[0][4]).toBe(expectedServiceName);
     expect(sendServiceRequestApprovedStub.mock.calls[0][5]).toEqual(expectedRoles);
-    expect(sendServiceRequestApprovedStub.mock.calls[0][6]).toBe(expectedPermissionName);
+    expect(sendServiceRequestApprovedStub.mock.calls[0][6]).toEqual(expectedPermission);
   });
 });
