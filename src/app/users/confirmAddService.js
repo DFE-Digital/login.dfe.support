@@ -76,6 +76,10 @@ const post = async (req, res) => {
       if (!uid.startsWith('inv-') && isEmailAllowed) {
         const userOrganisations = await getUserOrganisations(uid, req.id);
         const organisationDetails = userOrganisations.find(x => x.organisation.id === organisationId);
+        const userOrgPermission = {
+          id: organisationDetails.role.id,
+          name: organisationDetails.role.name,
+        };
         const serviceDetails = allServices.services.find(x => x.id === service.serviceId);
         const allRolesOfService = await listRolesOfService(service.serviceId, req.id);
         const roleDetails = allRolesOfService.filter(x => service.roles.find(y => y.toLowerCase() === x.id.toLowerCase()));
@@ -88,10 +92,7 @@ const post = async (req, res) => {
           organisationDetails.organisation.name,
           serviceDetails.name,
           roleDetails.map(i => i.name),
-          {
-            id: organisationDetails.role.id,
-            name: organisationDetails.role.name,
-          },
+          userOrgPermission,
         );
       }
     }
