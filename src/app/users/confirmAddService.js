@@ -14,7 +14,7 @@ const get = async (req, res) => {
   }
   const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisations(userId, req.id);
   const organisationDetails = userOrganisations.find(x => x.organisation.id === req.params.orgId);
-  
+
   const userServices = getSafePath(req, 'session.user.services', []);
   const services = userServices.map(service => ({
     id: service.serviceId,
@@ -24,7 +24,7 @@ const get = async (req, res) => {
 
   if (userServices.length) {
     const allServices = await getAllServices(req.id);
-    
+
     for (let i = 0; i < services.length; i++) {
       const service = services[i];
       const serviceDetails = allServices.services.find(x => x.id === service.id);
@@ -33,7 +33,6 @@ const get = async (req, res) => {
       service.name = serviceDetails.name;
       service.roles = roleDetails;
     }
-
   }
 
   return res.render('users/views/confirmAddService', {
@@ -74,21 +73,26 @@ const post = async (req, res) => {
         req.session.user.isAddService ? await addUserService(uid, service.serviceId, organisationId, service.roles, req.id) : await updateUserService(uid, service.serviceId, organisationId, service.roles, req.id);
       }
 
-      if(!uid.startsWith('inv-') && isEmailAllowed){
+      if (!uid.startsWith('inv-') && isEmailAllowed) {
         const userOrganisations = await getUserOrganisations(uid, req.id);
         const organisationDetails = userOrganisations.find(x => x.organisation.id === organisationId);
+        const userOrgPermission = {
+          id: organisationDetails.role.id,
+          name: organisationDetails.role.name,
+        };
         const serviceDetails = allServices.services.find(x => x.id === service.serviceId);
         const allRolesOfService = await listRolesOfService(service.serviceId, req.id);
         const roleDetails = allRolesOfService.filter(x => service.roles.find(y => y.toLowerCase() === x.id.toLowerCase()));
-  
+
         const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});
         await notificationClient.sendServiceRequestApproved(
-          req.session.user.email, 
-          req.session.user.firstName, 
-          req.session.user.lastName, 
+          req.session.user.email,
+          req.session.user.firstName,
+          req.session.user.lastName,
           organisationDetails.organisation.name,
           serviceDetails.name,
-          roleDetails.map(i => i.name)
+          roleDetails.map(i => i.name),
+          userOrgPermission,
         );
       }
     }
