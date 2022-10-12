@@ -1,11 +1,23 @@
-const logger = require('./../../infrastructure/logger');
-const { searchForUsers, getSearchDetailsForUserById, updateUserInSearch } = require('./../../infrastructure/search');
-const { getInvitation, createUserDevice, getUser } = require('./../../infrastructure/directories');
-const { getServicesByUserId, getServicesByInvitationId } = require('./../../infrastructure/access');
-const { getServiceById } = require('./../../infrastructure/applications');
-const { mapUserStatus } = require('./../../infrastructure/utils');
-const config = require('./../../infrastructure/config');
-const sortBy = require('lodash/sortBy');
+const logger = require("./../../infrastructure/logger");
+const {
+  searchForUsers,
+  getSearchDetailsForUserById,
+  updateUserInSearch,
+} = require("./../../infrastructure/search");
+const {
+  getInvitation,
+  createUserDevice,
+  getUser,
+} = require("./../../infrastructure/directories");
+const {
+  getServicesByUserId,
+  getServicesByInvitationId,
+} = require("./../../infrastructure/access");
+const { getServiceById } = require("./../../infrastructure/applications");
+const { mapUserStatus } = require("./../../infrastructure/utils");
+const config = require("./../../infrastructure/config");
+const sortBy = require("lodash/sortBy");
+const isEmpty = require("lodash/isEmpty");
 
 const delay = async (milliseconds) => {
   return new Promise((resolve) => {
@@ -24,27 +36,29 @@ const unpackMultiSelect = (parameter) => {
 const buildFilters = (paramsSource) => {
   let filter = {};
 
-  const selectedOrganisationTypes = unpackMultiSelect(paramsSource.organisationType);
+  const selectedOrganisationTypes = unpackMultiSelect(
+    paramsSource.organisationType
+  );
   if (selectedOrganisationTypes) {
-    filter.organisationCategories = selectedOrganisationTypes
+    filter.organisationCategories = selectedOrganisationTypes;
   }
 
   const selectedAccountStatuses = unpackMultiSelect(paramsSource.accountStatus);
   if (selectedAccountStatuses) {
-    filter.statusId = selectedAccountStatuses
+    filter.statusId = selectedAccountStatuses;
   }
 
   const selectedServices = unpackMultiSelect(paramsSource.service);
   if (selectedServices) {
-    filter.services = selectedServices
+    filter.services = selectedServices;
   }
 
   return Object.keys(filter).length > 0 ? filter : undefined;
 };
 
 const search = async (req) => {
-  const paramsSource = req.method === 'POST' ? req.body : req.query;
-  let criteria = paramsSource.criteria ? paramsSource.criteria.trim() : '';
+  const paramsSource = req.method === "POST" ? req.body : req.query;
+  let criteria = paramsSource.criteria ? paramsSource.criteria.trim() : "";
 
   const userRegex = /^[^±!£$%^&*+§¡€#¢§¶•ªº«\\/<>?:;|=,~"]{1,256}$/i;
   let filteredError;
@@ -52,38 +66,41 @@ const search = async (req) => {
    * Check minimum characters and special characters in search criteria if:
    * user is not using the filters toggle (to open or close) and filters are not visible
    */
-  if (paramsSource.isFilterToggle !== 'true' && paramsSource.showFilters !== 'true') {
+  if (
+    paramsSource.isFilterToggle !== "true" &&
+    paramsSource.showFilters !== "true"
+  ) {
     if (!criteria || criteria.length < 4) {
       return {
         validationMessages: {
-          criteria: 'Please enter at least 4 characters',
+          criteria: "Please enter at least 4 characters",
         },
       };
     }
     if (!userRegex.test(criteria)) {
       return {
         validationMessages: {
-          criteria: 'Special characters cannot be used',
+          criteria: "Special characters cannot be used",
         },
       };
     }
-  /**
-   * Check special characters in search criteria if:
-   * user is filtering filtering and had specified a criteria
-   */
+    /**
+     * Check special characters in search criteria if:
+     * user is filtering filtering and had specified a criteria
+     */
   } else if (!userRegex.test(criteria) && criteria.length > 0) {
-    criteria = '';
+    criteria = "";
     // here we normally just return the error but we
     // want to keep the last set of filtered results
     // and append the error to the result
     filteredError = {
-      criteria: 'Special characters cannot be used',
+      criteria: "Special characters cannot be used",
     };
   }
 
   let safeCriteria = criteria;
-  if (criteria.indexOf('-') !== -1) {
-    criteria = "\"" + criteria + "\"";
+  if (criteria.indexOf("-") !== -1) {
+    criteria = '"' + criteria + '"';
   }
 
   let page = paramsSource.page ? parseInt(paramsSource.page) : 1;
@@ -91,55 +108,68 @@ const search = async (req) => {
     page = 1;
   }
 
-  let sortBy = paramsSource.sort ? paramsSource.sort.toLowerCase() : 'name';
-  let sortAsc = (paramsSource.sortdir ? paramsSource.sortdir : 'asc').toLowerCase() === 'asc';
+  let sortBy = paramsSource.sort ? paramsSource.sort.toLowerCase() : "name";
+  let sortAsc =
+    (paramsSource.sortdir ? paramsSource.sortdir : "asc").toLowerCase() ===
+    "asc";
 
   const filter = buildFilters(paramsSource);
 
-  const results = await searchForUsers(criteria + '*', page, sortBy, sortAsc ? 'asc' : 'desc', filter);
-  logger.audit(`${req.user.email} (id: ${req.user.sub}) searched for users in support using criteria "${criteria}"`, {
-    type: 'support',
-    subType: 'user-search',
-    userId: req.user.sub,
-    userEmail: req.user.email,
-    criteria,
-    pageNumber: page,
-    numberOfPages: results.numberOfPages,
-    sortedBy: sortBy,
-    sortDirection: sortAsc ? 'asc' : 'desc',
-  });
+  const results = await searchForUsers(
+    criteria + "*",
+    page,
+    sortBy,
+    sortAsc ? "asc" : "desc",
+    filter
+  );
+  logger.audit(
+    `${req.user.email} (id: ${req.user.sub}) searched for users in support using criteria "${criteria}"`,
+    {
+      type: "support",
+      subType: "user-search",
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      criteria,
+      pageNumber: page,
+      numberOfPages: results.numberOfPages,
+      sortedBy: sortBy,
+      sortDirection: sortAsc ? "asc" : "desc",
+    }
+  );
 
   return {
     criteria: safeCriteria,
     page,
     sortBy,
-    sortOrder: sortAsc ? 'asc' : 'desc',
+    sortOrder: sortAsc ? "asc" : "desc",
     numberOfPages: results.numberOfPages,
     totalNumberOfResults: results.totalNumberOfResults,
     users: results.users,
     validationMessages: filteredError,
     sort: {
       name: {
-        nextDirection: sortBy === 'name' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-        applied: sortBy === 'name',
+        nextDirection: sortBy === "name" ? (sortAsc ? "desc" : "asc") : "asc",
+        applied: sortBy === "name",
       },
       email: {
-        nextDirection: sortBy === 'email' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-        applied: sortBy === 'email',
+        nextDirection: sortBy === "email" ? (sortAsc ? "desc" : "asc") : "asc",
+        applied: sortBy === "email",
       },
       organisation: {
-        nextDirection: sortBy === 'organisation' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-        applied: sortBy === 'organisation',
+        nextDirection:
+          sortBy === "organisation" ? (sortAsc ? "desc" : "asc") : "asc",
+        applied: sortBy === "organisation",
       },
       lastLogin: {
-        nextDirection: sortBy === 'lastlogin' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-        applied: sortBy === 'lastlogin',
+        nextDirection:
+          sortBy === "lastlogin" ? (sortAsc ? "desc" : "asc") : "asc",
+        applied: sortBy === "lastlogin",
       },
       status: {
-        nextDirection: sortBy === 'status' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-        applied: sortBy === 'status',
+        nextDirection: sortBy === "status" ? (sortAsc ? "desc" : "asc") : "asc",
+        applied: sortBy === "status",
       },
-    }
+    },
   };
 };
 
@@ -154,19 +184,27 @@ const mapUserToSupportModel = (user, userFromSearch) => {
     firstName: user.given_name,
     lastName: user.family_name,
     email: user.email,
-    organisation: userFromSearch.primaryOrganisation ? {
-      name: userFromSearch.primaryOrganisation
-    } : null,
+    organisation: userFromSearch.primaryOrganisation
+      ? {
+          name: userFromSearch.primaryOrganisation,
+        }
+      : null,
     organisations: userFromSearch.organisations,
-    lastLogin: userFromSearch.lastLogin ? new Date(userFromSearch.lastLogin) : null,
-    successfulLoginsInPast12Months: userFromSearch.numberOfSuccessfulLoginsInPast12Months,
-    status: mapUserStatus(userFromSearch.status.id, userFromSearch.statusLastChangedOn),
+    lastLogin: userFromSearch.lastLogin
+      ? new Date(userFromSearch.lastLogin)
+      : null,
+    successfulLoginsInPast12Months:
+      userFromSearch.numberOfSuccessfulLoginsInPast12Months,
+    status: mapUserStatus(
+      userFromSearch.status.id,
+      userFromSearch.statusLastChangedOn
+    ),
     pendingEmail: userFromSearch.pendingEmail,
   };
 };
 
 const getUserDetailsById = async (uid, correlationId) => {
-  if (uid.startsWith('inv-')) {
+  if (uid.startsWith("inv-")) {
     const invitation = await getInvitation(uid.substr(4), correlationId);
     return {
       id: uid,
@@ -179,22 +217,48 @@ const getUserDetailsById = async (uid, correlationId) => {
       loginsInPast12Months: {
         successful: 0,
       },
-      deactivated: invitation.deactivated
+      deactivated: invitation.deactivated,
     };
   } else {
-    const userSearch = await getSearchDetailsForUserById(uid);
+    const userSearch = await getSearchDetailsForUserById(uid); // has numeric and textIdentifier -> map it and pass it back to display and log it
     const rawUser = await getUser(uid, correlationId);
     const user = mapUserToSupportModel(rawUser, userSearch);
     const serviceDetails = await getServicesByUserId(uid, correlationId);
 
-    const ktsDetails = serviceDetails ? serviceDetails.find((c) => c.serviceId.toLowerCase() === config.serviceMapping.key2SuccessServiceId.toLowerCase()) : undefined;
-    let externalIdentifier = '';
+    const ktsDetails = serviceDetails
+      ? serviceDetails.find(
+          (c) =>
+            c.serviceId.toLowerCase() ===
+            config.serviceMapping.key2SuccessServiceId.toLowerCase()
+        )
+      : undefined;
+    let externalIdentifier = "";
     if (ktsDetails && ktsDetails.identifiers) {
-      const key = ktsDetails.identifiers.find((a) => a.key = 'k2s-id');
+      const key = ktsDetails.identifiers.find((a) => (a.key = "k2s-id"));
       if (key) {
         externalIdentifier = key.value;
       }
     }
+
+    const isLegacyIdPresent = (user) => {
+      if (isEmpty(user?.numericIdentifier && user?.textIdentifier)) return true;
+
+      return false;
+    };
+
+    const numericAndTextIdentifierCheck = isLegacyIdPresent(
+      userSearch.organisations
+    );
+
+    const numeriIdentifierAndTextidentifier = {};
+    userSearch.organisations?.map((org) => {
+      if (org["numericIdentifier"] && org["textIdentifier"]) {
+        numeriIdentifierAndTextidentifier["numericIdentifier"] =
+          org["numericIdentifier"];
+        numeriIdentifierAndTextidentifier["textIdentifier"] =
+          org["textIdentifier"];
+      }
+    });
 
     return {
       id: uid,
@@ -208,9 +272,12 @@ const getUserDetailsById = async (uid, correlationId) => {
         successful: user.successfulLoginsInPast12Months,
       },
       serviceId: config.serviceMapping.key2SuccessServiceId,
-      orgId: ktsDetails ? ktsDetails.organisationId : '',
+      orgId: ktsDetails ? ktsDetails.organisationId : "",
       ktsId: externalIdentifier,
       pendingEmail: user.pendingEmail,
+      ...(numericAndTextIdentifierCheck && {
+        legacyId: JSON.stringify(numeriIdentifierAndTextidentifier),
+      }),
     };
   }
 };
@@ -219,17 +286,25 @@ const updateUserDetails = async (user, correlationId) => {
   await updateUserInSearch(user, correlationId);
 };
 
-const getAllServicesForUserInOrg = async (userId, organisationId, correlationId) => {
-  const allUserServices = userId.startsWith('inv-') ? await getServicesByInvitationId(userId.substr(4), correlationId) : await getServicesByUserId(userId, correlationId);
+const getAllServicesForUserInOrg = async (
+  userId,
+  organisationId,
+  correlationId
+) => {
+  const allUserServices = userId.startsWith("inv-")
+    ? await getServicesByInvitationId(userId.substr(4), correlationId)
+    : await getServicesByUserId(userId, correlationId);
   if (!allUserServices) {
     return [];
   }
 
-  const userServicesForOrg = allUserServices.filter(x => x.organisationId === organisationId);
+  const userServicesForOrg = allUserServices.filter(
+    (x) => x.organisationId === organisationId
+  );
   const services = userServicesForOrg.map((service) => ({
     id: service.serviceId,
     dateActivated: service.accessGrantedOn,
-    name: '',
+    name: "",
     status: null,
   }));
   for (let i = 0; i < services.length; i++) {
@@ -238,11 +313,10 @@ const getAllServicesForUserInOrg = async (userId, organisationId, correlationId)
     service.name = application.name;
     service.status = mapUserStatus(service.status);
   }
-  return sortBy(services, 'name');
+  return sortBy(services, "name");
 };
 
 const createDevice = async (req) => {
-
   const userId = req.body.userId;
   const userEmail = req.body.email;
   const serialNumber = req.body.serialNumber;
@@ -250,25 +324,31 @@ const createDevice = async (req) => {
   const result = await createUserDevice(userId, serialNumber, req.id);
 
   if (result.success) {
-    logger.audit(`Support user ${req.user.email} (id: ${req.user.sub}) linked ${userEmail} (id: ${userId}) linked to token ${serialNumber} "${serialNumber}"`, {
-      type: 'support',
-      subType: 'digipass-assign',
-      success: true,
-      editedUser: userId,
-      userId: req.user.sub,
-      userEmail: req.user.email,
-      deviceSerialNumber: serialNumber,
-    });
+    logger.audit(
+      `Support user ${req.user.email} (id: ${req.user.sub}) linked ${userEmail} (id: ${userId}) linked to token ${serialNumber} "${serialNumber}"`,
+      {
+        type: "support",
+        subType: "digipass-assign",
+        success: true,
+        editedUser: userId,
+        userId: req.user.sub,
+        userEmail: req.user.email,
+        deviceSerialNumber: serialNumber,
+      }
+    );
   } else {
-    logger.audit(`Support user ${req.user.email} (id: ${req.user.sub}) failed to link ${userEmail} (id: ${userId}) to token ${serialNumber} "${serialNumber}"`, {
-      type: 'support',
-      subType: 'digipass-assign',
-      success: false,
-      editedUser: userId,
-      userId: req.user.sub,
-      userEmail: req.user.email,
-      deviceSerialNumber: serialNumber,
-    });
+    logger.audit(
+      `Support user ${req.user.email} (id: ${req.user.sub}) failed to link ${userEmail} (id: ${userId}) to token ${serialNumber} "${serialNumber}"`,
+      {
+        type: "support",
+        subType: "digipass-assign",
+        success: false,
+        editedUser: userId,
+        userId: req.user.sub,
+        userEmail: req.user.email,
+        deviceSerialNumber: serialNumber,
+      }
+    );
   }
   return result.success;
 };
