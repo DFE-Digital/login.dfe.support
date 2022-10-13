@@ -44,7 +44,6 @@
         },
         "nodeVersion": {
             "type": "string",
-            "defaultValue": "8.9.4",
             "metadata": {
                 "description": "The default NodeJS version that the App Service will run"
             }
