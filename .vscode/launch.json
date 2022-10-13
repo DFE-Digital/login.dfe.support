@@ -11,7 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/src/web.js",
+            "program": "${workspaceFolder}/src/index.js",
             "env": {
                 "settings": "config/login.dfe.support.local.json",
                 "NODE_TLS_REJECT_UNAUTHORIZED": "0"
