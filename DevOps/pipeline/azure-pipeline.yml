@@ -64,7 +64,7 @@ variables:
 - name: numberOfWorkers
   value: 1
 - name: dev
-  ${{ if or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'dsi'), contains(variables['Build.SourceBranch'],'PIM'), contains(variables['Build.SourceBranch'],'NSA')) }}:
+  ${{ if or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}:
     value: true
   ${{ else }}:
     value: false
