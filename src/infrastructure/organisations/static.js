@@ -57,6 +57,10 @@ const getInvitationOrganisations = async (invitationId, correlationId) => {
       "organisation": {
         "id": "88a1ed39-5a98-43da-b66e-78e564ea72b0",
         "name": "Big School"
+      },
+      "role": {
+        "id": 0,
+        "name": "End user"
       }
     }
   ])
