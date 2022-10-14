@@ -13,7 +13,7 @@
         },
         "branch": {
             "type": "string",
-            "defaultValue": "feature/DSI-4947",
+            "defaultValue": "feature/DSI-5160-61",
             "metadata": {
                 "description": "Branch that use for the ARM templateLinks"
             }
