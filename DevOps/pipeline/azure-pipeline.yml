@@ -6,7 +6,7 @@ resources:
       type: github
       endpoint: DfE-Digital
       name: DFE-Digital/login.dfe.devops
-      ref: feature/DSI-4947
+      ref: feature/DSI-5160-61
     - repository: config
       type: github
       endpoint: DfE-Digital
