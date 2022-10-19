@@ -16,4 +16,4 @@ RUN npm install
 
 COPY . .
 
-CMD node src/web.js
+CMD node src/index.js

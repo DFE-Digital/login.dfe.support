@@ -3,8 +3,20 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "templatesBaseUri": {
+            "type": "string"
+        },
+        "AccessToken": {
             "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/DFE-Digital/login.dfe.infrastructure/master/"
+            "metadata": {
+                "description": "Token that will acces the private repo from the logic app"
+            }
+        },
+        "branch": {
+            "type": "string",
+            "defaultValue": "feature/DSI-5160-61",
+            "metadata": {
+                "description": "Branch that use for the ARM templateLinks"
+            }
         },
         "appServiceName": {
             "type": "string",
@@ -32,7 +44,6 @@
         },
         "nodeVersion": {
             "type": "string",
-            "defaultValue": "8.9.4",
             "metadata": {
                 "description": "The default NodeJS version that the App Service will run"
             }
@@ -117,11 +128,31 @@
             "metadata": {
                 "description": "Audit HTTP triger Function Key"
             }
+        },
+        "includeDeploymentSlot": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Whether or not to include a staging deployment slot"
+            }
+        },
+        "gatewayVnetRg": {
+            "type": "string",
+            "metadata": {
+                "description": "Gateway virtual network resource group"
+            }
+        },
+        "gatewayVnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "Gateway virtual network name"
+            }
         }
     },
     "variables": {
         "enableVirtualNetworkIntegration": "[and(not(empty(parameters('virtualNetworkResourceGroupName'))), not(empty(parameters('virtualNetworkName'))))]",
-        "serviceSubnetResourceId": "[if(variables('enableVirtualNetworkIntegration'), resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), concat(parameters('subnetPrefix'))), '')]"
+        "serviceSubnetResourceId": "[if(variables('enableVirtualNetworkIntegration'), resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), concat(parameters('subnetPrefix'))), '')]",
+        "gatewaySubnetId": "[resourceId(parameters('gatewayVnetRg'),'Microsoft.Network/virtualNetworks/subnets',parameters('gatewayVnetName'), 'gateway')]"
     },
     "resources": [
         {
@@ -131,7 +162,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(parameters('templatesBaseUri'), 'Shared/app-service-plan.json')]",
+                    "uri": "[concat(parameters('templatesBaseUri'),'&repo=DFE-Digital/login.dfe.devops&ref=',parameters('branch'),'&token=', parameters('AccessToken'),'&file=templates/app-service-plan.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -157,7 +188,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(parameters('templatesBaseUri'), 'Shared/app-service-certificate.json')]",
+                    "uri": "[concat(parameters('templatesBaseUri'),'&repo=DFE-Digital/login.dfe.devops&ref=',parameters('branch'),'&token=', parameters('AccessToken'),'&file=templates/app-service-certificate.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -183,7 +214,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(parameters('templatesBaseUri'), 'Shared/app-service-azure-config.json')]",
+                    "uri": "[concat(parameters('templatesBaseUri'),'&repo=DFE-Digital/login.dfe.devops&ref=',parameters('branch'),'&token=', parameters('AccessToken'),'&file=templates/app-service-azure-config.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -228,6 +259,20 @@
                     },
                     "http20Enabled": {
                         "value": true
+                    },
+                    "includeDeploymentSlot": {
+                        "value": "[parameters('includeDeploymentSlot')]"
+                    },
+                    "ipSecurityRestrictions": {
+                        "value": [
+                            {
+                                "vnetSubnetResourceId": "[variables('gatewaySubnetId')]",
+                                "action": "Allow",
+                                "tag": "Default",
+                                "name": "Gateway",
+                                "priority": 200
+                            }
+                        ]
                     }
                 }
             },

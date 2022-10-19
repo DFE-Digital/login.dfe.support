@@ -3,10 +3,10 @@
   "version": "1.0.1",
   "description": "",
   "scripts": {
-    "web": "settings='./config/support.dev.json' node src/web.js",
+    "web": "settings='./config/support.dev.json' node src/index.js",
     "test": "./node_modules/.bin/jest",
     "test:watch": "./node_modules/.bin/jest --watchAll",
-    "dev": "settings='./config/login.dfe.support.dev.json' nodemon src/web.js"
+    "dev": "settings='./config/login.dfe.support.dev.json' nodemon src/index.js"
   },
   "engines": {
     "node": "12.x.x"
