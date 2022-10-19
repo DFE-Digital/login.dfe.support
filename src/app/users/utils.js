@@ -100,7 +100,7 @@ const search = async (req) => {
 
   let safeCriteria = criteria;
   if (criteria.indexOf('-') !== -1) {
-    criteria = '"' + criteria + '"';
+    criteria = "\"" + criteria + "\"";
   }
 
   let page = paramsSource.page ? parseInt(paramsSource.page) : 1;
@@ -220,7 +220,7 @@ const getUserDetailsById = async (uid, correlationId) => {
       deactivated: invitation.deactivated,
     };
   } else {
-    const userSearch = await getSearchDetailsForUserById(uid); // has numeric and textIdentifier -> map it and pass it back to display and log it
+    const userSearch = await getSearchDetailsForUserById(uid);
     const rawUser = await getUser(uid, correlationId);
     const user = mapUserToSupportModel(rawUser, userSearch);
     const serviceDetails = await getServicesByUserId(uid, correlationId);
