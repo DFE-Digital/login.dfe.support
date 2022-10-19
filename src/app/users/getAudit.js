@@ -72,7 +72,16 @@ const describeAuditEvent = async (audit, req) => {
   }
 
   if (audit.type === 'change-password') {
-    return 'Changed password';
+    switch (audit.subType) {
+      case 'incorrect-password':
+        return 'Incorrect current password';
+      case 'password-validation':
+        return 'Password validation failed';
+      default:
+        break;
+    }
+
+    return 'Password changed';
   }
 
   if (audit.type === 'reset-password') {
