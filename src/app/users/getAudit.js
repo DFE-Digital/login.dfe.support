@@ -78,8 +78,10 @@ const describeAuditEvent = async (audit, req) => {
       case 'password-validation':
         return 'Password validation failed';
       default:
-        return 'Password changed';
+        break;
     }
+
+    return 'Password changed';
   }
 
   if (audit.type === 'reset-password') {
