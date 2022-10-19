@@ -28,7 +28,7 @@ const paginationModel = {
             <tbody>
             <%users.forEach((user) => {%>
                 <tr>
-                    <td><a href="/users/<%=user.id%>"><%=user.name%></a></td>
+                    <td class="breakable"><a href="/users/<%=user.id%>"><%=user.name%></a></td>
                     <td><%=user.email%></td>
                     <td><%=user.organisation.role.description%></td>
                     <td>
