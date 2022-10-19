@@ -1,23 +1,23 @@
-const logger = require("./../../infrastructure/logger");
+const logger = require('./../../infrastructure/logger');
 const {
   searchForUsers,
   getSearchDetailsForUserById,
   updateUserInSearch,
-} = require("./../../infrastructure/search");
+} = require('./../../infrastructure/search');
 const {
   getInvitation,
   createUserDevice,
   getUser,
-} = require("./../../infrastructure/directories");
+} = require('./../../infrastructure/directories');
 const {
   getServicesByUserId,
   getServicesByInvitationId,
-} = require("./../../infrastructure/access");
-const { getServiceById } = require("./../../infrastructure/applications");
-const { mapUserStatus } = require("./../../infrastructure/utils");
-const config = require("./../../infrastructure/config");
-const sortBy = require("lodash/sortBy");
-const isEmpty = require("lodash/isEmpty");
+} = require('./../../infrastructure/access');
+const { getServiceById } = require('./../../infrastructure/applications');
+const { mapUserStatus } = require('./../../infrastructure/utils');
+const config = require('./../../infrastructure/config');
+const sortBy = require('lodash/sortBy');
+const isEmpty = require('lodash/isEmpty');
 
 const delay = async (milliseconds) => {
   return new Promise((resolve) => {
@@ -57,8 +57,8 @@ const buildFilters = (paramsSource) => {
 };
 
 const search = async (req) => {
-  const paramsSource = req.method === "POST" ? req.body : req.query;
-  let criteria = paramsSource.criteria ? paramsSource.criteria.trim() : "";
+  const paramsSource = req.method === 'POST' ? req.body : req.query;
+  let criteria = paramsSource.criteria ? paramsSource.criteria.trim() : '';
 
   const userRegex = /^[^±!£$%^&*+§¡€#¢§¶•ªº«\\/<>?:;|=,~"]{1,256}$/i;
   let filteredError;
@@ -67,20 +67,20 @@ const search = async (req) => {
    * user is not using the filters toggle (to open or close) and filters are not visible
    */
   if (
-    paramsSource.isFilterToggle !== "true" &&
-    paramsSource.showFilters !== "true"
+    paramsSource.isFilterToggle !== 'true' &&
+    paramsSource.showFilters !== 'true'
   ) {
     if (!criteria || criteria.length < 4) {
       return {
         validationMessages: {
-          criteria: "Please enter at least 4 characters",
+          criteria: 'Please enter at least 4 characters',
         },
       };
     }
     if (!userRegex.test(criteria)) {
       return {
         validationMessages: {
-          criteria: "Special characters cannot be used",
+          criteria: 'Special characters cannot be used',
         },
       };
     }
@@ -89,17 +89,17 @@ const search = async (req) => {
      * user is filtering filtering and had specified a criteria
      */
   } else if (!userRegex.test(criteria) && criteria.length > 0) {
-    criteria = "";
+    criteria = '';
     // here we normally just return the error but we
     // want to keep the last set of filtered results
     // and append the error to the result
     filteredError = {
-      criteria: "Special characters cannot be used",
+      criteria: 'Special characters cannot be used',
     };
   }
 
   let safeCriteria = criteria;
-  if (criteria.indexOf("-") !== -1) {
+  if (criteria.indexOf('-') !== -1) {
     criteria = '"' + criteria + '"';
   }
 
@@ -108,32 +108,32 @@ const search = async (req) => {
     page = 1;
   }
 
-  let sortBy = paramsSource.sort ? paramsSource.sort.toLowerCase() : "name";
+  let sortBy = paramsSource.sort ? paramsSource.sort.toLowerCase() : 'name';
   let sortAsc =
-    (paramsSource.sortdir ? paramsSource.sortdir : "asc").toLowerCase() ===
-    "asc";
+    (paramsSource.sortdir ? paramsSource.sortdir : 'asc').toLowerCase() ===
+    'asc';
 
   const filter = buildFilters(paramsSource);
 
   const results = await searchForUsers(
-    criteria + "*",
+    criteria + '*',
     page,
     sortBy,
-    sortAsc ? "asc" : "desc",
+    sortAsc ? 'asc' : 'desc',
     filter
   );
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) searched for users in support using criteria "${criteria}"`,
     {
-      type: "support",
-      subType: "user-search",
+      type: 'support',
+      subType: 'user-search',
       userId: req.user.sub,
       userEmail: req.user.email,
       criteria,
       pageNumber: page,
       numberOfPages: results.numberOfPages,
       sortedBy: sortBy,
-      sortDirection: sortAsc ? "asc" : "desc",
+      sortDirection: sortAsc ? 'asc' : 'desc',
     }
   );
 
@@ -141,33 +141,33 @@ const search = async (req) => {
     criteria: safeCriteria,
     page,
     sortBy,
-    sortOrder: sortAsc ? "asc" : "desc",
+    sortOrder: sortAsc ? 'asc' : 'desc',
     numberOfPages: results.numberOfPages,
     totalNumberOfResults: results.totalNumberOfResults,
     users: results.users,
     validationMessages: filteredError,
     sort: {
       name: {
-        nextDirection: sortBy === "name" ? (sortAsc ? "desc" : "asc") : "asc",
-        applied: sortBy === "name",
+        nextDirection: sortBy === 'name' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'name',
       },
       email: {
-        nextDirection: sortBy === "email" ? (sortAsc ? "desc" : "asc") : "asc",
-        applied: sortBy === "email",
+        nextDirection: sortBy === 'email' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'email',
       },
       organisation: {
         nextDirection:
-          sortBy === "organisation" ? (sortAsc ? "desc" : "asc") : "asc",
-        applied: sortBy === "organisation",
+          sortBy === 'organisation' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'organisation',
       },
       lastLogin: {
         nextDirection:
-          sortBy === "lastlogin" ? (sortAsc ? "desc" : "asc") : "asc",
-        applied: sortBy === "lastlogin",
+          sortBy === 'lastlogin' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'lastlogin',
       },
       status: {
-        nextDirection: sortBy === "status" ? (sortAsc ? "desc" : "asc") : "asc",
-        applied: sortBy === "status",
+        nextDirection: sortBy === 'status' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+        applied: sortBy === 'status',
       },
     },
   };
@@ -204,7 +204,7 @@ const mapUserToSupportModel = (user, userFromSearch) => {
 };
 
 const getUserDetailsById = async (uid, correlationId) => {
-  if (uid.startsWith("inv-")) {
+  if (uid.startsWith('inv-')) {
     const invitation = await getInvitation(uid.substr(4), correlationId);
     return {
       id: uid,
@@ -232,9 +232,9 @@ const getUserDetailsById = async (uid, correlationId) => {
             config.serviceMapping.key2SuccessServiceId.toLowerCase()
         )
       : undefined;
-    let externalIdentifier = "";
+    let externalIdentifier = '';
     if (ktsDetails && ktsDetails.identifiers) {
-      const key = ktsDetails.identifiers.find((a) => (a.key = "k2s-id"));
+      const key = ktsDetails.identifiers.find((a) => (a.key = 'k2s-id'));
       if (key) {
         externalIdentifier = key.value;
       }
@@ -252,11 +252,11 @@ const getUserDetailsById = async (uid, correlationId) => {
 
     const numeriIdentifierAndTextidentifier = {};
     userSearch.organisations?.map((org) => {
-      if (org["numericIdentifier"] && org["textIdentifier"]) {
-        numeriIdentifierAndTextidentifier["numericIdentifier"] =
-          org["numericIdentifier"];
-        numeriIdentifierAndTextidentifier["textIdentifier"] =
-          org["textIdentifier"];
+      if (org['numericIdentifier'] && org['textIdentifier']) {
+        numeriIdentifierAndTextidentifier['numericIdentifier'] =
+          org['numericIdentifier'];
+        numeriIdentifierAndTextidentifier['textIdentifier'] =
+          org['textIdentifier'];
       }
     });
 
@@ -272,7 +272,7 @@ const getUserDetailsById = async (uid, correlationId) => {
         successful: user.successfulLoginsInPast12Months,
       },
       serviceId: config.serviceMapping.key2SuccessServiceId,
-      orgId: ktsDetails ? ktsDetails.organisationId : "",
+      orgId: ktsDetails ? ktsDetails.organisationId : '',
       ktsId: externalIdentifier,
       pendingEmail: user.pendingEmail,
       ...(numericAndTextIdentifierCheck && {
@@ -291,7 +291,7 @@ const getAllServicesForUserInOrg = async (
   organisationId,
   correlationId
 ) => {
-  const allUserServices = userId.startsWith("inv-")
+  const allUserServices = userId.startsWith('inv-')
     ? await getServicesByInvitationId(userId.substr(4), correlationId)
     : await getServicesByUserId(userId, correlationId);
   if (!allUserServices) {
@@ -304,7 +304,7 @@ const getAllServicesForUserInOrg = async (
   const services = userServicesForOrg.map((service) => ({
     id: service.serviceId,
     dateActivated: service.accessGrantedOn,
-    name: "",
+    name: '',
     status: null,
   }));
   for (let i = 0; i < services.length; i++) {
@@ -313,7 +313,7 @@ const getAllServicesForUserInOrg = async (
     service.name = application.name;
     service.status = mapUserStatus(service.status);
   }
-  return sortBy(services, "name");
+  return sortBy(services, 'name');
 };
 
 const createDevice = async (req) => {
@@ -327,8 +327,8 @@ const createDevice = async (req) => {
     logger.audit(
       `Support user ${req.user.email} (id: ${req.user.sub}) linked ${userEmail} (id: ${userId}) linked to token ${serialNumber} "${serialNumber}"`,
       {
-        type: "support",
-        subType: "digipass-assign",
+        type: 'support',
+        subType: 'digipass-assign',
         success: true,
         editedUser: userId,
         userId: req.user.sub,
@@ -340,8 +340,8 @@ const createDevice = async (req) => {
     logger.audit(
       `Support user ${req.user.email} (id: ${req.user.sub}) failed to link ${userEmail} (id: ${userId}) to token ${serialNumber} "${serialNumber}"`,
       {
-        type: "support",
-        subType: "digipass-assign",
+        type: 'support',
+        subType: 'digipass-assign',
         success: false,
         editedUser: userId,
         userId: req.user.sub,

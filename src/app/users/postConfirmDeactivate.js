@@ -1,17 +1,17 @@
-const logger = require("./../../infrastructure/logger");
+const logger = require('./../../infrastructure/logger');
 const {
   getUserDetails,
   getUserDetailsById,
   updateUserDetails,
   waitForIndexToUpdate,
-} = require("./utils");
-const { deactivate } = require("./../../infrastructure/directories");
+} = require('./utils');
+const { deactivate } = require('./../../infrastructure/directories');
 
 const updateUserIndex = async (uid, correlationId) => {
   const user = await getUserDetailsById(uid, correlationId);
   user.status = {
     id: 0,
-    description: "Deactivated",
+    description: 'Deactivated',
   };
 
   await updateUserDetails(user, correlationId);
@@ -29,17 +29,17 @@ const postConfirmDeactivate = async (req, res) => {
     `${req.user.email} (id: ${req.user.sub}) deactivated user ${
       user.email
     } (id: ${user.id}) (legacyId: ${
-      user.legacyId ? JSON.stringify(user.legacyId) : "null"
+      user.legacyId ? JSON.stringify(user.legacyId) : 'null'
     })`,
     {
-      type: "support",
-      subType: "user-edit",
+      type: 'support',
+      subType: 'user-edit',
       userId: req.user.sub,
       userEmail: req.user.email,
       editedUser: user.id,
       editedFields: [
         {
-          name: "status",
+          name: 'status',
           oldValue: user.status.id,
           newValue: 0,
         },
@@ -48,7 +48,7 @@ const postConfirmDeactivate = async (req, res) => {
     }
   );
 
-  return res.redirect("services");
+  return res.redirect('services');
 };
 
 module.exports = postConfirmDeactivate;
