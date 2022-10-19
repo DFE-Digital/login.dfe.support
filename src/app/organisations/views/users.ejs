@@ -29,16 +29,16 @@ const paginationModel = {
             <%users.forEach((user) => {%>
                 <tr>
                     <td class="breakable"><a href="/users/<%=user.id%>"><%=user.name%></a></td>
-                    <td><%=user.email%></td>
-                    <td><%=user.organisation.role.description%></td>
-                    <td>
+                    <td class="breakable"><%=user.email%></td>
+                    <td class="breakable"><%=user.organisation.role.description%></td>
+                    <td class="breakable">
                         <% if (user.lastLogin) {%>
                             <%=locals.moment(user.lastLogin).fromNow()%>
                         <% } else {%>
                             Never
                         <% } %>
                     </td>
-                    <td><%=user.status.description%></td>
+                    <td class="breakable"><%=user.status.description%></td>
                 </tr>
             <%})%>
             </tbody>
