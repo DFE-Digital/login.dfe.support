@@ -5,7 +5,7 @@ jest.mock('./../../../src/infrastructure/search');
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
 const postEditPermissions = require('./../../../src/app/users/postEditPermissions');
-const { addInvitationOrganisation, setUserAccessToOrganisation } = require('./../../../src/infrastructure/organisations');
+const { addInvitationOrganisation, setUserAccessToOrganisation, getUserOrganisations } = require('./../../../src/infrastructure/organisations');
 const { getSearchDetailsForUserById } = require('./../../../src/infrastructure/search');
 
 jest.mock('login.dfe.notifications.client');
@@ -21,7 +21,18 @@ describe('when editing a users permission level', () => {
   const expectedFirstName = 'James';
   const expectedLastName = 'Howlett';
   const expectedOrgName = 'X-Men';
-  const expectedPermissionName = ['approver', 'end user'];
+  const expectedPermission = [
+    {
+      id: 10000,
+      name: 'Approver',
+      oldName: 'End user',
+    },
+    {
+      id: 0,
+      name: 'End user',
+      oldName: 'Approver',
+    },
+  ];
 
   beforeEach(() => {
     req = getRequestMock({
@@ -57,6 +68,18 @@ describe('when editing a users permission level', () => {
         },
       ]
     });
+    getUserOrganisations.mockReset().mockReturnValue([
+      {
+        organisation: {
+          id: 'org1',
+          name: 'Great Big School',
+        },
+        role: {
+          id: 0,
+          name: 'End user',
+        },
+      },
+    ]);
     sendUserPermissionChangedStub = jest.fn();
     notificationClient.mockReset().mockImplementation(() => ({
       sendUserPermissionChanged: sendUserPermissionChangedStub,
@@ -139,12 +162,24 @@ describe('when editing a users permission level', () => {
     expect(sendUserPermissionChangedStub.mock.calls[0][1]).toBe(expectedFirstName);
     expect(sendUserPermissionChangedStub.mock.calls[0][2]).toBe(expectedLastName);
     expect(sendUserPermissionChangedStub.mock.calls[0][3]).toBe(expectedOrgName);
-    expect(sendUserPermissionChangedStub.mock.calls[0][4]).toBe(expectedPermissionName[0]);
+    expect(sendUserPermissionChangedStub.mock.calls[0][4]).toEqual(expectedPermission[0]);
   
   });
 
   it('then it should send an email notification if user permissions are modified to end user', async () => {
     req.body.selectedLevel = 0;
+    getUserOrganisations.mockReset().mockReturnValue([
+      {
+        organisation: {
+          id: 'org1',
+          name: 'Great Big School',
+        },
+        role: {
+          id: 10000,
+          name: 'Approver',
+        },
+      },
+    ]);
 
     await postEditPermissions(req, res);
 
@@ -153,7 +188,7 @@ describe('when editing a users permission level', () => {
     expect(sendUserPermissionChangedStub.mock.calls[0][1]).toBe(expectedFirstName);
     expect(sendUserPermissionChangedStub.mock.calls[0][2]).toBe(expectedLastName);
     expect(sendUserPermissionChangedStub.mock.calls[0][3]).toBe(expectedOrgName);
-    expect(sendUserPermissionChangedStub.mock.calls[0][4]).toBe(expectedPermissionName[1]);
+    expect(sendUserPermissionChangedStub.mock.calls[0][4]).toEqual(expectedPermission[1]);
   
   });
 });
