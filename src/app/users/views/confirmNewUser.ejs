@@ -31,7 +31,10 @@
                 <dt>Organisation</dt>
                 <dd><%=organisation.name%></dd>
                 <dt>Permission level</dt>
-                <dd><%=role.name%></dd>
+                <dd><%=role.name%>
+                    <a class="bold pull-right" href="organisation-permissions">
+                        Change<span class="hidden"> organisation permissions</span>
+                    </a></dd>
             </dl>
             <%} else {%>
             <p><em>No organisation added</em></p>
