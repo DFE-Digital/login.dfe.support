@@ -3,6 +3,7 @@ const { getUser } = require('./../../infrastructure/directories');
 const { emailPolicy } = require('login.dfe.validation');
 
 const validateInput = async (req) => {
+  const nameRegEx = /^[^±!@£$%^&*_+§¡€#¢§¶•ªº«\\/<>?:;|=.,~"]{1,60}$/i;
   const model = {
     firstName: req.body.firstName || '',
     lastName: req.body.lastName || '',
@@ -12,10 +13,14 @@ const validateInput = async (req) => {
 
   if (!model.firstName) {
     model.validationMessages.firstName = 'Please enter a first name';
+  } else if (!nameRegEx.test(model.firstName)) {
+    model.validationMessages.firstName = 'Special characters cannot be used';
   }
 
   if (!model.lastName) {
     model.validationMessages.lastName = 'Please enter a last name';
+  } else if (!nameRegEx.test(model.lastName)) {
+    model.validationMessages.lastName = 'Special characters cannot be used';
   }
 
   if (!model.email) {

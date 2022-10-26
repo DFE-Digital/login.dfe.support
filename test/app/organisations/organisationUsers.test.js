@@ -77,8 +77,8 @@ describe('when displaying organisation users', () => {
               id: 'org-1',
               roleId: 1,
               role: {
-                id: 1,
-                description: 'End User',
+                id: 0,
+                description: 'End user',
               },
             },
           },

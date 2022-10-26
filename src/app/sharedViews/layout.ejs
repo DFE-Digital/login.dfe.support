@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="<%= locals.urls.assets %>/css/govuk/fonts.css?version=<%= locals.assets.version %>">
     <link rel="stylesheet" href="<%= locals.urls.assets %>/css/govuk/govuk-template.css?version=<%= locals.assets.version %>">
     <link rel="stylesheet" href="<%= locals.urls.assets %>/css/screen.css?version=<%= locals.assets.version %>">
-    <link rel="stylesheet" href="<%= locals.urls.assets %>/gds-upgrade/css/screen.css?version=<%= locals.assets.version %>">
 
     <link rel="shortcut icon" href="<%= locals.urls.assets %>/images/favicon.ico" type="image/x-icon"/>
 
@@ -107,12 +106,26 @@
             </ul>
         </nav>
     </div>
+    <div class="session-timeout-overlay">
+        <div class="session-timeout-modal">
+          <h3 class="heading-medium">Your session will time out in <br /><span id="minutes">5</span> minutes <span id="seconds"></span> seconds </h3>
+          <p class="lede">if you do not respond, we will sign you out. We do this to keep your information safe.</p>
+          <button id="modal-signin" class="button">Stay signed in</button>
+          <button id="modal-signout" class="button button-secondary">Sign out now</button>    
+        </div>
+    </div>
 </footer>
 
 <script src="<%= locals.urls.assets %>/gds-upgrade/javascript/vendors/jquery.min.js?version=<%= locals.assets.version %>"></script>
 <script src="<%= locals.urls.assets %>/gds-upgrade/javascript/vendors/select2.min.js?version=<%= locals.assets.version %>"></script>
 <script type="text/javascript" src="<%= locals.urls.assets %>/gds-upgrade/javascript/vendors/vendors.min.js?version=<%= locals.assets.version %>"></script>
 <script src="<%= locals.urls.assets %>/gds-upgrade/javascript/app.min.js?version=<%= locals.assets.version %>"></script>
+<script>
 
+    <% if (locals.isLoggedIn) { %>
+        sessionTimeout();
+        <% } %> 
+        
+</script>
 </body>
 </html>

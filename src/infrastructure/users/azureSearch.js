@@ -3,7 +3,7 @@ const config = require('./../config');
 const rp = require('login.dfe.request-promise-retry');
 
 
-const uuid = require('uuid/v4');
+const {v4:uuid} = require('uuid');
 const logger = require('./../logger');
 
 const client = new Redis(config.cache.params.indexPointerConnectionString);

@@ -1,9 +1,10 @@
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
-const { setUserAccessToOrganisation, addInvitationOrganisation } = require('./../../infrastructure/organisations');
+const { setUserAccessToOrganisation, addInvitationOrganisation, getUserOrganisations } = require('./../../infrastructure/organisations');
 const { getSearchDetailsForUserById, updateIndex } = require('./../../infrastructure/search');
 const { isSupportEmailNotificationAllowed } = require ('./../../infrastructure/applications');
+const { mapRole } = require('./../users/utils');
 
 const validatePermissions = (req) => {
   const validPermissions = [0, 10000];
@@ -36,26 +37,40 @@ const editUserPermissions = async(uid, req, model) => {
   await setUserAccessToOrganisation(uid, organisationId, permissionId, req.id);
 };
 
-
 const postEditPermissions = async (req, res) => {
   const model = validatePermissions(req);
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
     return res.render('users/views/editPermissions', model);
   }
-  const uid = req.params.uid; 
-  const permissionName = model.selectedLevel === 10000 ? 'approver' : 'end user';
+  const { uid } = req.params;
+  const permissionName = mapRole(model.selectedLevel).description;
   const isEmailAllowed = await isSupportEmailNotificationAllowed();
 
   if (uid.startsWith('inv-')) {
     await editInvitationPermissions(uid, req, model);
   } else {
+    const mngUserOrganisations = await getUserOrganisations(uid, req.id);
+
     await editUserPermissions(uid, req, model);
-    if(isEmailAllowed){
-      const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});    
-      await notificationClient.sendUserPermissionChanged(req.session.user.email, req.session.user.firstName, req.session.user.lastName, model.organisationName, permissionName);
+    if (isEmailAllowed) {
+      const mngUserOrganisationDetails = mngUserOrganisations.find((x) => x.organisation.id === req.params.id);
+      const mngUserOrgPermission = {
+        id: model.selectedLevel,
+        name: permissionName,
+        oldName: mngUserOrganisationDetails.role.name,
+
+      };
+      const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});
+      await notificationClient.sendUserPermissionChanged(
+        req.session.user.email,
+        req.session.user.firstName,
+        req.session.user.lastName,
+        model.organisationName,
+        mngUserOrgPermission,
+      );
     }
-   }
+  }
 
   // patch search index
   const userSearchDetails = await getSearchDetailsForUserById(uid);

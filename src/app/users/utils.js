@@ -44,20 +44,40 @@ const buildFilters = (paramsSource) => {
 
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
-
   let criteria = paramsSource.criteria ? paramsSource.criteria.trim() : '';
 
+  const userRegex = /^[^±!£$%^&*+§¡€#¢§¶•ªº«\\/<>?:;|=,~"]{1,256}$/i;
+  let filteredError;
   /**
-   * Check minimum characters in search criteria if:
-   * - user is not using the filters toggle (to open or close)
-   * AND
-   * - filters are not visible
+   * Check minimum characters and special characters in search criteria if:
+   * user is not using the filters toggle (to open or close) and filters are not visible
    */
-  if (paramsSource.isFilterToggle !== 'true' && paramsSource.showFilters !== 'true' && (!criteria || criteria.length < 4)) {
-    return {
-      validationMessages: {
-        criteria: 'Please enter at least 4 characters',
-      },
+  if (paramsSource.isFilterToggle !== 'true' && paramsSource.showFilters !== 'true') {
+    if (!criteria || criteria.length < 4) {
+      return {
+        validationMessages: {
+          criteria: 'Please enter at least 4 characters',
+        },
+      };
+    }
+    if (!userRegex.test(criteria)) {
+      return {
+        validationMessages: {
+          criteria: 'Special characters cannot be used',
+        },
+      };
+    }
+  /**
+   * Check special characters in search criteria if:
+   * user is filtering filtering and had specified a criteria
+   */
+  } else if (!userRegex.test(criteria) && criteria.length > 0) {
+    criteria = '';
+    // here we normally just return the error but we
+    // want to keep the last set of filtered results
+    // and append the error to the result
+    filteredError = {
+      criteria: 'Special characters cannot be used',
     };
   }
 
@@ -82,7 +102,7 @@ const search = async (req) => {
     subType: 'user-search',
     userId: req.user.sub,
     userEmail: req.user.email,
-    criteria: criteria,
+    criteria,
     pageNumber: page,
     numberOfPages: results.numberOfPages,
     sortedBy: sortBy,
@@ -97,6 +117,7 @@ const search = async (req) => {
     numberOfPages: results.numberOfPages,
     totalNumberOfResults: results.totalNumberOfResults,
     users: results.users,
+    validationMessages: filteredError,
     sort: {
       name: {
         nextDirection: sortBy === 'name' ? (sortAsc ? 'desc' : 'asc') : 'asc',
@@ -268,6 +289,13 @@ const waitForIndexToUpdate = async (uid, updatedCheck) => {
   }
 };
 
+const mapRole = (roleId) => {
+  if (roleId === 10000) {
+    return { id: 10000, description: 'Approver' };
+  }
+  return { id: 0, description: 'End user' };
+};
+
 module.exports = {
   search,
   getUserDetails,
@@ -276,4 +304,5 @@ module.exports = {
   createDevice,
   waitForIndexToUpdate,
   getAllServicesForUserInOrg,
+  mapRole,
 };

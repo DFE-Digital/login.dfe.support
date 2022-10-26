@@ -5,7 +5,7 @@ jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/access');
 jest.mock('./../../../src/infrastructure/audit');
-jest.mock('uuid/v4');
+jest.mock('uuid');
 jest.mock('ioredis');
 
 const users = require('./../../../src/infrastructure/users');
@@ -13,9 +13,10 @@ const directories = require('./../../../src/infrastructure/directories');
 const organisations = require('./../../../src/infrastructure/organisations');
 const access = require('./../../../src/infrastructure/access');
 const audit = require('./../../../src/infrastructure/audit');
-const uuid = require('uuid/v4');
+const {v4:uuid} = require('uuid');
 const { syncDiffUsersView } = require('./../../../src/app/syncViews');
 
+const date1 = new Date();
 const testData = {
   correlationId: 'DiffUserIndex-some-uuid',
   indexName: 'existing-user-index-name',
@@ -74,7 +75,7 @@ const testData = {
     user1: [{
       id: 'svc1',
       userId: 'user1',
-      requestDate: new Date(2018, 6, 1),
+      requestDate: date1,
       organisation: {
         id: 'org1',
         name: 'Organisation One',
@@ -86,7 +87,7 @@ const testData = {
     user2: [{
       id: 'svc1',
       userId: 'user2',
-      requestDate: new Date(2018, 6, 3),
+      requestDate: date1,
       organisation: {
         id: 'org2',
         name: 'Organisation Two',
@@ -133,9 +134,9 @@ const testData = {
   audit: {
     stats: {
       user1: {
-        lastLogin: new Date(2018, 7, 6),
+        lastLogin: date1 ,
         lastStatusChange: undefined,
-        loginsInPast12Months: [{ timestamp: new Date(2020, 7, 4) }, { timestamp: new Date(2020, 7, 5) }, { timestamp: new Date(2020, 7, 6) }]
+        loginsInPast12Months: [{ timestamp: date1 }, { timestamp: date1 }, { timestamp: date1 }]
       },
     },
   },
@@ -224,6 +225,7 @@ describe('When syncing diff users materialised view', () => {
     const expectedUser = testData.users.page1.users[0];
     const expectedServices = testData.userServices.user1;
     const actual = users.updateIndex.mock.calls[0][0].find(x => x.id === expectedUser.sub);
+    console.log(actual)
     expect(actual).toBeDefined();
     expect(actual.name).toEqual(`${expectedUser.given_name} ${expectedUser.family_name}`);
     expect(actual.firstName).toEqual(expectedUser.given_name);

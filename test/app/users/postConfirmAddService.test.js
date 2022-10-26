@@ -36,6 +36,13 @@ describe('when adding new services to a user', () => {
   const expectedFirstName = 'test';
   const expectedLastName = 'name';
   const expectedService = 'Services';
+  const expectedOrgName = 'Great Big School';
+  const expectedServiceName = 'service name';
+  const expectedRoles = [];
+  const expectedPermission = {
+    id: 0,
+    name: 'End user',
+  };
 
   beforeEach(() => {
     req = getRequestMock({
@@ -92,11 +99,19 @@ describe('when adding new services to a user', () => {
           id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
           name: 'Great Big School'
         },
+        role: {
+          id: 0,
+          name: 'End user'
+        },
       },
       {
         organisation: {
           id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
           name: 'Little Tiny School'
+        },
+        role: {
+          id: 10000,
+          name: 'Approver'
         },
       },
     ]);
@@ -104,15 +119,25 @@ describe('when adding new services to a user', () => {
     getInvitationOrganisations.mockReset();
     getInvitationOrganisations.mockReturnValue([
       {
+        invitationId: 'E89DF8C6-BED4-480D-9F02-34D177E86DAD',
         organisation: {
           id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
-          name: 'Great Big School'
+          name: 'Great Big School',
+        },
+        role: {
+          id: 0,
+          name: 'End user',
         },
       },
       {
+        invitationId: 'E89DF8C6-BED4-480D-9F02-34D177E86DAD',
         organisation: {
           id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
-          name: 'Little Tiny School'
+          name: 'Little Tiny School',
+        },
+        role: {
+          id: 10000,
+          name: 'Approver',
         },
       },
     ]);
@@ -267,6 +292,9 @@ describe('when adding new services to a user', () => {
     expect(sendServiceRequestApprovedStub.mock.calls[0][0]).toBe(expectedEmailAddress);
     expect(sendServiceRequestApprovedStub.mock.calls[0][1]).toBe(expectedFirstName);
     expect(sendServiceRequestApprovedStub.mock.calls[0][2]).toBe(expectedLastName);
-  
+    expect(sendServiceRequestApprovedStub.mock.calls[0][3]).toBe(expectedOrgName);
+    expect(sendServiceRequestApprovedStub.mock.calls[0][4]).toBe(expectedServiceName);
+    expect(sendServiceRequestApprovedStub.mock.calls[0][5]).toEqual(expectedRoles);
+    expect(sendServiceRequestApprovedStub.mock.calls[0][6]).toEqual(expectedPermission);
   });
 });

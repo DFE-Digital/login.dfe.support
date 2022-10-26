@@ -1,5 +1,5 @@
-const { sendResult } = require('./../../infrastructure/utils');
-const { searchOrganisations,getOrganisationCategories, listOrganisationStatus } = require('./../../infrastructure/organisations');
+const { sendResult } = require('../../infrastructure/utils');
+const { searchOrganisations, getOrganisationCategories, listOrganisationStatus } = require('../../infrastructure/organisations');
 
 const getFiltersModel = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
@@ -49,21 +49,43 @@ const unpackMultiSelect = (parameter) => {
 
 const search = async (req) => {
   const inputSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
-  const criteria = inputSource.criteria ? inputSource.criteria.trim() : '';
+  let criteria = inputSource.criteria ? inputSource.criteria.trim() : '';
 
+  const organisationRegex = /^[a-zA-Z0-9\s-'&(),.@\\/:]{1,256}$/;
+  let filteredError;
   /**
-   * Check minimum characters in search criteria if:
-   * - user is not using the filters toggle (to open or close)
-   * AND
-   * - filters are not visible
+   * Check minimum characters and special characters in search criteria if:
+   * user is not using the filters toggle (to open or close) and filters are not visible
    */
-  if (inputSource.isFilterToggle !== 'true' && inputSource.showFilters !== 'true' && (!criteria || criteria.length < 4)) {
-    return {
-      validationMessages: {
-        criteria: 'Please enter at least 4 characters',
-      },
+  if (inputSource.isFilterToggle !== 'true' && inputSource.showFilters !== 'true') {
+    if (!criteria || criteria.length < 4) {
+      return {
+        validationMessages: {
+          criteria: 'Please enter at least 4 characters',
+        },
+      };
+    }
+    if (!organisationRegex.test(criteria)) {
+      return {
+        validationMessages: {
+          criteria: 'Special characters cannot be used',
+        },
+      };
+    }
+  /**
+   * Check special characters in search criteria if:
+   * user is filtering filtering and had specified a criteria
+   */
+  } else if (!organisationRegex.test(criteria) && criteria.length > 0) {
+    criteria = '';
+    // here we normally just return the error but we
+    // want to keep the last set of filtered results
+    // and append the error to the result
+    filteredError = {
+      criteria: 'Special characters cannot be used',
     };
   }
+
   const orgTypes = unpackMultiSelect(inputSource.organisationType);
   const orgStatuses = unpackMultiSelect(inputSource.organisationStatus);
   let pageNumber = parseInt(inputSource.page) || 1;
@@ -72,30 +94,31 @@ const search = async (req) => {
   }
 
   const pageOfOrganisations = await searchOrganisations(criteria, orgTypes , orgStatuses, pageNumber, req.id);
-  const result =  {
-    criteria: criteria,
+  const result = {
+    criteria,
     page: pageNumber,
     numberOfPages: pageOfOrganisations.totalNumberOfPages,
     totalNumberOfResults: pageOfOrganisations.totalNumberOfRecords,
     organisations: pageOfOrganisations.organisations,
-  }
+    validationMessages: filteredError,
+  };
 
   return result;
 };
 
 const buildModel = async (req, result = {}) => {
-  const model =  {
+  const model = {
     csrfToken: req.csrfToken(),
     criteria: result.criteria,
     page: result.page,
     numberOfPages: result.numberOfPages,
     totalNumberOfResults: result.totalNumberOfResults,
     organisations: result.organisations,
-    validationMessages: result.validationMessages || {}
+    validationMessages: result.validationMessages || {},
   };
   const filtersModel = await getFiltersModel(req);
   return Object.assign(model, filtersModel);
-}
+};
 
 const doSearchAndBuildModel = async (req) => {
   const result = await search(req);
