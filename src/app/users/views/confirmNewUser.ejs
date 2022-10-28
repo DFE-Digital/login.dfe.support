@@ -11,7 +11,11 @@
                 Review invite details
             </h1>
             <p>Please review these details before sending an invite.  The user will need to confirm their email address and create a password before their DfE Sign-in account becomes active.</p>
-            <h2 class="heading-medium">Personal details </h2>
+            <h2 class="heading-medium">Personal details 
+                <a class="bold-small pull-right" href="new-user?review=true">
+                Change<span class="hidden"> personal details</span>
+                </a>
+            </h2>
             <dl class="rows">
                 <dt>First name</dt>
                 <dd><%=user.firstName%></dd>
@@ -31,7 +35,10 @@
                 <dt>Organisation</dt>
                 <dd><%=organisation.name%></dd>
                 <dt>Permission level</dt>
-                <dd><%=role.name%></dd>
+                <dd><%=role.name%>
+                    <a class="bold pull-right" href="organisation-permissions">
+                        Change<span class="hidden"> organisation permissions</span>
+                    </a></dd>
             </dl>
             <%} else {%>
             <p><em>No organisation added</em></p>
