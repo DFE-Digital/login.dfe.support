@@ -155,7 +155,7 @@ const paginationModel = {
                     <% } %>
                     <% for (let i = 0; i < locals.organisations.length; i++) { %>
                         <tr>
-                            <td><a href="/organisations/<%= organisations[i].id %>/"><%= organisations[i].name %></a></td>
+                            <td class="breakable"><a href="/organisations/<%= organisations[i].id %>/"><%= organisations[i].name %></a></td>
                             <td><%= organisations[i].category ? organisations[i].category.name : '' %></td>
                             <td><%= organisations[i].urn %></td>
                             <td><%= organisations[i].uid %></td>

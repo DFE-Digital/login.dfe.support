@@ -369,6 +369,13 @@ const waitForIndexToUpdate = async (uid, updatedCheck) => {
   }
 };
 
+const mapRole = (roleId) => {
+  if (roleId === 10000) {
+    return { id: 10000, description: 'Approver' };
+  }
+  return { id: 0, description: 'End user' };
+};
+
 module.exports = {
   search,
   getUserDetails,
@@ -377,4 +384,5 @@ module.exports = {
   createDevice,
   waitForIndexToUpdate,
   getAllServicesForUserInOrg,
+  mapRole,
 };

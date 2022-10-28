@@ -60,11 +60,11 @@
                             <% const role = locals.serviceRoles[i]; %>
                             <div class="multiple-choice">
                                 <input id="<%=role.id%>" type="checkbox" name="role" value="<%=role.id%>"
-                                        <% if (locals.selectedRoles.roles && locals.selectedRoles.roles.length > 0) {
-                                        for(let i = 0; i < locals.selectedRoles.roles.length; i++) {
-                                            const selectedRole = locals.selectedRoles.roles[i];
-                                        %>
-                                        <%= role.id === selectedRole ? 'checked': ''%><% } }%>>
+                                    <% if (locals.selectedRoles.roles && locals.selectedRoles.roles.length > 0) {
+                                    for(let i = 0; i < locals.selectedRoles.roles.length; i++) {
+                                        const selectedRole = locals.selectedRoles.roles[i];
+                                    %>
+                                    <%= role.id === selectedRole ? 'checked': ''%><% } }%>>
                                 <label for="<%=role.id%>"><%=role.name%></label>
                             </div>
                         <% } %>

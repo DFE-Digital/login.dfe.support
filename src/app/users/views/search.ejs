@@ -244,7 +244,7 @@ if (services && services.length > 0) {
             <% } %>
             <% for (let i = 0; i < locals.users.length; i++) { %>
             <tr>
-                <td><a href="/users/<%= users[i].id %>/"><%= users[i].name %></a></td>
+                <td><a class="breakable" href="/users/<%= users[i].id %>/"><%= users[i].name %></a></td>
 
                 <td><span class="breakable"><%= users[i].email %></span></td>
                 <td>

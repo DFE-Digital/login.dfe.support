@@ -24,28 +24,32 @@
 %>
 
 <%- include('../../sharedViews/pagination', paginationModel); %>
-
-<div class="col-12 text-break"> 
-	<div class="row data border-bottom-black-2px">
-		<div class="col-2 text-smaller-right-padding-5px">Date</div>
-		<div class="col-3 text-smaller-right-padding-5px">Event</div>
-		<div class="col-1 text-smaller-right-padding-5px">Service</div>
-		<div class="col-2 text-smaller-right-padding-5px">Organisation</div>
-		<div class="col-1 text-smaller-right-padding-5px">Result</div>
-		<div class="col-3 text-smaller-right-padding-5px">User</div>
-	</div>		
-	
-	<% for(let a = 0;a < locals.audits.length; a++) { %>
-	<% const audit = locals.audits[a]; %>
-		<div class="row data border-bottom-gray-1px">
-			<div class="col-2 text-smaller-right-padding-5px"><%= locals.moment(audit.timestamp).format('DD/MMM/YYYY HH:mm:ss') %></div>
-			<div class="col-3 text-smaller-right-padding-5px"><%= audit.event.description %>&nbsp;</div>
-			<div class="col-1 text-smaller-right-padding-5px"><%= audit.service ? audit.service.name : '' %>&nbsp;</div>
-			<div class="col-2 text-smaller-right-padding-5px"><%= audit.organisation ? audit.organisation.name: '' %>&nbsp;</div>
-			<div class="col-1 text-smaller-right-padding-5px"><%= audit.result ? 'Success' : 'Failure' %></div>
-			<div class="col-3 text-smaller-right-padding-5px"><%= audit.user ? audit.user.name : '' %>&nbsp;</div>
-		</div>
-	<% } %>
-</div>
-
-<%- include('../../sharedViews/pagination', paginationModel); %>
+<div class="row">
+    <div class="col-12">
+        <table class="data">
+            <thead>
+                <tr>
+                    <th scope="col" class="cwp-20">Date</th>
+                    <th scope="col" class="cwp-30">Event</th>
+                    <th scope="col" class="cwp-15">Service</th>
+                    <th scope="col" class="cwp-10">Organisation</th>
+                    <th scope="col" class="cwp-10">Result</th>
+                    <th scope="col" class="cwp-15">User</th>
+                </tr>
+            </thead>
+            <tbody>
+            <% for(let a = 0;a < locals.audits.length; a++) { %>
+            <% const audit = locals.audits[a]; %>
+                <tr>
+                    <td><%= locals.moment(audit.timestamp).format('DD/MMM/YYYY HH:mm:ss') %></td>
+                    <td class="breakable"><%= audit.event.description %></td>
+                    <td class="breakable"><%= audit.service ? audit.service.name : '' %></td>
+                    <td class="breakable"><%= audit.organisation ? audit.organisation.name: '' %></td>
+                    <td class="breakable"><%= audit.result ? 'Success' : 'Failure' %></td>
+                    <td class="breakable"><%= audit.user ? audit.user.name : '' %></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+        <%- include('../../sharedViews/pagination', paginationModel); %>
+    </div>
