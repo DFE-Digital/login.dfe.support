@@ -22,6 +22,12 @@ const getCachedUserById = async (userId, reqId) => {
 const describeAuditEvent = async (audit, req) => {
   const isCurrentUser = audit.userId.toLowerCase() === req.params.uid.toLowerCase();
 
+  let legacyId = 'null';
+  const userOrgs = await getUserOrganisations(req.params.uid, req.id);
+  if (userOrgs[0].numericIdentifier && userOrgs[0].textIdentifier) {
+    legacyId = `(numericIdentifier: ${userOrgs[0].numericIdentifier}, textIdentifier: ${userOrgs[0].textIdentifier})`;
+  }
+
   if (audit.type === 'sign-in') {
     let description = 'Sign-in';
     switch (audit.subType) {
@@ -45,8 +51,8 @@ const describeAuditEvent = async (audit, req) => {
     if (editedStatusTo && editedStatusTo.newValue === 0) {
       const newStatus = mapUserStatus(editedStatusTo.newValue);
       const reason = audit.reason ? audit.reason : 'no reason given';
-      return isCurrentUser ? `${newStatus.description} user: ${viewedUser.firstName} ${viewedUser.lastName} (reason: ${reason})`
-        : ` Account ${newStatus.description} (reason: ${reason})`
+      return isCurrentUser ? `${newStatus.description} user: ${viewedUser.firstName} ${viewedUser.lastName}, legacyId: ${legacyId}, (reason: ${reason})`
+        : ` Account ${newStatus.description}, legacyId: ${legacyId}, (reason: ${reason})`
     }
     if (editedStatusTo && editedStatusTo.newValue === 1) {
       return isCurrentUser ? `Reactivated user: ${viewedUser.firstName} ${viewedUser.lastName}` : `Account Reactivated`

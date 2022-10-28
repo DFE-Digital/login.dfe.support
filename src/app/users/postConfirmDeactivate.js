@@ -29,7 +29,7 @@ const postConfirmDeactivate = async (req, res) => {
     `${req.user.email} (id: ${req.user.sub}) deactivated user ${
       user.email
     } (id: ${user.id}) (legacyId: ${
-      user.legacyId ? JSON.stringify(user.legacyId) : 'null'
+      user.legacyId ? user.legacyId : 'null'
     })`,
     {
       type: 'support',
