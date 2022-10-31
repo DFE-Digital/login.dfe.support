@@ -1,6 +1,8 @@
 const logger = require('./../../infrastructure/logger');
 const { getUserDetails, getUserDetailsById, updateUserDetails, waitForIndexToUpdate } = require('./utils');
 const { deactivate } = require('./../../infrastructure/directories');
+const { sendResult } = require('./../../infrastructure/utils');
+
 
 const updateUserIndex = async (uid, correlationId) => {
   const user = await getUserDetailsById(uid, correlationId);
@@ -17,8 +19,18 @@ const updateUserIndex = async (uid, correlationId) => {
 const postConfirmDeactivate = async (req, res) => {
   const user = await getUserDetails(req);
 
-  await deactivate(user.id, req.id);
-  await updateUserIndex(user.id, req.id);
+  if (req.body.reason === '') {
+    sendResult(req, res, 'users/views/confirmDeactivate', {
+      csrfToken: req.csrfToken(),
+      backLink: 'services',
+      reason: '',
+      validationMessages: {
+        reason: 'Please give a reason for deactivation'
+      },
+    });
+  } else {
+    await deactivate(user.id, req.id);
+    await updateUserIndex(user.id, req.id);
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) deactivated user ${user.email} (id: ${user.id})`, {
     type: 'support',
@@ -37,6 +49,7 @@ const postConfirmDeactivate = async (req, res) => {
   });
 
   return res.redirect('services');
+  }
 };
 
 module.exports = postConfirmDeactivate;

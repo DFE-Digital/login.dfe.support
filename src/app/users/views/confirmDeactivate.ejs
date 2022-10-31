@@ -8,7 +8,7 @@
             <fieldset>
                 <legend><p>Please confirm you would like to deactivate the user.</p></legend>
                 <div class="form-group <%= (locals.validationMessages.reason !== undefined) ? 'form-group-error' : '' %>">
-                    <label class="form-label" for="reason">Reason for deactivation of user (optional)</span> </label>
+                    <label class="form-label" for="reason">Reason for deactivation of user (mandatory)</span> </label>
                     <% if (locals.validationMessages.reason !== undefined) { %>
                     <p class="error-message" id="validation-reason"><%= locals.validationMessages.reason %></p>
                     <% } %>
