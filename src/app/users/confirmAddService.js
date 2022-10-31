@@ -66,15 +66,18 @@ const post = async (req, res) => {
 
     for (let i = 0; i < req.session.user.services.length; i++) {
       const service = req.session.user.services[i];
-      if (uid.startsWith('inv-')) {
-        const invitationId = uid.substr(4);
+      const invitationId = uid.startsWith('inv-') ? uid.substr(4) : undefined;
+
+      if (invitationId) {
         req.session.user.isAddService ?  await addInvitationService(invitationId, service.serviceId, organisationId, [], service.roles, req.id) : await updateInvitationService(invitationId, service.serviceId, organisationId, service.roles, req.id);
       } else {
         req.session.user.isAddService ? await addUserService(uid, service.serviceId, organisationId, service.roles, req.id) : await updateUserService(uid, service.serviceId, organisationId, service.roles, req.id);
       }
 
-      if (!uid.startsWith('inv-') && isEmailAllowed) {
-        const userOrganisations = await getUserOrganisations(uid, req.id);
+      if (isEmailAllowed) {
+        const userOrganisations = invitationId
+          ? await getInvitationOrganisations(invitationId, req.id)
+          : await getUserOrganisations(uid, req.id);
         const organisationDetails = userOrganisations.find(x => x.organisation.id === organisationId);
         const userOrgPermission = {
           id: organisationDetails.role.id,
