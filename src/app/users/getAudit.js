@@ -84,6 +84,14 @@ const describeAuditEvent = async (audit, req) => {
     return 'Password changed';
   }
 
+  if (audit.type === 'support' && audit.subType === 'user-invited') {
+    return 'User invite sent from support console';
+  }
+
+  if (audit.type === 'approver' && audit.subType === 'user-invited') {
+    return 'User invite sent from Manage users (Services console)';
+  }
+
   if (audit.type === 'reset-password') {
     return 'Reset password';
   }

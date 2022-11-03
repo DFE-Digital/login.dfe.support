@@ -31,6 +31,15 @@ const postConfirmNewUser = async (req, res) => {
 
   const invitationId = await createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email, null, clientId, redirectUri, req.id, emailOverrides, req.session.user.permission, organisation?organisation.name:null);
 
+  if (invitationId) {
+    logger.audit({
+      type: 'support',
+      subType: 'invite-created',
+      userId: req.user.sub,
+      message: `Invitation code is created. Id ${invitationId}`,
+    });
+  }
+
   if (req.session.user.organisationId) {
     await addInvitationOrganisation(invitationId, req.session.user.organisationId, req.session.user.permission || 0, req.id);
   }
