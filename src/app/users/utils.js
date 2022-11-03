@@ -240,26 +240,6 @@ const getUserDetailsById = async (uid, correlationId) => {
       }
     }
 
-    const isLegacyIdPresent = (user) => {
-      if (isEmpty(user?.numericIdentifier && user?.textIdentifier)) return true;
-
-      return false;
-    };
-
-    const numericAndTextIdentifierCheck = isLegacyIdPresent(
-      userSearch.organisations
-    );
-
-    const numeriIdentifierAndTextidentifier = {};
-    userSearch.organisations?.map((org) => {
-      if (org['numericIdentifier'] && org['textIdentifier']) {
-        numeriIdentifierAndTextidentifier['numericIdentifier'] =
-          org['numericIdentifier'];
-        numeriIdentifierAndTextidentifier['textIdentifier'] =
-          org['textIdentifier'];
-      }
-    });
-
     return {
       id: uid,
       name: user.name,
@@ -275,9 +255,6 @@ const getUserDetailsById = async (uid, correlationId) => {
       orgId: ktsDetails ? ktsDetails.organisationId : '',
       ktsId: externalIdentifier,
       pendingEmail: user.pendingEmail,
-      ...(numericAndTextIdentifierCheck && {
-        legacyId: JSON.stringify(numeriIdentifierAndTextidentifier),
-      }),
     };
   }
 };

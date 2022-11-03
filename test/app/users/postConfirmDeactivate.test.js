@@ -119,7 +119,7 @@ describe('When confirming deactivation of user', () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0]).toBe(
-      'super.user@unit.test (id: suser1) deactivated user rupert.grint@hogwarts.test (id: 915a7382-576b-4699-ad07-a9fd329d3867) (legacyId: null)'
+      'super.user@unit.test (id: suser1) deactivated user rupert.grint@hogwarts.test (id: 915a7382-576b-4699-ad07-a9fd329d3867)'
     );
     expect(logger.audit.mock.calls[0][1]).toMatchObject({
       type: 'support',

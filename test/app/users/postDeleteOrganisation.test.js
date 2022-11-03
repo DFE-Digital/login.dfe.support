@@ -4,6 +4,7 @@ jest.mock('./../../../src/infrastructure/organisations', () => {
   return {
     deleteInvitationOrganisation: jest.fn(),
     deleteUserOrganisation: jest.fn(),
+    getUserOrganisations: jest.fn(),
   };
 });
 jest.mock('./../../../src/infrastructure/search');
@@ -12,7 +13,7 @@ jest.mock('login.dfe.notifications.client');
 const notificationClient = require('login.dfe.notifications.client');
 const { getRequestMock, getResponseMock } = require('./../../utils');
 const postDeleteOrganisation = require('./../../../src/app/users/postDeleteOrganisation');
-const { deleteInvitationOrganisation, deleteUserOrganisation } = require('./../../../src/infrastructure/organisations');
+const { deleteInvitationOrganisation, deleteUserOrganisation, getUserOrganisations } = require('./../../../src/infrastructure/organisations');
 const { getSearchDetailsForUserById } = require('./../../../src/infrastructure/search');
 
 const res = getResponseMock();
@@ -55,6 +56,14 @@ describe('when removing a users access to an organisation', () => {
         },
       ]
     });
+    getUserOrganisations.mockReturnValue({
+      organisations: [
+        {
+          numericIdentifier: "1111",
+          textIdentifier: "rpssss",
+        },
+      ]
+    })
     sendUserRemovedFromOrganisationStub = jest.fn();
     notificationClient.mockReset().mockImplementation(() => ({
       sendUserRemovedFromOrganisation: sendUserRemovedFromOrganisationStub,
@@ -65,6 +74,7 @@ describe('when removing a users access to an organisation', () => {
     req.params.uid = 'inv-invite1';
 
     await postDeleteOrganisation(req, res);
+    await getUserOrganisations.mockReset();
 
     expect(deleteInvitationOrganisation.mock.calls).toHaveLength(1);
     expect(deleteInvitationOrganisation.mock.calls[0][0]).toBe('invite1');

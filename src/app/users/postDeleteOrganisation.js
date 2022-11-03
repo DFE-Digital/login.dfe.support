@@ -1,7 +1,7 @@
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
 const NotificationClient = require('login.dfe.notifications.client');
-const { deleteUserOrganisation, deleteInvitationOrganisation } = require('./../../infrastructure/organisations');
+const { deleteUserOrganisation, deleteInvitationOrganisation, getUserOrganisations } = require('./../../infrastructure/organisations');
 const { getAllServicesForUserInOrg } = require('./utils');
 const { removeServiceFromInvitation, removeServiceFromUser } = require('./../../infrastructure/access');
 const { getSearchDetailsForUserById, updateIndex } = require('./../../infrastructure/search');
@@ -23,6 +23,8 @@ const postDeleteOrganisation = async (req, res) => {
   const organisationId = req.params.id;
   const servicesForUserInOrg = await getAllServicesForUserInOrg(uid, organisationId, req.id);
   const isEmailAllowed = await isSupportEmailNotificationAllowed();
+
+  const userOrgs = await getUserOrganisations(uid, req.id);
 
   if (uid.startsWith('inv-')) {
     for (let i = 0; i < servicesForUserInOrg.length; i++) {
@@ -55,7 +57,21 @@ const postDeleteOrganisation = async (req, res) => {
 
   const fullname = `${req.session.user.firstName} ${req.session.user.lastName}`;
   const org = req.session.org.name;
-  logger.audit(`${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${req.params.id}) for user ${req.session.user.email} (id: ${uid})`, {
+
+  let hasLegacyId = false;
+  let numericIdentifier = {};
+  let textIdentifier = {};
+  let numericAndTextIdentifier = {};
+  if (userOrgs[0]?.['numericIdentifier'] && userOrgs[0]?.['textIdentifier']) {
+    numericIdentifier['numericIdentifier'] = userOrgs[0]['numericIdentifier'];
+    textIdentifier['textIdentifier'] = userOrgs[0]['textIdentifier'];
+    numericAndTextIdentifier = {...numericIdentifier, ...textIdentifier}
+    hasLegacyId = true;
+  }
+
+  logger.audit(`${req.user.email} (id: ${req.user.sub}) removed organisation ${org} (id: ${req.params.id}) for user ${req.session.user.email} (id: ${uid}), (legacyId: ${
+    hasLegacyId ? JSON.stringify(numericAndTextIdentifier) : 'null'
+  })`, {
     type: 'support',
     subType: 'user-org-deleted',
     userId: req.user.sub,
@@ -66,6 +82,7 @@ const postDeleteOrganisation = async (req, res) => {
       oldValue: req.params.id,
       newValue: undefined,
     }],
+    ...(hasLegacyId && {...numericAndTextIdentifier})
   });
   res.flash('info', `${fullname} no longer has access to ${org}`);
   return res.redirect(`/users/${uid}/organisations`);

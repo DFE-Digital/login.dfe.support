@@ -4,7 +4,7 @@ const { getPageOfUserAudits, cache } = require('./../../infrastructure/audit');
 const logger = require('./../../infrastructure/logger');
 const { getServiceIdForClientId } = require('./../../infrastructure/serviceMapping');
 const { getServiceById } = require('./../../infrastructure/applications');
-const { getOrganisationById, getUserOrganisations } = require('./../../infrastructure/organisations');
+const { getOrganisationById, getUserOrganisations, getOrganisationByIdV2 } = require('./../../infrastructure/organisations');
 
 let cachedServiceIds = {};
 let cachedServices  = {};
@@ -21,12 +21,6 @@ const getCachedUserById = async (userId, reqId) => {
 
 const describeAuditEvent = async (audit, req) => {
   const isCurrentUser = audit.userId.toLowerCase() === req.params.uid.toLowerCase();
-
-  let legacyId = 'null';
-  const userOrgs = await getUserOrganisations(req.params.uid, req.id);
-  if (userOrgs[0].numericIdentifier && userOrgs[0].textIdentifier) {
-    legacyId = `(numericIdentifier: ${userOrgs[0].numericIdentifier}, textIdentifier: ${userOrgs[0].textIdentifier})`;
-  }
 
   if (audit.type === 'sign-in') {
     let description = 'Sign-in';
@@ -51,8 +45,8 @@ const describeAuditEvent = async (audit, req) => {
     if (editedStatusTo && editedStatusTo.newValue === 0) {
       const newStatus = mapUserStatus(editedStatusTo.newValue);
       const reason = audit.reason ? audit.reason : 'no reason given';
-      return isCurrentUser ? `${newStatus.description} user: ${viewedUser.firstName} ${viewedUser.lastName}, legacyId: ${legacyId}, (reason: ${reason})`
-        : ` Account ${newStatus.description}, legacyId: ${legacyId}, (reason: ${reason})`
+      return isCurrentUser ? `${newStatus.description} user: ${viewedUser.firstName} ${viewedUser.lastName} (reason: ${reason})`
+        : ` Account ${newStatus.description} (reason: ${reason})`
     }
     if (editedStatusTo && editedStatusTo.newValue === 1) {
       return isCurrentUser ? `Reactivated user: ${viewedUser.firstName} ${viewedUser.lastName}` : `Account Reactivated`
@@ -100,9 +94,10 @@ const describeAuditEvent = async (audit, req) => {
 
   if (audit.type === 'support' && audit.subType === 'user-org-deleted') {
     const organisationId = audit.editedFields && audit.editedFields.find(x => x.name === 'new_organisation');
-    const organisation = await getOrganisationById(organisationId.oldValue);
+    const organisation = await getOrganisationById(organisationId.oldValue, req.id);
     const viewedUser = await getCachedUserById(audit.editedUser, req.id);
-    return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName}`
+    return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
+      numericIdentifier: ${audit['numericIdentifier']}, textIdentifier: ${audit['textIdentifier']})`
   }
   if (audit.type === 'support' && audit.subType === 'user-org') {
     const organisationId = audit.editedFields && audit.editedFields.find(x => x.name === 'new_organisation');

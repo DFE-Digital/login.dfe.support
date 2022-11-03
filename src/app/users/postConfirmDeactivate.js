@@ -28,9 +28,7 @@ const postConfirmDeactivate = async (req, res) => {
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) deactivated user ${
       user.email
-    } (id: ${user.id}) (legacyId: ${
-      user.legacyId ? user.legacyId : 'null'
-    })`,
+    } (id: ${user.id})`,
     {
       type: 'support',
       subType: 'user-edit',
