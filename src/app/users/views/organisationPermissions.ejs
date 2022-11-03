@@ -17,11 +17,13 @@
                     <p class="error-message" id="validation-permission-level"><%=locals.validationMessages.selectedLevel %></p>
                     <% } %>
                     <div class="multiple-choice">
-                        <input id="level-user" type="radio" name="selectedLevel" value="0">
+                        <input id="level-user" type="radio" name="selectedLevel" value="0"
+                        <%= locals.selectedLevel === 0 ? 'checked' : '' %> >
                         <label for="level-user">End user</label>
                     </div>
                     <div class="multiple-choice">
-                        <input id="level-approver" type="radio" name="selectedLevel" value="10000">
+                        <input id="level-approver" type="radio" name="selectedLevel" value="10000"
+                        <%= locals.selectedLevel === 10000 ? 'checked' : '' %> >
                         <label for="level-approver">Approver</label>
                     </div>
                 </fieldset>

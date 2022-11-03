@@ -1,6 +1,6 @@
-const { sendResult } = require('./../../infrastructure/utils');
-const { getUser } = require('./../../infrastructure/directories');
 const { emailPolicy } = require('login.dfe.validation');
+const { sendResult } = require('../../infrastructure/utils');
+const { getUser } = require('../../infrastructure/directories');
 
 const validateInput = async (req) => {
   const nameRegEx = /^[^±!@£$%^&*_+§¡€#¢§¶•ªº«\\/<>?:;|=.,~"]{1,60}$/i;
@@ -47,8 +47,8 @@ const postNewUser = async (req, res) => {
   req.session.user.firstName = model.firstName;
   req.session.user.lastName = model.lastName;
   req.session.user.email = model.email;
-
-  return res.redirect('associate-organisation');
+  const redirectLink = (req.query.review && req.query.review === 'true') ? 'confirm-new-user' : 'associate-organisation';
+  return res.redirect(redirectLink);
 };
 
 module.exports = postNewUser;
