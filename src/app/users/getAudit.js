@@ -4,7 +4,7 @@ const { getPageOfUserAudits, cache } = require('./../../infrastructure/audit');
 const logger = require('./../../infrastructure/logger');
 const { getServiceIdForClientId } = require('./../../infrastructure/serviceMapping');
 const { getServiceById } = require('./../../infrastructure/applications');
-const { getOrganisationById, getUserOrganisations, getOrganisationByIdV2 } = require('./../../infrastructure/organisations');
+const { getOrganisationById, getUserOrganisations } = require('./../../infrastructure/organisations');
 
 let cachedServiceIds = {};
 let cachedServices  = {};
