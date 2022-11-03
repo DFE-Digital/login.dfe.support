@@ -51,7 +51,7 @@ const postConfirmNewUser = async (req, res) => {
   logger.audit(`${req.user.email} (id: ${req.user.sub}) invited ${req.session.user.email}`,
     {
       type: 'support',
-      subType: 'user-invite',
+      subType: 'user-invited',
       userId: req.user.sub,
       userEmail: req.user.email,
       invitedUserEmail: req.session.user.email,
