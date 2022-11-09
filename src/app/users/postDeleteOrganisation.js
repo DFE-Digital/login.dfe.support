@@ -62,9 +62,12 @@ const postDeleteOrganisation = async (req, res) => {
   let numericIdentifier = {};
   let textIdentifier = {};
   let numericAndTextIdentifier = {};
-  if (userOrgs[0]?.['numericIdentifier'] && userOrgs[0]?.['textIdentifier']) {
-    numericIdentifier['numericIdentifier'] = userOrgs[0]['numericIdentifier'];
-    textIdentifier['textIdentifier'] = userOrgs[0]['textIdentifier'];
+
+  const deletedOrg = userOrgs.filter(org => org.organisation.id === organisationId);
+
+  if (deletedOrg[0]?.['numericIdentifier'] && deletedOrg[0]?.['textIdentifier']) {
+    numericIdentifier['numericIdentifier'] = deletedOrg[0]['numericIdentifier'];
+    textIdentifier['textIdentifier'] = deletedOrg[0]['textIdentifier'];
     numericAndTextIdentifier = {...numericIdentifier, ...textIdentifier}
     hasLegacyId = true;
   }

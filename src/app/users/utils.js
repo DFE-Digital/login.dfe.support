@@ -17,7 +17,6 @@ const { getServiceById } = require('./../../infrastructure/applications');
 const { mapUserStatus } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
 const sortBy = require('lodash/sortBy');
-const isEmpty = require('lodash/isEmpty');
 
 const delay = async (milliseconds) => {
   return new Promise((resolve) => {
