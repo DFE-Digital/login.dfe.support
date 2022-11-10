@@ -131,6 +131,9 @@ const describeAuditEvent = async (audit, req) => {
     const viewedUser = await getCachedUserById(audit.editedUser, req.id);
     return `Edited permission level to ${editedFields.newValue} for user ${viewedUser.firstName} ${viewedUser.lastName} in organisation ${editedFields.organisation}`
   }
+  if (audit.type === 'approver' && audit.subType === 'user-org-deleted') {
+    return audit.message;
+  }
 
   return `${audit.type} / ${audit.subType}`;
 };
