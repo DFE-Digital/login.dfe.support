@@ -1,10 +1,18 @@
-jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
-jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
+jest.mock('./../../../src/infrastructure/config', () =>
+  require('./../../utils').configMockFactory()
+);
+jest.mock('./../../../src/infrastructure/logger', () =>
+  require('./../../utils').loggerMockFactory()
+);
 jest.mock('./../../../src/app/users/utils');
 jest.mock('./../../../src/infrastructure/directories');
 
 const logger = require('./../../../src/infrastructure/logger');
-const { getUserDetails, getUserDetailsById, updateUserDetails } = require('./../../../src/app/users/utils');
+const {
+  getUserDetails,
+  getUserDetailsById,
+  updateUserDetails,
+} = require('./../../../src/app/users/utils');
 const { deactivate } = require('./../../../src/infrastructure/directories');
 const postConfirmDeactivate = require('./../../../src/app/users/postConfirmDeactivate');
 
@@ -26,7 +34,7 @@ describe('When confirming deactivation of user', () => {
       user: {
         sub: 'suser1',
         email: 'super.user@unit.test',
-      }
+      },
     };
 
     res = {
@@ -45,7 +53,7 @@ describe('When confirming deactivation of user', () => {
       lastLogin: null,
       status: {
         id: 1,
-        description: 'Active'
+        description: 'Active',
       },
       loginsInPast12Months: {
         successful: 0,
@@ -62,7 +70,7 @@ describe('When confirming deactivation of user', () => {
       lastLogin: null,
       status: {
         id: 1,
-        description: 'Active'
+        description: 'Active',
       },
       loginsInPast12Months: {
         successful: 0,
@@ -83,7 +91,9 @@ describe('When confirming deactivation of user', () => {
     await postConfirmDeactivate(req, res);
 
     expect(deactivate.mock.calls).toHaveLength(1);
-    expect(deactivate.mock.calls[0][0]).toBe('915a7382-576b-4699-ad07-a9fd329d3867');
+    expect(deactivate.mock.calls[0][0]).toBe(
+      '915a7382-576b-4699-ad07-a9fd329d3867'
+    );
     expect(deactivate.mock.calls[0][1]).toBe('correlationId');
   });
 
@@ -97,18 +107,20 @@ describe('When confirming deactivation of user', () => {
       email: 'rupert.grint@hogwarts.test',
       organisationName: 'Hogwarts School of Witchcraft and Wizardry',
       lastLogin: null,
-      status:{
+      status: {
         id: 0,
-        description: 'Deactivated'
-      }
-    })
+        description: 'Deactivated',
+      },
+    });
   });
 
   it('then it should should audit user being deactivated', async () => {
     await postConfirmDeactivate(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe('super.user@unit.test (id: suser1) deactivated user rupert.grint@hogwarts.test (id: 915a7382-576b-4699-ad07-a9fd329d3867)');
+    expect(logger.audit.mock.calls[0][0]).toBe(
+      'super.user@unit.test (id: suser1) deactivated user rupert.grint@hogwarts.test (id: 915a7382-576b-4699-ad07-a9fd329d3867)'
+    );
     expect(logger.audit.mock.calls[0][1]).toMatchObject({
       type: 'support',
       subType: 'user-edit',
@@ -120,9 +132,9 @@ describe('When confirming deactivation of user', () => {
           name: 'status',
           oldValue: 1,
           newValue: 0,
-        }
+        },
       ],
-      reason: 'some reason for deactivation'
+      reason: 'some reason for deactivation',
     });
   });
 });

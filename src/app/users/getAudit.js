@@ -115,9 +115,10 @@ const describeAuditEvent = async (audit, req) => {
 
   if (audit.type === 'support' && audit.subType === 'user-org-deleted') {
     const organisationId = audit.editedFields && audit.editedFields.find(x => x.name === 'new_organisation');
-    const organisation = await getOrganisationById(organisationId.oldValue);
+    const organisation = await getOrganisationById(organisationId.oldValue, req.id);
     const viewedUser = await getCachedUserById(audit.editedUser, req.id);
-    return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName}`
+    return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
+      numericIdentifier: ${audit['numericIdentifier']}, textIdentifier: ${audit['textIdentifier']})`
   }
   if (audit.type === 'support' && audit.subType === 'user-org') {
     const organisationId = audit.editedFields && audit.editedFields.find(x => x.name === 'new_organisation');
@@ -129,6 +130,14 @@ const describeAuditEvent = async (audit, req) => {
     const editedFields = audit.editedFields && audit.editedFields.find(x => x.name === 'edited_permission');
     const viewedUser = await getCachedUserById(audit.editedUser, req.id);
     return `Edited permission level to ${editedFields.newValue} for user ${viewedUser.firstName} ${viewedUser.lastName} in organisation ${editedFields.organisation}`
+  }
+  if (audit.type === 'approver' && audit.subType === 'user-org-deleted') {
+    const metaData = JSON.parse(audit.meta);
+    const organisationId = metaData.editedFields && metaData.editedFields.find(x => x.name === 'new_organisation');
+    const organisation = await getOrganisationById(organisationId.oldValue, req.id);
+    const viewedUser = await getCachedUserById(audit.editedUser, req.id);
+    return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
+      numericIdentifier: ${audit['numericIdentifier']}, textIdentifier: ${audit['textIdentifier']})`
   }
 
   return `${audit.type} / ${audit.subType}`;
