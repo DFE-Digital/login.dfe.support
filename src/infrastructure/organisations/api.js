@@ -41,7 +41,7 @@ const getUserOrganisationsV2 = async (userId, correlationId) => {
 };
 
 const getInvitationOrganisations = async (invitationId, correlationId) => {
-  logger.info(`Inspecting userId: ${userId} and correlalationId: ${correlationId}`);
+  logger.info(`Inspecting correlalationId: ${correlationId}`);
   logger.info(`getInvitationOrganisations triggered`);
   return await callOrganisationsApi(`invitations/v2/${invitationId}`, 'GET', undefined, correlationId);
 };
