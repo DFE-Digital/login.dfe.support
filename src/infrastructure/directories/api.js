@@ -108,6 +108,7 @@ const getInvitation = async (invitationId, correlationId) => {
 
     return invitation;
   } catch (e) {
+    console.log('what is the error: ', e)
     const status = e.statusCode ? e.statusCode : 500;
     if (status === 404) {
       return null;

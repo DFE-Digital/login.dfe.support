@@ -132,12 +132,19 @@ const describeAuditEvent = async (audit, req) => {
     return `Edited permission level to ${editedFields.newValue} for user ${viewedUser.firstName} ${viewedUser.lastName} in organisation ${editedFields.organisation}`
   }
   if (audit.type === 'approver' && audit.subType === 'user-org-deleted') {
-    const metaData = JSON.parse(audit.meta);
-    const organisationId = metaData.editedFields && metaData.editedFields.find(x => x.name === 'new_organisation');
-    const organisation = await getOrganisationById(organisationId.oldValue, req.id);
-    const viewedUser = await getCachedUserById(audit.editedUser, req.id);
-    return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
-      numericIdentifier: ${audit['numericIdentifier']}, textIdentifier: ${audit['textIdentifier']})`
+    try {
+      const metaData = JSON.parse(audit?.meta || audit);
+      const organisationId = metaData.editedFields && metaData.editedFields.find(x => x.name === 'new_organisation');
+      const organisation = await getOrganisationById(organisationId.oldValue, req.id);
+      const viewedUser = await getCachedUserById(audit.editedUser, req.id);
+      return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
+        numericIdentifier: ${audit['numericIdentifier']}, textIdentifier: ${audit['textIdentifier']})`
+    } catch (e) {
+      logger.error(e);
+
+      return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
+        numericIdentifier: ${audit['numericIdentifier']}, textIdentifier: ${audit['textIdentifier']})`
+    }
   }
 
   return `${audit.type} / ${audit.subType}`;
