@@ -62,11 +62,14 @@ const post = async (req, res) => {
   const organisationId = req.params.orgId;
 
   if (req.session.user.services) {
+    logger.info('inside if req.session.user.services condition')
     const allServices = await getAllServices();
 
     for (let i = 0; i < req.session.user.services.length; i++) {
       const service = req.session.user.services[i];
       const invitationId = uid.startsWith('inv-') ? uid.substr(4) : undefined;
+
+      logger.info('what is invitationId', invitationId);
 
       if (invitationId) {
         req.session.user.isAddService ?  await addInvitationService(invitationId, service.serviceId, organisationId, [], service.roles, req.id) : await updateInvitationService(invitationId, service.serviceId, organisationId, service.roles, req.id);

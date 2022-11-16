@@ -1,6 +1,7 @@
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const config = require('./../config');
 const rp = require('login.dfe.request-promise-retry');
+const logger = require('../logger');
 
 const callOrganisationsApi = async (endpoint, method, body, correlationId) => {
   const token = await jwtStrategy(config.organisations.service).getBearerToken();
@@ -30,6 +31,8 @@ const callOrganisationsApi = async (endpoint, method, body, correlationId) => {
 };
 
 const getUserOrganisations = async (userId, correlationId) => {
+  logger.info(`Inspecting userId: ${userId} and correlalationId: ${correlationId}`);
+  logger.info(`getUserOrganisations triggered`);
   return await callOrganisationsApi(`organisations/associated-with-user/${userId}`, 'GET', undefined, correlationId);
 };
 
@@ -38,6 +41,8 @@ const getUserOrganisationsV2 = async (userId, correlationId) => {
 };
 
 const getInvitationOrganisations = async (invitationId, correlationId) => {
+  logger.info(`Inspecting userId: ${userId} and correlalationId: ${correlationId}`);
+  logger.info(`getInvitationOrganisations triggered`);
   return await callOrganisationsApi(`invitations/v2/${invitationId}`, 'GET', undefined, correlationId);
 };
 
