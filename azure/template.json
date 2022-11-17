@@ -1,0 +1,239 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "templatesBaseUri": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/DFE-Digital/login.dfe.infrastructure/master/"
+        },
+        "appServiceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the App Service"
+            }
+        },
+        "appServicePlanName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the App Service Plan"
+            }
+        },
+        "appServicePlanSku": {
+            "type": "object",
+            "metadata": {
+                "description": "The sku of the App Service Plan"
+            }
+        },
+        "appServicePlanRG": {
+            "type": "string",
+            "metadata": {
+                "description": "Resource Group where the ASP lives"
+            }
+        },
+        "nodeVersion": {
+            "type": "string",
+            "defaultValue": "8.9.4",
+            "metadata": {
+                "description": "The default NodeJS version that the App Service will run"
+            }
+        },
+        "minTlsVersion": {
+            "type": "string",
+            "defaultValue": "1.0",
+            "metadata": {
+                "description": "The minimum tls version for the service"
+            }
+        },
+        "numberOfWorkers": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "The number of workers to assign to the app service within the app service plan"
+            }
+        },
+        "appServiceConfigPath": {
+            "type": "string",
+            "metadata": {
+                "description": "JSON string containing app config"
+            }
+        },
+        "customHostName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "certificateName": {
+            "type": "string"
+        },
+        "keyVaultName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Key Vault that stores application certificates"
+            }
+        },
+        "keyVaultResourceGroup": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Resource Group that contains the Key Vault"
+            }
+        },
+        "virtualNetworkResourceGroupName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Resource group of the virtual network"
+            }
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Name of the virtual network"
+            }
+        },
+        "subnetPrefix": {
+            "type": "string",
+            "defaultValue": "sup-sn-1",
+            "metadata": {
+                "description": "Prefix of the subnet to integrate the app service with"
+            }
+        },
+        "vnetRouteAllEnabled": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Enable the Route All setting to route all traffic through the vnet"
+            }
+        },
+        "auditHttpTriggerInvokeUrl": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Audit HTTP trigger invoke URL"
+            }
+        },
+        "auditHttpTriggerFunctionKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Audit HTTP triger Function Key"
+            }
+        }
+    },
+    "variables": {
+        "enableVirtualNetworkIntegration": "[and(not(empty(parameters('virtualNetworkResourceGroupName'))), not(empty(parameters('virtualNetworkName'))))]",
+        "serviceSubnetResourceId": "[if(variables('enableVirtualNetworkIntegration'), resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), concat(parameters('subnetPrefix'))), '')]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2017-05-10",
+            "name": "[parameters('appServicePlanName')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templatesBaseUri'), 'Shared/app-service-plan.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "appServicePlanName": {
+                        "value": "[parameters('appServicePlanName')]"
+                    },
+                    "appServicePlanSku": {
+                        "value": "[parameters('appServicePlanSku')]"
+                    },
+                    "appServicePlanOS": {
+                        "value": "Linux"
+                    },
+                    "appServicePlanIsLinux": {
+                        "value": true
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "[concat(parameters('appServiceName'), '-certificate')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templatesBaseUri'), 'Shared/app-service-certificate.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "keyVaultCertificateName": {
+                        "value": "[parameters('certificateName')]"
+                    },
+                    "keyVaultName": {
+                        "value": "[parameters('keyVaultName')]"
+                    },
+                    "keyVaultResourceGroup": {
+                        "value": "[parameters('keyVaultResourceGroup')]"
+                    },
+                    "serverFarmId": {
+                        "value": "[reference(parameters('appServicePlanName')).outputs.appServicePlanId.Value]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "[parameters('appServiceName')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templatesBaseUri'), 'Shared/app-service-azure-config.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "appServiceName": {
+                        "value": "[parameters('appServiceName')]"
+                    },
+                    "appServicePlanName": {
+                        "value": "[parameters('appServicePlanName')]"
+                    },
+                    "appServicePlanRG": {
+                        "value": "[parameters('appServicePlanRG')]"
+                    },
+                    "nodeVersion": {
+                        "value": "[parameters('nodeVersion')]"
+                    },
+                    "numberOfWorkers": {
+                        "value": "[parameters('numberOfWorkers')]"
+                    },
+                    "appServiceConfigPath": {
+                        "value": "[parameters('appServiceConfigPath')]"
+                    },
+                    "minTlsVersion": {
+                        "value": "[parameters('minTlsVersion')]"
+                    },
+                    "customHostName": {
+                        "value": "[parameters('customHostName')]"
+                    },
+                    "certificateThumbprint": {
+                        "value": "[reference(concat(parameters('appServiceName'), '-certificate')).outputs.certificateThumbprint.value]"
+                    },
+                    "additionalAppSettings": {
+                        "value": {
+                            "AUDIT_HTTP_TRIGGER_URL": "[parameters('auditHttpTriggerInvokeUrl')]",
+                            "AUDIT_HTTP_TRIGGER_KEY": "[parameters('auditHttpTriggerFunctionKey')]"
+                        }
+                    },
+                    "subnetResourceId": {
+                        "value": "[variables('serviceSubnetResourceId')]"
+                    },
+                    "vnetRouteAllEnabled": {
+                        "value": "[parameters('vnetRouteAllEnabled')]"
+                    },
+                    "http20Enabled": {
+                        "value": true
+                    }
+                }
+            },
+            "dependsOn": [
+                "[parameters('appServicePlanName')]"
+            ]
+        }
+    ]
+}
