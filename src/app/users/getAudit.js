@@ -136,6 +136,8 @@ const describeAuditEvent = async (audit, req) => {
       const metaData = audit?.meta ? JSON.parse(audit.meta) : audit;
       const organisationId = metaData.editedFields && metaData.editedFields.find(x => x.name === 'new_organisation');
       const organisation = await getOrganisationById(organisationId.oldValue, req.id);
+      // Escaping audit.editedUser double quotes bug
+      audit.editedUser = /["]/.test(audit.editedUser) ? audit.editedUser.replace(/[""]+/g, '') : audit.editedUser
       const viewedUser = await getCachedUserById(audit.editedUser, req.id);
       return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
         numericIdentifier: ${audit['numericIdentifier']}, textIdentifier: ${audit['textIdentifier']})`
