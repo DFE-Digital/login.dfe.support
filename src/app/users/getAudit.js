@@ -132,12 +132,18 @@ const describeAuditEvent = async (audit, req) => {
     return `Edited permission level to ${editedFields.newValue} for user ${viewedUser.firstName} ${viewedUser.lastName} in organisation ${editedFields.organisation}`
   }
   if (audit.type === 'approver' && audit.subType === 'user-org-deleted') {
-    const metaData = JSON.parse(audit.meta);
-    const organisationId = metaData.editedFields && metaData.editedFields.find(x => x.name === 'new_organisation');
-    const organisation = await getOrganisationById(organisationId.oldValue, req.id);
-    const viewedUser = await getCachedUserById(audit.editedUser, req.id);
-    return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
-      numericIdentifier: ${audit['numericIdentifier']}, textIdentifier: ${audit['textIdentifier']})`
+    try {
+      const metaData = audit?.meta ? JSON.parse(audit.meta) : audit;
+      const organisationId = metaData.editedFields && metaData.editedFields.find(x => x.name === 'new_organisation');
+      const organisation = await getOrganisationById(organisationId.oldValue, req.id);
+      // Escaping audit.editedUser double quotes bug
+      audit.editedUser = /["]/.test(audit.editedUser) ? audit.editedUser.replace(/[""]+/g, '') : audit.editedUser
+      const viewedUser = await getCachedUserById(audit.editedUser, req.id);
+      return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
+        numericIdentifier: ${audit['numericIdentifier']}, textIdentifier: ${audit['textIdentifier']})`
+    } catch (e) {
+      return audit.message;
+    }
   }
 
   return `${audit.type} / ${audit.subType}`;
