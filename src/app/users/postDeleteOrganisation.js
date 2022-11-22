@@ -24,8 +24,6 @@ const postDeleteOrganisation = async (req, res) => {
   const servicesForUserInOrg = await getAllServicesForUserInOrg(uid, organisationId, req.id);
   const isEmailAllowed = await isSupportEmailNotificationAllowed();
 
-  const userOrgs = await getUserOrganisations(uid, req.id);
-
   if (uid.startsWith('inv-')) {
     for (let i = 0; i < servicesForUserInOrg.length; i++) {
       const service = servicesForUserInOrg[i];
@@ -62,6 +60,8 @@ const postDeleteOrganisation = async (req, res) => {
   let numericIdentifier = {};
   let textIdentifier = {};
   let numericAndTextIdentifier = {};
+
+  const userOrgs = uid.startsWith('inv-') ? [] : await getUserOrganisations(uid, req.id);
 
   const deletedOrg = userOrgs.filter(org => org.organisation.id === organisationId);
 
