@@ -172,7 +172,7 @@ stages:
         - ${{ if parameters.AppDeploy }}:
           - template: pipeline/deploy.yml@devopsTemplates
             parameters: 
-              ${{ if or(eq(var.key, 'dev'), eq(var.key 'tran')) }}:
+              ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
                 serviceConnection: $(devServiceConnection)
               ${{ elseif eq(var.key, 'pr') }}:
                 serviceConnection: $(prodServiceConnection)
