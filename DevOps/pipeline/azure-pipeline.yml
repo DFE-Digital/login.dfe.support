@@ -6,12 +6,12 @@ resources:
       type: github
       endpoint: DfE-Digital
       name: DFE-Digital/login.dfe.devops
-      ref: main
+      ref: feature/DSI-5680
     - repository: config
       type: github
       endpoint: DfE-Digital
       name: DFE-Digital/login.dfe.config
-      ref: master
+      ref: feature/DSI-5680
 
 trigger:
   branches:
@@ -34,6 +34,10 @@ parameters:
   type: boolean
   displayName: 'Infrastrucure Deployment only'
   default: true
+- name: tran 
+  type: boolean
+  displayName: 'Transformation Deployment'
+  default: false
 - name: dev
   type: boolean
   displayName: 'Dev Deployment'
@@ -63,8 +67,13 @@ variables:
   value: 'support'
 - name: numberOfWorkers
   value: 1
+- name: tran
+  ${{ if eq(parameters.tran, 'true') }}: 
+    value: true
+  ${{ else }}:
+    value: false
 - name: dev
-  ${{ if or(eq(parameters.dev, 'true'), contains(variables['Build.SourceBranch'],'feature')) }}:
+  ${{ if eq(parameters.dev, 'true') }}:
     value: true
   ${{ else }}:
     value: false
@@ -112,6 +121,8 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         environmentNames:
+          - ${{ if eq(variables.tran, 'true') }}: 
+            - tran
           - ${{ if eq(variables.dev, 'true') }}:
             - dev
           - ${{ if eq(variables.test, 'true') }}:
@@ -129,7 +140,7 @@ stages:
 
 
 - ${{ each var in variables }}:
-  - ${{ if le(length(var.key), 4) }}:
+  - ${{ if in(var.key, 'tran','dev','test','int','pp','pr') }}:
     - ${{ if eq(var.value, 'true') }}:
       - stage: Deployment_${{var.Key}}
         displayName: "Deployment [${{var.Key}}]"
@@ -140,9 +151,9 @@ stages:
         - group: dsi-${{var.key}}-kv
         jobs:
         - ${{ if parameters.InfrDeploy }}:
-          - template: pipeline/infrastructure.yml@devopsTemplates
+          - template: pipeline/appInfrastructure.yml@devopsTemplates
             parameters:
-              ${{ if eq(var.key, 'dev') }}:
+              ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
                 serviceConnection: $(devServiceConnection)
               ${{ elseif eq(var.key, 'pr') }}:
                 serviceConnection: $(prodServiceConnection)
@@ -161,7 +172,7 @@ stages:
         - ${{ if parameters.AppDeploy }}:
           - template: pipeline/deploy.yml@devopsTemplates
             parameters: 
-              ${{ if eq(var.key, 'dev') }}:
+              ${{ if or(eq(var.key, 'dev'), eq(var.key 'tran')) }}:
                 serviceConnection: $(devServiceConnection)
               ${{ elseif eq(var.key, 'pr') }}:
                 serviceConnection: $(prodServiceConnection)
