@@ -18,11 +18,15 @@ const deleteUserOrg = async (uid, req) => {
   await deleteUserOrganisation(uid, organisationId);
 };
 
+
 const postDeleteOrganisation = async (req, res) => {
   const uid = req.params.uid;
   const organisationId = req.params.id;
   const servicesForUserInOrg = await getAllServicesForUserInOrg(uid, organisationId, req.id);
   const isEmailAllowed = await isSupportEmailNotificationAllowed();
+
+  // Invocation has to happen before deleteUserOrg otherwise it will return []
+  const userOrgs = uid.startsWith('inv-') ? [] : await getUserOrganisations(uid, req.id);
 
   if (uid.startsWith('inv-')) {
     for (let i = 0; i < servicesForUserInOrg.length; i++) {
@@ -60,8 +64,6 @@ const postDeleteOrganisation = async (req, res) => {
   let numericIdentifier = {};
   let textIdentifier = {};
   let numericAndTextIdentifier = {};
-
-  const userOrgs = uid.startsWith('inv-') ? [] : await getUserOrganisations(uid, req.id);
 
   const deletedOrg = userOrgs.filter(org => org.organisation.id === organisationId);
 
