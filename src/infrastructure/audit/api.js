@@ -4,7 +4,7 @@ const updateAuditLogs = async () => {
   try {
     await rp({
       method: 'GET',
-      uri: `${process.env.AUDIT_HTTP_TRIGGER_URL}/?code=${process.env.AUDIT_HTTP_TRIGGER_KEY}`,
+      uri: `${process.env.AUDIT_HTTP_TRIGGER_URL}`,
       headers: {
         code: process.env.AUDIT_HTTP_TRIGGER_KEY,
       },
