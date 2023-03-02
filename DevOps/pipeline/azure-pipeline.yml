@@ -6,7 +6,7 @@ resources:
       type: github
       endpoint: DfE-Digital
       name: DFE-Digital/login.dfe.devops
-      ref: feature/DSI-5680
+      ref: feature/IDM
     - repository: config
       type: github
       endpoint: DfE-Digital
@@ -34,6 +34,10 @@ parameters:
   type: boolean
   displayName: 'Infrastrucure Deployment only'
   default: true
+- name: idm
+  type: boolean
+  displayName: 'IDM Deployment'
+  default: false
 - name: tran 
   type: boolean
   displayName: 'Transformation Deployment'
@@ -67,6 +71,11 @@ variables:
   value: 'support'
 - name: numberOfWorkers
   value: 1
+- name: idm
+  ${{ if eq(parameters.idm, 'true') }}:
+    value: true
+  ${{ else }}:
+    value: false
 - name: tran
   ${{ if eq(parameters.tran, 'true') }}: 
     value: true
@@ -121,6 +130,8 @@ stages:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         environmentNames:
+          - ${{ if eq(variables.idm, 'true') }}:
+            - idm
           - ${{ if eq(variables.tran, 'true') }}: 
             - tran
           - ${{ if eq(variables.dev, 'true') }}:
@@ -140,7 +151,7 @@ stages:
 
 
 - ${{ each var in variables }}:
-  - ${{ if in(var.key, 'tran','dev','test','int','pp','pr') }}:
+  - ${{ if in(var.key, 'idm','tran','dev','test','int','pp','pr') }}:
     - ${{ if eq(var.value, 'true') }}:
       - stage: Deployment_${{var.Key}}
         displayName: "Deployment [${{var.Key}}]"
@@ -153,7 +164,7 @@ stages:
         - ${{ if parameters.InfrDeploy }}:
           - template: pipeline/appInfrastructure.yml@devopsTemplates
             parameters:
-              ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
+              ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran'), eq(var.key,'idm')) }}:
                 serviceConnection: $(devServiceConnection)
               ${{ elseif eq(var.key, 'pr') }}:
                 serviceConnection: $(prodServiceConnection)
@@ -172,7 +183,7 @@ stages:
         - ${{ if parameters.AppDeploy }}:
           - template: pipeline/deploy.yml@devopsTemplates
             parameters: 
-              ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
+              ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran'), eq(var.key,'idm')) }}:
                 serviceConnection: $(devServiceConnection)
               ${{ elseif eq(var.key, 'pr') }}:
                 serviceConnection: $(prodServiceConnection)
