@@ -179,7 +179,6 @@ const getAudit = async (req, res) => {
   }
   const pageOfAudits = await getPageOfUserAudits(user.id, pageNumber);
   const audits = [];
-  const updateInProgress = await cache.getAuditRefreshStatus() === '1';
 
   for (let i = 0; i < pageOfAudits.audits.length; i++) {
     const audit = pageOfAudits.audits[i];
@@ -231,8 +230,7 @@ const getAudit = async (req, res) => {
     audits,
     numberOfPages: pageOfAudits.numberOfPages,
     page: pageNumber,
-    totalNumberOfResults: pageOfAudits.numberOfRecords,
-    updateInProgress,
+    totalNumberOfResults: pageOfAudits.numberOfRecords
   });
 };
 

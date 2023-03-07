@@ -247,8 +247,7 @@
                     },
                     "additionalAppSettings": {
                         "value": {
-                            "AUDIT_HTTP_TRIGGER_URL": "[parameters('auditHttpTriggerInvokeUrl')]",
-                            "AUDIT_HTTP_TRIGGER_KEY": "[parameters('auditHttpTriggerFunctionKey')]"
+                            "AUDIT_HTTP_TRIGGER_URL": "[parameters('auditHttpTriggerInvokeUrl')]"
                         }
                     },
                     "subnetResourceId": {
