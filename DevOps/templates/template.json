@@ -122,13 +122,6 @@
                 "description": "Audit HTTP trigger invoke URL"
             }
         },
-        "auditHttpTriggerFunctionKey": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Audit HTTP triger Function Key"
-            }
-        },
         "includeDeploymentSlot": {
             "type": "bool",
             "defaultValue": true,
