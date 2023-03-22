@@ -13,7 +13,7 @@
         },
         "branch": {
             "type": "string",
-            "defaultValue": "feature/DSI-5160-61",
+            "defaultValue": "main",
             "metadata": {
                 "description": "Branch that use for the ARM templateLinks"
             }
@@ -120,13 +120,6 @@
             "defaultValue": "",
             "metadata": {
                 "description": "Audit HTTP trigger invoke URL"
-            }
-        },
-        "auditHttpTriggerFunctionKey": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Audit HTTP triger Function Key"
             }
         },
         "includeDeploymentSlot": {
@@ -247,8 +240,7 @@
                     },
                     "additionalAppSettings": {
                         "value": {
-                            "AUDIT_HTTP_TRIGGER_URL": "[parameters('auditHttpTriggerInvokeUrl')]",
-                            "AUDIT_HTTP_TRIGGER_KEY": "[parameters('auditHttpTriggerFunctionKey')]"
+                            "AUDIT_HTTP_TRIGGER_URL": "[parameters('auditHttpTriggerInvokeUrl')]"
                         }
                     },
                     "subnetResourceId": {

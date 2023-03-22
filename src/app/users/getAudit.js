@@ -84,6 +84,27 @@ const describeAuditEvent = async (audit, req) => {
     return 'Password changed';
   }
 
+  if (audit.type === 'support' && audit.subType === 'user-invited') {
+    return 'User invite sent from support console.';
+  }
+
+  if (audit.subType === 'invite-created') {
+    switch (audit.type) {
+      case 'approver':
+        return 'Services/Invitation code created and sent.';
+      case 'support':
+        return 'Support/Invitation code created and sent.';
+      default:
+        break;
+    }
+
+    return audit.type;
+  }
+
+  if (audit.type === 'approver' && audit.subType === 'user-invited') {
+    return 'User invite sent from Manage users (Services console).';
+  }
+
   if (audit.type === 'reset-password') {
     return 'Reset password';
   }
@@ -94,9 +115,10 @@ const describeAuditEvent = async (audit, req) => {
 
   if (audit.type === 'support' && audit.subType === 'user-org-deleted') {
     const organisationId = audit.editedFields && audit.editedFields.find(x => x.name === 'new_organisation');
-    const organisation = await getOrganisationById(organisationId.oldValue);
+    const organisation = await getOrganisationById(organisationId.oldValue, req.id);
     const viewedUser = await getCachedUserById(audit.editedUser, req.id);
-    return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName}`
+    return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
+      numericIdentifier: ${audit['numericIdentifier']}, textIdentifier: ${audit['textIdentifier']})`
   }
   if (audit.type === 'support' && audit.subType === 'user-org') {
     const organisationId = audit.editedFields && audit.editedFields.find(x => x.name === 'new_organisation');
@@ -108,6 +130,20 @@ const describeAuditEvent = async (audit, req) => {
     const editedFields = audit.editedFields && audit.editedFields.find(x => x.name === 'edited_permission');
     const viewedUser = await getCachedUserById(audit.editedUser, req.id);
     return `Edited permission level to ${editedFields.newValue} for user ${viewedUser.firstName} ${viewedUser.lastName} in organisation ${editedFields.organisation}`
+  }
+  if (audit.type === 'approver' && audit.subType === 'user-org-deleted') {
+    try {
+      const metaData = audit?.meta ? JSON.parse(audit.meta) : audit;
+      const organisationId = metaData.editedFields && metaData.editedFields.find(x => x.name === 'new_organisation');
+      const organisation = await getOrganisationById(organisationId.oldValue, req.id);
+      // Escaping audit.editedUser double quotes bug
+      audit.editedUser = /["]/.test(audit.editedUser) ? audit.editedUser.replace(/[""]+/g, '') : audit.editedUser
+      const viewedUser = await getCachedUserById(audit.editedUser, req.id);
+      return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
+        numericIdentifier: ${audit['numericIdentifier']}, textIdentifier: ${audit['textIdentifier']})`
+    } catch (e) {
+      return audit.message;
+    }
   }
 
   return `${audit.type} / ${audit.subType}`;
@@ -143,7 +179,6 @@ const getAudit = async (req, res) => {
   }
   const pageOfAudits = await getPageOfUserAudits(user.id, pageNumber);
   const audits = [];
-  const updateInProgress = await cache.getAuditRefreshStatus() === '1';
 
   for (let i = 0; i < pageOfAudits.audits.length; i++) {
     const audit = pageOfAudits.audits[i];
@@ -195,8 +230,7 @@ const getAudit = async (req, res) => {
     audits,
     numberOfPages: pageOfAudits.numberOfPages,
     page: pageNumber,
-    totalNumberOfResults: pageOfAudits.numberOfRecords,
-    updateInProgress,
+    totalNumberOfResults: pageOfAudits.numberOfRecords
   });
 };
 

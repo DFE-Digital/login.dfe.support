@@ -3,11 +3,8 @@ const rp = require('login.dfe.request-promise-retry');
 const updateAuditLogs = async () => {
   try {
     await rp({
-      method: 'GET',
-      uri: `${process.env.AUDIT_HTTP_TRIGGER_URL}/?code=${process.env.AUDIT_HTTP_TRIGGER_KEY}`,
-      headers: {
-        code: process.env.AUDIT_HTTP_TRIGGER_KEY,
-      },
+      method: 'POST',
+      uri: `${process.env.AUDIT_HTTP_TRIGGER_URL}`,
       json: true,
     });
 
