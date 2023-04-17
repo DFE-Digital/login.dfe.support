@@ -69,6 +69,7 @@ const post = async (req, res) => {
         name: organisation.name,
         urn: organisation.URN || undefined,
         uid: organisation.UID || undefined,
+        upin: organisation.UPIN || undefined,
         UKPRN: organisation.UKPRN || undefined,
         establishmentNumber: organisation.EstablishmentNumber || undefined,
         laNumber: organisation.localAuthority ? organisation.localAuthority.code : undefined,
