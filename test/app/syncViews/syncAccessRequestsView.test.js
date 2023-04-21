@@ -60,6 +60,7 @@ describe('When syncing access request materialised view', function () {
         },
         urn: null,
         uid: '222222',
+        upin: null,
         ukprn: '11111'
       },
       {
@@ -74,6 +75,7 @@ describe('When syncing access request materialised view', function () {
         },
         urn: null,
         uid: '222222',
+        upin: null,
         ukprn: '11111'
       },
     ],totalNumberOfPages: 1});

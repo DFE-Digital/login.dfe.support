@@ -11,12 +11,16 @@ const getNaturalIdentifiers = async (req) => {
       org.naturalIdentifiers = [];
       const urn = org.organisation.urn;
       const uid = org.organisation.uid;
+      const upin = org.organisation.upin;
       const ukprn = org.organisation.ukprn;
       if (urn) {
         org.naturalIdentifiers.push(`URN: ${urn}`)
       }
       if (uid) {
         org.naturalIdentifiers.push(`UID: ${uid}`)
+      }
+      if (upin) {
+        org.naturalIdentifiers.push(`UPIN: ${upin}`)
       }
       if (ukprn) {
         org.naturalIdentifiers.push(`UKPRN: ${ukprn}`)
