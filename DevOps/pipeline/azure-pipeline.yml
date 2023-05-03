@@ -6,9 +6,7 @@ resources:
       type: github
       endpoint: DfE-Digital
       name: DFE-Digital/login.dfe.devops
-      ref: main
-      tag: 
-      - v1.0
+      ref: mainV1.0
     - repository: config
       type: github
       endpoint: DfE-Digital
