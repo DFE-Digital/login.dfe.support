@@ -24,6 +24,11 @@
                 <dd><%= organisation.uid %></dd>
             <% } %>
 
+            <% if (organisation.upin) { %>
+                <dt class="label">UPIN:</dt>
+                <dd><%= organisation.upin %></dd>
+            <% } %>
+
             <% if (organisation.ukprn) { %>
                 <dt class="label">UKPRN:</dt>
                 <dd><%= organisation.ukprn %></dd>

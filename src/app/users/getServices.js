@@ -30,6 +30,7 @@ const getOrganisations = async (userId, correlationId) => {
       name: invitation.organisation.name,
       urn: invitation.organisation.urn,
       uid: invitation.organisation.uid,
+      upin: invitation.organisation.upin,
       ukprn: invitation.organisation.ukprn,
       status: invitation.organisation.status,
       services,
@@ -92,12 +93,16 @@ const action = async (req, res) => {
     org.naturalIdentifiers = [];
     const urn = org.urn;
     const uid = org.uid;
+    const upin = org.upin;
     const ukprn = org.ukprn;
     if (urn) {
       org.naturalIdentifiers.push(`URN: ${urn}`)
     }
     if (uid) {
       org.naturalIdentifiers.push(`UID: ${uid}`)
+    }
+    if (upin) {
+      org.naturalIdentifiers.push(`UPIN: ${upin}`)
     }
     if (ukprn) {
       org.naturalIdentifiers.push(`UKPRN: ${ukprn}`)
