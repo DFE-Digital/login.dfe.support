@@ -43,6 +43,11 @@
                                         <dt><abbr title="Unique Identifier">UID:</abbr></dt>
                                         <dd><%=org.uid%></dd>
                                         <% } %>
+                                        
+                                        <% if (org.upin) { %>
+                                        <dt><abbr title="The Independent Specialist Provider's Unique Provider Identification Number">UPIN:</abbr></dt>
+                                        <dd><%=org.upin%></dd>
+                                        <% } %>
 
                                         <% if (org.ukprn) { %>
                                         <dt><abbr title="UK Provider Reference Number">UKPRN:</abbr></dt>

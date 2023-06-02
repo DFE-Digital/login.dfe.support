@@ -56,9 +56,9 @@ const paginationModel = {
                     <p class="error-message" id="validation-service"><%=locals.validationMessages.criteria %></p>
                 <% } %>
                 <fieldset class="search-input">
-                    <label for="criteria" class="vh">Search by name, urn, uid or ukprn</label>
+                    <label for="criteria" class="vh">Search by name, URN, UID, UPIN or UKPRN</label>
                     <input type="text" id="criteria" name="criteria" value="<%= criteria %>" class="form-control"
-                           placeholder="Search by name, urn, uid or ukprn">
+                           placeholder="Search by name, URN, UID, UPIN or UKPRN">
                 </fieldset>
                 <fieldset class="search-submit">
                     <button type="submit" class="button">Search</button>
@@ -143,6 +143,7 @@ const paginationModel = {
                         <th scope="col" class="cwp-20">Type</th>
                         <th scope="col" class="cwp-10">URN</th>
                         <th scope="col" class="cwp-10">UID</th>
+                        <th scope="col" class="cwp-10">UPIN</th>
                         <th scope="col" class="cwp-10">UKPRN</th>
                         <th scope="col" class="cwp-10">Status</th>
                     </tr>
@@ -159,6 +160,7 @@ const paginationModel = {
                             <td><%= organisations[i].category ? organisations[i].category.name : '' %></td>
                             <td><%= organisations[i].urn %></td>
                             <td><%= organisations[i].uid %></td>
+                            <td><%= organisations[i].upin %></td>
                             <td><%= organisations[i].ukprn %></td>
                             <td><%= organisations[i].status ? organisations[i].status.name : '' %></td>
                         </tr>

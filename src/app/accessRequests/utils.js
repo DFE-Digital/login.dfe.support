@@ -93,7 +93,7 @@ const getAndMapOrgRequest = async (req) => {
     const approverName = approver ? `${approver.given_name} ${approver.family_name}` : '';
     const approverEmail = approver ? approver.email : '';
     const uniqueOrgId = organisation.urn?'URN:'+organisation.urn:organisation.ukprn?'UKPRN:'+organisation.ukprn:organisation.uid?
-        'UID:'+organisation.uid:organisation.legacyId?'Legacy Id:'+organisation.legacyId:organisation.establishmentNumber?
+        'UID:'+organisation.uid:organisation.upin?'UPIN:'+organisation.upin:organisation.legacyId?'Legacy Id:'+organisation.legacyId:organisation.establishmentNumber?
             'Establishment Number:'+organisation.establishmentNumber:null;
     const _cancelLink = req.headers.referer;
     mappedRequest = Object.assign({usersName, usersEmail, approverName, approverEmail, uniqueOrgId, _cancelLink }, request);

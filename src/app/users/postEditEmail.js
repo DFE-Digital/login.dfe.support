@@ -1,7 +1,7 @@
 const logger = require('./../../infrastructure/logger');
 const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetails, getUserDetailsById, updateUserDetails, waitForIndexToUpdate } = require('./utils');
-const { getUser, createChangeEmailCode, updateInvite } = require('./../../infrastructure/directories');
+const { getUser, createChangeEmailCode, updateInvite, getChangeEmailCode, deleteChangeEmailCode } = require('./../../infrastructure/directories');
 const { emailPolicy } = require('login.dfe.validation');
 
 const validate = async (req) => {
@@ -21,6 +21,12 @@ const validate = async (req) => {
   return model;
 };
 
+const codeExpiry = (updatedAt) => {
+  const date = new Date(updatedAt);
+  const diff = Date.now() - (1000 * 60 * 60);
+  return date > diff;
+}
+
 const updateUserIndex = async (uid, pendingEmail, correlationId) => {
   const user = await getUserDetailsById(uid, correlationId);
   user.pendingEmail = pendingEmail;
@@ -30,6 +36,11 @@ const updateUserIndex = async (uid, pendingEmail, correlationId) => {
   await waitForIndexToUpdate(uid, (updated) => updated.pendingEmail === pendingEmail);
 };
 const updateUserEmail = async (req, model, user) => {
+  const user_code = await getChangeEmailCode(user.id, req.id);
+    
+  if (user_code && !codeExpiry(user_code.updatedAt)) {
+    await deleteChangeEmailCode(user.id, req.id);
+  }
   await createChangeEmailCode(user.id, model.email, 'support', 'na', req.id);
 
   await updateUserIndex(user.id, model.email, req.id);
