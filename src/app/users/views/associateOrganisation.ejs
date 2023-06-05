@@ -65,37 +65,49 @@ const paginationModel = {
                         </form>
                     </h2>
                     <dl class="inline">
-                        <%if(org.urn) {%>
-                        <dt>URN</dt>
-                        <dd><%=org.urn%></dd>
-                        <%} else if(org.uid) {%>
-                        <dt>UID</dt>
-                        <dd><%=org.uid%></dd>
-                        <%}%>
-                        <% if (org.upin) { %>
-                        <dt>UPIN</dt>
-                        <dd><%=org.upin%></dd>
+
+                        <% if (org.LegalName) { %>
+                            <dt class="label">Legal name:</dt>
+                            <dd><%= org.LegalName %></dd>
                         <% } %>
-                        <% if (org.ukprn) { %>
-                        <dt>UKPRN</dt>
-                        <dd><%=org.ukprn%></dd>
-                        <% } %>
-                        <% if (org.legacyId) { %>
-                        <dt>Legacy ID</dt>
-                        <dd><%=org.legacyId%></dd>
+
+                        <% if (org.type || org.providerTypeName) { %>
+                            <dt class="govuk-label">Type:</dt>
+                            <dd class="govuk-label"><%=(org.type ? org.type.name : org.providerTypeName)%></dd>
+                            <% } else if (org.category) { %>
+                            <dt class="govuk-label">Category:</dt>
+                            <dd class="govuk-label"><%=org.category.name%></dd>
                         <% } %>
 
                         <dt>Address</dt>
                         <dd><%=org.address%></dd>
 
-                        <%if(org.type || org.category) {%>
-                        <dt>Type</dt>
-                        <dd><%=(org.type ? org.type.name : org.category.name)%></dd>
+                        <%if(org.urn) {%>
+                            <dt>URN</dt>
+                            <dd><%=org.urn%></dd>
+                            <%} else if(org.uid) {%>
+                            <dt>UID</dt>
+                            <dd><%=org.uid%></dd>
                         <%}%>
 
+                        <% if (org.ukprn) { %>
+                            <dt>UKPRN</dt>
+                            <dd><%=org.ukprn%></dd>
+                        <% } %>
+
+                        <% if (org.upin) { %>
+                            <dt>UPIN</dt>
+                            <dd><%=org.upin%></dd>
+                        <% } %>
+
+                        <% if (org.legacyId) { %>
+                            <dt>Legacy ID</dt>
+                            <dd><%=org.legacyId%></dd>
+                        <% } %>
+
                         <% if (org.status && org.status.name) { %>
-                        <dt>Status</dt>
-                        <dd><%=org.status.name%></dd>
+                            <dt>Status</dt>
+                            <dd><%=org.status.name%></dd>
                         <% } %>
                     </dl>
                 </article>

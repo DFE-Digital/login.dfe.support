@@ -67,6 +67,7 @@ typings/
 .idea/watcherTasks.xml
 access.log
 .DS_Store
+.vscode/
 
 \.idea/markdown-exported-files\.xml
 

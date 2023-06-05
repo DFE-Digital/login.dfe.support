@@ -30,28 +30,32 @@
                             <div class="meta js-hidden">
                                 <div class="approvers">
                                     <dl class="inline condensed small-dt">
-                                        <% if (org.status && org.status.name) { %>
-                                        <dt><abbr title="Status">Status:</abbr></dt>
-                                        <dd><%=org.status.name%></dd>
-                                        <% } %>
-                                        <% if (org.urn) { %>
-                                        <dt><abbr title="Unique Reference Number">URN:</abbr></dt>
-                                        <dd><%=org.urn%></dd>
+                                        <% if (org.LegalName) { %>
+                                        <dt><abbr title="Registered legal name">Legal name: </abbr></dt>
+                                        <dd><%=org.LegalName%></dd>
                                         <% } %>
 
-                                        <% if (org.uid) { %>
-                                        <dt><abbr title="Unique Identifier">UID:</abbr></dt>
+                                        <% if (org.urn) { %>
+                                        <dt><abbr title="Unique Reference Number">URN: </abbr></dt>
+                                        <dd><%=org.urn%></dd>
+                                        <%} else if(org.uid) {%>
+                                        <dt><abbr title="Unique Identifier">UID: </abbr></dt>
                                         <dd><%=org.uid%></dd>
-                                        <% } %>
+                                        <%}%>
                                         
+                                        <% if (org.ukprn) { %>
+                                        <dt><abbr title="UK Provider Reference Number">UKPRN: </abbr></dt>
+                                        <dd><%=org.ukprn%></dd>
+                                        <% } %>
+
                                         <% if (org.upin) { %>
-                                        <dt><abbr title="The Independent Specialist Provider's Unique Provider Identification Number">UPIN:</abbr></dt>
+                                        <dt><abbr title="The Independent Specialist Provider's Unique Provider Identification Number">UPIN: </abbr></dt>
                                         <dd><%=org.upin%></dd>
                                         <% } %>
 
-                                        <% if (org.ukprn) { %>
-                                        <dt><abbr title="UK Provider Reference Number">UKPRN:</abbr></dt>
-                                        <dd><%=org.ukprn%></dd>
+                                        <% if (org.status && org.status.name) { %>
+                                        <dt><abbr title="Status">Status: </abbr></dt>
+                                        <dd><%=org.status.name%></dd>
                                         <% } %>
 
                                         <% if (org.approvers && org.approvers.length > 0) { %>
