@@ -74,7 +74,7 @@ const post = async (req, res) => {
         req.session.user.isAddService ? await addUserService(uid, service.serviceId, organisationId, service.roles, req.id) : await updateUserService(uid, service.serviceId, organisationId, service.roles, req.id);
       }
 
-      if (isEmailAllowed && (invitationId === undefined || !invitationId)) {
+      if (isEmailAllowed) {
         const userOrganisations = invitationId
           ? await getInvitationOrganisations(invitationId, req.id)
           : await getUserOrganisations(uid, req.id);
