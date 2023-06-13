@@ -5,7 +5,7 @@ jest.mock('./../../../src/infrastructure/directories');
 
 const logger = require('./../../../src/infrastructure/logger');
 const { getUserDetails, getUserDetailsById, updateUserDetails } = require('./../../../src/app/users/utils');
-const { getUser, createChangeEmailCode, updateInvite } = require('./../../../src/infrastructure/directories');
+const { getUser, createChangeEmailCode, updateInvite, getChangeEmailCode, deleteChangeEmailCode } = require('./../../../src/infrastructure/directories');
 const postEditEmail = require('./../../../src/app/users/postEditEmail');
 
 const userDetails = {
@@ -38,6 +38,18 @@ const inviteDetails = {
     successful: 0,
   },
 };
+
+const codeDetails = {
+  uid: '915a7382-576b-4699-ad07-a9fd329d3867',
+  code: 'HHRSSGWH',
+  clientId: 'support',
+  redirectUri: 'na',
+  contextData: null,
+  email: 'rupert.grint@hogwarts.test',
+  codeType: 'changeemail',
+  createdAt: '2023-05-25T10:27:54.393Z',
+  updatedAt: '2023-05-26T09:27:54.393Z'
+}
 
 describe('when changing email address', () => {
   let req;
@@ -76,6 +88,10 @@ describe('when changing email address', () => {
     getUser.mockReset();
 
     createChangeEmailCode.mockReset();
+    
+    getChangeEmailCode.mockReset().mockReturnValue(codeDetails);
+
+    deleteChangeEmailCode.mockReset();
 
     updateInvite.mockReset();
   });
@@ -144,6 +160,18 @@ describe('when changing email address', () => {
     it('then it should create a change email code for user', async () => {
       await postEditEmail(req, res);
 
+      expect(createChangeEmailCode.mock.calls).toHaveLength(1);
+      expect(createChangeEmailCode.mock.calls[0][0]).toBe('915a7382-576b-4699-ad07-a9fd329d3867');
+      expect(createChangeEmailCode.mock.calls[0][1]).toBe('rupert.grint@hogwarts.school.test');
+      expect(createChangeEmailCode.mock.calls[0][2]).toBe('support');
+      expect(createChangeEmailCode.mock.calls[0][3]).toBe('na');
+      expect(createChangeEmailCode.mock.calls[0][4]).toBe('correlationId');
+    });
+
+    it('then it should re-generate a new change email code for user if old one is expired', async () => {
+      await postEditEmail(req, res);
+
+      expect(deleteChangeEmailCode.mock.calls).toHaveLength(1);
       expect(createChangeEmailCode.mock.calls).toHaveLength(1);
       expect(createChangeEmailCode.mock.calls[0][0]).toBe('915a7382-576b-4699-ad07-a9fd329d3867');
       expect(createChangeEmailCode.mock.calls[0][1]).toBe('rupert.grint@hogwarts.school.test');

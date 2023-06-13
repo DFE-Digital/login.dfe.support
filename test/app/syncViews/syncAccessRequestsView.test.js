@@ -51,6 +51,7 @@ describe('When syncing access request materialised view', function () {
       {
         org_id: '60EEAA8D-D21D-44E9-BF10-6220E841FDAB',
         org_name: 'Oxley Park Academy',
+        LegalName: 'Oxley Park Academy',
         user_id: 'user1',
         created_date: '2018-05-31T11:00:05.861Z',
         org_address: 'my address',
@@ -66,6 +67,7 @@ describe('When syncing access request materialised view', function () {
       {
         org_id: '60EEAA8D-D21D-44E9-BF10-6220E841FDAB',
         org_name: 'Oxley Park Academy',
+        LegalName: 'Oxley Park Academy',
         user_id: 'user2',
         created_date: '2018-05-31T11:00:05.861Z',
         org_address: 'my address',

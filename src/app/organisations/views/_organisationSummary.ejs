@@ -14,6 +14,22 @@
             <%= organisation.name %>
         </h1>
         <dl class="inline condensed">
+            <% if (organisation.LegalName) { %>
+                <dt class="label">Legal name:</dt>
+                <dd><%= organisation.LegalName %></dd>
+            <% } %>
+            
+            <% if (organisation.type || organisation.providerTypeName) { %>
+                <dt class="govuk-label">Type:</dt>
+                <dd class="govuk-label"><%=(organisation.type ? organisation.type.name : organisation.providerTypeName)%></dd>
+                <% } else if (organisation.category) { %>
+                <dt class="govuk-label">Category:</dt>
+                <dd class="govuk-label"><%=organisation.category.name%></dd>
+            <% } %>
+
+            <dt class="label">Address: </dt>
+            <dd><%= organisation.address || 'Not Recorded' %></dd>
+
             <% if (organisation.urn) { %>
                 <dt class="label">URN:</dt>
                 <dd><%= organisation.urn %></dd>
@@ -24,23 +40,23 @@
                 <dd><%= organisation.uid %></dd>
             <% } %>
 
-            <% if (organisation.upin) { %>
-                <dt class="label">UPIN:</dt>
-                <dd><%= organisation.upin %></dd>
-            <% } %>
-
             <% if (organisation.ukprn) { %>
                 <dt class="label">UKPRN:</dt>
                 <dd><%= organisation.ukprn %></dd>
             <% } %>
 
+            <% if (organisation.upin) { %>
+                <dt class="label">UPIN:</dt>
+                <dd><%= organisation.upin %></dd>
+            <% } %>
+
             <% if (organisation.establishmentNumber) { %>
-                <dt class="label">Establishment number:</dt>
+                <dt class="label">Establishment number: </dt>
                 <dd><%= organisation.establishmentNumber %></dd>
             <% } %>
 
             <% if (organisation.localAuthority) { %>
-                <dt class="label">Local authority:</dt>
+                <dt class="label">Local authority: </dt>
                 <dd>
                     <% if (organisation.localAuthority.name && organisation.localAuthority.code && organisation.localAuthority.id) { %>
                         <a href="/organisations/<%= organisation.localAuthority.id %>/users"><%= organisation.localAuthority.name %></a> (<%= organisation.localAuthority.code %>)
@@ -50,16 +66,13 @@
                 </dd>
             <% } %>
 
-            <dt class="label">Address:</dt>
-            <dd><%= organisation.address || 'Not Recorded' %></dd>
-
-            <dt class="label">Legacy Id:</dt>
+            <dt class="label">Legacy ID: </dt>
             <dd><%= organisation.legacyId %></dd>
 
-            <dt class="label">Status:</dt>
+            <dt class="label">Status: </dt>
             <dd><%= organisation.status.name || 'Unknown' %></dd>
             <% if (organisation.companyRegistrationNumber) { %>
-                <dt class="label">Company Number:</dt>
+                <dt class="label">Company Number: </dt>
                 <dd><%= organisation.companyRegistrationNumber %></dd>
             <% } %>
         </dl>
