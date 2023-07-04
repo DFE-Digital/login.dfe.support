@@ -158,7 +158,7 @@ const paginationModel = {
                     <% for (let i = 0; i < locals.organisations.length; i++) { %>
                         <tr>
                             <td class="breakable"><a href="/organisations/<%= organisations[i].id %>/"><%= organisations[i].name %></a></td>
-                            <td class="breakable"><a href="/organisations/<%= organisations[i].id %>/"><%= organisations[i].LegalName %></a></td>
+                            <td><%= organisations[i].LegalName %></td>
                             <td><%= organisations[i].type ? organisations[i].type.name : organisations[i].providerTypeName || organisations[i].category.name  %></td>
                             <td><%= organisations[i].urn %></td>
                             <td><%= organisations[i].uid %></td>
