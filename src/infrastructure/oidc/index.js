@@ -5,6 +5,7 @@ const { Strategy, Issuer, custom } = require('openid-client');
 const logger = require('../logger');
 const { getUserSupportClaims } = require('./../supportClaims');
 const asyncRetry = require('login.dfe.async-retry');
+const { getSingleUserService } = require('./../../infrastructure/access');
 
 custom.setHttpOptionsDefaults({
   timeout: 10000
@@ -99,7 +100,8 @@ const init = async (app) => {
         id_token: user.id_token,
       };
 
-      const supportClaims = await getUserSupportClaims(userDetails.sub);
+      const { roles } = await getSingleUserService(user.sub, config.access.identifiers.service, config.access.identifiers.org, req.id);
+      const supportClaims = {isRequestApprover: roles.some(i => i.code === 'request_approver'), isSupportUser: roles.some(i => i.code === 'support_user')};
       if (!supportClaims || !supportClaims.isSupportUser) {
         if (!req.session.redirectUrl.toLowerCase().endsWith('signout')) {
           return res.redirect('/not-authorised');
