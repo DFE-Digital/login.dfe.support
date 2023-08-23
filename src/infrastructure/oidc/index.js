@@ -100,7 +100,18 @@ const init = async (app) => {
         id_token: user.id_token,
       };
 
-      const { roles } = await getSingleUserService(user.sub, config.access.identifiers.service, config.access.identifiers.organisation, req.id);
+      let allUserServices;
+      try {
+        allUserServices = await getSingleUserService(user.sub, config.access.identifiers.service, config.access.identifiers.organisation, req.id);
+      } catch (error) {
+        logger.error(`Login error in auth callback-allUserServices - ${error}`);
+        return res.redirect('/not-authorised');
+      }
+      const { roles } = allUserServices;
+      if(!roles) {
+        logger.error(`Login error in auth callback - No roles found for user ${user.sub}`);
+        return res.redirect('/not-authorised');
+      }
       const supportClaims = {isRequestApprover: roles.some(i => i.code === 'request_approver'), isSupportUser: roles.some(i => i.code === 'support_user')};
       if (!supportClaims || !supportClaims.isSupportUser) {
         if (!req.session.redirectUrl.toLowerCase().endsWith('signout')) {
