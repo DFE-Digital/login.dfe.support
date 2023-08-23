@@ -107,7 +107,7 @@ const init = async (app) => {
         logger.error(`Login error in auth callback-allUserServices - ${error}`);
         return res.redirect('/not-authorised');
       }
-      if(!allUserServices.roles) {
+      if(!allUserService || !allUserServices.roles) {
         logger.error(`Login error in auth callback - No roles found for user ${user.sub}`);
         return res.redirect('/not-authorised');
       }
