@@ -107,7 +107,7 @@ const init = async (app) => {
         logger.error(`Login error in auth callback-allUserServices - ${error}`);
         return res.redirect('/not-authorised');
       }
-      if(!allUserService) {
+      if(!allUserServices) {
         logger.error(`Login error in auth callback - No Services found for user ${user.sub}`);
         return res.redirect('/not-authorised');
       }
