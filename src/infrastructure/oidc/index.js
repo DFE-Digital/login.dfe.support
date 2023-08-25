@@ -75,6 +75,12 @@ const init = async (app) => {
   app.get('/auth/cb', (req, res, next) => {
     const defaultLoggedInPath = '/';
 
+    const checkSessionAndRedirect = () => {
+      if (!req.session.redirectUrl.toLowerCase().endsWith('signout')) {
+        return res.redirect('/not-authorised');
+      }
+    };
+
     if (req.query.error === 'sessionexpired') {
       return res.redirect(defaultLoggedInPath);
     }
@@ -105,23 +111,21 @@ const init = async (app) => {
         allUserServices = await getSingleUserService(user.sub, config.access.identifiers.service, config.access.identifiers.organisation, req.id);
       } catch (error) {
         logger.error(`Login error in auth callback-allUserServices - ${error}`);
-        return res.redirect('/not-authorised');
+        checkSessionAndRedirect();
       }
       if(!allUserServices) {
         logger.error(`Login error in auth callback - No Services found for user ${user.sub}`);
-        return res.redirect('/not-authorised');
+        checkSessionAndRedirect();
       }
       if(allUserServices && !allUserServices.roles){
         logger.error(`Login error in auth callback - No roles found for user ${user.sub}`);
-        return res.redirect('/not-authorised');
+        checkSessionAndRedirect();
       }
       const { roles } = allUserServices;
      
       const supportClaims = {isRequestApprover: roles.some(i => i.code === 'request_approver'), isSupportUser: roles.some(i => i.code === 'support_user')};
       if (!supportClaims || !supportClaims.isSupportUser) {
-        if (!req.session.redirectUrl.toLowerCase().endsWith('signout')) {
-          return res.redirect('/not-authorised');
-        }
+        checkSessionAndRedirect();
       } else {
         Object.assign(userDetails, supportClaims);
       }
