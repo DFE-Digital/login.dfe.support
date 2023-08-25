@@ -113,21 +113,18 @@ const init = async (app) => {
         logger.error(`Login error in auth callback-allUserServices - ${error}`);
         checkSessionAndRedirect();
       }
-      if(!allUserServices) {
-        logger.error(`Login error in auth callback - No Services found for user ${user.sub}`);
-        checkSessionAndRedirect();
-      }
-      if(allUserServices && !allUserServices.roles){
-        logger.error(`Login error in auth callback - No roles found for user ${user.sub}`);
-        checkSessionAndRedirect();
-      }
-      const { roles } = allUserServices;
-     
-      const supportClaims = {isRequestApprover: roles.some(i => i.code === 'request_approver'), isSupportUser: roles.some(i => i.code === 'support_user')};
-      if (!supportClaims || !supportClaims.isSupportUser) {
-        checkSessionAndRedirect();
+
+      if(allUserServices && allUserServices.roles){
+        const { roles } = allUserServices;
+        const supportClaims = {isRequestApprover: roles.some(i => i.code === 'request_approver'), isSupportUser: roles.some(i => i.code === 'support_user')};
+        if (!supportClaims || !supportClaims.isSupportUser) {
+          checkSessionAndRedirect();
+        } else {
+          Object.assign(userDetails, supportClaims);
+        }
       } else {
-        Object.assign(userDetails, supportClaims);
+        logger.error(`Login error in auth callback - No services OR roles found for user ${user.sub}`);
+        checkSessionAndRedirect();
       }
 
       if (req.session.redirectUrl) {
