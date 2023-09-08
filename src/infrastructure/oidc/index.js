@@ -5,6 +5,7 @@ const { Strategy, Issuer, custom } = require('openid-client');
 const logger = require('../logger');
 const { getUserSupportClaims } = require('./../supportClaims');
 const asyncRetry = require('login.dfe.async-retry');
+const { getSingleUserService } = require('./../../infrastructure/access');
 
 custom.setHttpOptionsDefaults({
   timeout: 10000
@@ -74,6 +75,12 @@ const init = async (app) => {
   app.get('/auth/cb', (req, res, next) => {
     const defaultLoggedInPath = '/';
 
+    const checkSessionAndRedirect = () => {
+      if (!req.session.redirectUrl.toLowerCase().endsWith('signout')) {
+        return res.redirect('/not-authorised');
+      }
+    };
+
     if (req.query.error === 'sessionexpired') {
       return res.redirect(defaultLoggedInPath);
     }
@@ -99,13 +106,25 @@ const init = async (app) => {
         id_token: user.id_token,
       };
 
-      const supportClaims = await getUserSupportClaims(userDetails.sub);
-      if (!supportClaims || !supportClaims.isSupportUser) {
-        if (!req.session.redirectUrl.toLowerCase().endsWith('signout')) {
-          return res.redirect('/not-authorised');
+      let allUserServices;
+      try {
+        allUserServices = await getSingleUserService(user.sub, config.access.identifiers.service, config.access.identifiers.organisation, req.id);
+      } catch (error) {
+        logger.error(`Login error in auth callback-allUserServices - ${error}`);
+        checkSessionAndRedirect();
+      }
+
+      if(allUserServices && allUserServices.roles){
+        const { roles } = allUserServices;
+        const supportClaims = {isRequestApprover: roles.some(i => i.code === 'request_approver'), isSupportUser: roles.some(i => i.code === 'support_user')};
+        if (!supportClaims || !supportClaims.isSupportUser) {
+          checkSessionAndRedirect();
+        } else {
+          Object.assign(userDetails, supportClaims);
         }
       } else {
-        Object.assign(userDetails, supportClaims);
+        logger.error(`Login error in auth callback - No services OR roles found for user ${user.sub}`);
+        checkSessionAndRedirect();
       }
 
       if (req.session.redirectUrl) {
