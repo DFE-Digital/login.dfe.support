@@ -36,18 +36,18 @@ const buildFilters = (paramsSource) => {
   let filter = {};
 
   const selectedOrganisationTypes = unpackMultiSelect(
-    paramsSource.organisationType
+    paramsSource.organisationType || paramsSource.organisationCategories
   );
   if (selectedOrganisationTypes) {
     filter.organisationCategories = selectedOrganisationTypes;
   }
 
-  const selectedAccountStatuses = unpackMultiSelect(paramsSource.accountStatus);
+  const selectedAccountStatuses = unpackMultiSelect(paramsSource.accountStatus || paramsSource.statusId);
   if (selectedAccountStatuses) {
     filter.statusId = selectedAccountStatuses;
   }
 
-  const selectedServices = unpackMultiSelect(paramsSource.service);
+  const selectedServices = unpackMultiSelect(paramsSource.service || paramsSource.services);
   if (selectedServices) {
     filter.services = selectedServices;
   }
@@ -56,7 +56,10 @@ const buildFilters = (paramsSource) => {
 };
 
 const search = async (req) => {
-  const paramsSource = req.method === 'POST' ? req.body : req.query;
+  let paramsSource = req.method === 'POST' ? req.body : req.query;
+  if (paramsSource.services) {
+    paramsSource = {...paramsSource, service: paramsSource.services}
+  }
   let criteria = paramsSource.criteria ? paramsSource.criteria.trim() : '';
 
   const userRegex = /^[^±!£$%^&*+§¡€#¢§¶•ªº«\\/<>?:;|=,~"]{1,256}$/i;

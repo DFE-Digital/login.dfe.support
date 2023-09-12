@@ -37,7 +37,7 @@ const getFiltersModel = async (req) => {
   let services = [];
 
   if (showFilters) {
-    const selectedOrganisationTypes = unpackMultiSelect(paramsSource.organisationType);
+    const selectedOrganisationTypes = unpackMultiSelect(paramsSource.organisationType || paramsSource.organisationCategories);
     organisationTypes = (await getOrganisationCategories(req.id)).map((category) => {
       return {
         id: category.id,
@@ -46,7 +46,7 @@ const getFiltersModel = async (req) => {
       };
     });
 
-    const selectedAccountStatuses = unpackMultiSelect(paramsSource.accountStatus);
+    const selectedAccountStatuses = unpackMultiSelect(paramsSource.accountStatus || paramsSource.statusId);
     accountStatuses = userStatusMap.map((status) => {
       return {
         id: status.id,
@@ -55,7 +55,7 @@ const getFiltersModel = async (req) => {
       };
     });
 
-    const selectedServices = unpackMultiSelect(paramsSource.service);
+    const selectedServices = unpackMultiSelect(paramsSource.service || paramsSource.services);
     const getAll = await getAllServices();
     services = getAll.services.map((service) => {
       return {
