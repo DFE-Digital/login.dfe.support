@@ -56,22 +56,29 @@ const buildFilters = (paramsSource) => {
 };
 
 const search = async (req) => {
-  console.log('req.query', req.query)
   let paramsSource = req.method === 'POST' ? req.body : req.query;
+  
+  if (paramsSource.page && req.session?.params?.currentPage) {
+    paramsSource.currentPage = paramsSource.page
+
+    delete req.session.params.currentPage;
+    delete req.session.params.page;
+
+  }
+
+
   if (req.session.params) {
     paramsSource = {
-      ...req.session.params
+      ...req.session.params, 
+      currentPage: paramsSource.page, 
+      page: paramsSource.page
     }
   }
   
-  console.log('paramsSource', paramsSource)
   if (paramsSource.services) {
     paramsSource = {...paramsSource, service: paramsSource.services}
   }
   let criteria = paramsSource.criteria ? paramsSource.criteria.trim() : '';
-  // criteria = '';
-
-  console.log('UTILS SEARCH: ', paramsSource)
 
   const userRegex = /^[^±!£$%^&*+§¡€#¢§¶•ªº«\\/<>?:;|=,~"]{1,256}$/i;
   let filteredError;

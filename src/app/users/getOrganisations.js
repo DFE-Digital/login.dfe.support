@@ -63,7 +63,6 @@ const getPendingRequests = async (userId, correlationId) => {
 };
 
 const action = async (req, res) => {
-  console.log('inside the action method of getOrganisations.js', req.query)
   const user = await getUserDetails(req);
   const organisationDetails = await getOrganisations(user.id, req.id);
   const organisationRequests = !user.id.startsWith('inv-') ? await getPendingRequests(user.id, req.id) : [];
@@ -80,7 +79,6 @@ const action = async (req, res) => {
     ...req.query, 
     redirectedFromOrganisations: true
   }
-  console.log('what is req.session.params', req.session.params)
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) viewed user ${user.email} (id: ${user.id})`, {
     type: 'organisations',
