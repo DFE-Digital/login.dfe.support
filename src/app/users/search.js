@@ -11,6 +11,9 @@ const clearNewUserSessionData = (req) => {
   if (req.session.user) {
     req.session.user = undefined;
   }
+  // if (req.session.params) {
+  //   req.session.params = undefined;
+  // }
   if (req.session.digipassSerialNumberToAssign) {
     req.session.digipassSerialNumberToAssign = undefined;
   }
@@ -26,7 +29,17 @@ const unpackMultiSelect = (parameter) => {
 };
 
 const getFiltersModel = async (req) => {
-  const paramsSource = req.method === 'POST' ? req.body : req.query;
+  const fromRedirect = req.session.params ? req.session.params : null;
+  console.log('fromRedirect', fromRedirect)
+  let paramsSource = req.method === 'POST' ? req.body : req.query;
+  if (Object.keys(paramsSource.length == 0) && fromRedirect) {
+    paramsSource = {
+      ...req.session.params
+    }
+  }
+  console.log('what is paramsSource', paramsSource)
+  console.log('what is paramsSource keys', Object.keys(paramsSource))
+
   let showFilters = false;
   if (paramsSource.showFilters !== undefined && paramsSource.showFilters.toLowerCase() === 'true') {
     showFilters = true;
@@ -75,6 +88,7 @@ const getFiltersModel = async (req) => {
 };
 
 const buildModel = async (req, result = {}) => {
+  // console.log('what is result', result)
   const model =  {
     csrfToken: req.csrfToken(),
     criteria: result.criteria,
@@ -103,11 +117,27 @@ const doSearchAndBuildModel = async (req) => {
 const get = async (req, res) => {
   clearNewUserSessionData(req);
 
+  console.log('Something: ', req.session)
+
+  if (!req.session.params?.redirectedFromOrganisations) {
+    if (req.session.params) {
+      req.session.params = undefined;
+    }
+  }
+
+  if (req.session.params?.redirectedFromOrganisations) {
+    req.session.params.redirectedFromOrganisations = undefined;
+    await post(req, res)
+  }
+
+  console.log("RASHID: ", req.session)
+
   const model = await buildModel(req);
   sendResult(req, res, 'users/views/search', model);
 };
 
 const post = async (req, res) => {
+  // console.log('inspecting req', req)
   const model = await doSearchAndBuildModel(req);
   sendResult(req, res, 'users/views/search', model);
 };

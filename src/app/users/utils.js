@@ -56,11 +56,22 @@ const buildFilters = (paramsSource) => {
 };
 
 const search = async (req) => {
+  console.log('req.query', req.query)
   let paramsSource = req.method === 'POST' ? req.body : req.query;
+  if (req.session.params) {
+    paramsSource = {
+      ...req.session.params
+    }
+  }
+  
+  console.log('paramsSource', paramsSource)
   if (paramsSource.services) {
     paramsSource = {...paramsSource, service: paramsSource.services}
   }
   let criteria = paramsSource.criteria ? paramsSource.criteria.trim() : '';
+  // criteria = '';
+
+  console.log('UTILS SEARCH: ', paramsSource)
 
   const userRegex = /^[^±!£$%^&*+§¡€#¢§¶•ªº«\\/<>?:;|=,~"]{1,256}$/i;
   let filteredError;
