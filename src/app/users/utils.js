@@ -57,7 +57,6 @@ const buildFilters = (paramsSource) => {
 
 const search = async (req) => {
   let paramsSource = req.method === 'POST' ? req.body : req.query;
-  console.log('paramsSource before:', paramsSource)
 
   if (req.session.params && Object.keys(paramsSource).length === 0) {
     paramsSource = {
@@ -65,7 +64,6 @@ const search = async (req) => {
     }
   }
 
-  console.log('paramsSource after: ', paramsSource);
 
   
   if (paramsSource.services) {
