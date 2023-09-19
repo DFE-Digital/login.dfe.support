@@ -122,10 +122,13 @@ const get = async (req, res) => {
   if (req.session.params?.redirectedFromOrganisations) {
     req.session.params.redirectedFromOrganisations = undefined;
     await post(req, res)
+  } else {
+    const model = await buildModel(req);
+    sendResult(req, res, 'users/views/search', model);
   }
 
-  const model = await buildModel(req);
-  sendResult(req, res, 'users/views/search', model);
+  // const model = await buildModel(req);
+  // sendResult(req, res, 'users/views/search', model);
 };
 
 const post = async (req, res) => {
