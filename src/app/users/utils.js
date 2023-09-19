@@ -57,6 +57,15 @@ const buildFilters = (paramsSource) => {
 
 const search = async (req) => {
   let paramsSource = req.method === 'POST' ? req.body : req.query;
+
+  if (req.session.params && Object.keys(paramsSource).length === 0) {
+    paramsSource = {
+      ...req.session.params, 
+    }
+  }
+
+
+  
   if (paramsSource.services) {
     paramsSource = {...paramsSource, service: paramsSource.services}
   }

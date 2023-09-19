@@ -75,6 +75,11 @@ const action = async (req, res) => {
     email: user.email,
   };
 
+  req.session.params = {
+    ...req.query, 
+    redirectedFromOrganisations: true
+  }
+
   logger.audit(`${req.user.email} (id: ${req.user.sub}) viewed user ${user.email} (id: ${user.id})`, {
     type: 'organisations',
     subType: 'user-view',

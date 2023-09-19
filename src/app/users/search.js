@@ -11,6 +11,9 @@ const clearNewUserSessionData = (req) => {
   if (req.session.user) {
     req.session.user = undefined;
   }
+  // if (req.session.params) {
+  //   req.session.params = undefined;
+  // }
   if (req.session.digipassSerialNumberToAssign) {
     req.session.digipassSerialNumberToAssign = undefined;
   }
@@ -26,7 +29,15 @@ const unpackMultiSelect = (parameter) => {
 };
 
 const getFiltersModel = async (req) => {
-  const paramsSource = req.method === 'POST' ? req.body : req.query;
+  const fromRedirect = req.session.params ? req.session.params : null;
+  let paramsSource = req.method === 'POST' ? req.body : req.query;
+  if (Object.keys(paramsSource).length === 0 && fromRedirect) {
+    paramsSource = {
+      ...req.session.params
+    }
+  }
+
+
   let showFilters = false;
   if (paramsSource.showFilters !== undefined && paramsSource.showFilters.toLowerCase() === 'true') {
     showFilters = true;
@@ -103,8 +114,22 @@ const doSearchAndBuildModel = async (req) => {
 const get = async (req, res) => {
   clearNewUserSessionData(req);
 
-  const model = await buildModel(req);
-  sendResult(req, res, 'users/views/search', model);
+  if (!req.session.params?.redirectedFromOrganisations) {
+    if (req.session.params) {
+      req.session.params = undefined;
+    }
+  }
+
+  if (req.session.params?.redirectedFromOrganisations) {
+    req.session.params.redirectedFromOrganisations = undefined;
+    await post(req, res)
+  } else {
+    const model = await buildModel(req);
+    sendResult(req, res, 'users/views/search', model);
+  }
+
+  // const model = await buildModel(req);
+  // sendResult(req, res, 'users/views/search', model);
 };
 
 const post = async (req, res) => {
