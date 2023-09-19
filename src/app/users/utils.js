@@ -57,23 +57,14 @@ const buildFilters = (paramsSource) => {
 
 const search = async (req) => {
   let paramsSource = req.method === 'POST' ? req.body : req.query;
-  
-  if (paramsSource.page && req.session?.params?.currentPage) {
-    paramsSource.currentPage = paramsSource.page
-
-    delete req.session.params.currentPage;
-    delete req.session.params.page;
-
-  }
 
 
-  if (req.session.params) {
+  if (req.session.params && Object.keys(paramsSource).length === 0) {
     paramsSource = {
       ...req.session.params, 
-      currentPage: paramsSource.page, 
-      page: paramsSource.page
     }
   }
+
   
   if (paramsSource.services) {
     paramsSource = {...paramsSource, service: paramsSource.services}
