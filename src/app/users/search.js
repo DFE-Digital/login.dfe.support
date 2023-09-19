@@ -31,11 +31,12 @@ const unpackMultiSelect = (parameter) => {
 const getFiltersModel = async (req) => {
   const fromRedirect = req.session.params ? req.session.params : null;
   let paramsSource = req.method === 'POST' ? req.body : req.query;
-  if (Object.keys(paramsSource.length == 0) && fromRedirect) {
+  if (Object.keys(paramsSource).length === 0 && fromRedirect) {
     paramsSource = {
       ...req.session.params
     }
   }
+
 
   let showFilters = false;
   if (paramsSource.showFilters !== undefined && paramsSource.showFilters.toLowerCase() === 'true') {
