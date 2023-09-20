@@ -26,13 +26,18 @@
                             </span>
                             <% if (org.naturalIdentifiers) { %>
                                 <span class="form-hint">
-                                <%= org.naturalIdentifiers.join(', ') %>
-                            </span>
+                                    <%= org.naturalIdentifiers.join(', ') %>
+                                </span>
+                            <% } %>
+                            <% if (org.organisation.LegalName) { %>
+                                <span class="form-hint">
+                                    Legal Name: <%= org.organisation.LegalName %>
+                                </span>
                             <% } %>
                             <% if (org.organisation.address && org.organisation.address !== 'Not recorded') { %>
                                 <span class="form-hint">
-                                <%= org.organisation.address %>
-                            </span>
+                                    <%= org.organisation.address %>
+                                </span>
                             <% } %>
                         </label>
                     </div>
