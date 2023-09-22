@@ -6,6 +6,10 @@
         </h1>
         <p>You are associated with more than one organisation, please select the one you wish to sign-in with.</p>
 
+        <h2 class="heading-medium">
+            Your Organisations
+        </h2>
+
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
             <div class="form-group <%= (locals.validationMessages.selectedOrganisation !== undefined) ? 'form-group-error' : '' %>">
