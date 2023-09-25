@@ -2,9 +2,13 @@
 <div class="grid-row">
     <div class="col-8">
         <h1 class="heading-xlarge">
-            Select organisation
+            Select your Organisation
         </h1>
-        <p>Select the user's organisation that you want to add services to.</p>
+        <p>You are associated with more than one organisation, please select the one you wish to sign-in with.</p>
+
+        <h2 class="heading-medium">
+            Your Organisations
+        </h2>
 
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
@@ -26,13 +30,18 @@
                             </span>
                             <% if (org.naturalIdentifiers) { %>
                                 <span class="form-hint">
-                                <%= org.naturalIdentifiers.join(', ') %>
-                            </span>
+                                    <%= org.naturalIdentifiers.join(', ') %>
+                                </span>
+                            <% } %>
+                            <% if (org.organisation.LegalName) { %>
+                                <span class="form-hint">
+                                    Legal Name: <%= org.organisation.LegalName %>
+                                </span>
                             <% } %>
                             <% if (org.organisation.address && org.organisation.address !== 'Not recorded') { %>
                                 <span class="form-hint">
-                                <%= org.organisation.address %>
-                            </span>
+                                    <%= org.organisation.address %>
+                                </span>
                             <% } %>
                         </label>
                     </div>
