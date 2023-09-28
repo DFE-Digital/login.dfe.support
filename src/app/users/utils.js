@@ -59,16 +59,19 @@ const search = async (req) => {
   let paramsSource = req.method === 'POST' ? req.body : req.query;
 
   if (req.session.params && Object.keys(paramsSource).length === 0) {
+    let sanitized_criteria = req.session.params['organisationTypes'].replace('?criteria=', '')
     paramsSource = {
       ...req.session.params, 
+      criteria: sanitized_criteria
     }
   }
-
 
   
   if (paramsSource.services) {
     paramsSource = {...paramsSource, service: paramsSource.services}
   }
+
+
   let criteria = paramsSource.criteria ? paramsSource.criteria.trim() : '';
 
   const userRegex = /^[^±!£$%^&*+§¡€#¢§¶•ªº«\\/<>?:;|=,~"]{1,256}$/i;
