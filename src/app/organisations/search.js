@@ -2,7 +2,14 @@ const { sendResult } = require('../../infrastructure/utils');
 const { searchOrganisations, getOrganisationCategories, listOrganisationStatus } = require('../../infrastructure/organisations');
 
 const getFiltersModel = async (req) => {
-  const paramsSource = req.method === 'POST' ? req.body : req.query;
+  const fromRedirect = req.session.params ? req.session.params : null;
+  let paramsSource = req.method === 'POST' ? req.body : req.query;
+  if (Object.keys(paramsSource).length === 0 && fromRedirect) {
+    paramsSource = {
+      ...req.session.params
+    }
+  }
+
   let showFilters = false;
   if (paramsSource.showFilters !== undefined && paramsSource.showFilters.toLowerCase() === 'true') {
     showFilters = true;
@@ -48,7 +55,15 @@ const unpackMultiSelect = (parameter) => {
 };
 
 const search = async (req) => {
-  const inputSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
+  let inputSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
+
+  if (req.session.params && Object.keys(inputSource).length === 0) {
+    inputSource = {
+      ...req.session.params,
+      page: req.session.params.currentPage
+    }
+  }
+
   let criteria = inputSource.criteria ? inputSource.criteria.trim() : '';
 
   const organisationRegex = /^[a-zA-Z0-9\s-'&(),.@\\/:]{1,256}$/;
@@ -128,7 +143,21 @@ const doSearchAndBuildModel = async (req) => {
 
 const get = async (req, res) => {
   const model = await buildModel(req);
-  sendResult(req, res, 'organisations/views/search', model);
+
+  if (!req.session.params?.redirectedFromOrganisations) {
+    if (req.session.params) {
+      req.session.params = undefined;
+    }
+  }
+
+  if (req.session.params?.redirectedFromOrganisations) {
+    req.session.params.redirectedFromOrganisations = undefined;
+    await post(req, res)
+  } else {
+    const model = await buildModel(req);
+    sendResult(req, res, 'organisations/views/search', model);
+  }
+
 };
 
 const post = async (req, res) => {

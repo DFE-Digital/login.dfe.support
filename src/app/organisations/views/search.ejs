@@ -157,7 +157,7 @@ const paginationModel = {
                     <% } %>
                     <% for (let i = 0; i < locals.organisations.length; i++) { %>
                         <tr>
-                            <td class="breakable"><a href="/organisations/<%= organisations[i].id %>/"><%= organisations[i].name %></a></td>
+                            <td class="breakable"><a href="/organisations/<%= organisations[i].id %>/users?organisationType=<%= paginationModel['data'][4]['value'] %>&organisationStatus=<%= paginationModel['data'][5]['value'] %>&criteria=<%= paginationModel['data'][0]['value'] %>&showFilters=<%= paginationModel['data'][3]['value'] %>&currentPage=<%= paginationModel['currentPage'] %>&numberOfPages=<%= paginationModel['numberOfPages'] %>&totalNumberOfResults=<%= paginationModel['totalNumberOfResults'] %>&numberOfResultsOnPage=<%= paginationModel['numberOfResultsOnPage'] %>"><%= organisations[i].name %></a></td>
                             <td><%= organisations[i].LegalName %></td>
                             <td><%= organisations[i].type ? organisations[i].type.name : organisations[i].providerTypeName || organisations[i].category.name  %></td>
                             <td><%= organisations[i].urn %></td>

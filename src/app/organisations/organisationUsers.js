@@ -32,6 +32,10 @@ const render = async (req, res, dataSource) => {
 };
 
 const get = async (req, res) => {
+  req.session.params = {
+    ...req.query, 
+    redirectedFromOrganisations: true
+  }
   return render(req, res, req.query);
 };
 const post = async (req, res) => {
