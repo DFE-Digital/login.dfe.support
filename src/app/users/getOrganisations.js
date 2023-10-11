@@ -76,8 +76,8 @@ const action = async (req, res) => {
   };
 
   req.session.params = {
-    ...req.query, 
-    redirectedFromSearch: true
+    ...req.query,
+    redirectedFromSearchResult: true
   }
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) viewed user ${user.email} (id: ${user.id})`, {

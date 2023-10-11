@@ -33,8 +33,8 @@ const render = async (req, res, dataSource) => {
 
 const get = async (req, res) => {
   req.session.params = {
-    ...req.query, 
-    redirectedFromSearch: true
+    ...req.query,
+    redirectedFromSearchResult: true
   }
   return render(req, res, req.query);
 };
