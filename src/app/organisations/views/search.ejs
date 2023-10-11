@@ -163,7 +163,7 @@ const organisationStatusesQuery = locals.organisationStatuses.filter(x => x.isSe
                     <% } %>
                     <% for (let i = 0; i < locals.organisations.length; i++) { %>
                         <tr>
-                            <td class="breakable"><a href="/organisations/<%= organisations[i].id %>/users?criteria=<%= locals.criteria %>&page=<%= locals.page %>&showFilters=<%= locals.showFilters %>&<%= organisationTypesQuery %>&<%= organisationStatusesQuery %>&currentPage=<%= paginationModel['currentPage'] %>&numberOfPages=<%= paginationModel['numberOfPages'] %>&totalNumberOfResults=<%= paginationModel['totalNumberOfResults'] %>&numberOfResultsOnPage=<%= paginationModel['numberOfResultsOnPage'] %>"><%= organisations[i].name %></a></td>
+                            <td class="breakable"><a href="/organisations/<%= organisations[i].id %>/users?criteria=<%= locals.criteria %>&page=<%= locals.page %>&showFilters=<%= locals.showFilters %>&<%= organisationTypesQuery %>&<%= organisationStatusesQuery %>&numberOfPages=<%= paginationModel['numberOfPages'] %>&totalNumberOfResults=<%= paginationModel['totalNumberOfResults'] %>&numberOfResultsOnPage=<%= paginationModel['numberOfResultsOnPage'] %>"><%= organisations[i].name %></a></td>
                             <td><%= organisations[i].LegalName %></td>
                             <td><%= organisations[i].type ? organisations[i].type.name : organisations[i].providerTypeName || organisations[i].category.name  %></td>
                             <td><%= organisations[i].urn %></td>

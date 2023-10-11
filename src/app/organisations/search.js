@@ -59,9 +59,8 @@ const search = async (req) => {
 
   if (req.session.params && Object.keys(inputSource).length === 0) {
     inputSource = {
-      ...req.session.params,
-      page: req.session.params.currentPage
-    }
+      ...req.session.params
+    };
   }
 
   let criteria = inputSource.criteria ? inputSource.criteria.trim() : '';
