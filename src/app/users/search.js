@@ -114,15 +114,13 @@ const doSearchAndBuildModel = async (req) => {
 const get = async (req, res) => {
   clearNewUserSessionData(req);
 
-  if (!req.session.params?.redirectedFromOrganisations) {
-    if (req.session.params) {
-      req.session.params = undefined;
-    }
+  if (!req.session.params?.redirectedFromSearch && req.session.params) {
+    req.session.params = undefined;
   }
 
-  if (req.session.params?.redirectedFromOrganisations) {
-    req.session.params.redirectedFromOrganisations = undefined;
-    await post(req, res)
+  if (req.session.params?.redirectedFromSearch) {
+    req.session.params.redirectedFromSearch = undefined;
+    await post(req, res);
   } else {
     const model = await buildModel(req);
     sendResult(req, res, 'users/views/search', model);
