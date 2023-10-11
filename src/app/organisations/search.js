@@ -141,7 +141,10 @@ const doSearchAndBuildModel = async (req) => {
 };
 
 const get = async (req, res) => {
-  if (!req.session.params?.redirectedFromSearchResult && req.session.params) {
+  if (
+    (!req.session.params?.redirectedFromSearchResult && req.session.params)
+    || req.session.params?.searchType === 'users'
+  ) {
     req.session.params = undefined;
   }
 

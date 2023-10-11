@@ -11,9 +11,6 @@ const clearNewUserSessionData = (req) => {
   if (req.session.user) {
     req.session.user = undefined;
   }
-  // if (req.session.params) {
-  //   req.session.params = undefined;
-  // }
   if (req.session.digipassSerialNumberToAssign) {
     req.session.digipassSerialNumberToAssign = undefined;
   }
@@ -114,7 +111,10 @@ const doSearchAndBuildModel = async (req) => {
 const get = async (req, res) => {
   clearNewUserSessionData(req);
 
-  if (!req.session.params?.redirectedFromSearchResult && req.session.params) {
+  if (
+    (!req.session.params?.redirectedFromSearchResult && req.session.params)
+    || req.session.params?.searchType === 'organisations'
+  ) {
     req.session.params = undefined;
   }
 

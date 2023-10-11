@@ -35,7 +35,8 @@ const get = async (req, res) => {
   req.session.params = {
     ...req.session.params,
     ...req.query,
-    redirectedFromSearchResult: true
+    redirectedFromSearchResult: true,
+    searchType: 'organisations',
   }
   return render(req, res, req.query);
 };
