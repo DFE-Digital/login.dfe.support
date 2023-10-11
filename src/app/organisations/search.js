@@ -141,8 +141,6 @@ const doSearchAndBuildModel = async (req) => {
 };
 
 const get = async (req, res) => {
-  const model = await buildModel(req);
-
   if (!req.session.params?.redirectedFromSearchResult && req.session.params) {
     req.session.params = undefined;
   }
