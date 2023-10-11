@@ -76,6 +76,7 @@ const action = async (req, res) => {
   };
 
   req.session.params = {
+    ...req.session.params,
     ...req.query,
     redirectedFromSearchResult: true
   }
