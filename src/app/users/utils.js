@@ -58,19 +58,15 @@ const buildFilters = (paramsSource) => {
 const search = async (req) => {
   let paramsSource = req.method === 'POST' ? req.body : req.query;
 
-  if (req.session.params && Object.keys(paramsSource).length === 0) {
-    let sanitized_criteria = req.session.params['organisationTypes'].replace('?criteria=', '')
+  if (Object.keys(paramsSource).length === 0 && req.session.params) {
     paramsSource = {
-      ...req.session.params, 
-      criteria: sanitized_criteria
-    }
+      ...req.session.params
+    };
   }
 
-  
   if (paramsSource.services) {
-    paramsSource = {...paramsSource, service: paramsSource.services}
+    paramsSource = {...paramsSource, service: paramsSource.services};
   }
-
 
   let criteria = paramsSource.criteria ? paramsSource.criteria.trim() : '';
 
