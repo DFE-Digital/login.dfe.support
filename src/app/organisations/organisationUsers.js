@@ -35,9 +35,19 @@ const get = async (req, res) => {
   req.session.params = {
     ...req.session.params,
     ...req.query,
-    redirectedFromSearchResult: true,
     searchType: 'organisations',
+  };
+
+  // Check if it's possible to re-populate search with the current params.
+  if (
+    req.session.params.showFilters === 'true'
+    || (typeof req.session.params.criteria !== "undefined" && req.session.params.criteria !== '')
+  ) {
+    req.session.params.redirectedFromSearchResult = true;
+  } else {
+    req.session.params.redirectedFromSearchResult = false;
   }
+
   return render(req, res, req.query);
 };
 const post = async (req, res) => {

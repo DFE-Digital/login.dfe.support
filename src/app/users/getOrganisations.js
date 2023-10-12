@@ -78,8 +78,17 @@ const action = async (req, res) => {
   req.session.params = {
     ...req.session.params,
     ...req.query,
-    redirectedFromSearchResult: true,
-    searchType: 'users'
+    searchType: 'users',
+  };
+
+  // Check if it's possible to re-populate search with the current params.
+  if (
+    req.session.params.showFilters === 'true'
+    || (typeof req.session.params.criteria !== "undefined" && req.session.params.criteria !== '')
+  ) {
+    req.session.params.redirectedFromSearchResult = true;
+  } else {
+    req.session.params.redirectedFromSearchResult = false;
   }
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) viewed user ${user.email} (id: ${user.id})`, {
