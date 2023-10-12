@@ -35,7 +35,6 @@ const get = async (req, res) => {
   req.session.params = {
     ...req.session.params,
     ...req.query,
-    searchType: 'organisations',
   };
 
   // Check if it's possible to re-populate search with the current params.
