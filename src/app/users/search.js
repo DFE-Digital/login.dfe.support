@@ -125,9 +125,6 @@ const get = async (req, res) => {
     const model = await buildModel(req);
     sendResult(req, res, 'users/views/search', model);
   }
-
-  // const model = await buildModel(req);
-  // sendResult(req, res, 'users/views/search', model);
 };
 
 const post = async (req, res) => {
