@@ -59,9 +59,8 @@ const search = async (req) => {
 
   if (req.session.params && Object.keys(inputSource).length === 0) {
     inputSource = {
-      ...req.session.params,
-      page: req.session.params.currentPage
-    }
+      ...req.session.params
+    };
   }
 
   let criteria = inputSource.criteria ? inputSource.criteria.trim() : '';
@@ -142,17 +141,16 @@ const doSearchAndBuildModel = async (req) => {
 };
 
 const get = async (req, res) => {
-  const model = await buildModel(req);
-
-  if (!req.session.params?.redirectedFromOrganisations) {
-    if (req.session.params) {
-      req.session.params = undefined;
-    }
+  if (
+    (!req.session.params?.redirectedFromSearchResult && req.session.params)
+    || req.session.params?.searchType === 'users'
+  ) {
+    req.session.params = undefined;
   }
 
-  if (req.session.params?.redirectedFromOrganisations) {
-    req.session.params.redirectedFromOrganisations = undefined;
-    await post(req, res)
+  if (req.session.params?.redirectedFromSearchResult) {
+    req.session.params.redirectedFromSearchResult = undefined;
+    await post(req, res);
   } else {
     const model = await buildModel(req);
     sendResult(req, res, 'organisations/views/search', model);

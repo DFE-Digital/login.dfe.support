@@ -31,6 +31,12 @@ const paginationModel = {
             }, [])},
     ]
 }
+const organisationTypesQuery = locals.organisationTypes.filter(x => x.isSelected)
+                                .map(x => `organisationType=${x.id}`)
+                                .join('&') || 'organisationType=';
+const organisationStatusesQuery = locals.organisationStatuses.filter(x => x.isSelected)
+                                .map(x => `organisationStatus=${x.id}`)
+                                .join('&') || 'organisationStatus=';
 %>
 
 <div class="row row-spacer">
@@ -157,7 +163,7 @@ const paginationModel = {
                     <% } %>
                     <% for (let i = 0; i < locals.organisations.length; i++) { %>
                         <tr>
-                            <td class="breakable"><a href="/organisations/<%= organisations[i].id %>/users?organisationType=<%= paginationModel['data'][4]['value'] %>&organisationStatus=<%= paginationModel['data'][5]['value'] %>&criteria=<%= paginationModel['data'][0]['value'] %>&showFilters=<%= paginationModel['data'][3]['value'] %>&currentPage=<%= paginationModel['currentPage'] %>&numberOfPages=<%= paginationModel['numberOfPages'] %>&totalNumberOfResults=<%= paginationModel['totalNumberOfResults'] %>&numberOfResultsOnPage=<%= paginationModel['numberOfResultsOnPage'] %>"><%= organisations[i].name %></a></td>
+                            <td class="breakable"><a href="/organisations/<%= organisations[i].id %>/users?criteria=<%= locals.criteria %>&page=<%= locals.page %>&showFilters=<%= locals.showFilters %>&<%= organisationTypesQuery %>&<%= organisationStatusesQuery %>"><%= organisations[i].name %></a></td>
                             <td><%= organisations[i].LegalName %></td>
                             <td><%= organisations[i].type ? organisations[i].type.name : organisations[i].providerTypeName || organisations[i].category.name  %></td>
                             <td><%= organisations[i].urn %></td>

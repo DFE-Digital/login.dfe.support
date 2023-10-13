@@ -76,8 +76,24 @@ const action = async (req, res) => {
   };
 
   req.session.params = {
-    ...req.query, 
-    redirectedFromOrganisations: true
+    ...req.session.params,
+    ...req.query,
+  };
+
+  // Check if it's possible to re-populate search with the current params.
+  if (
+    req.session.params.showFilters === 'true'
+    || (typeof req.session.params.criteria !== "undefined" && req.session.params.criteria !== '')
+  ) {
+    req.session.params.redirectedFromSearchResult = true;
+  } else {
+    req.session.params.redirectedFromSearchResult = false;
+  }
+
+  // If searchType isn't set or equal to organisations, set it to users.
+  // This allows us to avoid populating user search after going from the org user list straight to a user profile.
+  if (req.session.params.searchType !== 'organisations') {
+    req.session.params.searchType = 'users';
   }
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) viewed user ${user.email} (id: ${user.id})`, {
