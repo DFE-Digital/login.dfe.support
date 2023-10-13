@@ -103,9 +103,9 @@ stages:
 
     - template:  pipeline/eslint.yml@devopsTemplates
 
-    # - template:  pipeline/dependencyCheck.yml@devopsTemplates
-    #   parameters:
-    #     npmInstCmd: 'install --force --json --no-package-lock'
+    - template:  pipeline/dependencyCheck.yml@devopsTemplates
+      parameters:
+        npmInstCmd: 'install --force --json --no-package-lock'
 
     - template: pipeline/build.yml@devopsTemplates
       parameters:
