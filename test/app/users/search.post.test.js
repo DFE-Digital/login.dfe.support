@@ -36,6 +36,9 @@ describe('When processing a post to search for users', () => {
       },
     };
 
+    req.session = jest.fn().mockReturnValue({ params: { ...req.query, redirectedFromOrganisations: true }})
+
+
     res = {
       render: jest.fn(),
     };

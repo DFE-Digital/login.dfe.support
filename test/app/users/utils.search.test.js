@@ -1,19 +1,15 @@
-jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
-jest.mock('./../../../src/infrastructure/users', () => {
-  return {
-    search: jest.fn().mockReturnValue([]),
-  };
-});
-jest.mock('./../../../src/infrastructure/search', () => {
-  return {
-    searchForUsers: jest.fn(),
-  };
-});
-jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
+jest.mock('./../../../src/infrastructure/config', () => require('../../utils').configMockFactory());
+jest.mock('./../../../src/infrastructure/users', () => ({
+  search: jest.fn().mockReturnValue([]),
+}));
+jest.mock('./../../../src/infrastructure/search', () => ({
+  searchForUsers: jest.fn(),
+}));
+jest.mock('./../../../src/infrastructure/logger', () => require('../../utils').loggerMockFactory());
 
-const logger = require('./../../../src/infrastructure/logger');
-const { searchForUsers } = require('./../../../src/infrastructure/search');
-const { search } = require('./../../../src/app/users/utils');
+const logger = require('../../../src/infrastructure/logger');
+const { searchForUsers } = require('../../../src/infrastructure/search');
+const { search } = require('../../../src/app/users/utils');
 
 describe('When processing a user search request', () => {
   let usersSearchResult;
@@ -25,15 +21,15 @@ describe('When processing a user search request', () => {
           name: 'Timmy Tester',
           email: 'timmy@tester.test',
           organisation: {
-            name: 'Testco'
+            name: 'Testco',
           },
           lastLogin: new Date(2018, 0, 11, 11, 30, 57),
           status: {
-            description: 'Active'
-          }
+            description: 'Active',
+          },
         },
       ],
-      numberOfPages: 3
+      numberOfPages: 3,
     };
     searchForUsers.mockReset().mockReturnValue(usersSearchResult);
 
@@ -54,13 +50,15 @@ describe('When processing a user search request', () => {
           email: 'user.one@unit.test',
         },
       };
+
+      req.session = jest.fn().mockReturnValue({ params: { ...req.query, redirectedFromOrganisations: true } });
     });
 
     test('then it should include the users from the adapter if criteria is supplied', async () => {
       const actual = await search(req);
 
       expect(actual).toMatchObject({
-        users: usersSearchResult.users
+        users: usersSearchResult.users,
       });
       expect(searchForUsers.mock.calls[0][0]).toBe('test*');
     });
@@ -73,8 +71,8 @@ describe('When processing a user search request', () => {
       expect(searchForUsers).not.toHaveBeenCalled();
       expect(result).toEqual({
         validationMessages: {
-          criteria: 'Please enter at least 4 characters'
-        }
+          criteria: 'Please enter at least 4 characters',
+        },
       });
     });
 
@@ -137,7 +135,7 @@ describe('When processing a user search request', () => {
       expect(searchForUsers.mock.calls[0][4]).toMatchObject({
         organisationCategories: ['org1', 'org2'],
         services: [],
-        statusId: []
+        statusId: [],
       });
     });
 
@@ -180,13 +178,14 @@ describe('When processing a user search request', () => {
           email: 'user.one@unit.test',
         },
       };
+      req.session = jest.fn().mockReturnValue({ params: { ...req.query, redirectedFromOrganisations: true } });
     });
 
     test('then it should include the users from the adapter using supplier criteria', async () => {
       const actual = await search(req);
 
       expect(actual).toMatchObject({
-        users: usersSearchResult.users
+        users: usersSearchResult.users,
       });
       expect(searchForUsers.mock.calls[0][0]).toBe('test*');
     });
@@ -199,8 +198,8 @@ describe('When processing a user search request', () => {
       expect(searchForUsers).not.toHaveBeenCalled();
       expect(result).toEqual({
         validationMessages: {
-          criteria: 'Please enter at least 4 characters'
-        }
+          criteria: 'Please enter at least 4 characters',
+        },
       });
     });
 

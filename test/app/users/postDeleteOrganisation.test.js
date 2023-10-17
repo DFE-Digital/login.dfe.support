@@ -1,20 +1,18 @@
-jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
-jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
-jest.mock('./../../../src/infrastructure/organisations', () => {
-  return {
-    deleteInvitationOrganisation: jest.fn(),
-    deleteUserOrganisation: jest.fn(),
-    getUserOrganisations: jest.fn(),
-  };
-});
+jest.mock('./../../../src/infrastructure/config', () => require('../../utils').configMockFactory());
+jest.mock('./../../../src/infrastructure/logger', () => require('../../utils').loggerMockFactory());
+jest.mock('./../../../src/infrastructure/organisations', () => ({
+  deleteInvitationOrganisation: jest.fn(),
+  deleteUserOrganisation: jest.fn(),
+  getUserOrganisations: jest.fn(),
+}));
 jest.mock('./../../../src/infrastructure/search');
 
 jest.mock('login.dfe.notifications.client');
 const notificationClient = require('login.dfe.notifications.client');
-const { getRequestMock, getResponseMock } = require('./../../utils');
-const postDeleteOrganisation = require('./../../../src/app/users/postDeleteOrganisation');
-const { deleteInvitationOrganisation, deleteUserOrganisation, getUserOrganisations } = require('./../../../src/infrastructure/organisations');
-const { getSearchDetailsForUserById } = require('./../../../src/infrastructure/search');
+const { getRequestMock, getResponseMock } = require('../../utils');
+const postDeleteOrganisation = require('../../../src/app/users/postDeleteOrganisation');
+const { deleteInvitationOrganisation, deleteUserOrganisation, getUserOrganisations } = require('../../../src/infrastructure/organisations');
+const { getSearchDetailsForUserById } = require('../../../src/infrastructure/search');
 
 const res = getResponseMock();
 
@@ -29,7 +27,7 @@ describe('when removing a users access to an organisation', () => {
     req = getRequestMock({
       params: {
         uid: 'user1',
-        id: 'org1'
+        id: 'org1',
       },
       session: {
         user: {
@@ -48,22 +46,21 @@ describe('when removing a users access to an organisation', () => {
     getSearchDetailsForUserById.mockReturnValue({
       organisations: [
         {
-          id: "org1",
-          name: "organisationId",
-          categoryId: "004",
+          id: 'org1',
+          name: 'organisationId',
+          categoryId: '004',
           statusId: 1,
-          roleId: 0
+          roleId: 0,
         },
-      ]
+      ],
     });
-    getUserOrganisations.mockReturnValue({
-      organisations: [
-        {
-          numericIdentifier: "1111",
-          textIdentifier: "rpssss",
-        },
-      ]
-    })
+    getUserOrganisations.mockReturnValue([
+      {
+        numericIdentifier: '1111',
+        textIdentifier: 'rpssss',
+        organisation: { id: 'test-org-id' },
+      },
+    ]);
     sendUserRemovedFromOrganisationStub = jest.fn();
     notificationClient.mockReset().mockImplementation(() => ({
       sendUserRemovedFromOrganisation: sendUserRemovedFromOrganisationStub,
@@ -82,7 +79,6 @@ describe('when removing a users access to an organisation', () => {
   });
 
   it('then it should delete org for user', async () => {
-
     await postDeleteOrganisation(req, res);
 
     expect(deleteUserOrganisation.mock.calls).toHaveLength(1);
@@ -106,7 +102,5 @@ describe('when removing a users access to an organisation', () => {
     expect(sendUserRemovedFromOrganisationStub.mock.calls[0][1]).toBe(expectedFirstName);
     expect(sendUserRemovedFromOrganisationStub.mock.calls[0][2]).toBe(expectedLastName);
     expect(sendUserRemovedFromOrganisationStub.mock.calls[0][3]).toBe(expectedOrgName);
-  
   });
-
 });
