@@ -7,6 +7,8 @@ const getSettingsObject = (settings) => {
   try {
     return JSON.parse(settings);
   } catch (e) {
+    console.log(e);
+
     return null;
   }
 };
@@ -25,7 +27,9 @@ const getSettingsFromFile = (settingsPath) => {
 
 const fetchConfig = () => {
   if (process.env.settings) {
+
     const settings = process.env.settings;
+
     let settingsObject = getSettingsObject(settings);
     if (settingsObject !== null) {
       return settingsObject;
