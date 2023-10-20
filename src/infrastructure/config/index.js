@@ -7,8 +7,6 @@ const getSettingsObject = (settings) => {
   try {
     return JSON.parse(settings);
   } catch (e) {
-    console.log(e);
-
     return null;
   }
 };
