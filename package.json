@@ -6,7 +6,7 @@
     "web": "settings='./config/support.dev.json' node src/index.js",
     "test": "settings='./config/login.dfe.support.dev.json' ./node_modules/.bin/jest",
     "test:watch": "./node_modules/.bin/jest --watchAll",
-    "dev": "settings='./config/login.dfe.support.dev.json' nodemon src/index.js"
+    "dev": "settings='./config/login.dfe.support.dev.json' node src/index.js"
   },
   "engines": {
     "node": "18.17.0"
@@ -30,7 +30,7 @@
     "cookie-session": "^2.0.0-rc.1",
     "csurf": "^1.11.0",
     "ejs": "^3.1.8",
-    "express": "^4.17.3",
+    "express": "^4.16.2",
     "express-ejs-layouts": "^2.5.0",
     "express-flash-2": "^1.0.1",
     "express-mw-correlation-id": "^5.2.0",
@@ -57,9 +57,9 @@
     "passport": "^0.6.0",
     "request": "^2.88.2",
     "sequelize": "^6.18.0",
-    "simpl-schema": "^3.4.1",
-    "tedious": "^14.4.0",
-    "uuid": "^9.0.0",
+    "simpl-schema": "^1.12.0",
+    "tedious": "^16.4.0",
+    "uuid": "^8.3.2",
     "winston": "^3.3.3"
   },
   "devDependencies": {
