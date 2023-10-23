@@ -5,9 +5,17 @@
 const url = require('url');
 const passport = require('passport');
 const config = require('./../../infrastructure/config');
+const logger = require('../../infrastructure/logger');
+
+const logout = (req, res) => {
+  req.logout(() => {
+    logger.info('user logged out.');
+  });
+  req.session = null; // Needed to clear session and completely logout
+};
 
 const signUserOut = (req, res) => {
-  if (req.user.id_token) {
+  if (req.user && req.user.id_token) {
     const idToken = req.user.id_token;
     const issuer = passport._strategies.oidc._issuer;
     let returnUrl = `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/signout/complete`;
@@ -16,7 +24,7 @@ const signUserOut = (req, res) => {
       returnUrl = `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/signout/session-timeout`;
     }
 
-    req.logout();
+    logout(req, res);
     res.redirect(url.format(Object.assign(url.parse(issuer.end_session_endpoint), {
       search: null,
       query: {
@@ -25,9 +33,9 @@ const signUserOut = (req, res) => {
       },
     })));
   } else {
+    logout(req, res);
     res.redirect('/');
   }
 };
 
 module.exports = signUserOut;
-

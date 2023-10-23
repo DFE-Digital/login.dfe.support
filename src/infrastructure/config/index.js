@@ -25,7 +25,9 @@ const getSettingsFromFile = (settingsPath) => {
 
 const fetchConfig = () => {
   if (process.env.settings) {
+
     const settings = process.env.settings;
+
     let settingsObject = getSettingsObject(settings);
     if (settingsObject !== null) {
       return settingsObject;

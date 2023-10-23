@@ -3,7 +3,6 @@ const { validateConfigAgainstSchema, schemas, patterns } = require('login.dfe.co
 const config = require('./index');
 const logger = require('./../logger');
 
-
 const identifyingPartySchema = new SimpleSchema({
   url: patterns.url,
   clientId: String,
@@ -62,7 +61,7 @@ const auditSchema = new SimpleSchema({
     allowedValues: ['static', 'sequelize']
   },
   params: {
-    type: schemas.sequelizeConnection,
+    type: new SimpleSchema({ ...schemas.sequelizeConnection }),
     optional: true,
     custom: function () {
       if (this.siblingField('type').value === 'sequelize' && !this.isSet) {
@@ -128,25 +127,24 @@ const accessIdentifiers = new SimpleSchema({
 
 accessIdentifiers.extend(schemas.apiClient);
 
-
 const schema = new SimpleSchema({
-  loggerSettings: schemas.loggerSettings,
-  hostingEnvironment: schemas.hostingEnvironment,
+  loggerSettings: new SimpleSchema({ ...schemas.loggerSettings }),
+  hostingEnvironment: new SimpleSchema({ ...schemas.hostingEnvironment }),
   identifyingParty: identifyingPartySchema,
   cache: cacheSchema,
   claims: claimsSchema,
-  directories: schemas.apiClient,
-  organisations: schemas.apiClient,
-  applications: schemas.apiClient,
+  directories: new SimpleSchema({ ...schemas.apiClient }),
+  organisations: new SimpleSchema({ ...schemas.apiClient }),
+  applications: new SimpleSchema({ ...schemas.apiClient }),
   access: accessIdentifiers,
-  search: schemas.apiClient,
+  search: new SimpleSchema({ ...schemas.apiClient }),
   audit: auditSchema,
   serviceMapping: serviceMappingSchema,
-  devices: schemas.apiClient,
+  devices: new SimpleSchema({ ...schemas.apiClient }),
   schedules: schedulesSchema,
   toggles: togglesSchema,
   notifications: notificationsSchema,
-  assets: schemas.assets,
+  assets: new SimpleSchema({ ...schemas.assets }),
 });
 
 module.exports.validate = () => {

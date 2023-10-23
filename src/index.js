@@ -1,4 +1,3 @@
-const logger = require('./infrastructure/logger');
 const appInsights = require('applicationinsights');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -10,15 +9,16 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
-const config = require('./infrastructure/config');
 const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
-const oidc = require('./infrastructure/oidc');
 const moment = require('moment');
 const flash = require('express-flash-2');
 const setCorrelationId = require('express-mw-correlation-id');
-const registerRoutes = require('./routes');
 const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
+const registerRoutes = require('./routes');
+const oidc = require('./infrastructure/oidc');
+const config = require('./infrastructure/config');
+const logger = require('./infrastructure/logger');
 const configSchema = require('./infrastructure/config/schema');
 
 configSchema.validate();
@@ -40,26 +40,44 @@ const init = async () => {
   const app = express();
 
   if (config.hostingEnvironment.hstsMaxAge) {
-    app.use(helmet({
-      noCache: true,
-      frameguard: {
-        action: 'deny',
-      },
-      hsts: {
+    app.use(helmet.hsts(
+      {
         maxAge: config.hostingEnvironment.hstsMaxAge,
         preload: true,
       },
-    }));
-  } else {
-    app.use(helmet({
-      noCache: true,
-      frameguard: {
-        action: 'deny',
-      },
-    }));
+    ));
   }
 
-  app.use(setCorrelationId(true));
+  logger.info('set helmet policy defaults');
+
+  // Setting helmet Content Security Policy
+  const scriptSources = ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'localhost', '*.signin.education.gov.uk'];
+
+  app.use(helmet.contentSecurityPolicy({
+    browserSniff: false,
+    setAllHeaders: false,
+    directives: {
+      defaultSrc: ["'self'"],
+      childSrc: ["'none'"],
+      objectSrc: ["'none'"],
+      scriptSrc: scriptSources,
+      styleSrc: ["'self'", "'unsafe-inline'", 'localhost', '*.signin.education.gov.uk'],
+      imgSrc: ["'self'", 'data:', 'blob:', 'localhost', '*.signin.education.gov.uk'],
+      fontSrc: ["'self'", 'data:', '*.signin.education.gov.uk'],
+      connectSrc: ["'self'"],
+      formAction: ["'self'", '*'],
+    },
+  }));
+
+  logger.info('Set helmet filters');
+
+  app.use(helmet.xssFilter());
+  app.use(helmet.frameguard('false'));
+  app.use(helmet.ieNoOpen());
+
+  logger.info('helmet setup complete');
+
+  app.use(setCorrelationId('X-Correlation-ID'));
 
   let assetsUrl = config.assets.url;
   assetsUrl = assetsUrl.endsWith('/') ? assetsUrl.substr(0, assetsUrl.length - 1) : assetsUrl;
@@ -106,22 +124,41 @@ const init = async () => {
   app.use(sanitization({
     sanitizer: (key, value) => {
       const fieldToNotSanitize = ['email-subject', 'email-contents', 'criteria', 'email', 'firstName', 'lastName', 'reason'];
-      if (fieldToNotSanitize.find(x => x.toLowerCase() === key.toLowerCase())) {
+      if (fieldToNotSanitize.find((x) => x.toLowerCase() === key.toLowerCase())) {
         return value;
       }
       return sanitization.defaultSanitizer(key, value);
     },
   }));
 
-
   app.set('view engine', 'ejs');
   app.set('views', path.resolve(__dirname, 'app'));
   app.use(expressLayouts);
   app.set('layout', 'sharedViews/layout');
 
+    /*
+    Addressing issue with latest version of passport dependency packge
+    TypeError: req.session.regenerate is not a function
+    Reference: https://github.com/jaredhanson/passport/issues/907#issuecomment-1697590189
+  */
+  app.use((request, response, next) => {
+      if (request.session && !request.session.regenerate) {
+      request.session.regenerate = (cb) => {
+        cb();
+      };
+    }
+    if (request.session && !request.session.save) {
+      request.session.save = (cb) => {
+        cb();
+      };
+    }
+    next();
+  });
+
   await oidc.init(app);
 
   app.use('/assets', express.static(path.join(__dirname, 'app/assets')));
+
   registerRoutes(app, csrf);
 
   const errorPageRenderer = ejsErrorPages.getErrorPageRenderer({
