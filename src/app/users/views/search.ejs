@@ -245,9 +245,7 @@ if (services && services.length > 0) {
             <% } %>
             <% for (let i = 0; i < locals.users.length; i++) { %>
             <tr>
-                <td><a class="breakable" href="/users/<%= users[i].id %>/organisations?organisationTypes=<%= baseSortUri %>&currentPage=<%= locals.page%>&numberOfPages=<%= locals.page%>&totalNumberOfResults=<%= locals.totalNumberOfResults %>&numberOfResultsOnPage=<%= locals.users ? locals.users.length: undefined%>"><%= users[i].name %></a></td>
-
-
+                <td><a class="breakable" href="/users/<%= users[i].id %>/organisations<%= baseSortUri %>"><%= users[i].name %></a></td>
                 <td><span class="breakable"><%= users[i].email %></span></td>
                 <td>
                     <% if(users[i].organisation) { %>

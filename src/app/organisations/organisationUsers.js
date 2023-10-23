@@ -33,9 +33,26 @@ const render = async (req, res, dataSource) => {
 
 const get = async (req, res) => {
   req.session.params = {
-    ...req.query, 
-    redirectedFromOrganisations: true
+    ...req.session.params,
+    ...req.query,
+  };
+
+  // Check if it's possible to re-populate search with the current params.
+  if (
+    req.session.params.showFilters === 'true'
+    || (typeof req.session.params.criteria !== "undefined" && req.session.params.criteria !== '')
+  ) {
+    req.session.params.redirectedFromSearchResult = true;
+  } else {
+    req.session.params.redirectedFromSearchResult = false;
   }
+
+  // If searchType isn't set or equal to users, set it to organisations.
+  // This allows us to avoid populating org search after going from user's profile straight to an org user list.
+  if (req.session.params.searchType !== 'users') {
+    req.session.params.searchType = 'organisations';
+  }
+
   return render(req, res, req.query);
 };
 const post = async (req, res) => {
