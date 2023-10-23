@@ -1,4 +1,3 @@
-const logger = require('./infrastructure/logger');
 const appInsights = require('applicationinsights');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -10,15 +9,16 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
-const config = require('./infrastructure/config');
 const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
-const oidc = require('./infrastructure/oidc');
 const moment = require('moment');
 const flash = require('express-flash-2');
 const setCorrelationId = require('express-mw-correlation-id');
-const registerRoutes = require('./routes');
 const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
+const registerRoutes = require('./routes');
+const oidc = require('./infrastructure/oidc');
+const config = require('./infrastructure/config');
+const logger = require('./infrastructure/logger');
 const configSchema = require('./infrastructure/config/schema');
 
 configSchema.validate();
@@ -124,13 +124,12 @@ const init = async () => {
   app.use(sanitization({
     sanitizer: (key, value) => {
       const fieldToNotSanitize = ['email-subject', 'email-contents', 'criteria', 'email', 'firstName', 'lastName', 'reason'];
-      if (fieldToNotSanitize.find(x => x.toLowerCase() === key.toLowerCase())) {
+      if (fieldToNotSanitize.find((x) => x.toLowerCase() === key.toLowerCase())) {
         return value;
       }
       return sanitization.defaultSanitizer(key, value);
     },
   }));
-
 
   app.set('view engine', 'ejs');
   app.set('views', path.resolve(__dirname, 'app'));
@@ -140,6 +139,24 @@ const init = async () => {
   await oidc.init(app);
 
   app.use('/assets', express.static(path.join(__dirname, 'app/assets')));
+  /*
+    Addressing issue with latest version of passport dependency packge
+    TypeError: req.session.regenerate is not a function
+    Reference: https://github.com/jaredhanson/passport/issues/907#issuecomment-1697590189
+  */
+  app.use((request, response, next) => {
+    if (request.session && !request.session.regenerate) {
+      request.session.regenerate = (cb) => {
+        cb();
+      };
+    }
+    if (request.session && !request.session.save) {
+      request.session.save = (cb) => {
+        cb();
+      };
+    }
+    next();
+  });
   registerRoutes(app, csrf);
 
   const errorPageRenderer = ejsErrorPages.getErrorPageRenderer({
