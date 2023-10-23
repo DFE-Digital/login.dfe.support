@@ -136,16 +136,13 @@ const init = async () => {
   app.use(expressLayouts);
   app.set('layout', 'sharedViews/layout');
 
-  await oidc.init(app);
-
-  app.use('/assets', express.static(path.join(__dirname, 'app/assets')));
-  /*
+    /*
     Addressing issue with latest version of passport dependency packge
     TypeError: req.session.regenerate is not a function
     Reference: https://github.com/jaredhanson/passport/issues/907#issuecomment-1697590189
   */
   app.use((request, response, next) => {
-    if (request.session && !request.session.regenerate) {
+      if (request.session && !request.session.regenerate) {
       request.session.regenerate = (cb) => {
         cb();
       };
@@ -157,6 +154,11 @@ const init = async () => {
     }
     next();
   });
+
+  await oidc.init(app);
+
+  app.use('/assets', express.static(path.join(__dirname, 'app/assets')));
+
   registerRoutes(app, csrf);
 
   const errorPageRenderer = ejsErrorPages.getErrorPageRenderer({
