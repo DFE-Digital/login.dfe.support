@@ -7,7 +7,6 @@ const expressLayouts = require('express-ejs-layouts');
 const csurf = require('csurf');
 const http = require('http');
 const https = require('https');
-const fs = require('fs');
 const path = require('path');
 const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
@@ -86,6 +85,7 @@ const init = async () => {
     urls: {
       profile: config.hostingEnvironment.profileUrl,
       assets: assetsUrl,
+      supportV2: config.hostingEnvironment.supportV2Url,
     },
     app: {
       title: 'DfE Sign-in Support Console',
@@ -136,13 +136,13 @@ const init = async () => {
   app.use(expressLayouts);
   app.set('layout', 'sharedViews/layout');
 
-    /*
+  /*
     Addressing issue with latest version of passport dependency packge
     TypeError: req.session.regenerate is not a function
     Reference: https://github.com/jaredhanson/passport/issues/907#issuecomment-1697590189
   */
   app.use((request, response, next) => {
-      if (request.session && !request.session.regenerate) {
+    if (request.session && !request.session.regenerate) {
       request.session.regenerate = (cb) => {
         cb();
       };

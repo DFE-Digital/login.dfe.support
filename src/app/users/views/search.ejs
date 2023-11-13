@@ -105,7 +105,7 @@ if (services && services.length > 0) {
                 <li><a href="/users/new-user">Invite user</a></li>
                 <li><a href="/users/new-k2s-user">Invite KtS user</a></li>
                 <% if (locals.canViewRequests) { %>
-                    <li><a href="/access-requests">View user requests</a></li>
+                    <li><a href="<%= locals.urls.supportV2 %>/access-requests">View user requests</a></li>
                 <% } %>
             </ul>
         </aside>
