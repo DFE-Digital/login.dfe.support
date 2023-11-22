@@ -112,7 +112,8 @@
     "variables": {
         "enableVirtualNetworkIntegration": "[and(not(empty(parameters('virtualNetworkResourceGroupName'))), not(empty(parameters('virtualNetworkName'))))]",
         "serviceSubnetResourceId": "[if(variables('enableVirtualNetworkIntegration'), resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), concat(parameters('subnetPrefix'))), '')]",
-        "gatewaySubnetId": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), 'gateway')]"
+        "frontDoorRg": "[if(contains(parameters('virtualNetworkResourceGroupName'),'neu'), replace(parameters('virtualNetworkResourceGroupName'), 'neu-shd', 'fd') ,replace(parameters('virtualNetworkResourceGroupName'), 'shd', 'fd'))]",
+        "frontDoorName": "[replace(variables('frontDoorRg'), '-', '-signin-')]"
     },
     "resources": [
         {
@@ -174,11 +175,16 @@
                     "ipSecurityRestrictions": {
                         "value": [
                             {
-                                "vnetSubnetResourceId": "[variables('gatewaySubnetId')]",
+                                "ipAddress": "AzureFrontDoor.Backend",
                                 "action": "Allow",
-                                "tag": "Default",
-                                "name": "Gateway",
-                                "priority": 200
+                                "tag": "ServiceTag",
+                                "name": "AzureFrontDoor",
+                                "priority": 10,
+                                "headers": {
+                                    "x-azure-fdid": [
+                                            "[reference(resourceId(variables('frontDoorRg'),'Microsoft.Cdn/profiles', variables('frontDoorName')), '2022-11-01-preview').frontDoorId]"
+                                    ]
+                                }
                             }
                         ]
                     }
