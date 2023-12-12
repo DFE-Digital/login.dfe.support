@@ -2,7 +2,7 @@ const config = require('./../../infrastructure/config');
 const { sendResult } = require('./../../infrastructure/utils');
 const { getOrganisationByIdV2 } = require('./../../infrastructure/organisations');
 const ServiceNotificationsClient = require('login.dfe.service-notifications.jobs.client');
-const {wsSyncCall}  = require('wsSynchFunCall');
+const {wsSyncCall}  = require('./wsSynchFunCall');
 
 const get = async (req, res) => {
   const organisation = await getOrganisationByIdV2(req.params.id, req.id);

@@ -1,5 +1,3 @@
-const config = require('./../config');
-
 const rp = require('login.dfe.request-promise-retry');
 
 const wsSyncCall = async (orgId) => {
