@@ -86,7 +86,7 @@
             </h2>
             <ul class="error-summary-list">
                 <% for (const prop in locals.validationMessages) { %>
-                <li><a href="#<%= prop %>"><%= locals.validationMessages[prop] %></a></li>
+                <li><a href="#<%= prop %>"><%- locals.validationMessages[prop] %></a></li>
                 <% } %>
             </ul>
         </div>
