@@ -7,7 +7,7 @@ const wsSyncCall = async (orgId) => {
   try {
     const client = await rp({
       method: 'GET',
-      uri: `${process.env.WSORG_SYNC_URL}?orgId=${orgId}`
+      uri: `${process.env.WSORG_SYNC_URL}&orgId=${orgId}`
     });
     return client;
   } catch (e) {
