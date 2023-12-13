@@ -2,6 +2,7 @@ const config = require('./../../infrastructure/config');
 const { sendResult } = require('./../../infrastructure/utils');
 const { getOrganisationByIdV2 } = require('./../../infrastructure/organisations');
 const ServiceNotificationsClient = require('login.dfe.service-notifications.jobs.client');
+const {wsSyncCall}  = require('./wsSynchFunCall');
 
 const get = async (req, res) => {
   const organisation = await getOrganisationByIdV2(req.params.id, req.id);
@@ -12,12 +13,11 @@ const get = async (req, res) => {
   });
 };
 const post = async (req, res) => {
-  const organisation = await getOrganisationByIdV2(req.params.id, req.id);
-
-  const serviceNotificationsClient = new ServiceNotificationsClient(config.notifications);
-  await serviceNotificationsClient.notifyOrganisationUpdated(organisation);
-
-  res.flash('info', 'Organisation has been queued for sync');
+  await wsSyncCall(req.params.id);
+  //const organisation = await getOrganisationByIdV2(req.params.id, req.id);
+  //const serviceNotificationsClient = new ServiceNotificationsClient(config.notifications);
+  //await serviceNotificationsClient.notifyOrganisationUpdated(organisation);
+  //res.flash('info', 'Organisation has been queued for sync');
   return res.redirect(`/organisations/${organisation.id}/users`);
 };
 module.exports = {

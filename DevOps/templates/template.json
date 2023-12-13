@@ -101,6 +101,13 @@
                 "description": "Audit HTTP trigger invoke URL"
             }
         },
+         "wsorgsyncUrl": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "On Demand Org sync URL"
+            }
+        },
         "includeDeploymentSlot": {
             "type": "bool",
             "defaultValue": true,
@@ -154,7 +161,8 @@
                     "additionalAppSettings": {
                         "value": {
                             "AUDIT_HTTP_TRIGGER_URL": "[parameters('auditHttpTriggerInvokeUrl')]",
-                            "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4"
+                            "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4",
+                            "WSORG_SYNC_URL":"[parameters('wsorgsyncUrl')]"
                         }
                     },
                     "healthCheckPath": {
