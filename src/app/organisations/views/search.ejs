@@ -138,6 +138,14 @@ const organisationStatusesQuery = locals.organisationStatuses.filter(x => x.isSe
                 <button class="button-secondary">Apply filter</button>
             </form>
         </div>
+        <div class="col-4 pull-right">
+            <aside>
+                <h2 class="heading-medium">Actions</h2>
+                <ul class="list">
+                    <li><a href="/users/new-user">Run provider profile sync</a></li>
+                </ul>
+            </aside>
+        </div>
     <% } %>
     <% if (locals.organisations) { %>
         <div class="col-<%= (showFilters ? 8 : 12) %>">
