@@ -50,7 +50,7 @@
             <div class="form-group  <%= (locals.validationMessages.roles !== undefined) ? 'form-group-error' : '' %>">
                 <fieldset>
                     <% if (locals.validationMessages.roles !== undefined) { %>
-                    <p class="error-message" id="validation-selected-role"><%=locals.validationMessages.roles%></p>
+                    <p class="error-message" id="validation-selected-role"><%-locals.validationMessages.roles%></p>
                     <% } %>
                     <% if (locals.serviceRoles.length > 0) { %>
                         <legend>
