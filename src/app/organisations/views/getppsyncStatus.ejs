@@ -1,0 +1,58 @@
+<div class="row">
+    <div class="col-12">
+        <h1 class="heading-large">Run Provider Profile Sync</h1>
+    </div>
+    <div class="col-12">
+        <p>The following table tells you if the sync has run successfully or failed on each step.</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <table class="data">
+            <thead>
+                <tr>
+                    <th scope="col" class="cwp-20">Start date</th>
+                    <th scope="col" class="cwp-30">End date</th>
+                    <th scope="col" class="cwp-15">Status</th>
+                    <th scope="col" class="cwp-15">Step1</th>
+                    <th scope="col" class="cwp-10">Step2</th>
+                    <th scope="col" class="cwp-10">Step3</th>
+                </tr>
+            </thead>
+            <tbody>
+            <% for(let a = 0;a < locals.audits.length; a++) { %>
+            <% const audit = locals.audits[a]; %>
+                <tr>
+                    <%if (audit.startDate){%>
+                    <td><%= locals.moment(audit.startDate).format('DD/MMM/YYYY HH:mm:ss') %></td>
+                        <%}%>
+
+                    <%if (audit.endDate){%>
+                    <td><%= locals.moment(audit.endDate).format('DD/MMM/YYYY HH:mm:ss') %></td>
+                    <%}%>
+                    <td class="breakable"><%= audit.status %></td>
+                    <td class="breakable"><%= audit.statusStep1 %></td>
+                    <td class="breakable"><%= audit.statusStep2 %></td>
+                    <td class="breakable"><%= audit.statusStep3 %></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+        <div class="row">
+            <div class="col-12">
+                <h2 class="heading-medium">Provider Profile Email</h2>
+            </div>
+            <div class="col-12">
+                <p>Tick this box to confirm you have received the provider profile email.</p>
+
+                <input name="emailStatus" value=""
+                       type="checkbox" > Email received
+                <div class="form-submit submit-buttons">
+                    <button type="submit" class="button">Submit</button>
+                    <a href="<%= locals.cancelLink %>" class="button button-secondary">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
