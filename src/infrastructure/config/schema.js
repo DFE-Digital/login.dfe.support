@@ -125,21 +125,6 @@ const accessIdentifiers = new SimpleSchema({
   'identifiers.organisation': patterns.uuid,
 });
 
-const adapterSchema = new SimpleSchema({
-  type: {
-    type: String,
-    allowedValues: ['file', 'redis', 'mongo', 'azuread', 'sequelize'],
-  },
-  directories: {
-    type: schemas.sequelizeConnection,
-    optional: true,
-  },
-  organisation: {
-    type: schemas.sequelizeConnection,
-    optional: true,
-  },
-});
-
 accessIdentifiers.extend(schemas.apiClient);
 
 const schema = new SimpleSchema({
@@ -160,7 +145,6 @@ const schema = new SimpleSchema({
   toggles: togglesSchema,
   notifications: notificationsSchema,
   assets: new SimpleSchema({ ...schemas.assets }),
-  adapter: adapterSchema,
 });
 
 module.exports.validate = () => {
