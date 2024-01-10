@@ -14,7 +14,7 @@ const get = async (req, res) => {
 };
 const post = async (req, res) => {
   await wsSyncCall(req.params.id);
-  //const organisation = await getOrganisationByIdV2(req.params.id, req.id);
+  const organisation = await getOrganisationByIdV2(req.params.id, req.id);
   //const serviceNotificationsClient = new ServiceNotificationsClient(config.notifications);
   //await serviceNotificationsClient.notifyOrganisationUpdated(organisation);
   //res.flash('info', 'Organisation has been queued for sync');
