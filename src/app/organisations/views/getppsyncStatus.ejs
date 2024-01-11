@@ -13,7 +13,7 @@
                 <tr>
                     <th scope="col" class="cwp-20">Start date</th>
                     <th scope="col" class="cwp-30">End date</th>
-                    <th scope="col" class="cwp-15">Status</th>
+                   <!-- <th scope="col" class="cwp-15">Status</th> -->
                     <th scope="col" class="cwp-15">Step1</th>
                     <th scope="col" class="cwp-10">Step2</th>
                     <th scope="col" class="cwp-10">Step3</th>
@@ -25,15 +25,18 @@
                 <tr>
                     <%if (audit.startDate){%>
                     <td><%= locals.moment(audit.startDate).format('DD/MMM/YYYY HH:mm:ss') %></td>
+                        <%}else{%>
+                            <td></td>
                         <%}%>
-
                     <%if (audit.endDate){%>
                     <td><%= locals.moment(audit.endDate).format('DD/MMM/YYYY HH:mm:ss') %></td>
-                    <%}%>
-                    <td class="breakable"><%= audit.status %></td>
-                    <td class="breakable"><%= audit.statusStep1 %></td>
-                    <td class="breakable"><%= audit.statusStep2 %></td>
-                    <td class="breakable"><%= audit.statusStep3 %></td>
+                        <%}else{%>
+                            <td></td>
+                        <%}%>
+                    <!--<td class="breakable"><%= audit.status === 2? 'SUCCESS' : (audit.status === 3?'FAILURE' : '') %></td> -->
+                    <td class="breakable"><%= audit.statusStep1 === 2? 'SUCCESS' : (audit.statusStep1 === 3?'FAILURE' : '') %></td>
+                    <td class="breakable"><%= audit.statusStep2 === 2? 'SUCCESS' : (audit.statusStep2 === 3?'FAILURE' : '') %></td>
+                    <td class="breakable"><%= audit.statusStep3 === 2? 'SUCCESS' : (audit.statusStep3 === 3?'FAILURE' : '') %></td>
                 </tr>
             <% } %>
             </tbody>
