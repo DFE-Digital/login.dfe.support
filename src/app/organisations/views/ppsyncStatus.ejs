@@ -33,7 +33,6 @@
                         <%}else{%>
                             <td></td>
                         <%}%>
-                    <!--<td class="breakable"><%= audit.status === 2? 'SUCCESS' : (audit.status === 3?'FAILURE' : '') %></td> -->
                     <td class="breakable"><%= audit.statusStep1 === 2? 'SUCCESS' : (audit.statusStep1 === 3?'FAILURE' : '') %></td>
                     <td class="breakable"><%= audit.statusStep2 === 2? 'SUCCESS' : (audit.statusStep2 === 3?'FAILURE' : '') %></td>
                     <td class="breakable"><%= audit.statusStep3 === 2? 'SUCCESS' : (audit.statusStep3 === 3?'FAILURE' : '') %></td>
@@ -45,16 +44,20 @@
             <div class="col-12">
                 <h2 class="heading-medium">Provider Profile Email</h2>
             </div>
-            <div class="col-12">
-                <p>Tick this box to confirm you have received the provider profile email.</p>
 
-                <input name="emailStatus" value=""
-                       type="checkbox" > Email received
+            <div class="col-12">
+                <form method="post" id="form-pp-sync">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <p>Tick this box to confirm you have received the provider profile email.</p>
+                <input type="checkbox" id="emailStatus" name="emailStatus" value="checked"> <label> Email received </label>
                 <div class="form-submit submit-buttons">
                     <button type="submit" class="button">Submit</button>
                     <a href="<%= locals.cancelLink %>" class="button button-secondary">Cancel</a>
                 </div>
+            </form>
             </div>
+
+
         </div>
     </div>
 

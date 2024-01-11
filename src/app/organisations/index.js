@@ -9,6 +9,8 @@ const search = require('./search');
 const organisationUsers = require('./organisationUsers');
 const webServiceSync = require('./webServiceSync');
 const getppsyncStatus = require('./getppsyncStatus');
+const postppsyncStatus = require('./postPpsyncStatus');
+
 
 const router = express.Router({ mergeParams: true });
 
@@ -21,6 +23,7 @@ const users = (csrf) => {
   router.get('/', csrf, asyncWrapper(search.get));
   router.post('/', csrf, asyncWrapper(search.post));
   router.get('/run-pp-sync', csrf, asyncWrapper(getppsyncStatus));
+  router.post('/run-pp-sync', csrf, asyncWrapper(postppsyncStatus));
 
 
   router.get('/:id', (req, res) => {
