@@ -40,7 +40,7 @@ jspm_packages/
 typings/
 
 # npmrc
-.npmrc
+#.npmrc
 
 # Optional npm cache directory
 .npm
