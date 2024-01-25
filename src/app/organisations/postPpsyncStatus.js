@@ -29,6 +29,10 @@ const wsSyncCall = async () => {
   }
 };
 
+//const syncPromise = () => new Promise(resolve =>
+ //   setTimeout(() => resolve(wsSyncCall()), 3000)
+//);
+
 const postPpsyncStatus = async (req, res) => {
   const model = await validateInput(req);
   if (Object.keys(model.validationMessages).length > 0) {
@@ -37,7 +41,7 @@ const postPpsyncStatus = async (req, res) => {
     model.audits = ppauditData;
     return sendResult(req, res, 'organisations/views/ppsyncStatus', model);
   }
-  await wsSyncCall();
+  wsSyncCall();
   res.flash('info', 'The Provider Profile Sync in progress');
   return res.redirect('/organisations');
 };

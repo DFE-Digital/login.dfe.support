@@ -1,5 +1,6 @@
 const { sendResult } = require('../../infrastructure/utils');
 const { searchOrganisations, getOrganisationCategories, listOrganisationStatus } = require('../../infrastructure/organisations');
+const {organisation} = require('login.dfe.dao');
 
 const getFiltersModel = async (req) => {
   const fromRedirect = req.session.params ? req.session.params : null;
@@ -129,6 +130,7 @@ const buildModel = async (req, result = {}) => {
     totalNumberOfResults: result.totalNumberOfResults,
     organisations: result.organisations,
     validationMessages: result.validationMessages || {},
+    activeSync : req.activeSync,
   };
   const filtersModel = await getFiltersModel(req);
   return Object.assign(model, filtersModel);
@@ -152,10 +154,14 @@ const get = async (req, res) => {
     req.session.params.redirectedFromSearchResult = undefined;
     await post(req, res);
   } else {
+    const ppauditData = await organisation.getPpAudit();
+    const activeSync = ppauditData.filter(f=> (f.statusStep1===1 && f.endDate === null));
+    if(activeSync && activeSync.length > 0) {
+      req.activeSync = 'The Provider Profile Sync in progress.';
+    }
     const model = await buildModel(req);
     sendResult(req, res, 'organisations/views/search', model);
   }
-
 };
 
 const post = async (req, res) => {

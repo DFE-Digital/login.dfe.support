@@ -1,8 +1,8 @@
-<% if (locals.flash.info) { %>
+<% if (locals.flash.info || locals.activeSync) { %>
     <div class="row">
         <div class="col-12">
             <div class="notification notification-success">
-                <%= locals.flash.info %>
+                <%= locals.flash.info || locals.activeSync %>
             </div>
         </div>
     </div>

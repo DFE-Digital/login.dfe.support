@@ -49,8 +49,13 @@
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                 <p>Tick this box to confirm you have received the provider profile email.</p>
                 <input type="checkbox" id="emailStatus" name="emailStatus" value="checked"> <label> Email received </label>
+
                 <div class="form-submit submit-buttons">
+                    <%if(locals.syncInP){%>
+                        <button type="submit" disabled class="button">Submit</button>
+                     <%}else{%>
                     <button type="submit" class="button">Submit</button>
+                        <%}%>
                     <a href="<%= locals.cancelLink %>" class="button button-secondary">Cancel</a>
                 </div>
             </form>
