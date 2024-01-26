@@ -205,7 +205,7 @@
                             "AUDIT_HTTP_TRIGGER_URL": "[parameters('auditHttpTriggerInvokeUrl')]",
                             "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4",
                             "WSORG_SYNC_URL": "[parameters('wsorgsyncUrl')]",
-                            "START_WS_SYNC_URL": "[parameters('startwssyncUrl')]",
+                            "START_WS__SYNC_URL": "[parameters('startwssyncUrl')]",
                             "DATABASE_ORGANISATIONS_HOST_NAME": "[parameters('platformGlobalServerName')]",
                             "DATABASE_ORGANISATIONS_NAME": "[parameters('platformGlobalOrganisationsDatabaseName')]",
                             "DATABASE_ORGANISATIONS_USERNAME": "[parameters('sqlAdministratorLogin')]",
