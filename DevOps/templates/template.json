@@ -101,7 +101,7 @@
                 "description": "Audit HTTP trigger invoke URL"
             }
         },
-         "wsorgsyncUrl": {
+        "wsorgsyncUrl": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
@@ -129,28 +129,28 @@
                 "description": "Organisations Database Name"
             }
         },
-         "sqlAdministratorLogin": {
+        "sqlAdministratorLogin": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
                 "description": "SQL Server Admin Login"
             }
         },
-         "sqlAdministratorLoginPassword": {
+        "sqlAdministratorLoginPassword": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
                 "description": "SQL Server Admin Password"
             }
         },
-          "platformGlobalDirectoriesDatabaseName": {
+        "platformGlobalDirectoriesDatabaseName": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
                 "description": "Directories Database Name"
             }
         },
-          "includeDeploymentSlot": {
+        "includeDeploymentSlot": {
             "type": "bool",
             "defaultValue": true,
             "metadata": {
@@ -204,49 +204,51 @@
                         "value": {
                             "AUDIT_HTTP_TRIGGER_URL": "[parameters('auditHttpTriggerInvokeUrl')]",
                             "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4",
-                            "WSORG_SYNC_URL":"[parameters('wsorgsyncUrl')]",
-                            "START_WS__SYNC_URL":"[parameters('startwssyncUrl')]",
-                            "DATABASE_ORGANISATIONS_HOST_NAME":"[parameters('platformGlobalServerName')]",
-                            "DATABASE_ORGANISATIONS_NAME":"[parameters('platformGlobalOrganisationsDatabaseName')]",
-                            "DATABASE_ORGANISATIONS_USERNAME":"[parameters('sqlAdministratorLogin')]",
-                            "DATABASE_ORGANISATIONS_PASSWORD":"[parameters('sqlAdministratorLoginPassword')]",
-                            "DATABASE_DIRECTORIES_HOST_NAME":"[parameters('platformGlobalServerName')]",
-                            "DATABASE_DIRECTORIES_NAME":"[parameters('platformGlobalDirectoriesDatabaseName')]",
-                            "DATABASE_DIRECTORIES_USERNAME":"[parameters('sqlAdministratorLogin')]",
-                            "DATABASE_DIRECTORIES_PASSWORD":"[parameters('sqlAdministratorLoginPassword')]"
+                            "WSORG_SYNC_URL": "[parameters('wsorgsyncUrl')]",
+                            "START_WS__SYNC_URL": "[parameters('startwssyncUrl')]",
+                            "DATABASE_ORGANISATIONS_HOST_NAME": "[parameters('platformGlobalServerName')]",
+                            "DATABASE_ORGANISATIONS_NAME": "[parameters('platformGlobalOrganisationsDatabaseName')]",
+                            "DATABASE_ORGANISATIONS_USERNAME": "[parameters('sqlAdministratorLogin')]",
+                            "DATABASE_ORGANISATIONS_PASSWORD": "[parameters('sqlAdministratorLoginPassword')]",
+                            "DATABASE_DIRECTORIES_HOST_NAME": "[parameters('platformGlobalServerName')]",
+                            "DATABASE_DIRECTORIES_NAME": "[parameters('platformGlobalDirectoriesDatabaseName')]",
+                            "DATABASE_DIRECTORIES_USERNAME": "[parameters('sqlAdministratorLogin')]",
+                            "DATABASE_DIRECTORIES_PASSWORD": "[parameters('sqlAdministratorLoginPassword')]"
 
-                                                                                  
-                    },
-                    "healthCheckPath": {
-                        "value": "/healthCheck"
-                    },
-                    "subnetResourceId": {
-                        "value": "[variables('serviceSubnetResourceId')]"
-                    },
-                    "vnetRouteAllEnabled": {
-                        "value": "[parameters('vnetRouteAllEnabled')]"
-                    },
-                    "http20Enabled": {
-                        "value": true
-                    },
-                    "includeDeploymentSlot": {
-                        "value": "[parameters('includeDeploymentSlot')]"
-                    },
-                    "ipSecurityRestrictions": {
-                        "value": [
-                            {
-                                "ipAddress": "AzureFrontDoor.Backend",
-                                "action": "Allow",
-                                "tag": "ServiceTag",
-                                "name": "AzureFrontDoor",
-                                "priority": 10,
-                                "headers": {
-                                    "x-azure-fdid": [
+
+                        },
+                        "healthCheckPath": {
+                            "value": "/healthCheck"
+                        },
+                        "subnetResourceId": {
+                            "value": "[variables('serviceSubnetResourceId')]"
+                        },
+                        "vnetRouteAllEnabled": {
+                            "value": "[parameters('vnetRouteAllEnabled')]"
+                        },
+                        "http20Enabled": {
+                            "value": true
+                        },
+                        "includeDeploymentSlot": {
+                            "value": "[parameters('includeDeploymentSlot')]"
+                        },
+                        "ipSecurityRestrictions": {
+                            "value": [
+                                {
+                                    "ipAddress": "AzureFrontDoor.Backend",
+                                    "action": "Allow",
+                                    "tag": "ServiceTag",
+                                    "name": "AzureFrontDoor",
+                                    "priority": 10,
+                                    "headers": {
+                                        "x-azure-fdid": [
                                             "[reference(resourceId(variables('frontDoorRg'),'Microsoft.Cdn/profiles', variables('frontDoorName')), '2022-11-01-preview').frontDoorId]"
-                                    ]
+                                        ]
+                                    
+                                    }
                                 }
-                            }
-                        ]
+                            ]
+                        }
                     }
                 }
             }
