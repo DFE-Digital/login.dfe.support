@@ -108,7 +108,49 @@
                 "description": "On Demand Org sync URL"
             }
         },
-        "includeDeploymentSlot": {
+        "startwssyncUrl": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "To Start the Ws Sync"
+            }
+        },
+        "platformGlobalServerName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "SQL Server Name"
+            }
+        },
+        "platformGlobalOrganisationsDatabaseName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Organisations Database Name"
+            }
+        },
+         "sqlAdministratorLogin": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "SQL Server Admin Login"
+            }
+        },
+         "sqlAdministratorLoginPassword": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "SQL Server Admin Password"
+            }
+        },
+          "platformGlobalDirectoriesDatabaseName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Directories Database Name"
+            }
+        },
+          "includeDeploymentSlot": {
             "type": "bool",
             "defaultValue": true,
             "metadata": {
@@ -162,8 +204,18 @@
                         "value": {
                             "AUDIT_HTTP_TRIGGER_URL": "[parameters('auditHttpTriggerInvokeUrl')]",
                             "WEBSITE_HEALTHCHECK_MAXPINGFAILURES": "4",
-                            "WSORG_SYNC_URL":"[parameters('wsorgsyncUrl')]"
-                        }
+                            "WSORG_SYNC_URL":"[parameters('wsorgsyncUrl')]",
+                            "START_WS__SYNC_URL":"[parameters('startwssyncUrl')]",
+                            "DATABASE_ORGANISATIONS_HOST_NAME":"[parameters('platformGlobalServerName')]",
+                            "DATABASE_ORGANISATIONS_NAME":"[parameters('platformGlobalOrganisationsDatabaseName')]",
+                            "DATABASE_ORGANISATIONS_USERNAME":"[parameters('sqlAdministratorLogin')]",
+                            "DATABASE_ORGANISATIONS_PASSWORD":"[parameters('sqlAdministratorLoginPassword')]",
+                            "DATABASE_DIRECTORIES_HOST_NAME":"[parameters('platformGlobalServerName')]",
+                            "DATABASE_DIRECTORIES_NAME":"[parameters('platformGlobalDirectoriesDatabaseName')]",
+                            "DATABASE_DIRECTORIES_USERNAME":"[parameters('sqlAdministratorLogin')]",
+                            "DATABASE_DIRECTORIES_PASSWORD":"[parameters('sqlAdministratorLoginPassword')]"
+
+                                                                                  
                     },
                     "healthCheckPath": {
                         "value": "/healthCheck"
