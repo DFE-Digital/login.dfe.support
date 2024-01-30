@@ -216,40 +216,41 @@
                             "DATABASE_DIRECTORIES_PASSWORD": "[parameters('sqlAdministratorLoginPassword')]"
 
 
-                        },
-                        "healthCheckPath": {
-                            "value": "/healthCheck"
-                        },
-                        "subnetResourceId": {
-                            "value": "[variables('serviceSubnetResourceId')]"
-                        },
-                        "vnetRouteAllEnabled": {
-                            "value": "[parameters('vnetRouteAllEnabled')]"
-                        },
-                        "http20Enabled": {
-                            "value": true
-                        },
-                        "includeDeploymentSlot": {
-                            "value": "[parameters('includeDeploymentSlot')]"
-                        },
-                        "ipSecurityRestrictions": {
-                            "value": [
-                                {
-                                    "ipAddress": "AzureFrontDoor.Backend",
-                                    "action": "Allow",
-                                    "tag": "ServiceTag",
-                                    "name": "AzureFrontDoor",
-                                    "priority": 10,
-                                    "headers": {
-                                        "x-azure-fdid": [
-                                            "[reference(resourceId(variables('frontDoorRg'),'Microsoft.Cdn/profiles', variables('frontDoorName')), '2022-11-01-preview').frontDoorId]"
-                                        ]
-                                    
-                                    }
-                                }
-                            ]
                         }
+                    },
+                    "healthCheckPath": {
+                        "value": "/healthCheck"
+                    },
+                    "subnetResourceId": {
+                        "value": "[variables('serviceSubnetResourceId')]"
+                    },
+                    "vnetRouteAllEnabled": {
+                        "value": "[parameters('vnetRouteAllEnabled')]"
+                    },
+                    "http20Enabled": {
+                        "value": true
+                    },
+                    "includeDeploymentSlot": {
+                        "value": "[parameters('includeDeploymentSlot')]"
+                    },
+                    "ipSecurityRestrictions": {
+                        "value": [
+                            {
+                                "ipAddress": "AzureFrontDoor.Backend",
+                                "action": "Allow",
+                                "tag": "ServiceTag",
+                                "name": "AzureFrontDoor",
+                                "priority": 10,
+                                "headers": {
+                                    "x-azure-fdid": [
+                                        "[reference(resourceId(variables('frontDoorRg'),'Microsoft.Cdn/profiles', variables('frontDoorName')), '2022-11-01-preview').frontDoorId]"
+                                    ]
+                                
+                                }
+                            }
+                        ]
                     }
+                    
                 }
             }
         }
