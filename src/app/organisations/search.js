@@ -157,7 +157,7 @@ const get = async (req, res) => {
     const ppauditData = await organisation.getPpAudit();
     const activeSync = ppauditData.filter(f=> (f.statusStep1===1 && f.endDate === null));
     if(activeSync && activeSync.length > 0) {
-      req.activeSync = 'The Provider Profile Sync in progress.';
+      req.activeSync = 'The Provider Profile Sync is in progress.';
     }
     const model = await buildModel(req);
     sendResult(req, res, 'organisations/views/search', model);
