@@ -42,7 +42,7 @@ const postPpsyncStatus = async (req, res) => {
     return sendResult(req, res, 'organisations/views/ppsyncStatus', model);
   }
   wsSyncCall();
-  res.flash('info', 'The Provider Profile Sync in progress');
+  res.flash('info', 'The Provider Profile Sync is in progress');
   return res.redirect('/organisations');
 };
 
