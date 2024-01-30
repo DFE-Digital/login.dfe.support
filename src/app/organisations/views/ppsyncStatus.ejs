@@ -51,11 +51,11 @@
                     <div class="form-group <%= (locals.validationMessages.emailStatus !== undefined) ? 'form-group-error' : '' %>">
                         <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                         <p>Tick this box to confirm you have received the Provider Profile email.</p>
+                        <% if (locals.validationMessages.emailStatus !== undefined) { %>
+                            <p class="error-message" id="validation-firstName"><%= locals.validationMessages.emailStatus %></p>
+                        <% } %>
                         <div class="multiple-choice">
                          <input type="checkbox" id="emailStatus" name="emailStatus" value="checked"> <label> Email received </label>
-                            <% if (locals.validationMessages.emailStatus !== undefined) { %>
-                                <p class="error-message" id="validation-firstName"><%= locals.validationMessages.emailStatus %></p>
-                            <% } %>
                         </div>
                     </div>
 
