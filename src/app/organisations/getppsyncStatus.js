@@ -12,7 +12,8 @@ const getppsyncStatus = async (req, res) => {
         csrfToken: req.csrfToken(),
         audits : ppauditData,
         syncInP : req.syncInP,
-            cancelLink : '/organisations'
+        cancelLink : '/organisations',
+        validationMessages: {},
     });
 };
 
