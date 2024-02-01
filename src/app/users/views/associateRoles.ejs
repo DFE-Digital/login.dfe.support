@@ -45,17 +45,17 @@
                 </dd>
             </div>
         </dl>
+        <p class="govuk-body text-break govuk-!-margin-top-2">This service, and selected sub-services or roles, will be added to the user's account, assigned to organisation: <b><%= locals.organisation.name %></b></p>
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-            <div class="govuk-form-group <%= (locals.validationMessages.roles !== undefined) ? 'govuk-form-group--error' : '' %>">
-                <fieldset class="govuk-fieldset" id="roles">
+            <div class="form-group  <%= (locals.validationMessages.roles !== undefined) ? 'form-group-error' : '' %>">
+                <fieldset>
                 <% if (locals.serviceRoles.length > 0) { %>
                     <% if (locals.validationMessages.roles !== undefined) { %>
                         <span id="validation-selected-role" class="govuk-error-message">
                             <span class="govuk-visually-hidden">Error:</span> <%-locals.validationMessages.roles %>
                         </span>
                     <% } %>
-
                     <legend class="govuk-visually-hidden">'Select all required sub-services'</legend>
                     <% if (locals.serviceRoles.length > 0) { %>
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--xs">
@@ -65,7 +65,6 @@
                                 <% } %> -->
                              </p>
                         </legend>
-
                         <table class="govuk-table">
                             <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">Select all required sub-services</caption>
                             <thead class="govuk-table__head">
@@ -75,7 +74,6 @@
                                 </tr>
                             </thead>
                             <tbody class="govuk-table__body">
-
                                 <% for (let i = 0; i < locals.serviceRoles.length; i++) { %>
                                     <% const role = locals.serviceRoles[i]; %>
                                     <tr class="govuk-table__row extra-padding">
@@ -106,7 +104,15 @@
                     <% } %>
                 </fieldset>
             </div>
-            
+            <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessageFooter) { %>
+                <div class="govuk-warning-text">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                        <span class="govuk-warning-text__assistive">Warning</span>
+                        <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessageFooter %>
+                    </strong>
+                </div>
+            <% } %>
             <% if (!(!locals.user.isAddService && locals.serviceRoles.length === 0)) {%>
             <div class="form-submit submit-buttons">
                 <button type="submit" class="button">Continue</button>
