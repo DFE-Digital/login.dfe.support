@@ -35,10 +35,15 @@ const wsSyncCall = async () => {
 
 const postPpsyncStatus = async (req, res) => {
   const model = await validateInput(req);
+  const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
+
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    const ppauditData = await organisation.getPpAudit();
-    model.audits = ppauditData;
+    const ppauditData = await organisation.getPpAuditPaging(pageNumber);
+    model.audits = ppauditData.audits;
+    model.numberOfPages= ppauditData.totalNumberOfPages;
+    model.page= pageNumber;
+    model.totalNumberOfResults= ppauditData.totalNumberOfRecords;
     return sendResult(req, res, 'organisations/views/ppsyncStatus', model);
   }
   wsSyncCall();

@@ -7,6 +7,17 @@
         <p>The following table tells you if the sync has run successfully or failed on each step.</p>
     </div>
 </div>
+<%
+const paginationModel = {
+    currentPage: locals.page,
+    numberOfPages: locals.numberOfPages,
+    totalNumberOfResults: locals.totalNumberOfResults,
+    numberOfResultsOnPage: locals.audits.length,
+    data: [],
+};
+%>
+
+<%- include('../../sharedViews/pagination', paginationModel); %>
 <div class="row">
     <div class="col-12">
         <table class="data">
@@ -41,6 +52,7 @@
             <% } %>
             </tbody>
         </table>
+        <%- include('../../sharedViews/pagination', paginationModel); %>
         <div class="row">
             <div class="col-12">
                 <h2 class="heading-medium">Provider Profile Email</h2>
