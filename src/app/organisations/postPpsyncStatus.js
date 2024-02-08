@@ -1,3 +1,4 @@
+const logger = require('../../infrastructure/logger');
 const { sendResult } = require('../../infrastructure/utils');
 const {organisation} = require('login.dfe.dao');
 const rp = require('login.dfe.request-promise-retry');
@@ -46,6 +47,12 @@ const postPpsyncStatus = async (req, res) => {
     model.totalNumberOfResults= ppauditData.totalNumberOfRecords;
     return sendResult(req, res, 'organisations/views/ppsyncStatus', model);
   }
+  logger.audit(`${req.user.email} (id: ${req.user.sub}) wsSync has been initiated by ${req.user.email} (id: ${req.user.sub})`, {
+    type: 'organisations',
+    subType: 'ppSync-support',
+    userId: req.user.sub,
+    userEmail: req.user.email
+  });
   wsSyncCall();
   res.flash('info', 'The Provider Profile Sync is in progress');
   return res.redirect('/organisations');
