@@ -49,7 +49,7 @@ const postPpsyncStatus = async (req, res) => {
   }
   logger.audit(`${req.user.email} (id: ${req.user.sub}) wsSync has been initiated by ${req.user.email} (id: ${req.user.sub})`, {
     type: 'organisations',
-    subType: 'ppSync-support',
+    subType: 'ppSync-started',
     userId: req.user.sub,
     userEmail: req.user.email
   });
