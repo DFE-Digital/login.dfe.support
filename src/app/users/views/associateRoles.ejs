@@ -53,7 +53,7 @@
                 <% if (locals.serviceRoles.length > 0) { %>
                     <% if (locals.validationMessages.roles !== undefined) { %>
                         <span id="validation-selected-role" class="govuk-error-message">
-                            <span class="govuk-visually-hidden">Error:</span> <%-locals.validationMessages.roles %>
+                            <span class="govuk-visually-hidden">There is a problem</span> <%-locals.validationMessages.roles%>
                         </span>
                     <% } %>
                     <legend class="govuk-visually-hidden">'Select all required sub-services'</legend>
@@ -81,7 +81,7 @@
                                             <div class="govuk-checkboxes__item">
                                                 <input class="govuk-checkboxes__input" id="<%=role.id%>" type="checkbox" name="role" value="<%=role.id%>"
                                                     <% if (locals.selectedRoles.roles && locals.selectedRoles.roles.length > 0) {
-                                                    for(let i = 0; i < locals.selectedRoles.roles.length; i++) {
+                                                    for (let i = 0; i < locals.selectedRoles.roles.length; i++) {
                                                         const selectedRole = locals.selectedRoles.roles[i];
                                                     %>
                                                     <%= role.id === selectedRole ? 'checked': ''%><% } }%>>
