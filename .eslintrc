@@ -7,5 +7,6 @@
     "strict": "off",
     "no-underscore-dangle": ["error", { "allowAfterThis": true }],
     "max-len": 0
-  }
+  },
+  "plugins": ["jest"]
 }

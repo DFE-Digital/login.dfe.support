@@ -225,7 +225,7 @@ describe('When syncing diff users materialised view', () => {
     const expectedUser = testData.users.page1.users[0];
     const expectedServices = testData.userServices.user1;
     const actual = users.updateIndex.mock.calls[0][0].find(x => x.id === expectedUser.sub);
-    console.log(actual)
+ 
     expect(actual).toBeDefined();
     expect(actual.name).toEqual(`${expectedUser.given_name} ${expectedUser.family_name}`);
     expect(actual.firstName).toEqual(expectedUser.given_name);

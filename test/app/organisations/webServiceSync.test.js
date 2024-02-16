@@ -2,6 +2,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/utils');
 jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('login.dfe.service-notifications.jobs.client');
+jest.mock('../../../src/app/organisations/wsSynchFunCall')
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
 const { sendResult } = require('./../../../src/infrastructure/utils');
@@ -29,7 +30,6 @@ describe('when syncing organisation for sync', function () {
         id: 'org-1',
       },
     });
-
     res.mockResetAll();
   });
 
@@ -43,7 +43,9 @@ describe('when syncing organisation for sync', function () {
     });
   });
 
-  it('then it should queue organisation for sync on confirmation', async () => {
+  // Functionality removed as part of feature/PIM-2461 - PR #426
+
+/*  it('then it should queue organisation for sync on confirmation', async () => {
     await webServiceSync.post(req, res);
 
     expect(serviceNotificationsClient.notifyOrganisationUpdated).toHaveBeenCalledTimes(1);
@@ -56,6 +58,7 @@ describe('when syncing organisation for sync', function () {
     expect(res.flash).toHaveBeenCalledTimes(1);
     expect(res.flash).toHaveBeenCalledWith('info', 'Organisation has been queued for sync');
   });
+  */
 
   it('then it should redirect to organisation details page on confirmation', async () => {
     await webServiceSync.post(req, res);
