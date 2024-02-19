@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "web": "settings='./config/support.dev.json' node src/index.js",
-    "test": "settings='./config/login.dfe.support.dev.json' ./node_modules/.bin/jest",
+    "test": "jest --coverage",
     "test:watch": "./node_modules/.bin/jest --watchAll",
     "dev": "settings='./config/login.dfe.support.dev.json' node src/index.js"
   },
