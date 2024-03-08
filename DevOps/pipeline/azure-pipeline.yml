@@ -1,7 +1,7 @@
 name: $(BuildDefinitionName)_tag-$(BuildID)_at-$(Date:yyyyMMdd)$(Rev:.r)
 resources:
   repositories:
-  # Defult branch is master
+  # Defult branch is main
     - repository: devopsTemplates
       type: github
       endpoint: DfE-Digital
@@ -10,8 +10,8 @@ resources:
     - repository: config
       type: github
       endpoint: DfE-Digital
-      name: DFE-Digital/login.dfe.config
-      ref: master
+      name: DFE-Digital/login.dfe.dsi-config
+      ref: main
 
 trigger:
   branches:
