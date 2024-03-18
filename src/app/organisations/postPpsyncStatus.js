@@ -1,7 +1,7 @@
 const logger = require('../../infrastructure/logger');
 const { sendResult } = require('../../infrastructure/utils');
 const {organisation} = require('login.dfe.dao');
-const rp = require('login.dfe.request-promise-retry');
+const { ServiceBusClient } = require("@azure/service-bus");
 
 const validateInput = async (req) => {
   const model = {
