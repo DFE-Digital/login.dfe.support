@@ -52,12 +52,17 @@ const get = async (req, res) => {
   }
 
   if (!req.session.user.isAddService) {
-    // const userRoles = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id)
-    //   .sort(function (a, b) { if (a.name < b.name) { return -1; } if (a.name > b.name) { return 1; } return 0; });
     const userRoles = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
+    const rolesForUser = userRoles.roles.sort((a, b) => {
+      if (typeof a !== "undefined" && typeof b !== "undefined") {
+          return a.name.localeCompare(b.name);
+      }
+      return 0;
+    });
+
     req.session.user.services = [{
       serviceId: userRoles.id,
-      roles: userRoles.roles.sort().map(a => a.id),
+      roles: rolesForUser.map(a => a.id),
       name: userRoles.name
     }]
   }
