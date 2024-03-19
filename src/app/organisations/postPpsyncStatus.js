@@ -3,9 +3,6 @@ const { sendResult } = require('../../infrastructure/utils');
 const {organisation} = require('login.dfe.dao');
 const { ServiceBusClient } = require("@azure/service-bus");
 
-const SB_CONNECTION_STRING = process.env.SB_CONNECTION_STRING;
-const SB_TOPIC_NAME = process.env.SB_TOPIC_NAME;
-
 const validateInput = async (req) => {
   const model = {
     emailStatus: req.body.emailStatus || '',
@@ -22,13 +19,12 @@ async function sendServiceMessage() {
   try {
     console.log(`1 ------ Sending Service message starts ---------`);
     console.log(SB_CONNECTION_STRING);
-    console.log(`2 ------ Sending Service message starts ---------`);
-    const sbClient = new ServiceBusClient(SB_CONNECTION_STRING);
-    const sender = sbClient.createSender(SB_TOPIC_NAME);
+    const sbClient = new ServiceBusClient(process.env.SB_CONNECTION_STRING);
+    const sender = sbClient.createSender(process.env.SB_TOPIC_NAME);
     const message = { body: "SUPPORT_TRIGGERED" };
     await sender.sendMessages(message);
     await sender.close();
-    console.log(`------ Sending Service message ends ---------`);
+    console.log(`2 ------ Sending Service message ends ---------`);
   } catch (ex) {
     console.log(ex.message);
   }
