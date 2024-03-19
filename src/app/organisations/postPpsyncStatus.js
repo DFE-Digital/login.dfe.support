@@ -3,6 +3,9 @@ const { sendResult } = require('../../infrastructure/utils');
 const {organisation} = require('login.dfe.dao');
 const { ServiceBusClient } = require("@azure/service-bus");
 
+const SB_CONNECTION_STRING = process.env.SB_CONNECTION_STRING;
+const SB_TOPIC_NAME = process.env.SB_TOPIC_NAME;
+
 const validateInput = async (req) => {
   const model = {
     emailStatus: req.body.emailStatus || '',
