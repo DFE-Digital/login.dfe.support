@@ -60,6 +60,9 @@ typings/
 # dotenv environment variables file
 .env
 
+.vscode
+.npmrc
+
 # Dev env
 /config/
 
