@@ -17,13 +17,13 @@ const validateInput = async (req) => {
 
 async function sendServiceMessage() {
   try {
-    console.log(`2 ------ Sending Service message starts ---------`);
+    logger.info(`3 ------ Sending Service message starts ---------`);
     const sbClient = new ServiceBusClient(process.env.SB_CONNECTION_STRING);
     const sender = sbClient.createSender(process.env.SB_TOPIC_NAME);
     const message = { body: "SUPPORT_TRIGGERED" };
     await sender.sendMessages(message);
     await sender.close();
-    console.log(`2 ------ Sending Service message ends ---------`);
+    logger.info(`4 ------ Sending Service message ends ---------`);
   } catch (ex) {
     console.log(ex.message);
   }
