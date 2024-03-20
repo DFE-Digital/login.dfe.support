@@ -18,7 +18,6 @@ const validateInput = async (req) => {
 async function sendServiceMessage() {
   try {
     console.log(`1 ------ Sending Service message starts ---------`);
-    console.log(SB_CONNECTION_STRING);
     const sbClient = new ServiceBusClient(process.env.SB_CONNECTION_STRING);
     const sender = sbClient.createSender(process.env.SB_TOPIC_NAME);
     const message = { body: "SUPPORT_TRIGGERED" };
