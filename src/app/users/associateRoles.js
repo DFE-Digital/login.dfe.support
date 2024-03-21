@@ -26,7 +26,7 @@ const getViewModel = async (req) => {
   const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisations(userId, req.id);
   const organisationDetails = userOrganisations.find(x => x.organisation.id === req.params.orgId);
   const policyEngineResult = await policyEngine.getPolicyApplicationResultsForUser(userId.startsWith('inv-') ? undefined : userId, req.params.orgId, req.params.sid, req.id);
-  const serviceRoles = policyEngineResult.rolesAvailableToUsers;
+  const serviceRoles = policyEngineResult.rolesAvailableToUser;
   const selectedRoles = req.session.user.services ? req.session.user.services.find(x => x.serviceId === req.params.sid) : [];
 
   return {
@@ -53,16 +53,9 @@ const get = async (req, res) => {
 
   if (!req.session.user.isAddService) {
     const userRoles = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
-    const rolesForUser = userRoles.roles.sort((a, b) => {
-      if (typeof a !== "undefined" && typeof b !== "undefined") {
-          return a.name.localeCompare(b.name);
-      }
-      return 0;
-    });
-
     req.session.user.services = [{
       serviceId: userRoles.id,
-      roles: rolesForUser.map(a => a.id),
+      roles: userRoles.roles.map(a => a.id),
       name: userRoles.name
     }]
   }
