@@ -48,7 +48,7 @@ const postPpsyncStatus = async (req, res) => {
     userId: req.user.sub,
     userEmail: req.user.email
   });
-  sendServiceMessage();
+  await sendServiceMessage();
   res.flash('info', 'The Provider Profile Sync is in progress');
   return res.redirect('/organisations');
 };
