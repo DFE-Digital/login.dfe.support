@@ -22,8 +22,9 @@ const users = (csrf) => {
 
   router.get('/', csrf, asyncWrapper(search.get));
   router.post('/', csrf, asyncWrapper(search.post));
-  router.get('/run-pp-sync', csrf, asyncWrapper(getppsyncStatus));
-  router.post('/run-pp-sync', csrf, asyncWrapper(postppsyncStatus));
+  // DO NOT UNCOMMENT
+  // router.get('/run-pp-sync', csrf, asyncWrapper(getppsyncStatus));
+  // router.post('/run-pp-sync', csrf, asyncWrapper(postppsyncStatus));
 
 
   router.get('/:id', (req, res) => {
