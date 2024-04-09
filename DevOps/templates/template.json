@@ -150,6 +150,21 @@
                 "description": "Directories Database Name"
             }
         },
+        "sharedServiceBusConnectionString": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Shared Service Bus Connection String"
+            }
+        },
+        "ppsupporttopicname": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Service Bus Support Topic Name"
+            }
+        },
+        
         "includeDeploymentSlot": {
             "type": "bool",
             "defaultValue": true,
@@ -213,8 +228,9 @@
                             "DATABASE_DIRECTORIES_HOST_NAME": "[parameters('platformGlobalServerName')]",
                             "DATABASE_DIRECTORIES_NAME": "[parameters('platformGlobalDirectoriesDatabaseName')]",
                             "DATABASE_DIRECTORIES_USERNAME": "[parameters('sqlAdministratorLogin')]",
-                            "DATABASE_DIRECTORIES_PASSWORD": "[parameters('sqlAdministratorLoginPassword')]"
-
+                            "DATABASE_DIRECTORIES_PASSWORD": "[parameters('sqlAdministratorLoginPassword')]",
+                            "SB_CONNECTION_STRING": "[parameters('sharedServiceBusConnectionString')]",
+                            "SB_TOPIC_NAME": "[parameters('ppsupporttopicname')]"
 
                         }
                     },

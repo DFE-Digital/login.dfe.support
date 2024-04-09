@@ -26,7 +26,7 @@ const getViewModel = async (req) => {
   const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisations(userId, req.id);
   const organisationDetails = userOrganisations.find(x => x.organisation.id === req.params.orgId);
   const policyEngineResult = await policyEngine.getPolicyApplicationResultsForUser(userId.startsWith('inv-') ? undefined : userId, req.params.orgId, req.params.sid, req.id);
-  const serviceRoles = policyEngineResult.rolesAvailableToUsers;
+  const serviceRoles = policyEngineResult.rolesAvailableToUser;
   const selectedRoles = req.session.user.services ? req.session.user.services.find(x => x.serviceId === req.params.sid) : [];
 
   return {
@@ -52,12 +52,10 @@ const get = async (req, res) => {
   }
 
   if (!req.session.user.isAddService) {
-    // const userRoles = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id)
-    //   .sort(function (a, b) { if (a.name < b.name) { return -1; } if (a.name > b.name) { return 1; } return 0; });
     const userRoles = await getSingleServiceForUser(req.params.uid, req.params.orgId, req.params.sid, req.id);
     req.session.user.services = [{
       serviceId: userRoles.id,
-      roles: userRoles.roles.sort().map(a => a.id),
+      roles: userRoles.roles.map(a => a.id),
       name: userRoles.name
     }]
   }
@@ -102,8 +100,8 @@ const post = async (req, res) => {
 
 const haveRolesBeenUpdated= (req, currentService, selectedRoles) => {
   if(req.session.user.services
-    && (req.session.user.services[currentService].roles && req.session.user.services[currentService].roles.length > 0)){
-      return _.isEqual(req.session.user.services[currentService].roles.sort(),selectedRoles.sort());;
+      && (req.session.user.services[currentService].roles && req.session.user.services[currentService].roles.length > 0)){
+    return _.isEqual(req.session.user.services[currentService].roles.sort(),selectedRoles.sort());
   }
   return false;
 }
