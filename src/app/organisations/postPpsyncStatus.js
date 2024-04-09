@@ -1,7 +1,7 @@
 const logger = require('../../infrastructure/logger');
 const { sendResult } = require('../../infrastructure/utils');
 const {organisation} = require('login.dfe.dao');
-const rp = require('login.dfe.request-promise-retry');
+const { ServiceBusClient } = require("@azure/service-bus");
 
 const validateInput = async (req) => {
   const model = {
@@ -15,24 +15,19 @@ const validateInput = async (req) => {
   return model;
 };
 
-const wsSyncCall = async () => {
+async function sendServiceMessage() {
   try {
-    const client = await rp({
-      method: 'GET',
-      uri: `${process.env.START_WS__SYNC_URL}`
-    });
-    return client;
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return undefined;
-    }
-    throw e;
+    logger.info(`3 ------ Sending Service message starts ---------`);
+    const sbClient = new ServiceBusClient(process.env.SB_CONNECTION_STRING);
+    const sender = sbClient.createSender(process.env.SB_TOPIC_NAME);
+    const message = { body: "SUPPORT_TRIGGERED" };
+    await sender.sendMessages(message);
+    await sender.close();
+    logger.info(`4 ------ Sending Service message ends ---------`);
+  } catch (ex) {
+    console.log(ex.message);
   }
-};
-
-//const syncPromise = () => new Promise(resolve =>
- //   setTimeout(() => resolve(wsSyncCall()), 3000)
-//);
+}
 
 const postPpsyncStatus = async (req, res) => {
   const model = await validateInput(req);
@@ -53,7 +48,7 @@ const postPpsyncStatus = async (req, res) => {
     userId: req.user.sub,
     userEmail: req.user.email
   });
-  wsSyncCall();
+  await sendServiceMessage();
   res.flash('info', 'The Provider Profile Sync is in progress');
   return res.redirect('/organisations');
 };
