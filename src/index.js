@@ -84,12 +84,17 @@ const init = async () => {
   Object.assign(app.locals, {
     moment,
     urls: {
+      help: config.hostingEnvironment.helpUrl,
       profile: config.hostingEnvironment.profileUrl,
+      interactions: config.hostingEnvironment.interactionsUrl,
       assets: assetsUrl,
     },
     app: {
       title: 'DfE Sign-in Support Console',
-      environmentBannerMessage: config.hostingEnvironment.environmentBannerMessage,
+      environmentBannerMessage:
+        config.hostingEnvironment.environmentBannerMessage !== 'null'
+          ? config.hostingEnvironment.environmentBannerMessage
+          : null,
     },
     gaTrackingId: config.hostingEnvironment.gaTrackingId,
     assets: {
