@@ -100,23 +100,6 @@
         </div>
     </header>
 
-    <!-- <div class="header-user">
-        <div class="header-inner">
-            <div class="service-status">
-                <div class="govuk-phase-banner">
-                    <p class="govuk-phase-banner__content">
-                        <strong class="govuk-tag govuk-phase-banner__content__tag">
-                        PROTOTYPE
-                        </strong>
-                        <span class="govuk-phase-banner__text">
-                        This is a new service – your <a class="govuk-link" href="<%= locals.urls.survey %>" target="_blank">feedback</a> will help us to improve it.
-                        </span>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div> -->
-
     <main id="content" class="govuk-!-margin-bottom-9">
         <div class="govuk-width-container">
             <% if (locals.backLink !== undefined) { %>
@@ -160,7 +143,6 @@
             <ul class="govuk-footer__inline-list">
                 <li class="govuk-footer__inline-list-item">
                     <a class="govuk-footer__link" href="<%=locals.urls.interactions%>/cookies">
-                    <!-- <a class="govuk-footer__link" href="/cookies"> -->
                         Cookies
                     </a>
                 </li>
@@ -218,17 +200,9 @@
 <script src="<%= locals.urls.assets %>/gds-upgrade/javascript/app.min.js?version=<%= locals.assets.version %>"></script>
 
 <script>
-    function signOut(){
-        <% if (locals.isApprover) { %>
-            updateCookieReviewUsersBanner();
-        <% } %>
-    }
-
     <% if (locals.isLoggedIn) { %>
         sessionTimeout();
-        <% } %> 
-
-    
+    <% } %> 
 </script>
 
 </body>
