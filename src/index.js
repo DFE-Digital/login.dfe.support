@@ -1,3 +1,4 @@
+require('dotenv').config()
 const appInsights = require('applicationinsights');
 const express = require('express');
 const bodyParser = require('body-parser');
