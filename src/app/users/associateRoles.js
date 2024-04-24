@@ -7,7 +7,6 @@ const { getSingleUserService, getSingleInvitationService } = require('./../../in
 const PolicyEngine = require('login.dfe.policy-engine');
 const policyEngine = new PolicyEngine(config);
 
-
 const getSingleServiceForUser = async (userId, organisationId, serviceId, correlationId) => {
   const userService = userId.startsWith('inv-') ? await getSingleInvitationService(userId.substr(4), serviceId, organisationId, correlationId) : await getSingleUserService(userId, serviceId, organisationId, correlationId);
   const application = await getServiceById(serviceId, correlationId);
