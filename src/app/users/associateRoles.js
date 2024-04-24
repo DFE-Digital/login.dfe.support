@@ -18,14 +18,6 @@ const getSingleServiceForUser = async (userId, organisationId, serviceId, correl
   }
 };
 
-const sortRoles = async (r1, r2) => {
-  console.log(r1);
-  //const role1 = r1.name.toUpperCase();
-  //const role2 = r2.name.toUpperCase();
-
-  return undefined; // role1.localeCompare(role2);
-};
-
 const getViewModel = async (req) => {
   const userId = req.params.uid;
   const totalNumberOfServices = req.session.user.isAddService ? req.session.user.services.length : 1;
@@ -33,8 +25,8 @@ const getViewModel = async (req) => {
   const serviceDetails = await getServiceById(req.params.sid, req.id);
   const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisations(userId, req.id);
   const organisationDetails = userOrganisations.find(x => x.organisation.id === req.params.orgId);
-  const policyEngineResult = await sortRoles(policyEngine.getPolicyApplicationResultsForUser(userId.startsWith('inv-') ? undefined : userId, req.params.orgId, req.params.sid, req.id));
-  const serviceRoles = await policyEngineResult.rolesAvailableToUser;
+  const policyEngineResult = policyEngine.getPolicyApplicationResultsForUser(userId.startsWith('inv-') ? undefined : userId, req.params.orgId, req.params.sid, req.id);
+  const serviceRoles = (await policyEngineResult.rolesAvailableToUser).sort((a, b) => a.name.localeCompare(b.name));
   const selectedRoles = req.session.user.services ? req.session.user.services.find(x => x.serviceId === req.params.sid) : [];
 
   return {
