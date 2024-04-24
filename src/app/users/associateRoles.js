@@ -19,8 +19,8 @@ const getSingleServiceForUser = async (userId, organisationId, serviceId, correl
 };
 
 const sortRoles = async (r1, r2) => {
-  const role1 = r1.toUpperCase();
-  const role2 = r2.toUpperCase();
+  const role1 = r1.name.toUpperCase();
+  const role2 = r2.name.toUpperCase();
 
   return role1.localeCompare(role2);
 };
