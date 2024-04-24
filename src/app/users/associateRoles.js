@@ -26,7 +26,7 @@ const getViewModel = async (req) => {
   const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisations(userId, req.id);
   const organisationDetails = userOrganisations.find(x => x.organisation.id === req.params.orgId);
   const policyEngineResult = policyEngine.getPolicyApplicationResultsForUser(userId.startsWith('inv-') ? undefined : userId, req.params.orgId, req.params.sid, req.id);
-  const serviceRoles = (await policyEngineResult.rolesAvailableToUser).sort((a, b) => a.name.localeCompare(b.name));
+  const serviceRoles = await policyEngineResult.rolesAvailableToUser;
   const selectedRoles = req.session.user.services ? req.session.user.services.find(x => x.serviceId === req.params.sid) : [];
 
   return {
@@ -38,7 +38,7 @@ const getViewModel = async (req) => {
     organisationDetails,
     selectedRoles,
     serviceDetails,
-    serviceRoles,
+    serviceRoles: serviceRoles.sort((a, b) => a.name.localeCompare(b.name)),
     currentService,
     totalNumberOfServices,
     cancelLink: req.session.user.isAddService ? `/users/${userId}/organisations` : `/users/${userId}/services`,
