@@ -121,7 +121,6 @@ describe('when displaying the associate roles view', () => {
     expect(res.render.mock.calls[0][0]).toBe('users/views/associateRoles');
   });
 
-
   it('then it should include csrf token', async () => {
     await getAssociateRoles(req, res);
 
