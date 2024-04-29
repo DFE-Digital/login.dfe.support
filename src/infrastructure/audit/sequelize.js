@@ -52,8 +52,16 @@ const getPageOfUserAudits = async (userId, pageNumber) => {
   const queryWhere = `
     WHERE type != 'technical-audit'
     AND id IN (
-      SELECT AL.id FROM AuditLogs AL LEFT JOIN AuditLogMeta ALM on AL.id = ALM.auditId
-        WHERE AL.userId = :userId OR (ALM.[key] IN ('editedUser', 'viewedUser') AND ALM.[value] = :userId)
+      SELECT AL.id
+        FROM AuditLogs AL
+        WHERE AL.userId = :userId
+      UNION
+      SELECT AL.id
+        FROM AuditLogs AL
+        JOIN AuditLogMeta ALM
+          ON ALM.auditId = AL.id
+        WHERE ALM.[key] IN ('editedUser', 'viewedUser')
+          AND ALM.[Value] = :userId
     )`;
   const queryOpts = {
     type: QueryTypes.SELECT,
