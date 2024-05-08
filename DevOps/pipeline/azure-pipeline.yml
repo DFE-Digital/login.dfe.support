@@ -6,7 +6,7 @@ resources:
       type: github
       endpoint: DfE-Digital
       name: DFE-Digital/login.dfe.devops
-      ref: main
+      ref: feature/DSI-6894
     - repository: config
       type: github
       endpoint: DfE-Digital
@@ -102,109 +102,109 @@ stages:
   displayName: "Scan tools & Build"
   jobs:
     # Code scaning tools
-  - ${{ if eq(parameters.InfrDeploy, 'true') }}:
-    - template:  pipeline/checkov.yml@devopsTemplates
+  # - ${{ if eq(parameters.InfrDeploy, 'true') }}:
+  #   - template:  pipeline/checkov.yml@devopsTemplates
 
-  - ${{ if eq(parameters.AppDeploy, 'true') }}:
+  # - ${{ if eq(parameters.AppDeploy, 'true') }}:
 
-    - template:  pipeline/eslint.yml@devopsTemplates
+  #   - template:  pipeline/eslint.yml@devopsTemplates
 
     - template:  pipeline/dependencyCheck.yml@devopsTemplates
       parameters:
         npmInstCmd: 'install --force --json --no-package-lock'
 
-    - template: pipeline/build.yml@devopsTemplates
-      parameters:
-        applicationName: ${{variables.applicationFullName}}
-        custRegAuth: $(custRegAuth)
-        environmentNames:
-          - ${{ if eq(variables.tran, 'true') }}: 
-            - tran
-          - ${{ if eq(variables.dev, 'true') }}:
-            - dev
-          - ${{ if eq(variables.test, 'true') }}:
-            - test
-          - ${{ if eq(variables.pp, 'true') }}:
-            - pp
-          - ${{ if eq(variables.pr, 'true') }}:
-            - pr
-        pm2ProcessFileName: process.json
-        nodeVersionSpec: '18.17.0'
-        npmInstCmd: 'install --force --json --no-package-lock'
-        npmPruneFixCmd: 'install --production --json --force --no-package-lock'
+#     - template: pipeline/build.yml@devopsTemplates
+#       parameters:
+#         applicationName: ${{variables.applicationFullName}}
+#         custRegAuth: $(custRegAuth)
+#         environmentNames:
+#           - ${{ if eq(variables.tran, 'true') }}: 
+#             - tran
+#           - ${{ if eq(variables.dev, 'true') }}:
+#             - dev
+#           - ${{ if eq(variables.test, 'true') }}:
+#             - test
+#           - ${{ if eq(variables.pp, 'true') }}:
+#             - pp
+#           - ${{ if eq(variables.pr, 'true') }}:
+#             - pr
+#         pm2ProcessFileName: process.json
+#         nodeVersionSpec: '18.17.0'
+#         npmInstCmd: 'install --force --json --no-package-lock'
+#         npmPruneFixCmd: 'install --production --json --force --no-package-lock'
 
 
-- ${{ each location in parameters.location }}:
-  - ${{ each var in variables }}:
-    - ${{ if in(var.key, 'tran','dev','test','pp','pr') }}:
-      - ${{ if eq(var.value, 'true') }}:
-        - ${{ if or(and(in(var.key, 'tran','pp','pr'),eq(location, 'northeurope')),and(in(var.key, 'tran','dev','test','pp','pr'),eq(location, 'westeurope'))) }}:
-          - stage: Deployment_${{var.key}}_${{location}}
-            displayName: "Deployment [${{var.key}}] ${{location}}"
-            ${{ if eq(location,'westeurope') }}:
-              ${{ if eq(var.key,'pr') }}:
-                dependsOn: 
-                - scanBuildApp
-                - Deployment_pp_${{location}}
-                condition: and(in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped'),in(dependencies.Deployment_pp_westeurope.result, 'Succeeded', 'Skipped'))
-              ${{ else }}:
-                dependsOn: 
-                - scanBuildApp
-                condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
-            ${{ if eq(location,'northeurope') }}:
-              ${{ if eq(length(parameters.location), 2) }}:
-                dependsOn: 
-                - scanBuildApp
-                - Deployment_${{var.key}}_westeurope
-                condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
-              ${{ else }}:
-                dependsOn: 
-                - scanBuildApp
-                condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
-            variables:
-            - name: environmentId
-              ${{ if eq(var.key, 'tran') }}:
-                value: d03
-              ${{ if eq(var.key, 'dev') }}:
-                value: d01
-              ${{ if eq(var.key, 'test') }}:
-                value: t01
-              ${{ if eq(var.key, 'pp') }}:
-                value: t02
-              ${{ if eq(var.key, 'pr') }}:
-                value: p01
-            jobs:
-            - ${{ if parameters.InfrDeploy }}:
-              - template: pipeline/appInfrastructure.yml@devopsTemplates
-                parameters:
-                  ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
-                    serviceConnection: $(devServiceConnection)
-                  ${{ elseif eq(var.key, 'pr') }}:
-                    serviceConnection: $(prodServiceConnection)
-                  ${{ else }}:
-                    serviceConnection: $(testServiceConnection)
-                  environmentName: ${{var.key}}
-                  applicationShortName: ${{variables.applicationShortName}}
-                  applicationFullName: ${{variables.applicationFullName}}
-                  AppDeploy: ${{parameters.AppDeploy}}
-                  deploymentLocation: ${{location}}
-                  runtimeStack: NODE|18-lts
+# - ${{ each location in parameters.location }}:
+#   - ${{ each var in variables }}:
+#     - ${{ if in(var.key, 'tran','dev','test','pp','pr') }}:
+#       - ${{ if eq(var.value, 'true') }}:
+#         - ${{ if or(and(in(var.key, 'tran','pp','pr'),eq(location, 'northeurope')),and(in(var.key, 'tran','dev','test','pp','pr'),eq(location, 'westeurope'))) }}:
+#           - stage: Deployment_${{var.key}}_${{location}}
+#             displayName: "Deployment [${{var.key}}] ${{location}}"
+#             ${{ if eq(location,'westeurope') }}:
+#               ${{ if eq(var.key,'pr') }}:
+#                 dependsOn: 
+#                 - scanBuildApp
+#                 - Deployment_pp_${{location}}
+#                 condition: and(in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped'),in(dependencies.Deployment_pp_westeurope.result, 'Succeeded', 'Skipped'))
+#               ${{ else }}:
+#                 dependsOn: 
+#                 - scanBuildApp
+#                 condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
+#             ${{ if eq(location,'northeurope') }}:
+#               ${{ if eq(length(parameters.location), 2) }}:
+#                 dependsOn: 
+#                 - scanBuildApp
+#                 - Deployment_${{var.key}}_westeurope
+#                 condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
+#               ${{ else }}:
+#                 dependsOn: 
+#                 - scanBuildApp
+#                 condition: in(dependencies.scanBuildApp.result, 'Succeeded', 'Skipped')
+#             variables:
+#             - name: environmentId
+#               ${{ if eq(var.key, 'tran') }}:
+#                 value: d03
+#               ${{ if eq(var.key, 'dev') }}:
+#                 value: d01
+#               ${{ if eq(var.key, 'test') }}:
+#                 value: t01
+#               ${{ if eq(var.key, 'pp') }}:
+#                 value: t02
+#               ${{ if eq(var.key, 'pr') }}:
+#                 value: p01
+#             jobs:
+#             - ${{ if parameters.InfrDeploy }}:
+#               - template: pipeline/appInfrastructure.yml@devopsTemplates
+#                 parameters:
+#                   ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
+#                     serviceConnection: $(devServiceConnection)
+#                   ${{ elseif eq(var.key, 'pr') }}:
+#                     serviceConnection: $(prodServiceConnection)
+#                   ${{ else }}:
+#                     serviceConnection: $(testServiceConnection)
+#                   environmentName: ${{var.key}}
+#                   applicationShortName: ${{variables.applicationShortName}}
+#                   applicationFullName: ${{variables.applicationFullName}}
+#                   AppDeploy: ${{parameters.AppDeploy}}
+#                   deploymentLocation: ${{location}}
+#                   runtimeStack: NODE|18-lts
 
 
-            - ${{ if parameters.AppDeploy }}:
-              - template: pipeline/deploy.yml@devopsTemplates
-                parameters: 
-                  ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
-                    serviceConnection: $(devServiceConnection)
-                  ${{ elseif eq(var.key, 'pr') }}:
-                    serviceConnection: $(prodServiceConnection)
-                  ${{ else }}:
-                    serviceConnection: $(testServiceConnection)
-                  environmentName: ${{var.key}}
-                  applicationFullName: ${{variables.applicationFullName}}
-                  applicationShortName: ${{variables.applicationShortName}}
-                  releaseArtifactName: ${{variables.applicationShortName}}-${{var.key}}-$(Build.BuildId)-release
-                  InfrDeploy: ${{parameters.InfrDeploy}}
-                  deploymentLocation: ${{location}}
-                  runtimeStack: NODE|18-lts
-                  pm2ProcessFileName: process.json
+#             - ${{ if parameters.AppDeploy }}:
+#               - template: pipeline/deploy.yml@devopsTemplates
+#                 parameters: 
+#                   ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
+#                     serviceConnection: $(devServiceConnection)
+#                   ${{ elseif eq(var.key, 'pr') }}:
+#                     serviceConnection: $(prodServiceConnection)
+#                   ${{ else }}:
+#                     serviceConnection: $(testServiceConnection)
+#                   environmentName: ${{var.key}}
+#                   applicationFullName: ${{variables.applicationFullName}}
+#                   applicationShortName: ${{variables.applicationShortName}}
+#                   releaseArtifactName: ${{variables.applicationShortName}}-${{var.key}}-$(Build.BuildId)-release
+#                   InfrDeploy: ${{parameters.InfrDeploy}}
+#                   deploymentLocation: ${{location}}
+#                   runtimeStack: NODE|18-lts
+#                   pm2ProcessFileName: process.json
