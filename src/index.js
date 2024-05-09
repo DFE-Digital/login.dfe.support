@@ -17,10 +17,22 @@ const flash = require('express-flash-2');
 const setCorrelationId = require('express-mw-correlation-id');
 const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
 const registerRoutes = require('./routes');
+const localStorage = require('node-persist');
+const Redis = require('ioredis');
+const RedisStore = require('connect-redis').default;
 const oidc = require('./infrastructure/oidc');
 const config = require('./infrastructure/config');
 const logger = require('./infrastructure/logger');
 const configSchema = require('./infrastructure/config/schema');
+
+const redisClient = new Redis(config.claims.params.connectionString);
+
+// Initialize store.
+const redisStore = new RedisStore({
+  client: redisClient,
+  prefix: 'CookieSession:',
+});
+
 
 configSchema.validate();
 
@@ -30,7 +42,12 @@ if (config.hostingEnvironment.applicationInsights) {
   appInsights.setup(config.hostingEnvironment.applicationInsights).start();
 }
 
+
 const init = async () => {
+  localStorage.init({
+    ttl: 60 * 60 * 1000,
+  });
+
   const csrf = csurf({
     cookie: {
       secure: true,
@@ -41,12 +58,16 @@ const init = async () => {
   const app = express();
 
   if (config.hostingEnvironment.hstsMaxAge) {
-    app.use(helmet.hsts(
-      {
+   app.use(helmet({
+      noCache: true,
+      frameguard: {
+        action: 'deny',
+      },
+      hsts: {
         maxAge: config.hostingEnvironment.hstsMaxAge,
         preload: true,
       },
-    ));
+    }));
   }
 
   logger.info('set helmet policy defaults');
@@ -112,12 +133,24 @@ const init = async () => {
   if (!isNaN(sessionExpiry)) {
     expiryInMinutes = sessionExpiry;
   }
+  //chanmge to redisStore
   app.use(session({
+    name: 'session',
+    store: redisStore,
     keys: [config.hostingEnvironment.sessionSecret],
     maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
     httpOnly: true,
     secure: true,
+    resave: true,
+    saveUninitialized: true,
+    secret: config.hostingEnvironment.sessionSecret,
+    cookie: {
+      httpOnly: true,
+      secure: true,
+      maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
+    },
   }));
+ 
   app.use((req, res, next) => {
     req.session.now = Date.now();
     next();

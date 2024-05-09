@@ -115,7 +115,7 @@ const init = async (app) => {
       }
 
       if(allUserServices && allUserServices.roles){
-        const { roles } = allUserServices;
+        const roles = allUserServices.roles.sort((a, b) => a.name.localeCompare(b.name, 'es', {sensitivity: 'base'}));
         const supportClaims = {isRequestApprover: roles.some(i => i.code === 'request_approver'), isSupportUser: roles.some(i => i.code === 'support_user')};
         if (!supportClaims || !supportClaims.isSupportUser) {
           checkSessionAndRedirect();
