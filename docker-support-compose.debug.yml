@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+  redis-server:
+    image: 'redis'
+    environment:
+      NODE_ENV: development
+    ports:
+      - 6379:6379
+  logindfesupport:
+    image: logindfesupport
+    build:
+      context: .
+      dockerfile: ./Docker/Dockerfile
+    environment:
+      NODE_ENV: development
+      settings: ./config/login.dfe.support.local.json
+      localAddress: 'redis-server'
+      ENVIRONMENT_ID: 'd01'
+    ports:
+      - 41020:41020
+      - 9229:9229
+    depends_on:
+      - redis-server
+    command: ["node", "--inspect=0.0.0.0", "src/index.js"]
