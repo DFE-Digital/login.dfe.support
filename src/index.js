@@ -3,7 +3,7 @@ const appInsights = require('applicationinsights');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const session = require('cookie-session');
+const session = require('express-session');
 const expressLayouts = require('express-ejs-layouts');
 const csurf = require('csurf');
 const http = require('http');
@@ -134,23 +134,21 @@ const init = async () => {
     expiryInMinutes = sessionExpiry;
   }
   //chanmge to redisStore
-  app.use(session({
-    name: 'session',
-    store: redisStore,
-    keys: [config.hostingEnvironment.sessionSecret],
-    maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
-    httpOnly: true,
-    secure: true,
-    resave: true,
-    saveUninitialized: true,
-    secret: config.hostingEnvironment.sessionSecret,
-    cookie: {
-      httpOnly: true,
-      secure: true,
+  app.use(
+    session({
+      name: 'session',
+      store: redisStore,
+      resave: true,
+      saveUninitialized: true,
+      secret: config.hostingEnvironment.sessionSecret,
       maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
-    },
-  }));
- 
+      cookie: {
+        httpOnly: true,
+        secure: true,
+        maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
+      },
+    }),
+  );
   app.use((req, res, next) => {
     req.session.now = Date.now();
     next();
