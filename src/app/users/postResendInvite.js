@@ -7,7 +7,12 @@ const postResendInvite  = async (req, res) => {
     return res.redirect(req.header('Referer'));
   }
   res.flash('info', `Resent invitation email to ${req.session.user.firstName} ${req.session.user.lastName}`);
-  return res.redirect(req.header('Referer'));
+  const referer = req.header('Referer');
+  if(referer === undefined || referer === null)
+    {
+      referer = "organisations";
+    }
+  return res.redirect(referer);
 
 };
 
