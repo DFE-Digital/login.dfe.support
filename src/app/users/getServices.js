@@ -118,7 +118,7 @@ const action = async (req, res) => {
     }
     organisations.push(org);
   }
-
+  req.session.type = 'services';
   req.session.user = {
     firstName: user.firstName,
     lastName: user.lastName,

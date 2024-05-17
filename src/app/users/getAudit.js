@@ -172,7 +172,7 @@ const getAudit = async (req, res) => {
 
   const user = await getCachedUserById(req.params.uid, req.id);
   const userOrganisations = await getUserOrganisations(req.params.uid, req.id);
-
+  req.session.type = "audit";
   const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
   if (isNaN(pageNumber)) {
     return res.status(400).send();
