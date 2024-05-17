@@ -1,4 +1,4 @@
-const { sendResult , setCurrentArea } = require('./../../infrastructure/utils');
+const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
 const { getUserOrganisations, getInvitationOrganisations, getPendingRequestsAssociatedWithUser } = require('./../../infrastructure/organisations');
 const { getUsersByIdV2 } = require('./../../infrastructure/directories');
@@ -68,7 +68,6 @@ const action = async (req, res) => {
   const organisationRequests = !user.id.startsWith('inv-') ? await getPendingRequests(user.id, req.id) : [];
   const allOrgs = organisationDetails.concat(organisationRequests);
   const sortedOrgs = sortBy(allOrgs, 'name');
-  setCurrentArea('organisations');
   req.session.user = {
     firstName: user.firstName,
     lastName: user.lastName,
