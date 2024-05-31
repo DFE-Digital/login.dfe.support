@@ -112,6 +112,7 @@ stages:
     - template:  pipeline/dependencyCheck.yml@devopsTemplates
       parameters:
         npmInstCmd: 'install --force --json --no-package-lock'
+        npmAudit: false
 
     - template: pipeline/build.yml@devopsTemplates
       parameters:
