@@ -27,7 +27,7 @@
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
             <div class="form-group  <%= (locals.validationMessages.services !== undefined) ? 'form-group-error' : '' %>">
-                <fieldset>
+                <fieldset class="govuk-fieldset" aria-describedby="validation-selected-organisation">
                     <% if (locals.validationMessages.services !== undefined) { %>
                     <p class="error-message" id="validation-selected-organisation"><%=locals.validationMessages.services%></p>
                     <% } %>
