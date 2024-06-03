@@ -64,7 +64,7 @@
         <form method="post">
             <div class="form-group <%= (locals.validationMessages.selectedResponse !== undefined) ? 'form-group-error' : '' %>">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                <fieldset class="inline">
+                <fieldset class="inline" aria-describedby="validation-selected-organisation">
                     <% if (locals.validationMessages.selectedResponse !== undefined) { %>
                     <p class="error-message"
                        id="validation-selected-organisation"><%= locals.validationMessages.selectedResponse %></p>
