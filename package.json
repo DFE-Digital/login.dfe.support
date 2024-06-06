@@ -50,7 +50,6 @@
     "login.dfe.jwt-strategies": "github:DFE-Digital/login.dfe.jwt-strategies#v4.1.0",
     "login.dfe.notifications.client": "github:DFE-Digital/login.dfe.notifications.client#v5.2.1",
     "login.dfe.policy-engine": "github:DFE-Digital/login.dfe.policy-engine#v3.1.1",
-    "login.dfe.request-promise-retry": "github:DFE-Digital/login.dfe.request-promise-retry#v3.1.0",
     "login.dfe.sanitization": "github:DFE-Digital/login.dfe.sanitization#v3.0.1",
     "login.dfe.service-notifications.jobs.client": "github:DFE-Digital/login.dfe.service-notifications.jobs.client#v2.0.1",
     "login.dfe.validation": "github:DFE-Digital/login.dfe.validation#v2.1.1",
