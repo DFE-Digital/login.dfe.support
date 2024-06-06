@@ -9,7 +9,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
     },
   },
 }));
-jest.mock('login.dfe.request-promise-retry');
+jest.mock('login.dfe.async-retry');
 jest.mock('uuid', () => ({v4: jest.fn().mockReturnValue('some-uuid')}));
 
 const accessRequests = [
@@ -29,13 +29,13 @@ const accessRequests = [
   },
 ];
 
-const rp = require('login.dfe.request-promise-retry');
+const {fetchApi} = require('login.dfe.async-retry');
 
 describe('when updating an index with new data in azure search', () => {
   let updateIndex;
 
   beforeEach(() => {
-    rp.mockReset();
+    fetchApi.mockReset();
 
     updateIndex = require('./../../../src/infrastructure/accessRequests/azureSearch').updateIndex;
   });
@@ -43,18 +43,19 @@ describe('when updating an index with new data in azure search', () => {
 
   it('then it should post to index docs access requests', async () => {
     await updateIndex(accessRequests, 'new-index-name');
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
-      method: 'POST',
-      uri: 'https://test-search.search.windows.net/indexes/new-index-name/docs/index?api-version=2016-09-01'
+
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('https://test-search.search.windows.net/indexes/new-index-name/docs/index?api-version=2016-09-01');
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'POST'
     });
   });
 
   it('then it should include the api key from config', async () => {
     await updateIndex(accessRequests, 'new-index-name');
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
         'api-key': 'some-key',
       },
@@ -64,8 +65,8 @@ describe('when updating an index with new data in azure search', () => {
   it('then it should include access requests in body of request', async () => {
     await updateIndex(accessRequests, 'new-index-name');
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
       body: {
         value: [
           {
@@ -90,6 +91,6 @@ describe('when updating an index with new data in azure search', () => {
   it('then if there are no users to update the endpoint is not called', async () => {
     await updateIndex([], 'new-index-name');
 
-    expect(rp.mock.calls).toHaveLength(0);
+    expect(fetchApi.mock.calls).toHaveLength(0);
   });
 });

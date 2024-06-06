@@ -12,17 +12,17 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
     },
   },
 }));
-jest.mock('login.dfe.request-promise-retry');
+jest.mock('login.dfe.async-retry');
 jest.mock('uuid', () => ({v4: jest.fn().mockReturnValue('some-uuid')}));
 
 
-const rp  = require('login.dfe.request-promise-retry');
+const {fetchApi} = require('login.dfe.async-retry');
 
 describe('when creating an index in azure search', () => {
   let createIndex;
 
   beforeEach(() => {
-    rp.mockReset();
+    fetchApi.mockReset();
 
     createIndex = require('./../../../src/infrastructure/userDevices/azureSearch').createIndex;
   });
@@ -31,18 +31,18 @@ describe('when creating an index in azure search', () => {
   it('then it should put new index using new index name in uri', async () => {
     await createIndex();
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
-      method: 'PUT',
-      uri: 'https://test-search.search.windows.net/indexes/userdevices-some-uuid?api-version=2016-09-01'
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('https://test-search.search.windows.net/indexes/userdevices-some-uuid?api-version=2016-09-01');
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'PUT'
     })
   });
 
   it('then it should include api-key from config', async () => {
     await createIndex();
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
         'api-key': 'some-key',
       },
@@ -52,7 +52,7 @@ describe('when creating an index in azure search', () => {
   it('then it should include index schema in body', async () => {
     await createIndex();
 
-    expect(rp.mock.calls[0][0]).toMatchObject({
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
       body: {
         name: 'userdevices-some-uuid',
         fields: [

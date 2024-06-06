@@ -9,18 +9,18 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
     },
   },
 }));
-jest.mock('login.dfe.request-promise-retry');
+jest.mock('login.dfe.async-retry');
 jest.mock('uuid', () => ({v4: jest.fn().mockReturnValue('some-uuid')}));
 
 
-const rp = require('login.dfe.request-promise-retry');
+const {fetchApi} = require('login.dfe.async-retry');
 
 describe('when searching for a user in azure search', () => {
   let getByUserId;
 
   beforeEach(() => {
-    rp.mockReset();
-    rp.mockImplementation(() => {
+    fetchApi.mockReset();
+    fetchApi.mockImplementation(() => {
       return {
         '@odata.context': 'https://sbsa-search.search.windows.net/indexes(\'userdevices-7170516e-5671-4ea7-8e52-adfc901c73c3\')/$metadata#docs',
         '@odata.count': 49,
@@ -55,18 +55,18 @@ describe('when searching for a user in azure search', () => {
   it('then it gets the record by user id with the current index', async () => {
     await getByUserId('test');
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
-      method: 'GET',
-      uri: `https://test-search.search.windows.net/indexes/test-index/docs?api-version=2016-09-01&$filter=id+eq+'test'`,
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe(`https://test-search.search.windows.net/indexes/test-index/docs?api-version=2016-09-01&$filter=id+eq+'test'`);
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'GET'
     });
   });
 
   it('then the api key from config is included', async () => {
     await getByUserId('test');
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
         'api-key': 'some-key',
       },

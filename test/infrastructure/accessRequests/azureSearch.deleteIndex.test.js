@@ -9,21 +9,21 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
     },
   },
 }));
-jest.mock('login.dfe.request-promise-retry');
+jest.mock('login.dfe.async-retry');
 jest.mock('uuid', () => {
   return {v4: jest.fn().mockReturnValue('some-uuid')};
 });
 
 const accessRequestId = 'userOrg1';
 
-const rp = require('login.dfe.request-promise-retry');
+const {fetchApi} = require('login.dfe.async-retry');
 
 
 describe('when deleting an item from the index with azure search', () => {
   let deleteIndex;
 
   beforeEach(() => {
-    rp.mockReset();
+    fetchApi.mockReset();
     jest.doMock('ioredis', () => jest.fn().mockImplementation(() => {
       const RedisMock = require('ioredis-mock').default;
       const redisMock = new RedisMock();
@@ -35,18 +35,19 @@ describe('when deleting an item from the index with azure search', () => {
 
   it('then it should delete the index docs from access requests', async () => {
     await deleteIndex(accessRequestId, 'new-index-name');
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
-      method: 'POST',
-      uri: 'https://test-search.search.windows.net/indexes/new-index-name/docs/index?api-version=2016-09-01'
+
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('https://test-search.search.windows.net/indexes/new-index-name/docs/index?api-version=2016-09-01');
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'POST'
     });
   });
 
   it('then it should include the api key from config', async () => {
     await deleteIndex(accessRequestId, 'new-index-name');
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
         'api-key': 'some-key',
       },
@@ -56,8 +57,8 @@ describe('when deleting an item from the index with azure search', () => {
   it('then it should include access requests in body of request', async () => {
     await deleteIndex(accessRequestId, 'new-index-name');
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
       body: {
         value:
           [{

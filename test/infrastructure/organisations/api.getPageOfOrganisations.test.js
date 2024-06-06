@@ -1,4 +1,4 @@
-jest.mock('login.dfe.request-promise-retry');
+jest.mock('login.dfe.async-retry');
 jest.mock('agentkeepalive', () => {
   return {
     HttpsAgent: jest.fn()
@@ -14,7 +14,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
   },
 }));
 
-const rp  = require('login.dfe.request-promise-retry');
+const {fetchApi} = require('login.dfe.async-retry');
 
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { getPageOfOrganisations } = require('./../../../src/infrastructure/organisations/api');
@@ -31,8 +31,8 @@ const apiResponse = {
 
 describe('when getting a page of organisations from api', () => {
   beforeEach(() => {
-    rp.mockReset();
-    rp.mockImplementation(() => {
+    fetchApi.mockReset();
+    fetchApi.mockImplementation(() => {
       return apiResponse;
     });
 
@@ -48,17 +48,17 @@ describe('when getting a page of organisations from api', () => {
   it('then it should call organisations resource with page number', async () => {
     await getPageOfOrganisations(2, correlationId);
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
-      method: 'GET',
-      uri: 'http://organisations.test/organisations?page=2',
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('http://organisations.test/organisations?page=2');
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'GET'
     });
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
     await getPageOfOrganisations(2, correlationId);
 
-    expect(rp.mock.calls[0][0]).toMatchObject({
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
         authorization: 'bearer token',
       },
@@ -68,7 +68,7 @@ describe('when getting a page of organisations from api', () => {
   it('then it should include the correlation id', async () => {
     await getPageOfOrganisations(2, correlationId);
 
-    expect(rp.mock.calls[0][0]).toMatchObject({
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
         'x-correlation-id': correlationId,
       },
