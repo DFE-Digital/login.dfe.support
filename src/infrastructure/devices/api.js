@@ -1,5 +1,6 @@
 const config = require('./../config');
 const { fetchApi } = require('login.dfe.async-retry');
+const asyncRetry = require('login.dfe.async-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 
 
@@ -29,24 +30,30 @@ const deviceExists = async (serialNumber, correlationId) => {
   const token = await jwtStrategy(config.devices.service).getBearerToken();
 
   try {
-    const response = await fetchApi( `${config.devices.service.url}/digipass/${serialNumber}`,{
-      method: 'GET',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      }
-    });
 
-    if (response.statusCode === 204) {
+    const resp = await asyncRetry(async () =>{
+      const response = await fetch(`${config.devices.service.url}/digipass/${serialNumber}`,{
+        method: 'GET',
+        headers: {
+          authorization: `bearer ${token}`,
+          'x-correlation-id': correlationId,
+        }
+      });
+
+      return response;
+    }, asyncRetry.strategies.apiStrategy);
+    
+    if (resp.status === 204) {
       return true;
-    }
-    if (response.statusCode === 404) {
+    }    
+    if (resp.status === 404) {
       return false;
     }
 
-    throw new Error(`Error calling api, status code ${response.statusCode}`);
+    throw new Error(`Error calling api, status code ${response.status}`);
+
   } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
+    const status = e.status ? e.status : 500;
     if (status === 404) {
       return false;
     }
