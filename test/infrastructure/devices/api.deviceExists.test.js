@@ -10,7 +10,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 }));
 
 
-const {fetchApi} = require('login.dfe.async-retry');
+const asyncRetry = require('login.dfe.async-retry');
 
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { deviceExists } = require('./../../../src/infrastructure/devices/api');
@@ -18,11 +18,25 @@ const { deviceExists } = require('./../../../src/infrastructure/devices/api');
 const correlationId = 'abc123';
 
 describe('when getting a page of digipass tokens from the devices api', () => {
+  
+  const mockedFetch = jest.fn().mockResolvedValue({
+    method: 'GET',
+    uri: 'http://devices.test/digipass/123456789',
+    headers: {
+      authorization: 'bearer token',
+      'x-correlation-id': correlationId,
+    },
+  });
+
   beforeEach(() => {
-    fetchApi.mockReset();
-    fetchApi.mockImplementation(() => {
+    
+    global.fetch = mockedFetch;
+
+    asyncRetry.mockReset();
+    
+    asyncRetry.mockImplementation(() => {
       return {
-        statusCode: 204,
+        status: 204,
       };
     });
 
@@ -38,17 +52,18 @@ describe('when getting a page of digipass tokens from the devices api', () => {
   it('then it should call digipass resource with serial number', async () => {
     await deviceExists('123456789', correlationId);
 
-    expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][0]).toBe('http://devices.test/digipass/123456789');
-    expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      method: 'GET'
+    expect(asyncRetry.mock.calls).toHaveLength(1);
+    
+    expect(await asyncRetry.mock.calls[0][0]()).toMatchObject({
+      method: 'GET',
+      uri: 'http://devices.test/digipass/123456789'
     });
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
     await deviceExists('123456789', correlationId);
 
-    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+    expect(await asyncRetry.mock.calls[0][0]()).toMatchObject({
       headers: {
         authorization: 'bearer token',
       },
@@ -58,7 +73,7 @@ describe('when getting a page of digipass tokens from the devices api', () => {
   it('then it should include the correlation id', async () => {
     await deviceExists('123456789', correlationId);
 
-    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+    expect(await asyncRetry.mock.calls[0][0]()).toMatchObject({
       headers: {
         'x-correlation-id': correlationId,
       },
@@ -72,9 +87,9 @@ describe('when getting a page of digipass tokens from the devices api', () => {
   });
 
   it('then true is returned if api returns 404', async () => {
-    fetchApi.mockImplementation(() => {
+    asyncRetry.mockImplementation(() => {
       return {
-        statusCode: 404,
+        status: 404,
       };
     });
 
