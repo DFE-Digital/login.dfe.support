@@ -9,10 +9,10 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
     },
   },
 }));
-jest.mock('login.dfe.request-promise-retry');
+jest.mock('login.dfe.async-retry');
 jest.mock('uuid', () => ({v4: jest.fn().mockReturnValue('some-uuid')}));
 
-const rp = require('login.dfe.request-promise-retry');
+const {fetchApi} = require('login.dfe.async-retry');
 
 describe('When deleting unused indexes from Azure Search', () => {
   let deleteUnusedIndexes;
@@ -27,8 +27,8 @@ describe('When deleting unused indexes from Azure Search', () => {
       return redisMock;
     }));
 
-    rp.mockReset();
-    rp.mockImplementation((opts) => {
+    fetchApi.mockReset();
+    fetchApi.mockImplementation((_, opts) => {
       if (opts.method === 'GET') {
         return {
           "@odata.context": "https://test-search.search.windows.net/$metadata#indexes",
@@ -59,17 +59,17 @@ describe('When deleting unused indexes from Azure Search', () => {
   it('then it should delete user devices in indexes marked as unused that are still not used', async () => {
     await deleteUnusedIndexes();
 
-    expect(rp.mock.calls[0][0]).toMatchObject({
-      method: 'DELETE',
-      uri: 'https://test-search.search.windows.net/indexes/userDevices-4771d85e-f3ef-4e71-82ca-30f0663b10c9?api-version=2016-09-01',
+    expect(fetchApi.mock.calls[0][0]).toBe('https://test-search.search.windows.net/indexes/userDevices-4771d85e-f3ef-4e71-82ca-30f0663b10c9?api-version=2016-09-01');
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'DELETE'
     });
   });
 
   it('then it should not delete users in indexes marked as unused that are now used', async () => {
     await deleteUnusedIndexes();
 
-    rp.mock.calls.forEach((call) => {
-      expect(call[0].uri).not.toMatch(/indexes\/userDevices-58457890-ba74-49ae-86eb-b4a144649805/);
+    fetchApi.mock.calls.forEach((call) => {
+      expect(call[0]).not.toMatch(/indexes\/userDevices-58457890-ba74-49ae-86eb-b4a144649805/);
     });
   });
 

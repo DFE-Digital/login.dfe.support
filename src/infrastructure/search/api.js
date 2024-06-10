@@ -1,22 +1,19 @@
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const config = require('./../config');
-const rp = require('login.dfe.request-promise-retry');
 const { mapUserStatus } = require('./../../infrastructure/utils');
+const { fetchApi } = require('login.dfe.async-retry');
 
 const callApi = async (endpoint, method, body, correlationId) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();
 
   try {
-    return await rp({
+    return await fetchApi(`${config.search.service.url}${endpoint}`,{
       method: method,
-      uri: `${config.search.service.url}${endpoint}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
-      body: body,
-      json: true,
-      strictSSL: config.hostingEnvironment.env.toLowerCase() !== 'dev',
+      body: body
     });
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;

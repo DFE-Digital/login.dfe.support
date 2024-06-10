@@ -1,14 +1,13 @@
 const config = require('./../config');
-const rp = require('login.dfe.request-promise-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
+const { fetchApi } = require('login.dfe.async-retry');
 
 const addInvitationService = async (invitationId, serviceId, organisationId, externalIdentifiers = [], roles = [], correlationId) => {
   const token = await jwtStrategy(config.access.service).getBearerToken();
 
   try {
-    return await rp({
+    return await fetchApi(`${config.access.service.url}/invitations/${invitationId}/services/${serviceId}/organisations/${organisationId}`,{
       method: 'PUT',
-      uri: `${config.access.service.url}/invitations/${invitationId}/services/${serviceId}/organisations/${organisationId}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
@@ -16,8 +15,7 @@ const addInvitationService = async (invitationId, serviceId, organisationId, ext
       body: {
         identifiers: externalIdentifiers,
         roles,
-      },
-      json: true,
+      }
     });
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
@@ -35,17 +33,15 @@ const addUserService = async (userId, serviceId, organisationId, roles = [], cor
   const token = await jwtStrategy(config.access.service).getBearerToken();
 
   try {
-    return await rp({
+    return await fetchApi(`${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${organisationId}`,{
       method: 'PUT',
-      uri: `${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${organisationId}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
       body: {
         roles
-      },
-      json: true,
+      }
     });
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
@@ -61,18 +57,17 @@ const addUserService = async (userId, serviceId, organisationId, roles = [], cor
 
 const updateUserService = async (userId, serviceId, organisationId, roles, correlationId) => {
   const token = await jwtStrategy(config.access.service).getBearerToken();
+
   try {
-    return await rp({
+    return await fetchApi(`${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${organisationId}`,{
       method: 'PATCH',
-      uri: `${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${organisationId}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
       body: {
         roles
-      },
-      json: true,
+      }
     });
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
@@ -90,17 +85,15 @@ const updateInvitationService = async (invitationId, serviceId, organisationId, 
   const token = await jwtStrategy(config.access.service).getBearerToken();
 
   try {
-    return await rp({
+    return await fetchApi(`${config.access.service.url}/invitations/${invitationId}/services/${serviceId}/organisations/${organisationId}`,{
       method: 'PATCH',
-      uri: `${config.access.service.url}/invitations/${invitationId}/services/${serviceId}/organisations/${organisationId}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
       body: {
         roles,
-      },
-      json: true,
+      }
     });
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
@@ -118,14 +111,12 @@ const getServicesByUserId = async (id, correlationId) => {
   const token = await jwtStrategy(config.access.service).getBearerToken();
 
   try {
-    return await rp({
+    return await fetchApi(`${config.access.service.url}/users/${id}/services`,{
       method: 'GET',
-      uri: `${config.access.service.url}/users/${id}/services`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      },
-      json: true,
+      }
     });
 
   } catch (e) {
@@ -138,15 +129,14 @@ const getServicesByUserId = async (id, correlationId) => {
 
 const getServicesByInvitationId = async (iid, correlationId) => {
   const token = await jwtStrategy(config.access.service).getBearerToken();
+
   try {
-    return await rp({
+    return await fetchApi(`${config.access.service.url}/invitations/${iid}/services`,{
       method: 'GET',
-      uri: `${config.access.service.url}/invitations/${iid}/services`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      },
-      json: true,
+      }
     });
   } catch (e) {
     if (e.statusCode === 404) {
@@ -158,18 +148,17 @@ const getServicesByInvitationId = async (iid, correlationId) => {
 
 const putSingleServiceIdentifierForUser = async (userId, serviceId, orgId, key, value, correlationId) => {
   const token = await jwtStrategy(config.access.service).getBearerToken();
+
   try {
-    await rp({
+    await fetchApi(`${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${orgId}/identifiers/${key}`,{
       method: 'PUT',
-      uri: `${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${orgId}/identifiers/${key}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
       body: {
         value: value
-      },
-      json: true,
+      }
     });
     return true;
   } catch (e) {
@@ -186,15 +175,14 @@ const putSingleServiceIdentifierForUser = async (userId, serviceId, orgId, key, 
 
 const getServiceIdentifierDetails = async (serviceId, identifierKey, identifierValue, correlationId) => {
   const token = await jwtStrategy(config.access.service).getBearerToken();
+
   try {
-    return await rp({
+    return await fetchApi(`${config.access.service.url}/services/${serviceId}/users?filteridkey=${identifierKey}&filteridvalue=${identifierValue}`,{
       method: 'GET',
-      uri: `${config.access.service.url}/services/${serviceId}/users?filteridkey=${identifierKey}&filteridvalue=${identifierValue}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      },
-      json: true,
+      }
     });
   } catch (e) {
     if (e.statusCode === 404) {
@@ -206,15 +194,14 @@ const getServiceIdentifierDetails = async (serviceId, identifierKey, identifierV
 
 const getSingleUserService = async (userId, serviceId, organisationId, correlationId) => {
   const token = await jwtStrategy(config.access.service).getBearerToken();
+
   try {
-    return await rp({
+    return await fetchApi( `${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${organisationId}`,{
       method: 'GET',
-      uri: `${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${organisationId}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      },
-      json: true,
+      }
     });
   } catch (e) {
     if (e.statusCode === 404) {
@@ -226,15 +213,14 @@ const getSingleUserService = async (userId, serviceId, organisationId, correlati
 
 const getSingleInvitationService = async (invitationId, serviceId, organisationId, correlationId) => {
   const token = await jwtStrategy(config.access.service).getBearerToken();
+
   try {
-    return await rp({
+    return await fetchApi( `${config.access.service.url}/invitations/${invitationId}/services/${serviceId}/organisations/${organisationId}`,{
       method: 'GET',
-      uri: `${config.access.service.url}/invitations/${invitationId}/services/${serviceId}/organisations/${organisationId}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      },
-      json: true,
+      }
     });
   } catch (e) {
     if (e.statusCode === 404) {
@@ -246,15 +232,14 @@ const getSingleInvitationService = async (invitationId, serviceId, organisationI
 
 const listRolesOfService = async (serviceId, correlationId) => {
   const token = await jwtStrategy(config.access.service).getBearerToken();
+
   try {
-    return await rp({
+    return await fetchApi(`${config.access.service.url}/services/${serviceId}/roles`,{
       method: 'GET',
-      uri: `${config.access.service.url}/services/${serviceId}/roles`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      },
-      json: true,
+      }
     });
   } catch (e) {
     if (e.statusCode === 404) {
@@ -266,15 +251,14 @@ const listRolesOfService = async (serviceId, correlationId) => {
 
 const removeServiceFromUser = async (userId, serviceId, organisationId, correlationId) => {
   const token = await jwtStrategy(config.access.service).getBearerToken();
+
   try {
-    return await rp({
+    return await fetchApi(`${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${organisationId}`,{
       method: 'DELETE',
-      uri: `${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${organisationId}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      },
-      json: true,
+      }
     });
   } catch (e) {
     throw e;
@@ -283,15 +267,14 @@ const removeServiceFromUser = async (userId, serviceId, organisationId, correlat
 
 const removeServiceFromInvitation = async (invitationId, serviceId, organisationId, correlationId) => {
   const token = await jwtStrategy(config.access.service).getBearerToken();
+  
   try {
-    return await rp({
+    return await fetchApi(`${config.access.service.url}/invitations/${invitationId}/services/${serviceId}/organisations/${organisationId}`,{
       method: 'DELETE',
-      uri: `${config.access.service.url}/invitations/${invitationId}/services/${serviceId}/organisations/${organisationId}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      },
-      json: true,
+      }
     });
   } catch (e) {
     throw e;
