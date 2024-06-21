@@ -19,6 +19,13 @@ const getConfirmInvitationDeactivate = require('./getConfirmInvitationDeactivate
 const postConfirmInvitationDeactivate = require('./postConfirmInvitationDeactivate');
 const getConfirmReactivate = require('./getConfirmReactivate');
 const postConfirmReactivate = require('./postConfirmReactivate');
+
+const getManageConsoleServices = require('./getManageConsoleServices');
+// const postConfirmReactivate = require('./postConfirmReactivate');
+
+const { getManageConsoleRoles, postManageConsoleRoles }  = require('./getManageConsoleRoles')
+// const postManageConsoleRoles = require('./postManageConsoleRoles')
+
 const getConfirmInvitationReactivate = require('./getConfirmInvitationReactivate');
 const postConfirmInvitationReactivate = require('./postConfirmInvitationReactivate');
 const getNewUser = require('./getNewUser');
@@ -52,6 +59,7 @@ const { get: getAssociateRoles, post: postAssociateRoles } = require('./associat
 const { get: getConfirmAddService, post: postConfirmAddService } = require('./confirmAddService');
 const { get: getRemoveServiceAccess, post: postRemoveServiceAccess} = require('./removeServiceAccess');
 const { get: getWebServiceSync, post: postWebServiceSync} = require('./webServiceSync');
+
 
 const router = express.Router({ mergeParams: true });
 
@@ -99,6 +107,10 @@ const users = (csrf) => {
   router.get('/:uid/edit-profile', csrf, asyncWrapper(getEditProfile));
   router.post('/:uid/edit-profile', csrf, asyncWrapper(postEditProfile));
 
+  // add manage roles
+  router.get('/:uid/add-manage-console-roles/:sid', csrf, asyncWrapper(getManageConsoleRoles));
+  router.post('/:uid/add-manage-console-roles/:sid', csrf, asyncWrapper(postManageConsoleRoles));
+
   router.get('/:uid/edit-email', csrf, asyncWrapper(getEditEmail));
   router.post('/:uid/edit-email', csrf, asyncWrapper(postEditEmail));
 
@@ -110,6 +122,9 @@ const users = (csrf) => {
 
   router.get('/:uid/confirm-reactivation', csrf, asyncWrapper(getConfirmReactivate));
   router.post('/:uid/confirm-reactivation', csrf, asyncWrapper(postConfirmReactivate));
+
+// manage-console-services
+  router.get('/:uid/manage-console-services', csrf, asyncWrapper(getManageConsoleServices));
 
   router.get('/:uid/confirm-invitation-reactivation', csrf, asyncWrapper(getConfirmInvitationReactivate));
   router.post('/:uid/confirm-invitation-reactivation', csrf, asyncWrapper(postConfirmInvitationReactivate));

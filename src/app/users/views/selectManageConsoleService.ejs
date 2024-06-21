@@ -1,0 +1,44 @@
+
+<div class="govuk-width-container">
+  <!-- <div class="govuk-grid-row"> -->
+    <!-- <div class="govuk-grid-column-one-half"> -->
+    <div>
+    <!-- <div class="col-8"> -->
+      <h1 class="heading-xlarge">
+        <span class="govuk-heading-s"><%= user.name %></span>
+            Manage console roles
+        </h1>
+        <dl class="inline condensed">
+            <dt class="label">Email:</dt>
+            <dd><%= user.email %></dd>
+            <dt class="label">Last login:</dt>
+            <dd><%= locals.user.lastLogin ? locals.moment(locals.user.lastLogin).format('DD MMM YYYY, HH:mm:ss') : 'Never' %></dd>
+            <dt class="label">Account status:</dt>
+            <dd><%= user.status.description %></dd>
+            <dt class="label">Number of logins in last 12 months:</dt>
+            <dd><%= user.loginsInPast12Months.successful %></dd>
+        </dl>
+    </div>
+    <div class="col-8">
+        <table class="govuk-table">
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">Service</th>
+                <th scope="col" class="govuk-table__header">Service type</th>
+                <th scope="col" class="govuk-table__header">Activated</th>
+                <th scope="col" class="govuk-table__header">Visibility</th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              <% for(let i=0; i<services.services.length; i++ ) {%>
+              <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header"><a href="add-manage-console-roles/<%= services.services[i].id %>"><%= services.services[i].name %></a></th>
+                <td class="govuk-table__cell">£95</td>
+                <td class="govuk-table__cell">£95</td>
+                <td class="govuk-table__cell">£95</td>
+              </tr>
+              <% } %>
+            </tbody>
+          </table>
+    </div>
+</div>
