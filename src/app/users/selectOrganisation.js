@@ -2,6 +2,8 @@
 
 const { getUserOrganisationsV2, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 
+let selectionPrompt = 'You are associated with more than one organisation. Select the organisation associated with the service you would like to access.';
+
 const getNaturalIdentifiers = async (req) => {
   const userId = req.params.uid;
   const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisationsV2(req.params.uid, req.id);
