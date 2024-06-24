@@ -2,7 +2,9 @@
 
 const { getUserOrganisationsV2, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 
-let selectionPrompt = 'You are associated with more than one organisation. Select the organisation associated with the service you would like to access.';
+const getSelectionPrompt = async (req) => {
+  return 'You are associated with more than one organisation. Select the organisation associated with the service you would like to access.';
+};
 
 const getNaturalIdentifiers = async (req) => {
   const userId = req.params.uid;
@@ -45,6 +47,7 @@ const get = async (req, res) => {
     return res.redirect(`organisations/${userOrganisations[0].organisation.id}`);
   }
   return res.render('users/views/selectOrganisation', {
+    selectionPrompt: getSelectionPrompt(),
     csrfToken: req.csrfToken(),
     organisations: userOrganisations,
     selectedOrganisation: null,
