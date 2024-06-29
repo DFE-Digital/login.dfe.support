@@ -107,5 +107,6 @@ const haveRolesBeenUpdated= (req, currentService, selectedRoles) => {
 
 module.exports = {
   get,
-  post
+  post,
+  getSingleServiceForUser
 };
