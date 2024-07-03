@@ -32,15 +32,11 @@ parameters:
   default:
     - westeurope
     - northeurope
-- name: AppDeploy
-  type: boolean
-  displayName: 'App Deployment only'
-  default: true
 - name: InfrDeploy
   type: boolean
   displayName: 'Infrastrucure Deployment only'
-  default: true
-- name: tran 
+  default: false
+- name: tran
   type: boolean
   displayName: 'Transformation Deployment'
   default: false
@@ -60,6 +56,10 @@ parameters:
   type: boolean
   displayName: 'Prod Deployment'
   default: false
+- name: gitCheck
+  type: boolean
+  displayName: 'OverWrite Git Check in Test'
+  default: false
 
 variables:
 - group: dsi-global
@@ -70,7 +70,7 @@ variables:
 - name: numberOfWorkers
   value: 1
 - name: tran
-  ${{ if eq(parameters.tran, 'true') }}: 
+  ${{ if eq(parameters.tran, 'true') }}:
     value: true
   ${{ else }}:
     value: false
@@ -85,12 +85,12 @@ variables:
   ${{ else }}:
     value: false
 - name: pp
-  ${{ if or(eq(parameters.pp, 'true'), contains(variables['Build.SourceBranch'],'release')) }}:
+  ${{ if and(or(eq(parameters.pp, 'true'), contains(variables['Build.SourceBranch'],'release')), not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) }}:
     value: true
   ${{ else }}:
     value: false
 - name: pr
-  ${{ if or(eq(parameters.pr, 'true'), contains(variables['Build.SourceBranch'],'release')) }}:
+  ${{ if and(or(eq(parameters.pr, 'true'), contains(variables['Build.SourceBranch'],'release')), not(contains(variables['Build.SourceVersionMessage'],'Upgrade to version'))) }}:
     value: true
   ${{ else }}:
     value: false
@@ -101,25 +101,19 @@ stages:
 - stage: scanBuildApp
   displayName: "Scan tools & Build"
   jobs:
-    # Code scaning tools
-  - ${{ if eq(parameters.InfrDeploy, 'true') }}:
-    - template:  pipeline/checkov.yml@devopsTemplates
 
-  - ${{ if eq(parameters.AppDeploy, 'true') }}:
+  - template:  pipeline/scanTools.yml@devopsTemplates
+    parameters:
+      npmInstCmd: 'install --force --json --no-package-lock'
+      AppDeploy: ${{ not(parameters.InfrDeploy) }}
 
-    - template:  pipeline/eslint.yml@devopsTemplates
-
-    - template:  pipeline/dependencyCheck.yml@devopsTemplates
-      parameters:
-        npmInstCmd: 'install --force --json --no-package-lock'
-        npmAudit: false
-
+  - ${{ if not(eq(parameters.InfrDeploy, 'true')) }}:
     - template: pipeline/build.yml@devopsTemplates
       parameters:
         applicationName: ${{variables.applicationFullName}}
         custRegAuth: $(custRegAuth)
         environmentNames:
-          - ${{ if eq(variables.tran, 'true') }}: 
+          - ${{ if eq(variables.tran, 'true') }}:
             - tran
           - ${{ if eq(variables.dev, 'true') }}:
             - dev
@@ -175,37 +169,20 @@ stages:
               ${{ if eq(var.key, 'pr') }}:
                 value: p01
             jobs:
-            - ${{ if parameters.InfrDeploy }}:
-              - template: pipeline/appInfrastructure.yml@devopsTemplates
-                parameters:
-                  ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
-                    serviceConnection: $(devServiceConnection)
-                  ${{ elseif eq(var.key, 'pr') }}:
-                    serviceConnection: $(prodServiceConnection)
-                  ${{ else }}:
-                    serviceConnection: $(testServiceConnection)
-                  environmentName: ${{var.key}}
-                  applicationShortName: ${{variables.applicationShortName}}
-                  applicationFullName: ${{variables.applicationFullName}}
-                  AppDeploy: ${{parameters.AppDeploy}}
-                  deploymentLocation: ${{location}}
-                  runtimeStack: NODE|18-lts
-
-
-            - ${{ if parameters.AppDeploy }}:
-              - template: pipeline/deploy.yml@devopsTemplates
-                parameters: 
-                  ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
-                    serviceConnection: $(devServiceConnection)
-                  ${{ elseif eq(var.key, 'pr') }}:
-                    serviceConnection: $(prodServiceConnection)
-                  ${{ else }}:
-                    serviceConnection: $(testServiceConnection)
-                  environmentName: ${{var.key}}
-                  applicationFullName: ${{variables.applicationFullName}}
-                  applicationShortName: ${{variables.applicationShortName}}
-                  releaseArtifactName: ${{variables.applicationShortName}}-${{var.key}}-$(Build.BuildId)-release
-                  InfrDeploy: ${{parameters.InfrDeploy}}
-                  deploymentLocation: ${{location}}
-                  runtimeStack: NODE|18-lts
-                  pm2ProcessFileName: process.json
+            - template: pipeline/deployment.yml@devopsTemplates
+              parameters:
+                ${{ if or(eq(var.key, 'dev'), eq(var.key, 'tran')) }}:
+                  serviceConnection: $(devServiceConnection)
+                ${{ elseif eq(var.key, 'pr') }}:
+                  serviceConnection: $(prodServiceConnection)
+                ${{ else }}:
+                  serviceConnection: $(testServiceConnection)
+                environmentName: ${{var.key}}
+                applicationShortName: ${{variables.applicationShortName}}
+                applicationFullName: ${{variables.applicationFullName}}
+                releaseArtifactName: ${{variables.applicationShortName}}-${{var.key}}-$(Build.BuildId)-release
+                InfrDeploy: ${{parameters.InfrDeploy}}
+                deploymentLocation: ${{location}}
+                runtimeStack: NODE|18-lts
+                pm2ProcessFileName: process.json
+                gitCheck: ${{parameters.gitCheck}}
