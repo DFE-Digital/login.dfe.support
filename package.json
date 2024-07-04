@@ -1,6 +1,6 @@
 {
   "name": "login.dfe.support",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "scripts": {
     "web": "settings='./config/support.dev.json' node src/index.js",
@@ -41,7 +41,7 @@
     "ioredis": "^5.3.2",
     "lodash": "^4.17.21",
     "login.dfe.async-retry": "github:DFE-Digital/login.dfe.async-retry#v2.0.3",
-    "login.dfe.audit.winston-sequelize-transport": "github:DFE-Digital/login.dfe.audit.winston-sequelize-transport#v3.2.1",
+    "login.dfe.audit.winston-sequelize-transport": "github:DFE-Digital/login.dfe.audit.winston-sequelize-transport#v3.2.2",
     "login.dfe.config.schema.common": "github:DFE-Digital/login.dfe.config.schema.common#v2.1.4",
     "login.dfe.dao": "^4.2.12",
     "login.dfe.express-error-handling": "github:DFE-Digital/login.dfe.express-error-handling#v3.0.1",
@@ -61,7 +61,7 @@
     "passport": "^0.6.0",
     "sequelize": "^6.18.0",
     "simpl-schema": "^3.4.1",
-    "tedious": "^16.4.0",
+    "tedious": "^18.2.1",
     "uuid": "^8.3.2",
     "winston": "^3.3.3"
   },
