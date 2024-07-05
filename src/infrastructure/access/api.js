@@ -60,7 +60,6 @@ const addUserService = async (userId, serviceId, organisationId, roles = [], cor
 };
 
 const updateUserService = async (userId, serviceId, organisationId, roles, correlationId) => {
-  console.log('INSIDE updateUserService!!:: ', 'userId: ', userId, 'serviceId: ', serviceId, 'orgId: ', organisationId, 'roles: ', roles, 'corrId', correlationId)
   const token = await jwtStrategy(config.access.service).getBearerToken();
   try {
     return await rp({

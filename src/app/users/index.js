@@ -123,7 +123,6 @@ const users = (csrf) => {
   router.get('/:uid/confirm-reactivation', csrf, asyncWrapper(getConfirmReactivate));
   router.post('/:uid/confirm-reactivation', csrf, asyncWrapper(postConfirmReactivate));
 
-// manage-console-services
   router.get('/:uid/manage-console-services', csrf, asyncWrapper(getManageConsoleServices));
 
   router.get('/:uid/confirm-invitation-reactivation', csrf, asyncWrapper(getConfirmInvitationReactivate));

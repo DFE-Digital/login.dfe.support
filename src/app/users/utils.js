@@ -213,6 +213,19 @@ const mapUserToSupportModel = (user, userFromSearch) => {
   };
 };
 
+const checkManageAccess = async (arr) => {
+    const manage = await getServiceById('manage') 
+    let userServiceIds = []
+
+    for (let i = 0; i < arr.length; i++) {
+      console.log(`serviceDetails: ${i}: ${arr[i].serviceId}`)
+      userServiceIds.push(arr[i].serviceId)
+    }
+
+    return userServiceIds.includes(manage.id) ? true : false
+  }
+
+
 const getUserDetailsById = async (uid, correlationId) => {
   if (uid.startsWith('inv-')) {
     const invitation = await getInvitation(uid.substr(4), correlationId);
@@ -234,6 +247,23 @@ const getUserDetailsById = async (uid, correlationId) => {
     const rawUser = await getUser(uid, correlationId);
     const user = mapUserToSupportModel(rawUser, userSearch);
     const serviceDetails = await getServicesByUserId(uid, correlationId);
+
+    console.log('serviceDetails: ', serviceDetails)
+
+    // const checkManageAccess = async (arr) => {
+    //   const manage = await getServiceById('manage') 
+    //   let userServiceIds = []
+
+    //   for (let i = 0; i < arr.length; i++) {
+    //     console.log(`serviceDetails: ${i}: ${arr[i].serviceId}`)
+    //     userServiceIds.push(arr[i].serviceId)
+    //   }
+
+    //   return userServiceIds.includes(manage.id) ? true : false
+    // }
+
+    const hasManageAccess = await checkManageAccess(serviceDetails)
+    console.log('hasManageAccess:: ', hasManageAccess)
 
     const ktsDetails = serviceDetails
       ? serviceDetails.find(
@@ -265,6 +295,8 @@ const getUserDetailsById = async (uid, correlationId) => {
       orgId: ktsDetails ? ktsDetails.organisationId : '',
       ktsId: externalIdentifier,
       pendingEmail: user.pendingEmail,
+      serviceDetails, 
+      hasManageAccess
     };
   }
 };
@@ -363,6 +395,25 @@ const mapRole = (roleId) => {
   return { id: 0, description: 'End user' };
 };
 
+// userManageRoles arr1
+// manageConsoleRoleIds arr2
+
+const addOrEditManageConsoleServiceTitle = async (arr1, arr2) => {
+  let userManageRoleIds = []
+  let result = false
+  for(let i=0; i < arr1.roles.length; i++) {
+    userManageRoleIds.push(arr1.roles[i].id)
+  }
+
+  for(let i=0; i < arr2.length; i++) {
+   if (userManageRoleIds.includes(arr2[i])) {
+    result = true;
+    break;
+  }
+}
+return result
+}
+
 module.exports = {
   search,
   getUserDetails,
@@ -372,4 +423,5 @@ module.exports = {
   waitForIndexToUpdate,
   getAllServicesForUserInOrg,
   mapRole,
+  addOrEditManageConsoleServiceTitle
 };

@@ -1,19 +1,7 @@
-<!-- <% if (locals.flash.info) { %>
-<div class="row">
-    <div class="col-12">
-        <div class="notification notification-success">
-            <%=locals.flash.info%>
-        </div>
-    </div>
-</div>
-<% } %> -->
-
-
-
 <div class="govuk-width-container">
   <div class="col-8">
     <h1 class="heading-xlarge">
-        <%= userManageRoles.roles && userManageRoles.roles.length > 0 ? 'Edit Roles' : 'Add roles' %>
+        <%= addOrEditService ? 'Change Roles' : 'Add roles' %>
     </h1>
     <table class="govuk-table">
         <tbody class="govuk-table__body">
@@ -52,9 +40,13 @@
               </div>
             </fieldset>
           </div>
-          <div class="form-submit submit-buttons">
-              <button type="submit" class="button">Continue</button>
-              <a href="<%= locals.cancelLink %>" class="button button-secondary">Cancel</a>
+          <div class="govuk-button-group">
+            <button type="submit" class="govuk-button" data-module="govuk-button">
+              Continue
+            </button>
+            <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+              <a href="<%= locals.cancelLink %>">Cancel</a>
+            </button>
           </div>
     </form>
 </div>

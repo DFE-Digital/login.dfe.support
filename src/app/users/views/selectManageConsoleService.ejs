@@ -1,44 +1,81 @@
 
 <div class="govuk-width-container">
-  <!-- <div class="govuk-grid-row"> -->
-    <!-- <div class="govuk-grid-column-one-half"> -->
-    <div>
-    <!-- <div class="col-8"> -->
-      <h1 class="heading-xlarge">
-        <span class="govuk-heading-s"><%= user.name %></span>
-            Manage console roles
-        </h1>
-        <dl class="inline condensed">
-            <dt class="label">Email:</dt>
-            <dd><%= user.email %></dd>
-            <dt class="label">Last login:</dt>
-            <dd><%= locals.user.lastLogin ? locals.moment(locals.user.lastLogin).format('DD MMM YYYY, HH:mm:ss') : 'Never' %></dd>
-            <dt class="label">Account status:</dt>
-            <dd><%= user.status.description %></dd>
-            <dt class="label">Number of logins in last 12 months:</dt>
-            <dd><%= user.loginsInPast12Months.successful %></dd>
-        </dl>
-    </div>
-    <div class="col-8">
-        <table class="govuk-table">
-            <thead class="govuk-table__head">
-              <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header">Service</th>
-                <th scope="col" class="govuk-table__header">Service type</th>
-                <th scope="col" class="govuk-table__header">Activated</th>
-                <th scope="col" class="govuk-table__header">Visibility</th>
-              </tr>
-            </thead>
-            <tbody class="govuk-table__body">
-              <% for(let i=0; i<services.services.length; i++ ) {%>
-              <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header"><a href="add-manage-console-roles/<%= services.services[i].id %>"><%= services.services[i].name %></a></th>
-                <td class="govuk-table__cell">£95</td>
-                <td class="govuk-table__cell">£95</td>
-                <td class="govuk-table__cell">£95</td>
-              </tr>
-              <% } %>
-            </tbody>
-          </table>
-    </div>
+  <div class="row">
+    <% if (locals.flash.info) { %>
+      <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+        <div class="govuk-notification-banner__header">
+          <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+            Success
+          </h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+          <h3 class="govuk-notification-banner__heading">
+            <%= locals.flash.info %>
+          </h3>
+        </div>
+      </div>
+    <% } %>
+</div>
+  <div class="govuk-!-margin-top-9">
+    <span class="govuk-caption-xl"><%= user.name %></span>
+    <h1 class="govuk-heading-xl">Manage console roles</h1>
+  </div>
+  <div>
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row" class="govuk-!-padding-0" style="border: 2px solid red;">
+        <dt class="govuk-summary-list__key" class="govuk-!-padding-0">
+          Email:
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <%= user.email %>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Last login:
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <%= locals.user.lastLogin ? locals.moment(locals.user.lastLogin).format('DD MMM YYYY, HH:mm:ss') : 'Never' %>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Account status:
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <%= user.status.description %>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Number of logins in last 12 months:
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <%= user.loginsInPast12Months.successful %>
+        </dd>
+      </div>
+    </dl>
+  </div>
+  <div class="col-8">
+      <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Service</th>
+              <th scope="col" class="govuk-table__header">Service type</th>
+              <th scope="col" class="govuk-table__header">Activated</th>
+              <th scope="col" class="govuk-table__header">Visibility</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <% for(let i=0; i<services.services.length; i++ ) {%>
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header"><a href="add-manage-console-roles/<%= services.services[i].id %>"><%= services.services[i].name %></a></th>
+              <td class="govuk-table__cell">£95</td>
+              <td class="govuk-table__cell">£95</td>
+              <td class="govuk-table__cell">£95</td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+  </div>
 </div>
