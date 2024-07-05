@@ -18,39 +18,39 @@
 </div>
   <div class="govuk-!-margin-top-9">
     <span class="govuk-caption-xl"><%= user.name %></span>
-    <h1 class="govuk-heading-xl">Manage console roles</h1>
+    <h1 class="govuk-heading-xl govuk-!-margin-top-0">Manage console roles</h1>
   </div>
   <div>
     <dl class="govuk-summary-list govuk-summary-list--no-border">
-      <div class="govuk-summary-list__row" class="govuk-!-padding-0" style="border: 2px solid red;">
-        <dt class="govuk-summary-list__key" class="govuk-!-padding-0">
+      <div class="govuk-summary-list__row govuk-!-margin-0">
+        <dt class="govuk-summary-list__key govuk-!-padding-0">
           Email:
         </dt>
-        <dd class="govuk-summary-list__value">
+        <dd class="govuk-summary-list__value govuk-!-padding-0">
           <%= user.email %>
         </dd>
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-padding-0">
           Last login:
         </dt>
-        <dd class="govuk-summary-list__value">
+        <dd class="govuk-summary-list__value govuk-!-padding-0">
           <%= locals.user.lastLogin ? locals.moment(locals.user.lastLogin).format('DD MMM YYYY, HH:mm:ss') : 'Never' %>
         </dd>
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-padding-0">
           Account status:
         </dt>
-        <dd class="govuk-summary-list__value">
+        <dd class="govuk-summary-list__value govuk-!-padding-0">
           <%= user.status.description %>
         </dd>
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-padding-0">
           Number of logins in last 12 months:
         </dt>
-        <dd class="govuk-summary-list__value">
+        <dd class="govuk-summary-list__value govuk-!-padding-0">
           <%= user.loginsInPast12Months.successful %>
         </dd>
       </div>

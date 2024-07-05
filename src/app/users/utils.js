@@ -218,11 +218,10 @@ const checkManageAccess = async (arr) => {
     let userServiceIds = []
 
     for (let i = 0; i < arr.length; i++) {
-      console.log(`serviceDetails: ${i}: ${arr[i].serviceId}`)
       userServiceIds.push(arr[i].serviceId)
     }
 
-    return userServiceIds.includes(manage.id) ? true : false
+    return userServiceIds.includes(manage.id)
   }
 
 
@@ -247,23 +246,8 @@ const getUserDetailsById = async (uid, correlationId) => {
     const rawUser = await getUser(uid, correlationId);
     const user = mapUserToSupportModel(rawUser, userSearch);
     const serviceDetails = await getServicesByUserId(uid, correlationId);
-
-    console.log('serviceDetails: ', serviceDetails)
-
-    // const checkManageAccess = async (arr) => {
-    //   const manage = await getServiceById('manage') 
-    //   let userServiceIds = []
-
-    //   for (let i = 0; i < arr.length; i++) {
-    //     console.log(`serviceDetails: ${i}: ${arr[i].serviceId}`)
-    //     userServiceIds.push(arr[i].serviceId)
-    //   }
-
-    //   return userServiceIds.includes(manage.id) ? true : false
-    // }
-
     const hasManageAccess = await checkManageAccess(serviceDetails)
-    console.log('hasManageAccess:: ', hasManageAccess)
+
 
     const ktsDetails = serviceDetails
       ? serviceDetails.find(
@@ -395,9 +379,6 @@ const mapRole = (roleId) => {
   return { id: 0, description: 'End user' };
 };
 
-// userManageRoles arr1
-// manageConsoleRoleIds arr2
-
 const addOrEditManageConsoleServiceTitle = async (arr1, arr2) => {
   let userManageRoleIds = []
   let result = false
@@ -414,6 +395,25 @@ const addOrEditManageConsoleServiceTitle = async (arr1, arr2) => {
 return result
 }
 
+const checkIfRolesChanged = async (arr1, arr2) => {
+  console.log('arr1:: ', arr1)
+  console.log('arr2:: ', arr2)
+
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+
+  let sorted1 = arr1.slice().sort()
+  let sorted2 = arr2.slice().sort()
+
+  for(let i = 0; i < sorted1.length; i++) {
+    if (sorted1[i] !== sorted2[i]) {
+      return false
+    }
+  }
+  return true
+}
+
 module.exports = {
   search,
   getUserDetails,
@@ -423,5 +423,6 @@ module.exports = {
   waitForIndexToUpdate,
   getAllServicesForUserInOrg,
   mapRole,
-  addOrEditManageConsoleServiceTitle
+  addOrEditManageConsoleServiceTitle,
+  checkIfRolesChanged
 };

@@ -1,6 +1,6 @@
 <div class="govuk-width-container">
   <div class="col-8">
-    <h1 class="heading-xlarge">
+    <h1 class="govuk-heading-xl">
         <%= addOrEditService ? 'Change Roles' : 'Add roles' %>
     </h1>
     <table class="govuk-table">
@@ -45,7 +45,7 @@
               Continue
             </button>
             <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">
-              <a href="<%= locals.cancelLink %>">Cancel</a>
+              <a href="/users/<%=user.id%>/manage-console-services">Cancel</a>
             </button>
           </div>
     </form>

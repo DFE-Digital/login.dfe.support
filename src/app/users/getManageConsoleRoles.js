@@ -1,5 +1,5 @@
 const { sendResult } = require('../../infrastructure/utils');
-const { getUserDetails, addOrEditManageConsoleServiceTitle } = require('./utils');
+const { getUserDetails, addOrEditManageConsoleServiceTitle, checkIfRolesChanged } = require('./utils');
 const { getServiceById, getAllServices } = require('../../infrastructure/applications')
 const { listRolesOfService, getSingleUserService, getSingleInvitationService, addUserService, updateUserService } = require('../../infrastructure/access');
 
@@ -14,14 +14,21 @@ const getSingleServiceForUser = async (userId, organisationId, serviceId, correl
 };
 
 const getManageConsoleRoles = async (req, res) => {
-
+  console.log('INSIDE GET')
   //* Grab manage details - need id to check if user has manage service 
   const manage = await getServiceById('manage') 
+  // console.log('manage')
+  // const roles = []
+  // addUserService(req.params.uid, manage.id, '3de9d503-6609-4239-ba55-14f8ebd69f56', roles, req.id)
+  // console.log('addUserService')
+  
+  
   const user = await getUserDetails(req);
+  const userManageRoles = await getSingleServiceForUser(req.params.uid, '3de9d503-6609-4239-ba55-14f8ebd69f56', manage.id, req.id);
   
   // todo - rework DO NOT NEED ADD MANAGE SERVICE
   //* check user has manage service
-  const hasManageService = await getSingleUserService(req.params.uid, manage.id, '3de9d503-6609-4239-ba55-14f8ebd69f56', req.id)  
+  // const hasManageService = await getSingleUserService(req.params.uid, manage.id, '3de9d503-6609-4239-ba55-14f8ebd69f56', req.id)  
 
   //* Grab all manageConsoleRoles that exist, not what the user has, and filter by selected service id - gives list of acceptable role ids to be added
   const manageConsoleRolesForAllServices = await listRolesOfService(manage.id)
@@ -33,14 +40,14 @@ const getManageConsoleRoles = async (req, res) => {
 
   // todo - rework DO NOT NEED ADD MANAGE SERVICE
   //* check for all manage roles user has selected previously, for all services - pass in all roles
-  let userManageRoles = undefined;
-  if (hasManageService) {
-    userManageRoles = await getSingleServiceForUser(req.params.uid, '3de9d503-6609-4239-ba55-14f8ebd69f56', manage.id, req.id);
-  } else {
-    let selectedRoles = []
-    addUserService(user.id, manage.id, '3de9d503-6609-4239-ba55-14f8ebd69f56', selectedRoles, req.id)
-    userManageRoles = await getSingleServiceForUser(req.params.uid, '3de9d503-6609-4239-ba55-14f8ebd69f56', manage.id, req.id);
-  }
+  // let userManageRoles = undefined;
+  // if (hasManageService) {
+  //   userManageRoles = await getSingleServiceForUser(req.params.uid, '3de9d503-6609-4239-ba55-14f8ebd69f56', manage.id, req.id);
+  // } else {
+  //   let selectedRoles = []
+  //   addUserService(user.id, manage.id, '3de9d503-6609-4239-ba55-14f8ebd69f56', selectedRoles, req.id)
+  //   userManageRoles = await getSingleServiceForUser(req.params.uid, '3de9d503-6609-4239-ba55-14f8ebd69f56', manage.id, req.id);
+  // }
 
   const addOrEditService = await addOrEditManageConsoleServiceTitle(userManageRoles, manageConsoleRoleIds)
 
@@ -63,16 +70,18 @@ const getManageConsoleRoles = async (req, res) => {
 
 const postManageConsoleRoles = async (req, res) => {
 
-  const services = await getAllServices()
+  // const services = await getAllServices()
 
   const manage = await getServiceById('manage') 
   // todo - rework DO NOT NEED ADD MANAGE SERVICE
-  const hasService = await getSingleUserService(req.params.uid, manage.id,'3de9d503-6609-4239-ba55-14f8ebd69f56', req.id)
+  // const hasService = await getSingleUserService(req.params.uid, manage.id,'3de9d503-6609-4239-ba55-14f8ebd69f56', req.id)
+  const userManageRoles = await getSingleServiceForUser(req.params.uid, '3de9d503-6609-4239-ba55-14f8ebd69f56', manage.id, req.id);
 
-  let userManageRoles = undefined;
-  if (hasService) {
-    userManageRoles = await getSingleServiceForUser(req.params.uid, '3de9d503-6609-4239-ba55-14f8ebd69f56', manage.id, req.id);
-  }
+  // let userManageRoles = undefined;
+  // if (hasService) {
+  //   userManageRoles = await getSingleServiceForUser(req.params.uid, '3de9d503-6609-4239-ba55-14f8ebd69f56', manage.id, req.id);
+  // }
+
   const user = await getUserDetails(req);
   const serviceSelectedByUser = await getServiceById(req.params.sid) //* selected service eg 'Accounts return'. ID available here
   let rolesSelectedNew = req.body.role ? req.body.role : [];
@@ -83,13 +92,12 @@ const postManageConsoleRoles = async (req, res) => {
 
   const manageConsoleRolesForAllServices = await listRolesOfService(manage.id)
   const manageConsoleRolesForSelectedService = manageConsoleRolesForAllServices.filter(service => service.code.split('_')[0] === req.params.sid)
-
   let manageConsoleRoleIds = []
   manageConsoleRolesForSelectedService.forEach(obj => manageConsoleRoleIds.push(obj.id))
-
+  
   const addOrEditService = await addOrEditManageConsoleServiceTitle(userManageRoles, manageConsoleRoleIds)
-
-  //* re-render role selection view with error message if invaild service id sent in request 
+  
+  //* re-render role selection view with error message if invaild service is sent in request 
   for (let i =0; i < rolesSelectedNew.length; i++) {
     if(!manageConsoleRoleIds.includes(rolesSelectedNew[i])) {
       sendResult(req, res, 'users/views/selectManageConsoleRoles', {
@@ -105,11 +113,11 @@ const postManageConsoleRoles = async (req, res) => {
           roleSelection: 'You have selected an invalid role for this service'
         },
         cancelLink: `/users/${user.id}/organisations`,
-  });
-      } 
+      });
+    } 
   }
-
-if (hasService) {
+  
+  // if (hasService) {
     let rolesSelectedBeforeSession = []
     // userManageRoles = await getSingleServiceForUser(req.params.uid, '3de9d503-6609-4239-ba55-14f8ebd69f56', manage.id, req.id);
     userManageRoles.roles.forEach(role => rolesSelectedBeforeSession.push(role.id))
@@ -117,16 +125,32 @@ if (hasService) {
     const allSelectedRoles = [...new Set(rolesSelectedBeforeSession.concat(rolesSelectedNew))]
     const rolesToRemove = manageConsoleRoleIds.filter(id => !rolesSelectedNew.includes(id));
     const filteredallSelectedRoles = allSelectedRoles.filter(id => !rolesToRemove.includes(id))
+    const rolesForThisServiceSelectedBeforeSession = rolesSelectedBeforeSession.filter(id => rolesSelectedNew.includes(id))
+    const rolesHaveNotChanged = await checkIfRolesChanged(rolesForThisServiceSelectedBeforeSession, rolesSelectedNew)
+    console.log('manageConsoleRolesForSelectedService:: ', manageConsoleRolesForSelectedService)
+    console.log('rolesToRemove:: ', rolesToRemove)
+    
+    console.log('rolesForThisServiceSelectedBeforeSession:: ', rolesForThisServiceSelectedBeforeSession)
+    console.log('rolesSelectedNew:: ', rolesSelectedNew)
+    // console.log('rolesSelectedBeforeSession.filter(includes(rolesSelectedNew)):: ', test)
 
+    console.log('rolesHaveNotChanged:: ', rolesHaveNotChanged)
+
+    if (rolesHaveNotChanged && filteredallSelectedRoles.length === allSelectedRoles.length) {
+      updateUserService(req.params.uid, manage.id, '3de9d503-6609-4239-ba55-14f8ebd69f56', filteredallSelectedRoles, req.id)
+      return res.redirect(`/users/${req.params.uid}/manage-console-services`);
+    }
+    // if (rolesSelectedBeforeSession.filter(includes(rolesSelectedNew)))
     updateUserService(req.params.uid, manage.id, '3de9d503-6609-4239-ba55-14f8ebd69f56', filteredallSelectedRoles, req.id)
     res.flash('info', `Roles have been successfully updated`);
     return res.redirect(`/users/${req.params.uid}/manage-console-services`);
-  } else {
-    // todo - rework DO NOT NEED ADD MANAGE SERVICE
-    //! Should we be adding service here? Should user be able to get to this point without manage access? 
-    addUserService(req.params.uid, manage.id, '3de9d503-6609-4239-ba55-14f8ebd69f56', rolesSelectedNew, req.id)
-    return res.redirect(`/users/${req.params.uid}/manage-console-services`);
-  }
+
+  // } else {
+  //   // todo - rework DO NOT NEED ADD MANAGE SERVICE
+  //   //! Should we be adding service here? Should user be able to get to this point without manage access? 
+  //   addUserService(req.params.uid, manage.id, '3de9d503-6609-4239-ba55-14f8ebd69f56', rolesSelectedNew, req.id)
+  //   return res.redirect(`/users/${req.params.uid}/manage-console-services`);
+  // }
 };
 
 module.exports = {
