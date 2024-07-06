@@ -41,22 +41,11 @@ const getManageConsoleRoles = async (req, res) => {
 
 const postManageConsoleRoles = async (req, res) => {
 
-  // const services = await getAllServices()
-
   const manage = await getServiceById('manage') 
-  // todo - rework DO NOT NEED ADD MANAGE SERVICE
-  // const hasService = await getSingleUserService(req.params.uid, manage.id,'3de9d503-6609-4239-ba55-14f8ebd69f56', req.id)
   const userManageRoles = await getSingleServiceForUser(req.params.uid, '3de9d503-6609-4239-ba55-14f8ebd69f56', manage.id, req.id);
-
-  // let userManageRoles = undefined;
-  // if (hasService) {
-  //   userManageRoles = await getSingleServiceForUser(req.params.uid, '3de9d503-6609-4239-ba55-14f8ebd69f56', manage.id, req.id);
-  // }
-
   const user = await getUserDetails(req);
-  const serviceSelectedByUser = await getServiceById(req.params.sid) //* selected service eg 'Accounts return'. ID available here
+  const serviceSelectedByUser = await getServiceById(req.params.sid)
   let rolesSelectedNew = req.body.role ? req.body.role : [];
-
   if (!(rolesSelectedNew instanceof Array)) {
     rolesSelectedNew = [req.body.role];
   }
@@ -88,9 +77,7 @@ const postManageConsoleRoles = async (req, res) => {
     } 
   }
   
-  // if (hasService) {
     let rolesSelectedBeforeSession = []
-    // userManageRoles = await getSingleServiceForUser(req.params.uid, '3de9d503-6609-4239-ba55-14f8ebd69f56', manage.id, req.id);
     userManageRoles.roles.forEach(role => rolesSelectedBeforeSession.push(role.id))
     
     const allSelectedRoles = [...new Set(rolesSelectedBeforeSession.concat(rolesSelectedNew))]
@@ -98,30 +85,15 @@ const postManageConsoleRoles = async (req, res) => {
     const filteredallSelectedRoles = allSelectedRoles.filter(id => !rolesToRemove.includes(id))
     const rolesForThisServiceSelectedBeforeSession = rolesSelectedBeforeSession.filter(id => rolesSelectedNew.includes(id))
     const rolesHaveNotChanged = await checkIfRolesChanged(rolesForThisServiceSelectedBeforeSession, rolesSelectedNew)
-    console.log('manageConsoleRolesForSelectedService:: ', manageConsoleRolesForSelectedService)
-    console.log('rolesToRemove:: ', rolesToRemove)
-    
-    console.log('rolesForThisServiceSelectedBeforeSession:: ', rolesForThisServiceSelectedBeforeSession)
-    console.log('rolesSelectedNew:: ', rolesSelectedNew)
-    // console.log('rolesSelectedBeforeSession.filter(includes(rolesSelectedNew)):: ', test)
-
-    console.log('rolesHaveNotChanged:: ', rolesHaveNotChanged)
 
     if (rolesHaveNotChanged && filteredallSelectedRoles.length === allSelectedRoles.length) {
-      updateUserService(req.params.uid, manage.id, '3de9d503-6609-4239-ba55-14f8ebd69f56', filteredallSelectedRoles, req.id)
+      // updateUserService(req.params.uid, manage.id, '3de9d503-6609-4239-ba55-14f8ebd69f56', filteredallSelectedRoles, req.id)
       return res.redirect(`/users/${req.params.uid}/manage-console-services`);
     }
-    // if (rolesSelectedBeforeSession.filter(includes(rolesSelectedNew)))
+
     updateUserService(req.params.uid, manage.id, '3de9d503-6609-4239-ba55-14f8ebd69f56', filteredallSelectedRoles, req.id)
     res.flash('info', `Roles have been successfully updated`);
     return res.redirect(`/users/${req.params.uid}/manage-console-services`);
-
-  // } else {
-  //   // todo - rework DO NOT NEED ADD MANAGE SERVICE
-  //   //! Should we be adding service here? Should user be able to get to this point without manage access? 
-  //   addUserService(req.params.uid, manage.id, '3de9d503-6609-4239-ba55-14f8ebd69f56', rolesSelectedNew, req.id)
-  //   return res.redirect(`/users/${req.params.uid}/manage-console-services`);
-  // }
 };
 
 module.exports = {

@@ -88,8 +88,7 @@
                         <li><a href="edit-profile">Edit user's details</a></li>
                     <% } %>
                         <li><a href="web-service-sync">Send WS Sync</a></li>
-                        <!-- locals.user.hasManageAccess -->
-                    <% if(locals.user) { %>
+                    <% if(locals.user.hasManageAccess) { %>
                         <li><a href="manage-console-services">Manage Console roles</a></li>
                     <% } %>
                 </ul>
