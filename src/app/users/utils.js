@@ -213,6 +213,10 @@ const mapUserToSupportModel = (user, userFromSearch) => {
   };
 };
 
+// const filterRoles = async (arr, id) => {
+//   return arr.filter(service => service.code.split('_')[0] === id)
+// }
+
 const checkManageAccess = async (arr) => {
     const manage = await getServiceById('manage') 
     let userServiceIds = []
@@ -421,6 +425,7 @@ module.exports = {
   waitForIndexToUpdate,
   getAllServicesForUserInOrg,
   mapRole,
+  // filterRoles,
   addOrEditManageConsoleServiceTitle,
   checkIfRolesChanged
 };
