@@ -107,7 +107,7 @@ const users = (csrf) => {
   router.get('/:uid/edit-profile', csrf, asyncWrapper(getEditProfile));
   router.post('/:uid/edit-profile', csrf, asyncWrapper(postEditProfile));
 
-  // add manage roles
+  router.get('/:uid/manage-console-services', csrf, asyncWrapper(getManageConsoleServices));
   router.get('/:uid/add-manage-console-roles/:sid', csrf, asyncWrapper(getManageConsoleRoles));
   router.post('/:uid/add-manage-console-roles/:sid', csrf, asyncWrapper(postManageConsoleRoles));
 
@@ -123,7 +123,6 @@ const users = (csrf) => {
   router.get('/:uid/confirm-reactivation', csrf, asyncWrapper(getConfirmReactivate));
   router.post('/:uid/confirm-reactivation', csrf, asyncWrapper(postConfirmReactivate));
 
-  router.get('/:uid/manage-console-services', csrf, asyncWrapper(getManageConsoleServices));
 
   router.get('/:uid/confirm-invitation-reactivation', csrf, asyncWrapper(getConfirmInvitationReactivate));
   router.post('/:uid/confirm-invitation-reactivation', csrf, asyncWrapper(postConfirmInvitationReactivate));

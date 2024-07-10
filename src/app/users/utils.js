@@ -396,8 +396,6 @@ return result
 }
 
 const checkIfRolesChanged = async (arr1, arr2) => {
-  console.log('arr1:: ', arr1)
-  console.log('arr2:: ', arr2)
 
   if (arr1.length !== arr2.length) {
     return false;

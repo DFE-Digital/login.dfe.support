@@ -8,9 +8,11 @@ const getManageConsoleServices = async (req, res) => {
   const user = await getUserDetails(req);
   const services = await getAllServices()
 
+  console.log('services:: ', services)
   sendResult(req, res, 'users/views/selectManageConsoleService', {
     layout: 'sharedViews/layoutNew.ejs', 
     csrfToken: req.csrfToken(),
+    // messages: res.flash('info'),
     backLink: `/users/${user.id}/organisations`,
     user,
     services

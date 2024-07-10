@@ -45,6 +45,7 @@ const postManageConsoleRoles = async (req, res) => {
   const userManageRoles = await getSingleServiceForUser(req.params.uid, '3de9d503-6609-4239-ba55-14f8ebd69f56', manage.id, req.id);
   const user = await getUserDetails(req);
   const serviceSelectedByUser = await getServiceById(req.params.sid)
+  console.log('Service selected by user:: ', serviceSelectedByUser)
   let rolesSelectedNew = req.body.role ? req.body.role : [];
   if (!(rolesSelectedNew instanceof Array)) {
     rolesSelectedNew = [req.body.role];
@@ -82,17 +83,18 @@ const postManageConsoleRoles = async (req, res) => {
     
     const allSelectedRoles = [...new Set(rolesSelectedBeforeSession.concat(rolesSelectedNew))]
     const rolesToRemove = manageConsoleRoleIds.filter(id => !rolesSelectedNew.includes(id));
-    const filteredallSelectedRoles = allSelectedRoles.filter(id => !rolesToRemove.includes(id))
+    const filteredAllSelectedRoles = allSelectedRoles.filter(id => !rolesToRemove.includes(id))
     const rolesForThisServiceSelectedBeforeSession = rolesSelectedBeforeSession.filter(id => rolesSelectedNew.includes(id))
     const rolesHaveNotChanged = await checkIfRolesChanged(rolesForThisServiceSelectedBeforeSession, rolesSelectedNew)
 
-    if (rolesHaveNotChanged && filteredallSelectedRoles.length === allSelectedRoles.length) {
-      // updateUserService(req.params.uid, manage.id, '3de9d503-6609-4239-ba55-14f8ebd69f56', filteredallSelectedRoles, req.id)
+    if (rolesHaveNotChanged && filteredAllSelectedRoles.length === allSelectedRoles.length) {
       return res.redirect(`/users/${req.params.uid}/manage-console-services`);
     }
 
-    updateUserService(req.params.uid, manage.id, '3de9d503-6609-4239-ba55-14f8ebd69f56', filteredallSelectedRoles, req.id)
-    res.flash('info', `Roles have been successfully updated`);
+    updateUserService(req.params.uid, manage.id, '3de9d503-6609-4239-ba55-14f8ebd69f56', filteredAllSelectedRoles, req.id)
+    res.flash('info', `The selected roles have been added to ${serviceSelectedByUser.name}` );  
+    // res.flash('messages', {line1: 'Roles added', line2: `The selected roles have been added to ${serviceSelectedByUser.name}`} );
+    // res.flash('info', {line1: 'Roles added', line2: `The selected roles have been added to ${serviceSelectedByUser.name}`} );
     return res.redirect(`/users/${req.params.uid}/manage-console-services`);
 };
 
