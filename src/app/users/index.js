@@ -19,13 +19,6 @@ const getConfirmInvitationDeactivate = require('./getConfirmInvitationDeactivate
 const postConfirmInvitationDeactivate = require('./postConfirmInvitationDeactivate');
 const getConfirmReactivate = require('./getConfirmReactivate');
 const postConfirmReactivate = require('./postConfirmReactivate');
-
-const getManageConsoleServices = require('./getManageConsoleServices');
-// const postConfirmReactivate = require('./postConfirmReactivate');
-
-const { getManageConsoleRoles, postManageConsoleRoles }  = require('./getManageConsoleRoles')
-// const postManageConsoleRoles = require('./postManageConsoleRoles')
-
 const getConfirmInvitationReactivate = require('./getConfirmInvitationReactivate');
 const postConfirmInvitationReactivate = require('./postConfirmInvitationReactivate');
 const getNewUser = require('./getNewUser');
@@ -53,6 +46,8 @@ const getDeleteOrganisation = require('./getDeleteOrganisation');
 const postDeleteOrganisation = require('./postDeleteOrganisation');
 const getSecureAccess = require('./getSecureAccessDetails');
 const postUpdateAuditLog = require('./postUpdateAuditLog');
+const getManageConsoleServices = require('./getManageConsoleServices');
+const { getManageConsoleRoles, postManageConsoleRoles }  = require('./getManageConsoleRoles')
 const { get: getAssociateServices, post: postAssociateServices } = require('./associateServices');
 const { get: getSelectOrganisation, post: postSelectOrganisation }  = require('./selectOrganisation');
 const { get: getAssociateRoles, post: postAssociateRoles } = require('./associateRoles');

@@ -10,6 +10,18 @@ const clients = [
       'https://client.one/signout/complete',
     ],
   },
+  {
+    client_id: 'manage',
+    client_secret: 'some-secure-secret',
+    id: '1231231', 
+    redirect_uris: [
+      'https://client.one/auth/cb',
+      'https://client.one/register/complete',
+    ],
+    post_logout_redirect_uris: [
+      'https://client.one/signout/complete',
+    ],
+  },
 ];
 const getAllServices = async () => {
   return Promise.resolve([]);

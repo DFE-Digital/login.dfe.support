@@ -3,20 +3,18 @@ const { getAllServices }= require('../../infrastructure/applications')
 const { getUserDetails } = require('./utils');
 
 
-
 const getManageConsoleServices = async (req, res) => {
   const user = await getUserDetails(req);
-  const services = await getAllServices()
+  const services = await getAllServices();
+  // console.log(services)
 
-  console.log('services:: ', services)
   sendResult(req, res, 'users/views/selectManageConsoleService', {
     layout: 'sharedViews/layoutNew.ejs', 
     csrfToken: req.csrfToken(),
-    // messages: res.flash('info'),
     backLink: `/users/${user.id}/organisations`,
     user,
     services
   });
 };
 
-module.exports = getManageConsoleServices;
+module.exports =  getManageConsoleServices ;

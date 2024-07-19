@@ -1,0 +1,129 @@
+jest.mock('./../../../src/infrastructure/config', () =>
+    require('./../../utils').configMockFactory());
+jest.mock('./../../../src/app/users/utils');
+jest.mock('./../../../src/infrastructure/access');
+jest.mock('./../../../src/infrastructure/utils');
+jest.mock('./../../../src/infrastructure/applications');
+
+// const getManageConsoleRolesFile = require('./../../../src/app/users/getManageConsoleRoles')
+
+// getManageConsoleRolesFile.getSingleServiceForUser = jest.fn().mockReturnValue({
+//     id:'B1F190AA-729A-45FC-A695-4EA209DC79D4',
+//     roles:['role1', 'role2', 'role3'],
+//     name: 'manage'
+// })
+
+
+        
+const {getManageConsoleRoles, getSingleServiceForUser} = require('./../../../src/app/users/getManageConsoleRoles');
+const { listRolesOfService, getSingleUserService,  getSingleInvitationService, updateUserService } = require('./../../../src/infrastructure/access');
+const { getServiceById } = require('./../../../src/infrastructure/applications')
+
+jest.mock('./../../../src/app/users/getManageConsoleRoles', () => {
+    const originalMod = jest.requireActual('./../../../src/app/users/getManageConsoleRoles');
+    return {
+            ...originalMod,
+            getSingleServiceForUser: jest.fn(),
+        }
+    })
+
+const { sendResult } = require('./../../../src/infrastructure/utils');
+const { getUserDetails } = require('./../../../src/app/users/utils');
+
+
+
+describe('getManageConsoleRoles', () => {
+    let req;
+    let res;
+
+    beforeEach(() => {
+        req = {
+            id: 'correlationId',
+            csrfToken: () => 'token',
+            accepts: () => ['text/html'],
+            user: {
+                sub: 'user1',
+                email: 'super.user@unit.test',
+        },
+        params: {
+            uid: 'user1',
+            sid: 'serviceSelectedByUserId'
+        },
+        session: {},
+        };
+
+        res = {
+            render: jest.fn(),
+        };
+
+        getServiceById.mockReset()
+        getServiceById.mockReturnValueOnce({
+            // id: 'B1F190AA-729A-45FC-A695-4EA209DC79D4'
+            id: 'manage'
+            }).mockReturnValueOnce({
+            name:'gias',
+            id: 'serviceSelectedByUserId',
+            }).mockReturnValue({
+                // coming through in getSingleServiceForUser/getServiceById call
+                name:'manage',
+            });
+
+        getUserDetails.mockReset()
+        getUserDetails.mockReturnValue({
+        // test to check not empty for name ? 
+            id: 'user1',
+            name:'Bill Murray'
+            });
+
+        getSingleServiceForUser.mockReset()
+        getSingleServiceForUser.mockReturnValue({
+                id:'B1F190AA-729A-45FC-A695-4EA209DC79D4',
+                roles:['role1', 'role2', 'role3'],
+            });
+            
+        getSingleUserService.mockReset()
+        getSingleUserService.mockReturnValueOnce(() => ({
+            id:'B1F190AA-729A-45FC-A695-4EA209DC79D4',
+            roles:['role1', 'role2', 'role3'],
+            name: 'manage',
+            
+        }));
+
+        // getSingleInvitationService.mockReset()
+        // getSingleInvitationService.mockReturnValue(() => ({
+        //     id:'B1F190AA-729A-45FC-A695-4EA209DC79D4',
+        //     roles:['role1', 'role2', 'role3'],
+        //     name: 'manage',
+            
+        // }));
+
+        listRolesOfService.mockReset()
+        listRolesOfService.mockReturnValue([{
+            //! check this output 
+            // id:'serviceSelectedByUserId',
+            code:'serviceSelectedByUserId_roleId1'
+        }]);
+        
+        // addOrChangeManageConsoleServiceTitle.mockReset()
+        // addOrChangeManageConsoleServiceTitle.mockReturnValue(true);
+
+    })
+
+    it('should call getServiceById', async () => {
+        // check?
+        // await getManageConsoleRoles(req, res);
+        await getManageConsoleRoles(req, res);
+
+        // getSingleServiceForUser.mockReturnedValue(() => ({
+        //     id:'B1F190AA-729A-45FC-A695-4EA209DC79D4',
+        //     roles:['role1', 'role2', 'role3'],
+        //     name: 'manage',
+            
+        // }));
+
+        expect(getServiceById).toHaveBeenCalled();
+        // expect(sendResult).toHaveBeenCalled();
+        // expect (sendResult.mock.calls[0][3]).objectContaining(user, services)
+    })
+
+})

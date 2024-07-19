@@ -10,8 +10,9 @@
         </div>
         <div class="govuk-notification-banner__content">
           <h3 class="govuk-notification-banner__heading">
-            <%= locals.flash.info %>
+            <%= locals.flash.info[0] %>
           </h3>
+          <p class="govuk-body"><%= locals.flash.info[1] %></p>
         </div>
       </div>
     <% } %>

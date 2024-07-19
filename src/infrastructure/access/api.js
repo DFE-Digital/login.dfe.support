@@ -205,6 +205,7 @@ const getServiceIdentifierDetails = async (serviceId, identifierKey, identifierV
 };
 
 const getSingleUserService = async (userId, serviceId, organisationId, correlationId) => {
+  console.log('!! inside getSingleUserService:: ', userId, serviceId, organisationId, correlationId)
   const token = await jwtStrategy(config.access.service).getBearerToken();
   try {
     return await rp({
