@@ -6,7 +6,6 @@ const { getUserDetails } = require('./utils');
 const getManageConsoleServices = async (req, res) => {
   const user = await getUserDetails(req);
   const services = await getAllServices();
-  // console.log(services)
 
   sendResult(req, res, 'users/views/selectManageConsoleService', {
     layout: 'sharedViews/layoutNew.ejs', 
