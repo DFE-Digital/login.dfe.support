@@ -8,7 +8,7 @@ const {
     sendResult: jest.fn(),
   }));
   
-  jest.mock('./utils', () => ({
+  jest.mock('./../../../src/app/users/utils', () => ({
     getUserDetails: jest.fn(),
   }));
   

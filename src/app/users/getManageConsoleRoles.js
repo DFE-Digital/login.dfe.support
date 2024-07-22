@@ -146,7 +146,8 @@ module.exports = {
   getManageConsoleRoles,
   postManageConsoleRoles,
   getSingleServiceForUser,
-  addOrChangeManageConsoleServiceTitle
+  addOrChangeManageConsoleServiceTitle,
+  checkIfRolesChanged
 };
 
 
