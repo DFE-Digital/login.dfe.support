@@ -131,7 +131,6 @@ const postManageConsoleRoles = async (req, res) => {
     const rolesToRemove = manageConsoleRoleIds.filter(id => !rolesSelectedNew.includes(id));
     const filteredAllSelectedRoles = allSelectedRoles.filter(id => !rolesToRemove.includes(id))
     const rolesForThisServiceSelectedBeforeSession = rolesSelectedBeforeSession.filter(id => rolesSelectedNew.includes(id))
-    
     const rolesHaveNotChanged = checkIfRolesChanged(rolesForThisServiceSelectedBeforeSession, rolesSelectedNew)
 
     if (rolesHaveNotChanged && filteredAllSelectedRoles.length === allSelectedRoles.length) {
@@ -147,8 +146,7 @@ module.exports = {
   getManageConsoleRoles,
   postManageConsoleRoles,
   getSingleServiceForUser,
-  addOrChangeManageConsoleServiceTitle,
-  checkIfRolesChanged
+  addOrChangeManageConsoleServiceTitle
 };
 
 
