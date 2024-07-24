@@ -25,38 +25,38 @@ describe('getManageConsoleServices', () => {
             user: {
             sub: 'user1',
             email: 'super.user@unit.test',
-        },
-        params: {
-            uid: 'user1',
-        },
-        session: {},
-    };
+            },
+            params: {
+                uid: 'user1',
+            },
+            session: {},
+        };
 
-    res = {
-        render: jest.fn(),
-    };
+        res = {
+            render: jest.fn(),
+        };
 
-    getUserDetails.mockReset();
-    getUserDetails.mockReturnValue({
-        id: 'user1',
+        getUserDetails.mockReset();
+        getUserDetails.mockReturnValue({
+            id: 'user1',
+        });
+
+        //! invitation ?? doesn't have isIdOnlyService, isHiddenService
+        getAllServices.mockReset();
+        getAllServices.mockReturnValue([
+            {
+                id: '49FFFA46-BB7A-439A-B7A1-7CA00FF77456',
+                name: 'Academy Budget Forecast Return',
+                description:
+                'This service is for Academy trusts to submit their budget forecasts to the Education and Skills Funding Agency',
+                isExternalService: true,
+                isIdOnlyService: false,
+                isHiddenService: false,
+                isMigrated: false,
+                relyingParty: {},
+            }
+        ]);
     });
-
-      //! invitation ?? doesn't have isIdOnlyService, isHiddenService
-    getAllServices.mockReset();
-    getAllServices.mockReturnValue([
-    {
-        id: '49FFFA46-BB7A-439A-B7A1-7CA00FF77456',
-        name: 'Academy Budget Forecast Return',
-        description:
-        'This service is for Academy trusts to submit their budget forecasts to the Education and Skills Funding Agency',
-        isExternalService: true,
-        isIdOnlyService: false,
-        isHiddenService: false,
-        isMigrated: false,
-        relyingParty: {},
-    }
-    ]);
-});
 
     it('should call getUserDetails', async () => {
         await getManageConsoleServices(req, res);
@@ -71,6 +71,8 @@ describe('getManageConsoleServices', () => {
     
     it('should call getAllServices', async () => {
         await getManageConsoleServices(req, res);
+
+        const getAllServicesResult = getAllServices()
         
         expect(getAllServices).toHaveBeenCalled();
         expect(getAllServices).toReturnWith([
@@ -86,21 +88,28 @@ describe('getManageConsoleServices', () => {
             relyingParty: {},
         }
         ]);
-        expect(getAllServices()).toHaveLength(1);
-        expect(getUserDetails).not.toBeFalsy();
-        expect(getAllServices().length).toBe(1);
-        expect(getAllServices()[0].id).toBe('49FFFA46-BB7A-439A-B7A1-7CA00FF77456');
-        expect(sendResult.mock.calls[0][3].user).toMatchObject({
-        id: 'user1',
-        });
+        expect(getAllServicesResult).toHaveLength(1);
+        expect(getAllServicesResult[0].id).toBe('49FFFA46-BB7A-439A-B7A1-7CA00FF77456');
     });
 
     it('should call sendResult', async () => {
-        // check?
         await getManageConsoleServices(req, res);
 
         expect(sendResult).toHaveBeenCalled();
-        expect (sendResult.mock.calls[0][3]).objectContaining(user, services)
+        expect(sendResult.mock.calls[0][3].user).toMatchObject({
+            id: 'user1',
+            });
+        expect (sendResult.mock.calls[0][3].services).toContainEqual({
+            id: '49FFFA46-BB7A-439A-B7A1-7CA00FF77456',
+            name: 'Academy Budget Forecast Return',
+            description:
+            'This service is for Academy trusts to submit their budget forecasts to the Education and Skills Funding Agency',
+            isExternalService: true,
+            isIdOnlyService: false,
+            isHiddenService: false,
+            isMigrated: false,
+            relyingParty: {},
+        })
     })
 });
   
