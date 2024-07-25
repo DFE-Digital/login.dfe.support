@@ -60,6 +60,7 @@ const addUserService = async (userId, serviceId, organisationId, roles = [], cor
 };
 
 const updateUserService = async (userId, serviceId, organisationId, roles, correlationId) => {
+  console.log('LOG:: ', userId, serviceId, organisationId, roles, correlationId)
   const token = await jwtStrategy(config.access.service).getBearerToken();
   try {
     return await rp({

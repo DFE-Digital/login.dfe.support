@@ -4,12 +4,9 @@ const { getServiceById } = require('../../infrastructure/applications')
 const { listRolesOfService, getSingleUserService, getSingleInvitationService, updateUserService } = require('../../infrastructure/access');
 
 const getSingleServiceForUser = async (userId, organisationId, serviceId, correlationId) => {
-  console.log('inside getSingleServiceForUser:: ', userId, organisationId, serviceId, correlationId)
   const userService = userId.startsWith('inv-') ? await getSingleInvitationService(userId.substr(4), serviceId, organisationId, correlationId) : await getSingleUserService(userId, serviceId, organisationId, correlationId);
-
-  console.log('!! userService:: ', userService)
   const application = await getServiceById(serviceId, correlationId);
-  console.log('userService:: leaving getSingleServiceForUser:: ', userService)
+
   return {
     id: userService.serviceId,
     roles: userService.roles,
@@ -50,23 +47,14 @@ const checkIfRolesChanged =  (rolesSelectedBeforeSession, newRolesSelected) => {
 }
 
 const getManageConsoleRoles = async (req, res) => {
-  console.log('BEING CALLED!')
+  
   const manage = await getServiceById('manage');
-  console.log('manage:: ', manage)
-
   const serviceSelectedByUser = await getServiceById(req.params.sid);
-  console.log('serviceSelectedByUser:: ', serviceSelectedByUser)
-
   const user = await getUserDetails(req);
-  console.log('user:: ', user)
-
   const userManageRoles = await getSingleServiceForUser(req.params.uid, '3de9d503-6609-4239-ba55-14f8ebd69f56', manage.id, req.id);
-  console.log('userManageRoles:: ', userManageRoles)
-
   const manageConsoleRolesForAllServices = await listRolesOfService(manage.id);
   const manageConsoleRolesForSelectedService = manageConsoleRolesForAllServices.filter(service => service.code.split('_')[0] === req.params.sid);
-  console.log('manageConsoleRolesForSelectedService:: ', manageConsoleRolesForSelectedService);
-  
+    
   let manageConsoleRoleIds = [];
   manageConsoleRolesForSelectedService.forEach(obj => manageConsoleRoleIds.push(obj.id));
   const addOrChangeService = addOrChangeManageConsoleServiceTitle(userManageRoles, manageConsoleRoleIds);
@@ -87,24 +75,24 @@ const getManageConsoleRoles = async (req, res) => {
 
 const postManageConsoleRoles = async (req, res) => {
 
-  const manage = await getServiceById('manage') 
-  const userManageRoles = await getSingleServiceForUser(req.params.uid, '3de9d503-6609-4239-ba55-14f8ebd69f56', manage.id, req.id);
-  const user = await getUserDetails(req);
-  const serviceSelectedByUser = await getServiceById(req.params.sid)
-
   let rolesSelectedNew = req.body.role ? req.body.role : [];
   if (!(rolesSelectedNew instanceof Array)) {
     rolesSelectedNew = [req.body.role];
   }
 
-  const manageConsoleRolesForAllServices = await listRolesOfService(manage.id)
-  const manageConsoleRolesForSelectedService = manageConsoleRolesForAllServices.filter(service => service.code.split('_')[0] === req.params.sid)
+  const manage = await getServiceById('manage') 
+  const serviceSelectedByUser = await getServiceById(req.params.sid);
+  const user = await getUserDetails(req);
+  const userManageRoles = await getSingleServiceForUser(req.params.uid, '3de9d503-6609-4239-ba55-14f8ebd69f56', manage.id, req.id);
+  const manageConsoleRolesForAllServices = await listRolesOfService(manage.id);
+  const manageConsoleRolesForSelectedService = manageConsoleRolesForAllServices.filter(service => service.code.split('_')[0] === req.params.sid);
+  
   let manageConsoleRoleIds = []
   manageConsoleRolesForSelectedService.forEach(obj => manageConsoleRoleIds.push(obj.id))
   
   const addOrChangeService = addOrChangeManageConsoleServiceTitle(userManageRoles, manageConsoleRoleIds)
   
-  //* re-render role selection view with error message if invaild service is sent in request 
+  //* re-render role selection view with error message if invaild service is requested. 
   for (let i =0; i < rolesSelectedNew.length; i++) {
     if(!manageConsoleRoleIds.includes(rolesSelectedNew[i])) {
       sendResult(req, res, 'users/views/selectManageConsoleRoles', {

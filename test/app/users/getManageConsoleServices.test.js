@@ -45,10 +45,10 @@ describe('getManageConsoleServices', () => {
         getAllServices.mockReset();
         getAllServices.mockReturnValue([
             {
-                id: '49FFFA46-BB7A-439A-B7A1-7CA00FF77456',
-                name: 'Academy Budget Forecast Return',
+                id: 'service1Id',
+                name: 'Service 1',
                 description:
-                'This service is for Academy trusts to submit their budget forecasts to the Education and Skills Funding Agency',
+                'Service for testing puposes',
                 isExternalService: true,
                 isIdOnlyService: false,
                 isHiddenService: false,
@@ -77,10 +77,10 @@ describe('getManageConsoleServices', () => {
         expect(getAllServices).toHaveBeenCalled();
         expect(getAllServices).toReturnWith([
         {
-            id: '49FFFA46-BB7A-439A-B7A1-7CA00FF77456',
-            name: 'Academy Budget Forecast Return',
+            id: 'service1Id',
+            name: 'Service 1',
             description:
-            'This service is for Academy trusts to submit their budget forecasts to the Education and Skills Funding Agency',
+            'Service for testing puposes',
             isExternalService: true,
             isIdOnlyService: false,
             isHiddenService: false,
@@ -89,7 +89,7 @@ describe('getManageConsoleServices', () => {
         }
         ]);
         expect(getAllServicesResult).toHaveLength(1);
-        expect(getAllServicesResult[0].id).toBe('49FFFA46-BB7A-439A-B7A1-7CA00FF77456');
+        expect(getAllServicesResult[0].id).toBe('service1Id');
     });
 
     it('should call sendResult', async () => {
@@ -100,10 +100,10 @@ describe('getManageConsoleServices', () => {
             id: 'user1',
             });
         expect (sendResult.mock.calls[0][3].services).toContainEqual({
-            id: '49FFFA46-BB7A-439A-B7A1-7CA00FF77456',
-            name: 'Academy Budget Forecast Return',
+            id: 'service1Id',
+            name: 'Service 1',
             description:
-            'This service is for Academy trusts to submit their budget forecasts to the Education and Skills Funding Agency',
+            'Service for testing puposes',
             isExternalService: true,
             isIdOnlyService: false,
             isHiddenService: false,
