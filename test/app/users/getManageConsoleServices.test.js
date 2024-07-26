@@ -41,7 +41,6 @@ describe('getManageConsoleServices', () => {
             id: 'user1',
         });
 
-        //! invitation ?? doesn't have isIdOnlyService, isHiddenService
         getAllServices.mockReset();
         getAllServices.mockReturnValue([
             {

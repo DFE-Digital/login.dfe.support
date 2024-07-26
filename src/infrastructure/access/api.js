@@ -60,7 +60,6 @@ const addUserService = async (userId, serviceId, organisationId, roles = [], cor
 };
 
 const updateUserService = async (userId, serviceId, organisationId, roles, correlationId) => {
-  console.log('LOG:: ', userId, serviceId, organisationId, roles, correlationId)
   const token = await jwtStrategy(config.access.service).getBearerToken();
   try {
     return await rp({
@@ -206,7 +205,6 @@ const getServiceIdentifierDetails = async (serviceId, identifierKey, identifierV
 };
 
 const getSingleUserService = async (userId, serviceId, organisationId, correlationId) => {
-  console.log('!! inside getSingleUserService:: ', userId, serviceId, organisationId, correlationId)
   const token = await jwtStrategy(config.access.service).getBearerToken();
   try {
     return await rp({

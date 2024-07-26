@@ -46,8 +46,7 @@ const { updateUserService } = require('./../../../src/infrastructure/access');
 // const { listRolesOfService } = require('../../../src/infrastructure/access/static');
 
 describe('updateUserService', () => {
-  // let getBearerTokenMock;
- 
+
   beforeEach(() => {
     req = {
       id: 'correlationId',
@@ -58,7 +57,7 @@ describe('updateUserService', () => {
       email: 'super.user@unit.test',
       },
       body: {
-        role: ['role1', 'role2']
+        role: ['role1Id', 'role2Id']
       },
       params: {
           uid: 'userId',
@@ -108,8 +107,8 @@ describe('updateUserService', () => {
       },
       {
         id: 'role4Id',
-        name: 'test service 1 - Service Support',
-        code: 'not-service1Id_serviceSup',
+        name: 'test service 2 - Service Support',
+        code: 'service2Id_serviceSup',
         numericId: '23174',
         status: { id: 1 }
       }
@@ -124,102 +123,22 @@ describe('updateUserService', () => {
   it('should successfully update user service', async () => {
     
     await postManageConsoleRoles(req, res)
-    // await updateUserService('userId', 'serviceId', 'organisationId', ['role1', 'role2'], 'correlationId');
 
     expect(updateUserService.mock.calls).toHaveLength(1);
     expect(updateUserService.mock.calls[0][0]).toBe('userId');
     expect(updateUserService.mock.calls[0][1]).toBe('service1Id');
-    expect(updateUserService.mock.calls[0][2]).toBe('');
-    // expect(updateUserService.mock.calls[0][2]).toBe('3de9d503-6609-4239-ba55-14f8ebd69f56');
-    // expect(updateUserService.mock.calls[0][3]).toEqual();
+    // expect(updateUserService.mock.calls[0][2]).toBe('');
+    // check the selected rolesare passed in to updateUserService
+    // expect(updateUserService.mock.calls[0][2]).toBe(['role1Id', 'role2Id']);
     expect(updateUserService.mock.calls[0][4]).toBe('correlationId');
-
-    expect(res.flash.mock.calls[0][1]).toEqual(["Roles updated", "The selected roles have been updated for test service"]);
-    // expect(rp).toHaveBeenCalledTimes(1);
-    // expect(rp).toHaveBeenCalledWith(expect.objectContaining({
-    //   method: 'PATCH',
-    //   uri: `${config.access.service.url}/users/userId/services/serviceId/organisations/organisationId`,
-    //   headers: {
-    //     authorization: `bearer ${token}`,
-    //     'x-correlation-id': 'correlationId',
-    //   },
-    //   body: { roles: ['role1', 'role2'] },
-    //   json: true,
-    // }));
   });
   
-  // test('then you are redirected to the access requests page with a flash message', async () => {
-  //   await post(req, res);
+  it('should then redirect the user to the manage console services endpoint with a flash message', async () => {
+    await postManageConsoleRoles(req, res)
 
-  //   expect(res.flash.mock.calls[0][1]).toBe('Access request approved. test user is now associated with test org');
-  //   expect(res.redirect.mock.calls).toHaveLength(1);
-  //   expect(res.redirect.mock.calls[0][0]).toBe('/access-requests');
-  // });
-  // it('should return false for 403 status code', async () => {
-  //   const token = 'mockToken';
-  //   const error = new Error('Forbidden');
-  //   error.statusCode = 403;
-  //   getBearerTokenMock.mockResolvedValue(token);
-  //   rp.mockRejectedValue(error);
- 
-  //   const result = await updateUserService('userId', 'serviceId', 'organisationId', ['role1', 'role2'], 'correlationId');
-  //   expect(result).toBe(false);
-  //   expect(getBearerTokenMock).toHaveBeenCalledTimes(1);
-  //   expect(rp).toHaveBeenCalledTimes(1);
-  // });
- 
-  // it('should return false for 409 status code', async () => {
-  //   const token = 'mockToken';
-  //   const error = new Error('Conflict');
-  //   error.statusCode = 409;
-  //   getBearerTokenMock.mockResolvedValue(token);
-  //   rp.mockRejectedValue(error);
- 
-  //   const result = await updateUserService('userId', 'serviceId', 'organisationId', ['role1', 'role2'], 'correlationId');
-  //   expect(result).toBe(false);
-  //   expect(getBearerTokenMock).toHaveBeenCalledTimes(1);
-  //   expect(rp).toHaveBeenCalledTimes(1);
-  // });
- 
-  // it('should throw error for other status codes', async () => {
-  //   //const token = 'mockToken';
-  //   const error = new Error('Internal Server Error');
-  //   error.statusCode = 500;
-  //   //getBearerTokenMock.mockResolvedValue(token);
-  //   rp.mockRejectedValue(error);
- 
-  //   await expect(updateUserService('userId', 'serviceId', 'organisationId', ['role1', 'role2'], 'correlationId')).rejects.toThrow(error);
-  //   expect(getBearerTokenMock).toHaveBeenCalledTimes(1);
-  //   expect(rp).toHaveBeenCalledTimes(1);
-  // });
+    expect(res.flash.mock.calls[0][1]).toEqual(["Roles updated", "The selected roles have been updated for test service"]);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe('/users/userId/manage-console-services');
+  })
 });
 
-
-// const { 
-//     getSingleServiceForUser, 
-//     addOrChangeManageConsoleServiceTitle, 
-//     checkIfRolesChanged 
-//   } = require('./../../../src/app/users/getManageConsoleRoles');
-  
-//   jest.mock('./../../../src/infrastructure/utils', () => ({
-//     sendResult: jest.fn(),
-//   }));
-  
-//   jest.mock('./../../../src/app/users/utils', () => ({
-//     getUserDetails: jest.fn(),
-//   }));
-  
-//   jest.mock('./../../../src/infrastructure/applications', () => ({
-//     getServiceById: jest.fn(),
-//   }));
-  
-//   jest.mock('./../../../src/infrastructure/access', () => ({
-//     listRolesOfService: jest.fn(),
-//     getSingleUserService: jest.fn(),
-//     getSingleInvitationService: jest.fn(),
-//     updateUserService: jest.fn(),
-//   }));
-  
-//   describe('updateUserService', () => {
-
-//   })
