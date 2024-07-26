@@ -123,6 +123,7 @@ const accessIdentifiers = new SimpleSchema({
   },
   'identifiers.service': patterns.uuid,
   'identifiers.organisation': patterns.uuid,
+  'identifiers.departmentForEducation': patterns.uuid,
 });
 
 accessIdentifiers.extend(schemas.apiClient);

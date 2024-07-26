@@ -18,7 +18,7 @@ const {
   addOrChangeManageConsoleServiceTitle, 
   checkIfRolesChanged,
   postManageConsoleRoles
-} = require('./../../../src/app/users/getManageConsoleRoles');
+} = require('./../../../src/app/users/postManageConsoleRoles');
 
 const { getServiceById } = require('./../../../src/infrastructure/applications');
 const { getSingleUserService, getSingleInvitationService, listRolesOfService } = require('./../../../src/infrastructure/access');
