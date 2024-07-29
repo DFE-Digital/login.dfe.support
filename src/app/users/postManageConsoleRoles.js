@@ -1,9 +1,9 @@
 const config = require('./../../../src/infrastructure/config');
 const { sendResult } = require('../../infrastructure/utils');
 const { getUserDetails} = require('./utils');
-const { getServiceById } = require('../../infrastructure/applications')
+const { getServiceById } = require('../../infrastructure/applications');
 const { listRolesOfService, updateUserService } = require('../../infrastructure/access');
-const { getSingleServiceForUser } = require('./getManageConsoleRoles');
+const { getSingleServiceForUser, addOrChangeManageConsoleServiceTitle } = require('../../app/users/getManageConsoleRoles');
 
 const postManageConsoleRoles = async (req, res) => {
 
@@ -12,7 +12,7 @@ const postManageConsoleRoles = async (req, res) => {
       rolesSelectedNew = [req.body.role];
     }
   
-    const manage = await getServiceById('manage') 
+    const manage = await getServiceById('manage');
     const serviceSelectedByUser = await getServiceById(req.params.sid);
     const user = await getUserDetails(req);
     const userManageRoles = await getSingleServiceForUser(req.params.uid, config.access.identifiers.departmentForEducation, manage.id, req.id);
