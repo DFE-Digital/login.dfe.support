@@ -1,6 +1,7 @@
 const config = require('./../config');
-const rp = require('login.dfe.request-promise-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
+
+const { fetchApi } = require('login.dfe.async-retry');
 
 
 const getPageOfUsers = async (pageNumber, pageSize, includeDevices, includeCodes, includeLegacyUsernames, changedAfter, correlationId) => {
@@ -8,6 +9,7 @@ const getPageOfUsers = async (pageNumber, pageSize, includeDevices, includeCodes
 
   try {
     let uri = `${config.directories.service.url}/users?page=${pageNumber}&pageSize=${pageSize}`;
+
     if (includeDevices || includeCodes || includeLegacyUsernames) {
       const includes = [
         includeDevices ? 'devices' : undefined,
@@ -16,18 +18,17 @@ const getPageOfUsers = async (pageNumber, pageSize, includeDevices, includeCodes
       ].filter(x => x !== undefined).join(',');
       uri += `&include=${includes}`;
     }
+
     if (changedAfter) {
       uri += `&changedAfter=${changedAfter.toISOString()}`;
     }
 
-    const pageOfUsers = await rp({
+    const pageOfUsers = await fetchApi(uri,{
       method: 'GET',
-      uri: uri,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      },
-      json: true,
+      }
     });
 
     return pageOfUsers;
@@ -44,14 +45,12 @@ const getUser = async (uid, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
-    const user = await rp({
+    const user = await fetchApi(`${config.directories.service.url}/users/${uid}`,{
       method: 'GET',
-      uri: `${config.directories.service.url}/users/${uid}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      },
-      json: true,
+      }
     });
 
     return user;
@@ -69,17 +68,17 @@ const getPageOfInvitations = async (pageNumber, pageSize, changedAfter, correlat
 
   try {
     let uri = `${config.directories.service.url}/invitations?page=${pageNumber}&pageSize=${pageSize}`;
+    
     if (changedAfter) {
       uri += `&changedAfter=${changedAfter.toISOString()}`;
     }
-    const pageOfInvitations = await rp({
+
+    const pageOfInvitations = await fetchApi( uri,{
       method: 'GET',
-      uri,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      },
-      json: true,
+      }
     });
 
     return pageOfInvitations;
@@ -96,14 +95,12 @@ const getInvitation = async (invitationId, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
-    const invitation = await rp({
+    const invitation = await fetchApi(`${config.directories.service.url}/invitations/${invitationId}`,{
       method: 'GET',
-      uri: `${config.directories.service.url}/invitations/${invitationId}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
-      json: true,
     });
 
     return invitation;
@@ -120,14 +117,12 @@ const getUserDevices = async (uid, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
-    const devices = await rp({
+    const devices = await fetchApi(`${config.directories.service.url}/users/${uid}/devices`,{
       method: 'GET',
-      uri: `${config.directories.service.url}/users/${uid}/devices`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      },
-      json: true,
+      }
     });
 
     return devices ? devices : [];
@@ -144,14 +139,12 @@ const getUserAssociatedToDevice = async (type, serialNumber, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
-    const deviceAssociation = await rp({
+    const deviceAssociation = await fetchApi(`${config.directories.service.url}/devices/${type}/${serialNumber}`,{
       method: 'GET',
-      uri: `${config.directories.service.url}/devices/${type}/${serialNumber}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      },
-      json: true,
+      }
     });
 
     return deviceAssociation ? deviceAssociation.associatedWith : null;
@@ -176,15 +169,13 @@ const updateUser = async (uid, givenName, familyName, correlationId) => {
       body.family_name = familyName;
     }
 
-    await rp({
+    await fetchApi(`${config.directories.service.url}/users/${uid}`,{
       method: 'PATCH',
-      uri: `${config.directories.service.url}/users/${uid}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
-      body,
-      json: true,
+      body
     });
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
@@ -198,37 +189,33 @@ const updateUser = async (uid, givenName, familyName, correlationId) => {
 const deactivate = async (uid, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
-  await rp({
+  await fetchApi(`${config.directories.service.url}/users/${uid}/deactivate`,{
     method: 'POST',
-    uri: `${config.directories.service.url}/users/${uid}/deactivate`,
     headers: {
       authorization: `bearer ${token}`,
       'x-correlation-id': correlationId,
-    },
-    json: true,
+    }
   });
 };
 
 const reactivate = async (uid, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
-  await rp({
+  await fetchApi(`${config.directories.service.url}/users/${uid}/activate`,{
     method: 'POST',
-    uri: `${config.directories.service.url}/users/${uid}/activate`,
     headers: {
       authorization: `bearer ${token}`,
       'x-correlation-id': correlationId,
-    },
-    json: true,
+    }
   });
 };
 
 const deactivateInvite = async (id, reason, correlationId) => {
   try {
     const token = await jwtStrategy(config.directories.service).getBearerToken();
-    await rp({
+
+    await fetchApi(`${config.directories.service.url}/invitations/${id.replace('inv-', '')}`,{
       method: 'PATCH',
-      uri: `${config.directories.service.url}/invitations/${id.replace('inv-', '')}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
@@ -236,8 +223,7 @@ const deactivateInvite = async (id, reason, correlationId) => {
       body: {
         reason: reason,
         deactivated: true,
-      },
-      json: true,
+      }
     });
   } catch (e) {
     console.log(e);
@@ -247,9 +233,9 @@ const deactivateInvite = async (id, reason, correlationId) => {
 const reactivateInvite = async (id, reason, correlationId) => {
   try {
     const token = await jwtStrategy(config.directories.service).getBearerToken();
-    await rp({
+
+    await fetchApi(`${config.directories.service.url}/invitations/${id.replace('inv-', '')}`,{
       method: 'PATCH',
-      uri: `${config.directories.service.url}/invitations/${id.replace('inv-', '')}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
@@ -257,8 +243,7 @@ const reactivateInvite = async (id, reason, correlationId) => {
       body: {
         reason: reason,
         deactivated: false,
-      },
-      json: true,
+      }
     });
   } catch (e) {
     console.log(e);
@@ -288,15 +273,13 @@ const createInvite = async (givenName, familyName, email, digipassSerialNumber, 
     };
   }
 
-  const invitation = await rp({
+  const invitation = await fetchApi(`${config.directories.service.url}/invitations`,{
     method: 'POST',
-    uri: `${config.directories.service.url}/invitations`,
     headers: {
       authorization: `bearer ${token}`,
       'x-correlation-id': correlationId,
     },
-    body,
-    json: true,
+    body
   });
 
   return invitation.id;
@@ -305,17 +288,16 @@ const createInvite = async (givenName, familyName, email, digipassSerialNumber, 
 const updateInvite = async (id, email, correlationId) => {
   try {
     const token = await jwtStrategy(config.directories.service).getBearerToken();
-    await rp({
+
+    await fetchApi(`${config.directories.service.url}/invitations/${id}`,{
       method: 'PATCH',
-      uri: `${config.directories.service.url}/invitations/${id}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
       body: {
         email,
-      },
-      json: true,
+      }
     });
   } catch (e) {
     console.log(e);
@@ -325,14 +307,13 @@ const updateInvite = async (id, email, correlationId) => {
 const resendInvite = async (id, correlationId) => {
   try {
     const token = await jwtStrategy(config.directories.service).getBearerToken();
-    await rp({
+    
+    await fetchApi(`${config.directories.service.url}/invitations/${id}/resend`,{
       method: 'POST',
-      uri: `${config.directories.service.url}/invitations/${id}/resend`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      },
-      json: true,
+      }
     });
     return true;
   } catch (e) {
@@ -343,10 +324,10 @@ const resendInvite = async (id, correlationId) => {
 
 const createUserDevice = async (id, serialNumber, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
+
   try {
     const opts = {
       method: 'POST',
-      uri: `${config.directories.service.url}/users/${id}/devices`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
@@ -356,7 +337,7 @@ const createUserDevice = async (id, serialNumber, correlationId) => {
 
     opts.body = { type: 'digipass', serialNumber };
 
-    await rp(opts);
+    await fetchApi(`${config.directories.service.url}/users/${id}/devices`,opts);
 
     return {
       success: true
@@ -372,20 +353,19 @@ const createUserDevice = async (id, serialNumber, correlationId) => {
 
 const deleteUserDevice = async (id, serialNumber, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
+
   try {
     const opts = {
       method: 'DELETE',
-      uri: `${config.directories.service.url}/users/${id}/devices`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
-      json: true,
     };
 
     opts.body = { type: 'digipass', serialNumber };
 
-    await rp(opts);
+    await fetchApi(`${config.directories.service.url}/users/${id}/devices`,opts);
 
     return {
       success: true
@@ -401,10 +381,10 @@ const deleteUserDevice = async (id, serialNumber, correlationId) => {
 
 const createChangeEmailCode = async (userId, newEmailAddress, clientId, redirectUri, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
+  
   try {
-    return await rp({
+    return await fetchApi(`${config.directories.service.url}/usercodes/upsert`,{
       method: 'PUT',
-      uri: `${config.directories.service.url}/usercodes/upsert`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
@@ -416,8 +396,7 @@ const createChangeEmailCode = async (userId, newEmailAddress, clientId, redirect
         codeType: 'changeemail',
         email: newEmailAddress,
         selfInvoked: false,
-      },
-      json: true,
+      }
     });
   } catch (e) {
     throw e;
@@ -426,15 +405,14 @@ const createChangeEmailCode = async (userId, newEmailAddress, clientId, redirect
 
 const getChangeEmailCode = async (userId, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
+
   try {
-    return await rp({
+    return await fetchApi(`${config.directories.service.url}/usercodes/${userId}/changeemail`,{
       method: 'GET',
-      uri: `${config.directories.service.url}/usercodes/${userId}/changeemail`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
-      json: true,
     });
   } catch (e) {
     if (e.statusCode === 404) {
@@ -446,15 +424,14 @@ const getChangeEmailCode = async (userId, correlationId) => {
 
 const deleteChangeEmailCode = async (userId, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
+
   try {
-    return await rp({
+    return await fetchApi(`${config.directories.service.url}/usercodes/${userId}/changeemail`,{
       method: 'DELETE',
-      uri: `${config.directories.service.url}/usercodes/${userId}/changeemail`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      },
-      json: true,
+      }
     });
   } catch (e) {
     throw e;
@@ -463,15 +440,14 @@ const deleteChangeEmailCode = async (userId, correlationId) => {
 
 const getUsersById = async (ids, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
+
   try {
-    return await rp({
+    return await fetchApi(`${config.directories.service.url}/users/by-ids?id=${ids.toString()}`,{
       method: 'GET',
-      uri: `${config.directories.service.url}/users/by-ids?id=${ids.toString()}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
-      json: true,
     });
   } catch (e) {
     if (e.statusCode === 404) {
@@ -483,18 +459,17 @@ const getUsersById = async (ids, correlationId) => {
 
 const getUsersByIdV2 = async (ids, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
+
   try {
-    return await rp({
+    return await fetchApi(`${config.directories.service.url}/users/by-ids`,{
       method: 'POST',
-      uri: `${config.directories.service.url}/users/by-ids`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
       body: {
         ids: ids.toString(),
-      },
-      json: true,
+      }
     });
   } catch (e) {
     if (e.statusCode === 404) {
@@ -506,15 +481,14 @@ const getUsersByIdV2 = async (ids, correlationId) => {
 
 const getLegacyUsernames = async (userIds, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
+
   try {
-    return await rp({
+    return await fetchApi(`${config.directories.service.url}/users/${userIds}/legacy-username`,{
       method: 'GET',
-      uri: `${config.directories.service.url}/users/${userIds}/legacy-username`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      },
-      json: true,
+      }
     });
   } catch (e) {
     if (e.statusCode === 404) {

@@ -3,7 +3,7 @@ const appInsights = require('applicationinsights');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const session = require('cookie-session');
+const session = require('express-session');
 const expressLayouts = require('express-ejs-layouts');
 const csurf = require('csurf');
 const http = require('http');
@@ -13,7 +13,7 @@ const path = require('path');
 const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
 const moment = require('moment');
-const flash = require('express-flash-2');
+const flash = require('login.dfe.express-flash-2');
 const setCorrelationId = require('express-mw-correlation-id');
 const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
 const registerRoutes = require('./routes');
@@ -57,37 +57,45 @@ const init = async () => {
 
   const app = express();
 
+  logger.info('set helmet policy defaults');
+  
+
   if (config.hostingEnvironment.hstsMaxAge) {
-   app.use(helmet({
-      noCache: true,
-      frameguard: {
-        action: 'deny',
-      },
-      hsts: {
+    app.use(helmet({
+      strictTransportSecurity: {
         maxAge: config.hostingEnvironment.hstsMaxAge,
         preload: true,
+        includeSubDomains: true,
       },
     }));
   }
 
-  logger.info('set helmet policy defaults');
+  const self = "'self'";
+  const allowedOrigin = '*.signin.education.gov.uk';
 
   // Setting helmet Content Security Policy
-  const scriptSources = ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'localhost', '*.signin.education.gov.uk'];
+  const scriptSources = [self, "'unsafe-inline'", "'unsafe-eval'", allowedOrigin];
+  const styleSources = [self, "'unsafe-inline'", allowedOrigin];
+  const imgSources = [self, 'data:', 'blob:', allowedOrigin];
+  const fontSources = [self, 'data:', allowedOrigin];
+
+  if (config.hostingEnvironment.env === 'dev') {
+    scriptSources.push('localhost');
+    styleSources.push('localhost');
+    imgSources.push('localhost');
+    fontSources.push('localhost');
+  }
+
 
   app.use(helmet.contentSecurityPolicy({
-    browserSniff: false,
-    setAllHeaders: false,
     directives: {
-      defaultSrc: ["'self'"],
-      childSrc: ["'none'"],
-      objectSrc: ["'none'"],
+      defaultSrc: [self],
       scriptSrc: scriptSources,
-      styleSrc: ["'self'", "'unsafe-inline'", 'localhost', '*.signin.education.gov.uk'],
-      imgSrc: ["'self'", 'data:', 'blob:', 'localhost', '*.signin.education.gov.uk'],
-      fontSrc: ["'self'", 'data:', '*.signin.education.gov.uk'],
-      connectSrc: ["'self'"],
-      formAction: ["'self'", '*'],
+      styleSrc: styleSources,
+      imgSrc: imgSources,
+      fontSrc: fontSources,
+      connectSrc: [self],
+      formAction: [self, '*'],
     },
   }));
 
@@ -134,23 +142,21 @@ const init = async () => {
     expiryInMinutes = sessionExpiry;
   }
   //chanmge to redisStore
-  app.use(session({
-    name: 'session',
-    store: redisStore,
-    keys: [config.hostingEnvironment.sessionSecret],
-    maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
-    httpOnly: true,
-    secure: true,
-    resave: true,
-    saveUninitialized: true,
-    secret: config.hostingEnvironment.sessionSecret,
-    cookie: {
-      httpOnly: true,
-      secure: true,
+  app.use(
+    session({
+      name: 'session',
+      store: redisStore,
+      resave: true,
+      saveUninitialized: true,
+      secret: config.hostingEnvironment.sessionSecret,
       maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
-    },
-  }));
- 
+      cookie: {
+        httpOnly: true,
+        secure: true,
+        maxAge: expiryInMinutes * 60000, // Expiry in milliseconds
+      },
+    }),
+  );
   app.use((req, res, next) => {
     req.session.now = Date.now();
     next();

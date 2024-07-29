@@ -1,4 +1,4 @@
-jest.mock('login.dfe.request-promise-retry');
+jest.mock('login.dfe.async-retry');
 jest.mock('login.dfe.jwt-strategies');
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
   directories: {
@@ -8,7 +8,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
     },
   },
 }));
-const rp  = require('login.dfe.request-promise-retry');
+const {fetchApi}  = require('login.dfe.async-retry');
 
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { createUserDevice } = require('./../../../src/infrastructure/directories/api');
@@ -26,8 +26,8 @@ const apiResponse = [
 
 describe('when creating a user device in the directories api', () => {
   beforeEach(() => {
-    rp.mockReset();
-    rp.mockImplementation(() => {
+    fetchApi.mockReset();
+    fetchApi.mockImplementation(() => {
       return apiResponse;
     });
 
@@ -43,17 +43,17 @@ describe('when creating a user device in the directories api', () => {
   it('then it should call users devices resource with uid', async () => {
     await createUserDevice(userId, serialNumber, correlationId);
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
-      method: 'POST',
-      uri: 'http://directories.test/users/user1/devices',
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('http://directories.test/users/user1/devices');
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'POST'
     });
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
     await createUserDevice(userId, serialNumber, correlationId);
 
-    expect(rp.mock.calls[0][0]).toMatchObject({
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
         authorization: 'bearer token',
       },
@@ -63,7 +63,7 @@ describe('when creating a user device in the directories api', () => {
   it('then it should include the correlation id', async () => {
     await createUserDevice(userId, serialNumber, correlationId);
 
-    expect(rp.mock.calls[0][0]).toMatchObject({
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
         'x-correlation-id': correlationId,
       },
@@ -73,7 +73,7 @@ describe('when creating a user device in the directories api', () => {
   it('then it will include in the body the serialNumber and type', async () => {
     await createUserDevice(userId, serialNumber, correlationId);
 
-    expect(rp.mock.calls[0][0]).toMatchObject({
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
       body: {
         type: 'digipass',
         serialNumber: serialNumber

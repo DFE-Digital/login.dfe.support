@@ -1,5 +1,6 @@
 const config = require('./../config');
-const rp = require('login.dfe.request-promise-retry');
+const { fetchApi } = require('login.dfe.async-retry');
+const asyncRetry = require('login.dfe.async-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 
 
@@ -7,14 +8,12 @@ const getDevices = async (correlationId) => {
   const token = await jwtStrategy(config.devices.service).getBearerToken();
 
   try {
-    const devices = await rp({
+    const devices = await fetchApi(`${config.devices.service.url}/digipass`,{
       method: 'GET',
-      uri: `${config.devices.service.url}/digipass`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
-      json: true,
     });
 
     return devices ? devices : [];
@@ -31,26 +30,30 @@ const deviceExists = async (serialNumber, correlationId) => {
   const token = await jwtStrategy(config.devices.service).getBearerToken();
 
   try {
-    const response = await rp({
-      method: 'GET',
-      uri: `${config.devices.service.url}/digipass/${serialNumber}`,
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-      resolveWithFullResponse: true,
-    });
 
-    if (response.statusCode === 204) {
+    const resp = await asyncRetry(async () =>{
+      const response = await fetch(`${config.devices.service.url}/digipass/${serialNumber}`,{
+        method: 'GET',
+        headers: {
+          authorization: `bearer ${token}`,
+          'x-correlation-id': correlationId,
+        }
+      });
+
+      return response;
+    }, asyncRetry.strategies.apiStrategy);
+    
+    if (resp.status === 204) {
       return true;
-    }
-    if (response.statusCode === 404) {
+    }    
+    if (resp.status === 404) {
       return false;
     }
 
-    throw new Error(`Error calling api, status code ${response.statusCode}`);
+    throw new Error(`Error calling api, status code ${response.status}`);
+
   } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
+    const status = e.status ? e.status : 500;
     if (status === 404) {
       return false;
     }
@@ -60,18 +63,17 @@ const deviceExists = async (serialNumber, correlationId) => {
 
 const syncDigipassToken = async (serialNumber, code1, code2) => {
   const token = await jwtStrategy(config.devices.service).getBearerToken();
+
   try {
-    const response = await rp({
+    const response = await fetchApi(`${config.devices.service.url}/digipass/${serialNumber}/sync`,{
       method: 'POST',
-      uri: `${config.devices.service.url}/digipass/${serialNumber}/sync`,
       headers: {
         authorization: `Bearer ${token}`,
       },
       body: {
         code1,
         code2,
-      },
-      json: true,
+      }
     });
 
     return response.valid;
@@ -89,14 +91,12 @@ const getDeviceUnlockCode = async (serialNumber, code, correlationId) => {
   const token = await jwtStrategy(config.devices.service).getBearerToken();
 
   try {
-    const device = await rp({
+    const device = await fetchApi(`${config.devices.service.url}/digipass/${serialNumber}?fields=${code}`,{
       method: 'GET',
-      uri: `${config.devices.service.url}/digipass/${serialNumber}?fields=${code}`,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      },
-      json: true,
+      }
     });
 
     return Object.values(Object.keys(device)
@@ -118,17 +118,15 @@ const deactivateToken = async (serialNumber, reason, correlationId) => {
   const token = await jwtStrategy(config.devices.service).getBearerToken();
 
   try {
-    await rp({
+    await fetchApi(`${config.devices.service.url}/digipass/${serialNumber}/deactivate`,{
       method: 'PUT',
-      uri: `${config.devices.service.url}/digipass/${serialNumber}/deactivate`,
       headers: {
         authorization: `Bearer ${token}`,
         'x-correlation-id': correlationId,
       },
       body: {
         reason: reason,
-      },
-      json: true,
+      }
     });
 
     return true;

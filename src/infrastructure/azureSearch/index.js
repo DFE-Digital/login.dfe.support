@@ -1,7 +1,7 @@
 'use strict';
 
 const config = require('./../config');
-const rp = require('login.dfe.request-promise-retry');
+const { fetchApi } = require('login.dfe.async-retry');
 
 const getAzureSearchUri = (indexName, indexResource = '') => {
   let indexUriSegments = '';
@@ -13,9 +13,8 @@ const getAzureSearchUri = (indexName, indexResource = '') => {
 
 const createIndex = async (indexName, fields) => {
   try {
-    await rp({
+    await fetchApi(getAzureSearchUri(indexName),{
       method: 'PUT',
-      uri: getAzureSearchUri(indexName),
       headers: {
         'content-type': 'application/json',
         'api-key': config.cache.params.apiKey,
@@ -23,8 +22,7 @@ const createIndex = async (indexName, fields) => {
       body: {
         name: indexName,
         fields
-      },
-      json: true,
+      }
     });
     return indexName;
   } catch (e) {
@@ -34,17 +32,15 @@ const createIndex = async (indexName, fields) => {
 
 const updateIndex = async (users, index) => {
   try {
-    await rp({
+    await fetchApi(getAzureSearchUri(index, '/docs/index'),{
       method: 'POST',
-      uri: getAzureSearchUri(index, '/docs/index'),
       headers: {
         'content-type': 'application/json',
         'api-key': config.cache.params.apiKey,
       },
       body: {
         value: users
-      },
-      json: true,
+      }
     });
   } catch (e) {
     throw e;
@@ -53,17 +49,15 @@ const updateIndex = async (users, index) => {
 
 const deleteIndexItem = async (item, index) => {
   try {
-    await rp({
+    await fetchApi(getAzureSearchUri(index, '/docs/index'),{
       method: 'POST',
-      uri: getAzureSearchUri(index, '/docs/index'),
       headers: {
         'content-type': 'application/json',
         'api-key': config.cache.params.apiKey,
       },
       body: {
         value: item
-      },
-      json: true,
+      }
     });
   } catch (e) {
     throw e;
@@ -74,13 +68,11 @@ const deleteUnusedIndexes = async (unusedIndexes, currentIndexName) => {
   for (let i = 0; i < unusedIndexes.length; i++) {
     if (unusedIndexes[i] !== currentIndexName) {
       try {
-        await rp({
+        await fetchApi(getAzureSearchUri(unusedIndexes[i]),{
           method: 'DELETE',
-          uri: getAzureSearchUri(unusedIndexes[i]),
           headers: {
             'api-key': config.cache.params.apiKey,
-          },
-          json: true,
+          }
         });
       } catch (e) {
         if (e.statusCode !== 404) {
@@ -92,25 +84,21 @@ const deleteUnusedIndexes = async (unusedIndexes, currentIndexName) => {
 };
 
 const getIndexes = async () => {
-  return await rp({
+  return await fetchApi(getAzureSearchUri(),{
     method: 'GET',
-    uri: getAzureSearchUri(),
     headers: {
       'api-key': config.cache.params.apiKey,
     },
-    json: true,
   });
 };
 
 const getIndexById = async (currentIndexName, userId, filterParam = 'id') => {
-  const response = await rp({
+  const response = await fetchApi(`${getAzureSearchUri(currentIndexName, '/docs')}&$filter=${filterParam}+eq+'${userId}'`,{
     method: 'GET',
-    uri: `${getAzureSearchUri(currentIndexName, '/docs')}&$filter=${filterParam}+eq+'${userId}'`,
     headers: {
       'content-type': 'application/json',
       'api-key': config.cache.params.apiKey,
-    },
-    json: true,
+    }
   });
 
   if (response.value.length === 0) {
@@ -121,14 +109,12 @@ const getIndexById = async (currentIndexName, userId, filterParam = 'id') => {
 };
 
 const search = async (currentIndexName, criteria, skip, pageSize, orderBy) => {
-  return await rp({
+  return await fetchApi(`${getAzureSearchUri(currentIndexName, '/docs')}&search=${encodeURIComponent(criteria)}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`,{
     method: 'GET',
-    uri: `${getAzureSearchUri(currentIndexName, '/docs')}&search=${encodeURIComponent(criteria)}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`,
     headers: {
       'content-type': 'application/json',
       'api-key': config.cache.params.apiKey,
     },
-    json: true,
   });
 };
 

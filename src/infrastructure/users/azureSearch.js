@@ -1,6 +1,6 @@
 const Redis = require('ioredis');
 const config = require('./../config');
-const rp = require('login.dfe.request-promise-retry');
+const { fetchApi } = require('login.dfe.async-retry');
 
 
 const {v4:uuid} = require('uuid');
@@ -95,14 +95,12 @@ const search = async (criteria, pageNumber, sortBy = 'name', sortAsc = true, fil
       uri += `&$filter=${filterParam}`;
     }
 
-    const response = await rp({
+    const response = await fetchApi(uri,{
       method: 'GET',
-      uri,
       headers: {
         'content-type': 'application/json',
         'api-key': config.cache.params.apiKey,
       },
-      json: true,
     });
 
     let numberOfPages = 1;
@@ -125,14 +123,12 @@ const getById = async (userId) => {
   const currentIndexName = await client.get('CurrentIndex_Users');
 
   try {
-    const response = await rp({
+    const response = await fetchApi(`${getAzureSearchUri(currentIndexName, '/docs')}&$filter=id+eq+'${userId}'`,{
       method: 'GET',
-      uri: `${getAzureSearchUri(currentIndexName, '/docs')}&$filter=id+eq+'${userId}'`,
       headers: {
         'content-type': 'application/json',
         'api-key': config.cache.params.apiKey,
-      },
-      json: true,
+      }
     });
 
     if (response.value.length === 0) {
@@ -152,9 +148,9 @@ const getExistingIndex = async () => {
 const createIndex = async () => {
   try {
     const indexName = `users-${uuid()}`;
-    await rp({
+
+    await fetchApi(getAzureSearchUri(indexName),{
       method: 'PUT',
-      uri: getAzureSearchUri(indexName),
       headers: {
         'content-type': 'application/json',
         'api-key': config.cache.params.apiKey,
@@ -181,8 +177,7 @@ const createIndex = async () => {
           { name: 'pendingEmail', type: 'Edm.String' },
           { name: 'legacyUsernames', type: 'Collection(Edm.String)', searchable: true, filterable: true },
         ]
-      },
-      json: true,
+      }
     });
     return indexName;
   } catch (e) {
@@ -225,17 +220,16 @@ const updateIndex = async (users, index) => {
         legacyUsernames: user.legacyUsernames || [],
       };
     });
-    await rp({
+
+    await fetchApi(getAzureSearchUri(index, '/docs/index'),{
       method: 'POST',
-      uri: getAzureSearchUri(index, '/docs/index'),
       headers: {
         'content-type': 'application/json',
         'api-key': config.cache.params.apiKey,
       },
       body: {
         value: usersForIndex,
-      },
-      json: true,
+      }
     });
   } catch (e) {
     throw e;
@@ -255,13 +249,12 @@ const deleteUnusedIndexes = async () => {
   for (let i = 0; i < unusedIndexes.length; i++) {
     if (unusedIndexes[i] !== currentIndexName) {
       try {
-        await rp({
+
+        await fetchApi(getAzureSearchUri(unusedIndexes[i]),{
           method: 'DELETE',
-          uri: getAzureSearchUri(unusedIndexes[i]),
           headers: {
             'api-key': config.cache.params.apiKey,
-          },
-          json: true,
+          }
         });
       } catch (e) {
         if (e.statusCode !== 404) {
@@ -273,13 +266,11 @@ const deleteUnusedIndexes = async () => {
   }
 
   // Find any remaining indexes that appear to be unused
-  const indexesResponse = await rp({
+  const indexesResponse = await fetchApi(getAzureSearchUri(),{
     method: 'GET',
-    uri: getAzureSearchUri(),
     headers: {
       'api-key': config.cache.params.apiKey,
-    },
-    json: true,
+    }
   });
   const indexesAppearingUnused = indexesResponse.value.map(x => x.name).filter(x => x !== currentIndexName && x.match(/^users-/i));
   await client.set('UnusedIndexes_Users', JSON.stringify(indexesAppearingUnused));

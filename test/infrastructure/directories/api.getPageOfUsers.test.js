@@ -1,4 +1,4 @@
-jest.mock('login.dfe.request-promise-retry');
+jest.mock('login.dfe.async-retry');
 jest.mock('login.dfe.jwt-strategies');
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
   directories: {
@@ -9,7 +9,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
   },
 }));
 
-const rp  = require('login.dfe.request-promise-retry');
+const {fetchApi} = require('login.dfe.async-retry');
 
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { getPageOfUsers } = require('./../../../src/infrastructure/directories/api');
@@ -24,8 +24,8 @@ const apiResponse = {
 
 describe('when getting a page of users from directories api', () => {
   beforeEach(() => {
-    rp.mockReset();
-    rp.mockImplementation(() => {
+    fetchApi.mockReset();
+    fetchApi.mockImplementation(() => {
       return apiResponse;
     });
 
@@ -41,67 +41,67 @@ describe('when getting a page of users from directories api', () => {
   it('then it should call users resource with page & page size', async () => {
     await getPageOfUsers(pageNumber, pageSize, false, false, false, undefined, correlationId);
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
-      method: 'GET',
-      uri: 'http://directories.test/users?page=1&pageSize=123',
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('http://directories.test/users?page=1&pageSize=123');
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'GET'
     });
   });
 
   it('then it should call users resource with page and include if includeDevices = true', async () => {
     await getPageOfUsers(pageNumber, pageSize, true, false, false, undefined, correlationId);
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
-      method: 'GET',
-      uri: 'http://directories.test/users?page=1&pageSize=123&include=devices',
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('http://directories.test/users?page=1&pageSize=123&include=devices');
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'GET'
     });
   });
 
   it('then it should call users resource with page and include if includeCodes = true', async () => {
     await getPageOfUsers(pageNumber, pageSize, false, true, false, undefined, correlationId);
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
-      method: 'GET',
-      uri: 'http://directories.test/users?page=1&pageSize=123&include=codes',
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('http://directories.test/users?page=1&pageSize=123&include=codes');
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'GET'
     });
   });
 
   it('then it should call users resource with page and include if includeLegacyUsernames = true', async () => {
     await getPageOfUsers(pageNumber, pageSize, false, false, true, undefined, correlationId);
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
-      method: 'GET',
-      uri: 'http://directories.test/users?page=1&pageSize=123&include=legacyusernames',
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('http://directories.test/users?page=1&pageSize=123&include=legacyusernames');
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'GET'
     });
   });
 
   it('then it should call users resource with page and include if includeDevices = true and includeCodes = true and includeLegacyUsernames = true', async () => {
     await getPageOfUsers(pageNumber, pageSize, true, true, true, undefined, correlationId);
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
-      method: 'GET',
-      uri: 'http://directories.test/users?page=1&pageSize=123&include=devices,codes,legacyusernames',
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('http://directories.test/users?page=1&pageSize=123&include=devices,codes,legacyusernames');
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'GET'
     });
   });
 
   it('then it should call users resource with page and changedAfter if changedAfter specified', async () => {
     await getPageOfUsers(pageNumber, pageSize, false, false, false, new Date(Date.UTC(2018, 8, 7, 10, 43, 32)), correlationId);
 
-    expect(rp.mock.calls).toHaveLength(1);
-    expect(rp.mock.calls[0][0]).toMatchObject({
-      method: 'GET',
-      uri: 'http://directories.test/users?page=1&pageSize=123&changedAfter=2018-09-07T10:43:32.000Z',
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('http://directories.test/users?page=1&pageSize=123&changedAfter=2018-09-07T10:43:32.000Z');
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'GET'
     });
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
     await getPageOfUsers(pageNumber, pageSize, false, false, false, undefined, correlationId);
 
-    expect(rp.mock.calls[0][0]).toMatchObject({
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
         authorization: 'bearer token',
       },
@@ -111,7 +111,7 @@ describe('when getting a page of users from directories api', () => {
   it('then it should include the correlation id', async () => {
     await getPageOfUsers(pageNumber, pageSize, false, false, false, undefined, correlationId);
 
-    expect(rp.mock.calls[0][0]).toMatchObject({
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
         'x-correlation-id': correlationId,
       },

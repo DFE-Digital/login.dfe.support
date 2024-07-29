@@ -23,6 +23,7 @@ describe('when getting users audit details', () => {
       id: 'correlationId',
       csrfToken: () => 'token',
       accepts: () => ['text/html'],
+      session: {type: 'audit'},
       query: {
         page: 3,
       },

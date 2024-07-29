@@ -4,7 +4,7 @@
         <h1 class="heading-xlarge">
             Select your Organisation
         </h1>
-        <p>You are associated with more than one organisation, please select the one you wish to sign-in with.</p>
+        <p>You are associated with more than one organisation. Select the organisation associated with the service you would like to access.</p>
 
         <h2 class="heading-medium">
             Your Organisations
@@ -13,7 +13,7 @@
         <form method="post">
             <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
             <div class="form-group <%= (locals.validationMessages.selectedOrganisation !== undefined) ? 'form-group-error' : '' %>">
-                <fieldset>
+                <fieldset class="govuk-fieldset" aria-describedby="validation-selected-organisation">
                     <% if (locals.validationMessages.selectedOrganisation !== undefined) { %>
                     <p class="error-message" id="validation-selected-organisation"><%=locals.validationMessages.selectedOrganisation %></p>
                     <% } %>

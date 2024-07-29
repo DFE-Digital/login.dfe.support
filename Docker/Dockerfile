@@ -13,6 +13,14 @@ ADD config /home/site/wwwroot/config
 COPY src /home/site/wwwroot/src
 COPY package.json /home/site/wwwroot/
 
+ARG USERNAME=node
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+RUN groupmod --gid $USER_GID $USERNAME \
+    && usermod --uid $USER_UID --gid $USER_GID $USERNAME \
+    && chown -R $USER_UID:$USER_GID /home/$USERNAME
+
 RUN npm install pm2 -g
 ENV PM2HOME /pm2home
 
@@ -39,6 +47,7 @@ COPY ./Docker/tokenization.ps1 tokenization.ps1
 
 RUN chmod 755 init.sh
 RUN chmod 755 tokenization.ps1
+USER $USERNAME
 
 EXPOSE 8080 2221
 
