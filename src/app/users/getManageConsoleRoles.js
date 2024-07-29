@@ -2,7 +2,7 @@ const config = require('./index');
 const { sendResult } = require('../../infrastructure/utils');
 const { getUserDetails} = require('./utils');
 const { getServiceById } = require('../../infrastructure/applications')
-const { listRolesOfService, getSingleUserService, getSingleInvitationService, updateUserService } = require('../../infrastructure/access');
+const { listRolesOfService, getSingleUserService, getSingleInvitationService } = require('../../infrastructure/access');
 
 const getSingleServiceForUser = async (userId, organisationId, serviceId, correlationId) => {
   const userService = userId.startsWith('inv-') ? await getSingleInvitationService(userId.substr(4), serviceId, organisationId, correlationId) : await getSingleUserService(userId, serviceId, organisationId, correlationId);

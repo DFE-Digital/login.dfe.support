@@ -4,6 +4,15 @@ const {
     checkIfRolesChanged 
   } = require('./../../../src/app/users/getManageConsoleRoles');
   
+  jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
+    support: {
+      type: 'api',
+      service: {
+        url: 'http://support.test',
+      },
+    },
+  }));
+
   jest.mock('./../../../src/infrastructure/utils', () => ({
     sendResult: jest.fn(),
   }));
@@ -12,6 +21,8 @@ const {
     getUserDetails: jest.fn(),
   }));
   
+  jest.mock('login.dfe.policy-engine');
+
   jest.mock('./../../../src/infrastructure/applications', () => ({
     getServiceById: jest.fn(),
   }));
@@ -96,4 +107,3 @@ const {
       expect(result).toBe(false);
     });
   });
-

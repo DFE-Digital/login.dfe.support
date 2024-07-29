@@ -1,4 +1,4 @@
-jest.mock('login.dfe.request-promise-retry');
+//jest.mock('login.dfe.request-promise-retry');
 jest.mock('login.dfe.jwt-strategies');
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
   support: {
@@ -7,22 +7,37 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
       url: 'http://support.test',
     },
   },
+  access: {
+    identifiers: {
+      service: "service1",
+      organisation: "organisation1",
+      departmentForEducation: "departmentForEducation1"
+    }
+  }
 }));
 
-const rp  = require('login.dfe.request-promise-retry');
+//const rp  = require('login.dfe.request-promise-retry');
+jest.mock('login.dfe.policy-engine');
 
 const jwtStrategy = require('login.dfe.jwt-strategies');
+jest.mock('login.dfe.jwt-strategies');
 
 const { 
-  getSingleServiceForUser, 
-  addOrChangeManageConsoleServiceTitle, 
-  checkIfRolesChanged,
   postManageConsoleRoles
 } = require('./../../../src/app/users/postManageConsoleRoles');
+
 
 const { getServiceById } = require('./../../../src/infrastructure/applications');
 const { getSingleUserService, getSingleInvitationService, listRolesOfService } = require('./../../../src/infrastructure/access');
 const { getUserDetails } = require('./../../../src/app/users/utils');
+
+const { 
+  getSingleServiceForUser, 
+  addOrChangeManageConsoleServiceTitle,
+  checkIfRolesChanged
+} = require('./../../../src/app/users/getManageConsoleRoles');
+
+jest.mock('./../../../src/app/users/getManageConsoleRoles');
 
 jest.mock('./../../../src/infrastructure/applications', () => ({
   getServiceById: jest.fn(),
@@ -39,11 +54,7 @@ jest.mock('./../../../src/infrastructure/access', () => ({
     updateUserService: jest.fn(),
   }));
 
-jest.mock('request-promise');
-jest.mock('login.dfe.jwt-strategies');
- 
 const { updateUserService } = require('./../../../src/infrastructure/access');
-// const { listRolesOfService } = require('../../../src/infrastructure/access/static');
 
 describe('updateUserService', () => {
 
@@ -122,7 +133,7 @@ describe('updateUserService', () => {
  
   it('should successfully update user service', async () => {
     
-    await postManageConsoleRoles(req, res)
+    await postManageConsoleRoles(req, res);
 
     expect(updateUserService.mock.calls).toHaveLength(1);
     expect(updateUserService.mock.calls[0][0]).toBe('userId');
@@ -141,4 +152,3 @@ describe('updateUserService', () => {
     expect(res.redirect.mock.calls[0][0]).toBe('/users/userId/manage-console-services');
   })
 });
-
