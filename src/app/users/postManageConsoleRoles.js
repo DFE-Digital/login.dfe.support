@@ -50,15 +50,15 @@ const postManageConsoleRoles = async (req, res) => {
     const rolesToRemove = manageConsoleRoleIds.filter(id => !rolesSelectedNew.includes(id));
     const filteredAllSelectedRoles = allSelectedRoles.filter(id => !rolesToRemove.includes(id));
     const rolesForThisServiceSelectedBeforeSession = rolesSelectedBeforeSession.filter(id => rolesSelectedNew.includes(id));
-    const rolesHaveNotChanged = checkIfRolesChanged(rolesForThisServiceSelectedBeforeSession, rolesSelectedNew);
 
-    if (rolesHaveNotChanged && filteredAllSelectedRoles.length === allSelectedRoles.length) {
+    if (!checkIfRolesChanged(rolesForThisServiceSelectedBeforeSession, rolesSelectedNew)) {
+      return res.redirect(`/users/${req.params.uid}/manage-console-services`);
+    } else {
+      updateUserService(req.params.uid, manage.id, config.access.identifiers.departmentForEducation, filteredAllSelectedRoles, req.id);
+
+      res.flash('info', [`Roles updated`,`The selected roles have been updated for ${serviceSelectedByUser.name}`] );  
       return res.redirect(`/users/${req.params.uid}/manage-console-services`);
     }
-
-    updateUserService(req.params.uid, manage.id, config.access.identifiers.departmentForEducation, filteredAllSelectedRoles, req.id);
-    res.flash('info', [`Roles updated`,`The selected roles have been updated for ${serviceSelectedByUser.name}`] );  
-    return res.redirect(`/users/${req.params.uid}/manage-console-services`);
   }
 
   module.exports = postManageConsoleRoles;

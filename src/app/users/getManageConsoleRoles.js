@@ -32,20 +32,8 @@ const addOrChangeManageConsoleServiceTitle = (userManageRoles, manageConsoleRole
 return result;
 }
 
-const checkIfRolesChanged =  (rolesSelectedBeforeSession, newRolesSelected) => {
-  if (rolesSelectedBeforeSession.length !== newRolesSelected.length) {
-    return false;
-  }
-
-  let rolesSelectedBeforeSessionSorted = rolesSelectedBeforeSession.slice().sort();
-  let newRolesSelectedSorted = newRolesSelected.slice().sort();
-
-  for(let i = 0; i < rolesSelectedBeforeSessionSorted.length; i++) {
-    if (rolesSelectedBeforeSessionSorted[i] !== newRolesSelectedSorted[i]) {
-      return false;
-    }
-  }
-  return true;
+const checkIfRolesChanged = (rolesSelectedBeforeSession, newRolesSelected) => {
+  return !(JSON.stringify(rolesSelectedBeforeSession.sort()) === JSON.stringify(newRolesSelected.sort()));
 }
 
 const getManageConsoleRoles = async (req, res) => {
