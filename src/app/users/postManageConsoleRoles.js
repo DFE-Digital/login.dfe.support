@@ -12,19 +12,17 @@ const postManageConsoleRoles = async (req, res) => {
       rolesSelectedNew = [req.body.role];
     }
   
-    const manage = await getServiceById('manage') 
+    const manage = await getServiceById('manage');
     const serviceSelectedByUser = await getServiceById(req.params.sid);
     const user = await getUserDetails(req);
-    console.log('ABOUT TO RUN:: getSingleServiceForUser')
     const userManageRoles = await getSingleServiceForUser(req.params.uid, config.access.identifiers.departmentForEducation, manage.id, req.id);
-    console.log('userManageRoles:: ', userManageRoles)
     const manageConsoleRolesForAllServices = await listRolesOfService(manage.id);
     const manageConsoleRolesForSelectedService = manageConsoleRolesForAllServices.filter(service => service.code.split('_')[0] === req.params.sid);
     
-    let manageConsoleRoleIds = []
-    manageConsoleRolesForSelectedService.forEach(obj => manageConsoleRoleIds.push(obj.id))
+    let manageConsoleRoleIds = [];
+    manageConsoleRolesForSelectedService.forEach(obj => manageConsoleRoleIds.push(obj.id));
     
-    const addOrChangeService = addOrChangeManageConsoleServiceTitle(userManageRoles, manageConsoleRoleIds)
+    const addOrChangeService = addOrChangeManageConsoleServiceTitle(userManageRoles, manageConsoleRoleIds);
     
     for (let i =0; i < rolesSelectedNew.length; i++) {
       if(!manageConsoleRoleIds.includes(rolesSelectedNew[i])) {

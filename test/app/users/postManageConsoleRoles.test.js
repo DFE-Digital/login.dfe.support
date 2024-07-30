@@ -58,7 +58,7 @@ jest.mock('./../../../src/infrastructure/access', () => ({
 
 const { updateUserService } = require('./../../../src/infrastructure/access');
 
-describe('updateUserService', () => {
+describe('when changing a users manage console access', () => {
 
   beforeEach(() => {
     req = {
@@ -74,7 +74,7 @@ describe('updateUserService', () => {
       },
       params: {
           uid: 'userId',
-          sid: 'service-id'
+          sid: 'testService1'
       },
       session: {},
   };
@@ -101,28 +101,28 @@ describe('updateUserService', () => {
       {
         id: 'role1Id',
         name: 'test service 1 - Service Access Management',
-        code: 'service1Id_accessManage',
+        code: 'testService1_accessManage',
         numericId: '23173',
         status: { id: 1 }
       },
       {
         id: 'role2Id',
         name: 'test service 1 - Service Banner',
-        code: 'service1Id_serviceBanner',
+        code: 'testService1_serviceBanner',
         numericId: '23175',
         status: { id: 1 }
       },
       {
         id: 'role3Id',
         name: 'test service 1 - Service Configuration',
-        code: 'service1Id_serviceconfig',
+        code: 'testService1_serviceconfig',
         numericId: '23172',
         status: { id: 1 }
       },
       {
         id: 'role4Id',
         name: 'test service 2 - Service Support',
-        code: 'service2Id_serviceSup',
+        code: 'testService1_serviceSup',
         numericId: '23174',
         status: { id: 1 }
       }
@@ -135,18 +135,20 @@ describe('updateUserService', () => {
   });
  
   it('should successfully update user service', async () => {
-    
+    getServiceById.mockResolvedValue({ id: "testService1", name: 'Test Service' });
+    getSingleUserService.mockResolvedValue({ serviceId: 'testService1', roles: ['role1'] });
+    getSingleServiceForUser.mockResolvedValue({ id: "testService1", roles: ['role1'], name: "applicationName" });
+
     await postManageConsoleRoles(req, res);
 
-    expect(getServiceById).toHaveBeenCalled()
+    expect(getServiceById).toHaveBeenCalled();
 
-    // expect(updateUserService.mock.calls).toHaveLength(1);
-  //   expect(updateUserService.mock.calls[0][0]).toBe('userId');
-  //   expect(updateUserService.mock.calls[0][1]).toBe('service1Id');
-  //   // expect(updateUserService.mock.calls[0][2]).toBe('');
-  //   // check the selected rolesare passed in to updateUserService
-  //   // expect(updateUserService.mock.calls[0][2]).toBe(['role1Id', 'role2Id']);
-  //   expect(updateUserService.mock.calls[0][4]).toBe('correlationId');
+    expect(updateUserService.mock.calls).toHaveLength(1);
+    expect(updateUserService.mock.calls[0][0]).toBe('userId');
+    expect(updateUserService.mock.calls[0][1]).toBe('testService1');
+    expect(updateUserService.mock.calls[0][2]).toBe('departmentForEducation1');
+    expect(updateUserService.mock.calls[0][3]).toBe(['role1Id', 'role2Id']);
+    expect(updateUserService.mock.calls[0][4]).toBe('correlationId');
   });
   
   // it('should then redirect the user to the manage console services endpoint with a flash message', async () => {
