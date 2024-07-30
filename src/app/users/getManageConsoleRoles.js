@@ -5,7 +5,6 @@ const { getServiceById } = require('../../infrastructure/applications')
 const { listRolesOfService, getSingleUserService, getSingleInvitationService, updateUserService } = require('../../infrastructure/access');
 
 const getSingleServiceForUser = async (userId, organisationId, serviceId, correlationId) => {
-  console.log(' INSIDE getSingleServiceForUser:: ', userId, organisationId, serviceId, correlationId)
   const userService = userId.startsWith('inv-') ? await getSingleInvitationService(userId.substr(4), serviceId, organisationId, correlationId) : await getSingleUserService(userId, serviceId, organisationId, correlationId);
   const application = await getServiceById(serviceId, correlationId);
 
