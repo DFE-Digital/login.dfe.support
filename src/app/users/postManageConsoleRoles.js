@@ -11,14 +11,13 @@ const postManageConsoleRoles = async (req, res) => {
     if (!(rolesSelectedNew instanceof Array)) {
       rolesSelectedNew = [req.body.role];
     }
-  
+    
     const manage = await getServiceById('manage');
     const serviceSelectedByUser = await getServiceById(req.params.sid);
     const user = await getUserDetails(req);
     const userManageRoles = await getSingleServiceForUser(req.params.uid, config.access.identifiers.departmentForEducation, manage.id, req.id);
     const manageConsoleRolesForAllServices = await listRolesOfService(manage.id);
     const manageConsoleRolesForSelectedService = manageConsoleRolesForAllServices.filter(service => service.code.split('_')[0] === req.params.sid);
-    
     let manageConsoleRoleIds = [];
     manageConsoleRolesForSelectedService.forEach(obj => manageConsoleRoleIds.push(obj.id));
     
@@ -43,18 +42,17 @@ const postManageConsoleRoles = async (req, res) => {
       } 
     }
     
-    let rolesSelectedBeforeSession = [];
-    userManageRoles.roles.forEach(role => rolesSelectedBeforeSession.push(role.id));
+    let currentRoles = [];
+    userManageRoles.roles.forEach(role => currentRoles.push(role.id));
 
-    const allSelectedRoles = [...new Set(rolesSelectedBeforeSession.concat(rolesSelectedNew))];
+    const allSelectedRoles = [...new Set(currentRoles.concat(rolesSelectedNew))];
     const rolesToRemove = manageConsoleRoleIds.filter(id => !rolesSelectedNew.includes(id));
-    const filteredAllSelectedRoles = allSelectedRoles.filter(id => !rolesToRemove.includes(id));
-    const rolesForThisServiceSelectedBeforeSession = rolesSelectedBeforeSession.filter(id => rolesSelectedNew.includes(id));
+    const newRoles = allSelectedRoles.filter(id => !rolesToRemove.includes(id));
 
-    if (!checkIfRolesChanged(rolesForThisServiceSelectedBeforeSession, rolesSelectedNew)) {
+    if (!checkIfRolesChanged(currentRoles, newRoles)) {
       return res.redirect(`/users/${req.params.uid}/manage-console-services`);
     } else {
-      updateUserService(req.params.uid, manage.id, config.access.identifiers.departmentForEducation, filteredAllSelectedRoles, req.id);
+      updateUserService(req.params.uid, manage.id, config.access.identifiers.departmentForEducation, newRoles, req.id);
 
       res.flash('info', [`Roles updated`,`The selected roles have been updated for ${serviceSelectedByUser.name}`] );  
       return res.redirect(`/users/${req.params.uid}/manage-console-services`);

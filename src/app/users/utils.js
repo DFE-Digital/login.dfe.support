@@ -213,8 +213,20 @@ const mapUserToSupportModel = (user, userFromSearch) => {
   };
 };
 
+const checkManageAccess = async (arr) => {
+    const manage = await getServiceById('manage') 
+    let userServiceIds = []
+
+    for (let i = 0; i < arr.length; i++) {
+      userServiceIds.push(arr[i].serviceId)
+    }
+
+    return userServiceIds.includes(manage.id)
+  }
+
+
 const getUserDetailsById = async (uid, correlationId) => {
-  if (uid.startsWith('inv-')) {
+  if (uid.startsWith("inv-")) {
     const invitation = await getInvitation(uid.substr(4), correlationId);
     return {
       id: uid,
@@ -234,6 +246,7 @@ const getUserDetailsById = async (uid, correlationId) => {
     const rawUser = await getUser(uid, correlationId);
     const user = mapUserToSupportModel(rawUser, userSearch);
     const serviceDetails = await getServicesByUserId(uid, correlationId);
+    const hasManageAccess = await checkManageAccess(serviceDetails ?? []);
 
     const ktsDetails = serviceDetails
       ? serviceDetails.find(
@@ -242,9 +255,9 @@ const getUserDetailsById = async (uid, correlationId) => {
             config.serviceMapping.key2SuccessServiceId.toLowerCase()
         )
       : undefined;
-    let externalIdentifier = '';
+    let externalIdentifier = "";
     if (ktsDetails && ktsDetails.identifiers) {
-      const key = ktsDetails.identifiers.find((a) => (a.key = 'k2s-id'));
+      const key = ktsDetails.identifiers.find((a) => (a.key = "k2s-id"));
       if (key) {
         externalIdentifier = key.value;
       }
@@ -262,9 +275,11 @@ const getUserDetailsById = async (uid, correlationId) => {
         successful: user.successfulLoginsInPast12Months,
       },
       serviceId: config.serviceMapping.key2SuccessServiceId,
-      orgId: ktsDetails ? ktsDetails.organisationId : '',
+      orgId: ktsDetails ? ktsDetails.organisationId : "",
       ktsId: externalIdentifier,
       pendingEmail: user.pendingEmail,
+      serviceDetails,
+      hasManageAccess,
     };
   }
 };
@@ -278,7 +293,7 @@ const getAllServicesForUserInOrg = async (
   organisationId,
   correlationId
 ) => {
-  const allUserServices = userId.startsWith('inv-')
+  const allUserServices = userId.startsWith("inv-")
     ? await getServicesByInvitationId(userId.substr(4), correlationId)
     : await getServicesByUserId(userId, correlationId);
   if (!allUserServices) {
@@ -291,7 +306,7 @@ const getAllServicesForUserInOrg = async (
   const services = userServicesForOrg.map((service) => ({
     id: service.serviceId,
     dateActivated: service.accessGrantedOn,
-    name: '',
+    name: "",
     status: null,
   }));
   for (let i = 0; i < services.length; i++) {
@@ -300,7 +315,7 @@ const getAllServicesForUserInOrg = async (
     service.name = application.name;
     service.status = mapUserStatus(service.status);
   }
-  return sortBy(services, 'name');
+  return sortBy(services, "name");
 };
 
 const createDevice = async (req) => {
@@ -314,8 +329,8 @@ const createDevice = async (req) => {
     logger.audit(
       `Support user ${req.user.email} (id: ${req.user.sub}) linked ${userEmail} (id: ${userId}) linked to token ${serialNumber} "${serialNumber}"`,
       {
-        type: 'support',
-        subType: 'digipass-assign',
+        type: "support",
+        subType: "digipass-assign",
         success: true,
         editedUser: userId,
         userId: req.user.sub,
@@ -327,8 +342,8 @@ const createDevice = async (req) => {
     logger.audit(
       `Support user ${req.user.email} (id: ${req.user.sub}) failed to link ${userEmail} (id: ${userId}) to token ${serialNumber} "${serialNumber}"`,
       {
-        type: 'support',
-        subType: 'digipass-assign',
+        type: "support",
+        subType: "digipass-assign",
         success: false,
         editedUser: userId,
         userId: req.user.sub,
@@ -358,9 +373,9 @@ const waitForIndexToUpdate = async (uid, updatedCheck) => {
 
 const mapRole = (roleId) => {
   if (roleId === 10000) {
-    return { id: 10000, description: 'Approver' };
+    return { id: 10000, description: "Approver" };
   }
-  return { id: 0, description: 'End user' };
+  return { id: 0, description: "End user" };
 };
 
 module.exports = {
