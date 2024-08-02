@@ -108,6 +108,21 @@ const schedulesSchema = new SimpleSchema({
   indexTidy: String,
 });
 
+const adapterSchema = new SimpleSchema({
+  type: {
+    type: String,
+    allowedValues: ['file', 'redis', 'mongo', 'azuread', 'sequelize'],
+  },
+  directories: {
+    type: schemas.sequelizeConnection,
+    optional: true,
+  },
+  organisation: {
+    type: schemas.sequelizeConnection,
+    optional: true,
+  },
+});
+
 const togglesSchema = new SimpleSchema({
   useGenericAddUser: Boolean,
 });
@@ -146,6 +161,7 @@ const schema = new SimpleSchema({
   toggles: togglesSchema,
   notifications: notificationsSchema,
   assets: new SimpleSchema({ ...schemas.assets }),
+  adapter: adapterSchema,
 });
 
 module.exports.validate = () => {
