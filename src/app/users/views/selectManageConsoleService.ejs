@@ -68,9 +68,9 @@
           </thead>
           <tbody class="govuk-table__body">
             <% for(let i=0; i<services.services.length; i++ ) {%>
-            <tr class="govuk-table__row">
-              <th scope="row" class="govuk-table__header"><a href="add-manage-console-roles/<%= services.services[i].id %>"><%= services.services[i].name %></a></th>
-              <td class="govuk-table__cell"><%= services.services[i].isIdOnlyService ? 'ID only' : 'Role'%></td>
+            <tr>
+              <td scope="col" class="govuk-table__cell"><a href="add-manage-console-roles/<%= services.services[i].id %>"><%= services.services[i].name %></a></th>
+              <td class="govuk-table__cell "><%= services.services[i].isIdOnlyService ? 'ID only' : 'Role'%></td>
               <td class="govuk-table__cell"><%= services.services[i].isHiddenService ? 'Hidden' : 'Visible'%></td>
             </tr>
             <% } %>
