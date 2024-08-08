@@ -57,8 +57,8 @@ const postManageConsoleRoles = async (req, res) => {
       res.flash('info', [`Roles updated`,`The selected roles have been updated for ${serviceSelectedByUser.name}`] );  
       return res.redirect(`/users/${req.params.uid}/manage-console-services`);
     } else {
+      await putUserInOrganisation(req.params.uid, config.access.identifiers.departmentForEducation, 1, 1, req.id);
       addUserService(req.params.uid, manage.id, config.access.identifiers.departmentForEducation, newRoles, req.id);
-
       res.flash('info', [`Roles updated`,`The selected roles have been updated for ${serviceSelectedByUser.name}`] );  
       return res.redirect(`/users/${req.params.uid}/manage-console-services`);
     }
