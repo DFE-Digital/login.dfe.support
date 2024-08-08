@@ -36,6 +36,7 @@ const jwtStrategy = require('login.dfe.jwt-strategies');
 const postManageConsoleRoles = require('./../../../src/app/users/postManageConsoleRoles');
 const { getServiceById } = require('./../../../src/infrastructure/applications');
 const { getSingleUserService, listRolesOfService, updateUserService } = require('./../../../src/infrastructure/access');
+const { getUserDetails } = require('./../../../src/app/users/utils');
 const { getSingleServiceForUser, checkIfRolesChanged } = require('./../../../src/app/users/getManageConsoleRoles');
 
 describe('when changing a user\'s manage console access', () => {
@@ -80,7 +81,6 @@ describe('when changing a user\'s manage console access', () => {
       { id: 'role4', name: 'test service 2 - Service Support', code: 'testService1_serviceSup', numericId: '23174', status: { id: 1 } },
     ]);
 
-    // getUserDetailsById.mockResolvedValue({hasManageAccess: true})
     getServiceById.mockResolvedValue({ name: 'Test Service', id: 'testService1' });
     getSingleUserService.mockResolvedValue({ serviceId: 'service-id', roles: [{ id: 'role1' }] });
     getSingleServiceForUser.mockResolvedValue({ id: "testService1", roles: [{ id: 'role1' }], name: "applicationName" });
@@ -92,6 +92,25 @@ describe('when changing a user\'s manage console access', () => {
 
   it('should successfully update user services', async () => {
     checkIfRolesChanged.mockResolvedValue(false);
+
+    getUserDetails.mockResolvedValue( {
+      id: 'user1-id',
+      name: 'user1-name',
+      firstName: 'user1-firstName',
+      lastName: 'user1-lastName',
+      email: 'user1-email',
+      lastLogin: 'user1-lastLogin',
+      status: '1',
+      loginsInPast12Months: {
+        successful: 10,
+      },
+      serviceId: 'service1Id',
+      orgId: 'org1Id',
+      ktsId: 'ktsId',
+      pendingEmail: 'pendingEmail',
+      serviceDetails: [],
+      hasManageAccess: true,
+    } );
 
     await postManageConsoleRoles(req, res);
 
@@ -107,6 +126,25 @@ describe('when changing a user\'s manage console access', () => {
   });
 
   it('should redirect the user to the manage console services endpoint with a flash message', async () => {
+    getUserDetails.mockResolvedValue( {
+      id: 'user1-id',
+      name: 'user1-name',
+      firstName: 'user1-firstName',
+      lastName: 'user1-lastName',
+      email: 'user1-email',
+      lastLogin: 'user1-lastLogin',
+      status: '1',
+      loginsInPast12Months: {
+        successful: 10,
+      },
+      serviceId: 'service1Id',
+      orgId: 'org1Id',
+      ktsId: 'ktsId',
+      pendingEmail: 'pendingEmail',
+      serviceDetails: [],
+      hasManageAccess: true,
+    } );
+    
     await postManageConsoleRoles(req, res);
 
     expect(res.flash).toHaveBeenCalledWith('info', ["Roles updated", "The selected roles have been updated for Test Service"]);
