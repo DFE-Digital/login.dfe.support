@@ -22,6 +22,7 @@ jest.mock('./../../../src/infrastructure/applications', () => ({
 }));
 jest.mock('./../../../src/app/users/utils', () => ({
   getUserDetails: jest.fn(),
+  getUserDetailsById: jest.fn(),
 }));
 jest.mock('./../../../src/infrastructure/access', () => ({
   listRolesOfService: jest.fn(),
@@ -79,6 +80,7 @@ describe('when changing a user\'s manage console access', () => {
       { id: 'role4', name: 'test service 2 - Service Support', code: 'testService1_serviceSup', numericId: '23174', status: { id: 1 } },
     ]);
 
+    // getUserDetailsById.mockResolvedValue({hasManageAccess: true})
     getServiceById.mockResolvedValue({ name: 'Test Service', id: 'testService1' });
     getSingleUserService.mockResolvedValue({ serviceId: 'service-id', roles: [{ id: 'role1' }] });
     getSingleServiceForUser.mockResolvedValue({ id: "testService1", roles: [{ id: 'role1' }], name: "applicationName" });

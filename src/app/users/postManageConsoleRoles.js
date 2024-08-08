@@ -2,7 +2,7 @@ const config = require('../../infrastructure/config');
 const { sendResult } = require('../../infrastructure/utils');
 const { getUserDetails} = require('./utils');
 const { getServiceById } = require('../../infrastructure/applications')
-const { listRolesOfService, updateUserService } = require('../../infrastructure/access');
+const { listRolesOfService, updateUserService, addUserService } = require('../../infrastructure/access');
 const { getSingleServiceForUser, addOrChangeManageConsoleServiceTitle, checkIfRolesChanged }= require('./getManageConsoleRoles')
 
 const postManageConsoleRoles = async (req, res) => {
@@ -51,8 +51,13 @@ const postManageConsoleRoles = async (req, res) => {
 
     if (!checkIfRolesChanged(currentRoles, newRoles)) {
       return res.redirect(`/users/${req.params.uid}/manage-console-services`);
-    } else {
+    } else if (user.hasManageAccess) {
       updateUserService(req.params.uid, manage.id, config.access.identifiers.departmentForEducation, newRoles, req.id);
+
+      res.flash('info', [`Roles updated`,`The selected roles have been updated for ${serviceSelectedByUser.name}`] );  
+      return res.redirect(`/users/${req.params.uid}/manage-console-services`);
+    } else {
+      addUserService(req.params.uid, manage.id, config.access.identifiers.departmentForEducation, newRoles, req.id);
 
       res.flash('info', [`Roles updated`,`The selected roles have been updated for ${serviceSelectedByUser.name}`] );  
       return res.redirect(`/users/${req.params.uid}/manage-console-services`);

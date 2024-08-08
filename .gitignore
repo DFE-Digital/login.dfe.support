@@ -77,6 +77,4 @@ access.log
 \.idea/markdown-navigator\.xml
 
 \.idea/markdown-navigator/profiles_settings\.xml
-certs/PKI-ROOT-CA.cer
-certs/PKI-ROOT-CA.key
-certs/PKI-ROOT-CA.pem
+certs/

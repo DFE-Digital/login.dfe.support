@@ -88,9 +88,7 @@
                             <li><a href="edit-profile">Edit user's details</a></li>
                         <% } %>
                             <li><a href="web-service-sync">Send WS Sync</a></li>
-                        <% if(locals.user.hasManageAccess) { %>
                             <li><a href="manage-console-services">Manage console roles</a></li>
-                        <% } %>
                     </ul>
                 </aside>
             <% } else if (locals.isInvitation && !locals.user.deactivated) { %>

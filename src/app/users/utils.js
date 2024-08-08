@@ -215,13 +215,14 @@ const mapUserToSupportModel = (user, userFromSearch) => {
 
 const checkManageAccess = async (arr) => {
     const manage = await getServiceById('manage') 
-    let userServiceIds = []
+    // let userServiceIds = []
 
-    for (let i = 0; i < arr.length; i++) {
-      userServiceIds.push(arr[i].serviceId)
-    }
+    // for (let i = 0; i < arr.length; i++) {
+    //   userServiceIds.push(arr[i].serviceId)
+    // }
 
-    return userServiceIds.includes(manage.id)
+    // return userServiceIds.includes(manage.id)
+    return arr.some(entry => entry.serviceId === manage.id);
   }
 
 
@@ -373,9 +374,9 @@ const waitForIndexToUpdate = async (uid, updatedCheck) => {
 
 const mapRole = (roleId) => {
   if (roleId === 10000) {
-    return { id: 10000, description: "Approver" };
+    return { id: 10000, description: 'Approver' };
   }
-  return { id: 0, description: "End user" };
+  return { id: 0, description: 'End user' };
 };
 
 module.exports = {

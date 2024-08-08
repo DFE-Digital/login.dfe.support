@@ -15,20 +15,25 @@ const getSingleServiceForUser = async (userId, organisationId, serviceId, correl
   }
 };
 
-const addOrChangeManageConsoleServiceTitle = (userManageRoles, manageConsoleRoleIds) => {
-  let userManageConsoleRoleIds = [];
-  let result = false;
-  for(let i=0; i < userManageRoles.roles.length; i++) {
-    userManageConsoleRoleIds.push(userManageRoles.roles[i].id);
-  }
+// const addOrChangeManageConsoleServiceTitle = (userManageRoles, manageConsoleRoleIds) => {
+//   let userManageConsoleRoleIds = [];
+//   let result = false;
+//   for(let i=0; i < userManageRoles.roles.length; i++) {
+//     userManageConsoleRoleIds.push(userManageRoles.roles[i].id);
+//   }
 
-  for(let i=0; i < manageConsoleRoleIds.length; i++) {
-   if (userManageConsoleRoleIds.includes(manageConsoleRoleIds[i])) {
-    result = true;
-    break;
-  }
-}
-return result;
+//   for(let i=0; i < manageConsoleRoleIds.length; i++) {
+//    if (userManageConsoleRoleIds.includes(manageConsoleRoleIds[i])) {
+//     result = true;
+//     break;
+//   }
+// }
+// return result;
+// }
+const addOrChangeManageConsoleServiceTitle = (userManageRoles, manageConsoleRoleIds) => {
+  return userManageRoles.roles
+    .map(role => role.id)
+    .some(roleId => manageConsoleRoleIds.includes(roleId));
 }
 
 const checkIfRolesChanged = (rolesSelectedBeforeSession, newRolesSelected) => {
@@ -44,8 +49,9 @@ const getManageConsoleRoles = async (req, res) => {
   const manageConsoleRolesForAllServices = await listRolesOfService(manage.id);
   const manageConsoleRolesForSelectedService = manageConsoleRolesForAllServices.filter(service => service.code.split('_')[0] === req.params.sid);
     
-  let manageConsoleRoleIds = [];
-  manageConsoleRolesForSelectedService.forEach(obj => manageConsoleRoleIds.push(obj.id));
+  // let manageConsoleRoleIds = [];
+  // manageConsoleRolesForSelectedService.forEach(obj => manageConsoleRoleIds.push(obj.id));
+  const manageConsoleRoleIds = manageConsoleRolesForSelectedService.map(service => service.id);
   const addOrChangeService = addOrChangeManageConsoleServiceTitle(userManageRoles, manageConsoleRoleIds);
   
   sendResult(req, res, 'users/views/selectManageConsoleRoles', {
