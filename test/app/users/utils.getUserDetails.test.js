@@ -2,8 +2,10 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/search');
+jest.mock('./../../../src/infrastructure/applications');
 
 const { getUser } = require('./../../../src/infrastructure/directories');
+const { getServiceById } = require('./../../../src/infrastructure/applications');
 const { getServicesByUserId } = require('./../../../src/infrastructure/organisations');
 const { getSearchDetailsForUserById } = require('./../../../src/infrastructure/search');
 const { getUserDetails } = require('./../../../src/app/users/utils');
@@ -13,6 +15,8 @@ describe('When getting user details', () => {
 
   beforeEach(() => {
     getServicesByUserId.mockReset();
+
+    getServiceById.mockResolvedValue({ name: 'Test Service', id: 'testService1' });
 
     getSearchDetailsForUserById.mockReset().mockReturnValue({
       id: 'user1',

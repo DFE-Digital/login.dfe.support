@@ -1,0 +1,54 @@
+<div class="govuk-width-container">
+  <div class="col-8">
+    <h1 class="govuk-heading-xl">
+        <%= addOrChangeService ? 'Change Roles' : 'Add roles' %>
+    </h1>
+    <table class="govuk-table">
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header"><b>User</b></th>
+            <td class="govuk-table__cell"><%= locals.user.name %></td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header"><b>Service</b></th>
+            <td class="govuk-table__cell"><%= serviceSelectedByUser.name %></td>
+        </tr>
+        </tbody>
+      </table>
+      <form method="post">
+        <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+          <div class="govuk-form-group">
+            <fieldset class="govuk-fieldset" aria-describedby="role-hint" id="roleSelection">
+              <div id="waste-hint" class="govuk-hint">
+                Select all that apply.
+              </div>
+              <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                <% for(let i=0; i<manageConsoleRolesForSelectedService.length; i++ ) {%>
+                  <% const role = manageConsoleRolesForSelectedService[i]; %>
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id="<%=role.id%>" name="role" type="checkbox" value="<%=role.id%>"
+                    <% if (userManageRoles.roles && userManageRoles.roles.length > 0) {
+                      for(let i = 0; i < userManageRoles.roles.length; i++) {
+                          const selectedRole = userManageRoles.roles[i].id;
+                      %>
+                      <%= role.id === selectedRole ? 'checked': ''%><% } }%>>
+                    <label class="govuk-label govuk-checkboxes__label" for="<%=role.id%>">
+                      <%= manageConsoleRolesForSelectedService[i].name.split('-')[1] %>
+                    </label>
+                  </div>
+                  <% } %>
+              </div>
+            </fieldset>
+          </div>
+          <div class="govuk-button-group">
+            <button type="submit" class="govuk-button" data-module="govuk-button">
+              Continue
+            </button>
+            <a href="/users/<%=user.id%>/manage-console-services" class="govuk-button govuk-button--secondary">
+              Cancel</a>
+          </div>
+    </form>
+</div>
+
+
+
