@@ -27,24 +27,28 @@
         </dl>
     </div>
 </div>
-
-
-<table class="data no-borders">
-    <thead>
-        <tr>
-            <th scope="col" class="cwp-40">Service</th>
-            <th scope="col" class="cwp-20">Service type</th>
-            <th scope="col" class="cwp-30">Visibility</th>
-        </tr>
-    </thead>
-    <tbody>
-        <% for(let i=0; i<services.services.length; i++ ) {%>
+<h2 class="heading-medium">
+    Your Services
+</h2>
+<% if (services.length > 0) { %>
+    <table class="data no-borders">
+        <thead>
             <tr>
-                <td><a href="add-manage-console-roles/<%= services.services[i].id %>"><%= services.services[i].name %></a></td>
-                <td><%= services.services[i].isIdOnlyService ? 'ID only' : 'Role'%></td>
-                <td><%= services.services[i].isHiddenService ? 'Hidden' : 'Visible'%></td>
+                <th scope="col" class="cwp-40">Service</th>
+                <th scope="col" class="cwp-20">Service type</th>
+                <th scope="col" class="cwp-30">Visibility</th>
             </tr>
-        <%}%>
-    </tbody>
-</table>
-
+        </thead>
+        <tbody>
+            <% for(let i=0; i<services.services.length; i++ ) {%>
+                <tr>
+                    <td><a href="add-manage-console-roles/<%= services.services[i].id %>"><%= services.services[i].name %></a></td>
+                    <td><%= services.services[i].isIdOnlyService ? 'ID only' : 'Role'%></td>
+                    <td><%= services.services[i].isHiddenService ? 'Hidden' : 'Visible'%></td>
+                </tr>
+            <%}%>
+        </tbody>
+    </table>
+<% } else { %>
+    <p>You are associated with any services.</p>
+<% }; %>

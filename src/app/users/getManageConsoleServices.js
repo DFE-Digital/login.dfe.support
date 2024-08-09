@@ -1,11 +1,9 @@
 const { sendResult } = require('../../infrastructure/utils');
-//const { getAllServices }= require('../../infrastructure/applications')
 const { getUserDetails } = require('./utils');
 const { getServicesByUserId } = require('./../../infrastructure/access');
 
 const getManageConsoleServices = async (req, res) => {
   const user = await getUserDetails(req);
-  //const services = await getAllServices();
   const services = await getServicesByUserId(user.id);
 
   sendResult(req, res, 'users/views/selectManageConsoleService', {
