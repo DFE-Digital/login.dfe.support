@@ -17,7 +17,6 @@ const flash = require('login.dfe.express-flash-2');
 const setCorrelationId = require('express-mw-correlation-id');
 const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
 const registerRoutes = require('./routes');
-const localStorage = require('node-persist');
 const Redis = require('ioredis');
 const RedisStore = require('connect-redis').default;
 const oidc = require('./infrastructure/oidc');
@@ -44,10 +43,6 @@ if (config.hostingEnvironment.applicationInsights) {
 
 
 const init = async () => {
-  localStorage.init({
-    ttl: 60 * 60 * 1000,
-  });
-
   const csrf = csurf({
     cookie: {
       secure: true,
