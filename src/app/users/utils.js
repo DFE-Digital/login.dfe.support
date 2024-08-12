@@ -65,7 +65,7 @@ const search = async (req) => {
   }
 
   if (paramsSource.services) {
-    paramsSource = {...paramsSource, service: paramsSource.services};
+    paramsSource = { ...paramsSource, service: paramsSource.services };
   }
 
   let criteria = paramsSource.criteria ? paramsSource.criteria.trim() : '';
@@ -196,8 +196,8 @@ const mapUserToSupportModel = (user, userFromSearch) => {
     email: user.email,
     organisation: userFromSearch.primaryOrganisation
       ? {
-          name: userFromSearch.primaryOrganisation,
-        }
+        name: userFromSearch.primaryOrganisation,
+      }
       : null,
     organisations: userFromSearch.organisations,
     lastLogin: userFromSearch.lastLogin
@@ -214,17 +214,9 @@ const mapUserToSupportModel = (user, userFromSearch) => {
 };
 
 const checkManageAccess = async (arr) => {
-    const manage = await getServiceById('manage') 
-    // let userServiceIds = []
-
-    // for (let i = 0; i < arr.length; i++) {
-    //   userServiceIds.push(arr[i].serviceId)
-    // }
-
-    // return userServiceIds.includes(manage.id)
-    return arr.some(entry => entry.serviceId === manage.id);
-  }
-
+  const manage = await getServiceById('manage')
+  return arr.some(entry => entry.serviceId === manage.id);
+};
 
 const getUserDetailsById = async (uid, correlationId) => {
   if (uid.startsWith("inv-")) {
@@ -251,10 +243,10 @@ const getUserDetailsById = async (uid, correlationId) => {
 
     const ktsDetails = serviceDetails
       ? serviceDetails.find(
-          (c) =>
-            c.serviceId.toLowerCase() ===
-            config.serviceMapping.key2SuccessServiceId.toLowerCase()
-        )
+        (c) =>
+          c.serviceId.toLowerCase() ===
+          config.serviceMapping.key2SuccessServiceId.toLowerCase()
+      )
       : undefined;
     let externalIdentifier = "";
     if (ktsDetails && ktsDetails.identifiers) {

@@ -47,14 +47,14 @@ const postDeleteOrganisation = require('./postDeleteOrganisation');
 const getSecureAccess = require('./getSecureAccessDetails');
 const postUpdateAuditLog = require('./postUpdateAuditLog');
 const getManageConsoleServices = require('./getManageConsoleServices');
-const postManageConsoleRoles  = require('./postManageConsoleRoles')
-const {getManageConsoleRoles } = require('./getManageConsoleRoles')
+const postManageConsoleRoles = require('./postManageConsoleRoles')
+const { getManageConsoleRoles } = require('./getManageConsoleRoles')
 const { get: getAssociateServices, post: postAssociateServices } = require('./associateServices');
-const { get: getSelectOrganisation, post: postSelectOrganisation }  = require('./selectOrganisation');
+const { get: getSelectOrganisation, post: postSelectOrganisation } = require('./selectOrganisation');
 const { get: getAssociateRoles, post: postAssociateRoles } = require('./associateRoles');
 const { get: getConfirmAddService, post: postConfirmAddService } = require('./confirmAddService');
-const { get: getRemoveServiceAccess, post: postRemoveServiceAccess} = require('./removeServiceAccess');
-const { get: getWebServiceSync, post: postWebServiceSync} = require('./webServiceSync');
+const { get: getRemoveServiceAccess, post: postRemoveServiceAccess } = require('./removeServiceAccess');
+const { get: getWebServiceSync, post: postWebServiceSync } = require('./webServiceSync');
 
 
 const router = express.Router({ mergeParams: true });
