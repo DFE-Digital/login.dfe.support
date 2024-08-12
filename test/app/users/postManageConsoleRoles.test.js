@@ -31,11 +31,15 @@ jest.mock('./../../../src/infrastructure/access', () => ({
   updateUserService: jest.fn(),
   addUserService: jest.fn(),
 }));
+jest.mock('./../../../src/infrastructure/organisations', () => ({
+  putUserInOrganisation: jest.fn(),
+}));
 
 // Import dependencies
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const postManageConsoleRoles = require('./../../../src/app/users/postManageConsoleRoles');
 const { getServiceById } = require('./../../../src/infrastructure/applications');
+const { putUserInOrganisation } = require('./../../../src/infrastructure/organisations');
 const { getSingleUserService, listRolesOfService, updateUserService, addUserService } = require('./../../../src/infrastructure/access');
 const { getUserDetails } = require('./../../../src/app/users/utils');
 const { getSingleServiceForUser, checkIfRolesChanged } = require('./../../../src/app/users/getManageConsoleRoles');
@@ -93,9 +97,9 @@ describe('when changing a user\'s manage console access', () => {
 
   it('should successfully update user services', async () => {
     checkIfRolesChanged.mockResolvedValue(false);
-    getUserDetails.mockResolvedValue( {
+    getUserDetails.mockResolvedValue({
       hasManageAccess: true,
-    } );
+    });
 
     await postManageConsoleRoles(req, res);
 
@@ -111,10 +115,10 @@ describe('when changing a user\'s manage console access', () => {
   });
 
   it('should redirect the user to the manage console services endpoint with a flash message if updating the service', async () => {
-    getUserDetails.mockResolvedValue( {
+    getUserDetails.mockResolvedValue({
       hasManageAccess: true,
-    } );
-    
+    });
+
     await postManageConsoleRoles(req, res);
 
     expect(updateUserService).toHaveBeenCalledTimes(1);
@@ -124,10 +128,10 @@ describe('when changing a user\'s manage console access', () => {
   });
 
   it('should redirect the user to the manage console services endpoint with a flash message if adding the service', async () => {
-    getUserDetails.mockResolvedValue( {
+    getUserDetails.mockResolvedValue({
       hasManageAccess: false,
-    } );
-    
+    });
+
     await postManageConsoleRoles(req, res);
 
     expect(addUserService).toHaveBeenCalledTimes(1);
@@ -138,13 +142,14 @@ describe('when changing a user\'s manage console access', () => {
 
   it('should call addUserService if hasManageAccess is false', async () => {
     checkIfRolesChanged.mockResolvedValue(false);
-    getUserDetails.mockResolvedValue( {
+    getUserDetails.mockResolvedValue({
       hasManageAccess: false,
-    } );
+    });
 
     await postManageConsoleRoles(req, res);
 
     expect(getServiceById).toHaveBeenCalled();
+    expect(putUserInOrganisation).toHaveBeenCalledTimes(1);
     expect(addUserService).toHaveBeenCalledTimes(1);
     expect(updateUserService).not.toHaveBeenCalled()
     expect(addUserService).toHaveBeenCalledWith(
@@ -155,5 +160,5 @@ describe('when changing a user\'s manage console access', () => {
       'correlationId'
     );
   });
-
 });
+
