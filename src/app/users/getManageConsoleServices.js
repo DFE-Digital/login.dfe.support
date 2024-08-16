@@ -7,8 +7,12 @@ const getManageConsoleServices = async (req, res) => {
   const user = await getUserDetails(req);
   const allServices = await getAllServices();
   const userServices = await getServicesByUserId(user.id);
-  const filterIds = new Set(userServices.map(item => item.serviceId));
-  const services = allServices.services.filter(item => filterIds.has(item.id));
+
+  let services = [];
+  if (userServices != undefined) {
+    const filterIds = new Set(userServices.map(item => item.serviceId));
+    services = allServices.services.filter(item => filterIds.has(item.id));
+  };
 
   sendResult(req, res, 'users/views/selectManageConsoleService', {
     csrfToken: req.csrfToken(),
