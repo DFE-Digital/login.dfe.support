@@ -167,7 +167,7 @@ describe('When retrieving manage console services for a user', () => {
     expect(sendResult.mock.calls[0][3].user).toMatchObject({
       id: 'user1',
     });
-    expect(sendResult.mock.calls[0][3].services).toContainEqual({
+    expect(sendResult.mock.calls[0][3].allServices.services[0]).toMatchObject({
       id: 'service1Id',
       name: 'Service 1',
       description: 'Service for testing purposes',
