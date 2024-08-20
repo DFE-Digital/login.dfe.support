@@ -9,8 +9,8 @@ const getSingleServiceForUser = async (userId, organisationId, serviceId, correl
   const application = await getServiceById(serviceId, correlationId);
 
   return {
-    id: userService.serviceId,
-    roles: userService.roles,
+    id: serviceId,
+    roles: userService === undefined ? [] : userService.roles,
     name: application.name
   };
 };
