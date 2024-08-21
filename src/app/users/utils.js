@@ -219,7 +219,7 @@ const checkManageAccess = async (arr) => {
 };
 
 const getUserDetailsById = async (uid, correlationId) => {
-  if (uid.startsWith("inv-")) {
+  if (uid.startsWith('inv-')) {
     const invitation = await getInvitation(uid.substr(4), correlationId);
     return {
       id: uid,
@@ -299,7 +299,7 @@ const getAllServicesForUserInOrg = async (
   const services = userServicesForOrg.map((service) => ({
     id: service.serviceId,
     dateActivated: service.accessGrantedOn,
-    name: "",
+    name: '',
     status: null,
   }));
   for (let i = 0; i < services.length; i++) {
