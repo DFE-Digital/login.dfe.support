@@ -1,0 +1,51 @@
+<div class="row">
+    <% if (locals.flash.info) { %>
+        <div class="col-12">
+            <div class="notification notification-success">
+                <div>
+                    <p><%= locals.flash.info[1] %></p>
+                </div>
+            </div>
+        </div>
+    <% } %>
+</div>
+<div class="row">
+    <div class="col-8">
+        <h1 class="heading-xlarge heading-breakable">
+            <span class="heading-secondary"><%= user.name %></span>
+            Manage console roles
+        </h1>
+        <dl class="inline condensed">
+            <dt class="label">Email:</dt>
+            <dd><%= user.email %></dd>
+            <dt class="label">Last login:</dt>
+            <dd><%= locals.user.lastLogin ? locals.moment(locals.user.lastLogin).format('DD MMM YYYY, HH:mm:ss') : 'Never' %></dd>
+            <dt class="label">Account status:</dt>
+            <dd><%= user.status.description %></dd>
+            <dt class="label">Number of logins in last 12 months:</dt>
+            <dd><%= user.loginsInPast12Months.successful %></dd>
+        </dl>
+    </div>
+</div>
+<% if (allServices.services.length > 0) { %>
+    <table class="data no-borders">
+        <thead>
+            <tr>
+                <th scope="col" class="cwp-40">Service</th>
+                <th scope="col" class="cwp-20">Service type</th>
+                <th scope="col" class="cwp-30">Visibility</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(let i=0; i< allServices.services.length; i++ ) {%>
+                <tr>
+                    <td><a href="add-manage-console-roles/<%= allServices.services[i].id %>"><%= allServices.services[i].name %></a></td>
+                    <td><%= allServices.services[i].isIdOnlyService ? 'ID only' : 'Role'%></td>
+                    <td><%= allServices.services[i].isHiddenService ? 'Hidden' : 'Visible'%></td>
+                </tr>
+            <%}%>
+        </tbody>
+    </table>
+<% } else { %>
+    <p>This user does not have any services mapped to their account.</p>
+<% }; %>

@@ -46,12 +46,16 @@ const getDeleteOrganisation = require('./getDeleteOrganisation');
 const postDeleteOrganisation = require('./postDeleteOrganisation');
 const getSecureAccess = require('./getSecureAccessDetails');
 const postUpdateAuditLog = require('./postUpdateAuditLog');
+const getManageConsoleServices = require('./getManageConsoleServices');
+const postManageConsoleRoles = require('./postManageConsoleRoles')
+const { getManageConsoleRoles } = require('./getManageConsoleRoles')
 const { get: getAssociateServices, post: postAssociateServices } = require('./associateServices');
-const { get: getSelectOrganisation, post: postSelectOrganisation }  = require('./selectOrganisation');
+const { get: getSelectOrganisation, post: postSelectOrganisation } = require('./selectOrganisation');
 const { get: getAssociateRoles, post: postAssociateRoles } = require('./associateRoles');
 const { get: getConfirmAddService, post: postConfirmAddService } = require('./confirmAddService');
-const { get: getRemoveServiceAccess, post: postRemoveServiceAccess} = require('./removeServiceAccess');
-const { get: getWebServiceSync, post: postWebServiceSync} = require('./webServiceSync');
+const { get: getRemoveServiceAccess, post: postRemoveServiceAccess } = require('./removeServiceAccess');
+const { get: getWebServiceSync, post: postWebServiceSync } = require('./webServiceSync');
+
 
 const router = express.Router({ mergeParams: true });
 
@@ -99,6 +103,10 @@ const users = (csrf) => {
   router.get('/:uid/edit-profile', csrf, asyncWrapper(getEditProfile));
   router.post('/:uid/edit-profile', csrf, asyncWrapper(postEditProfile));
 
+  router.get('/:uid/manage-console-services', csrf, asyncWrapper(getManageConsoleServices));
+  router.get('/:uid/add-manage-console-roles/:sid', csrf, asyncWrapper(getManageConsoleRoles));
+  router.post('/:uid/add-manage-console-roles/:sid', csrf, asyncWrapper(postManageConsoleRoles));
+
   router.get('/:uid/edit-email', csrf, asyncWrapper(getEditEmail));
   router.post('/:uid/edit-email', csrf, asyncWrapper(postEditEmail));
 
@@ -110,6 +118,7 @@ const users = (csrf) => {
 
   router.get('/:uid/confirm-reactivation', csrf, asyncWrapper(getConfirmReactivate));
   router.post('/:uid/confirm-reactivation', csrf, asyncWrapper(postConfirmReactivate));
+
 
   router.get('/:uid/confirm-invitation-reactivation', csrf, asyncWrapper(getConfirmInvitationReactivate));
   router.post('/:uid/confirm-invitation-reactivation', csrf, asyncWrapper(postConfirmInvitationReactivate));

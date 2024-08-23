@@ -42,6 +42,9 @@ typings/
 # npmrc
 #.npmrc
 
+# Prettier config
+.prettierrc.json
+
 # Optional npm cache directory
 .npm
 
@@ -77,3 +80,4 @@ access.log
 \.idea/markdown-navigator\.xml
 
 \.idea/markdown-navigator/profiles_settings\.xml
+certs/
