@@ -100,37 +100,7 @@ describe('When retrieving manage console services for a user', () => {
           isHiddenService: false,
           isMigrated: false,
           relyingParty: {},
-        },
-        {
-          id: 'service4Id',
-          name: 'Service 4',
-          description: 'Service for testing purposes',
-          isExternalService: true,
-          isIdOnlyService: false,
-          isHiddenService: false,
-          isMigrated: false,
-          relyingParty: {},
-        },
-        {
-          id: 'service5Id',
-          name: 'Service 5',
-          description: 'Service for testing purposes',
-          isExternalService: true,
-          isIdOnlyService: false,
-          isHiddenService: false,
-          isMigrated: false,
-          relyingParty: {},
-        },
-        {
-          id: 'service6Id',
-          name: 'Service 6',
-          description: 'Service for testing purposes',
-          isExternalService: true,
-          isIdOnlyService: false,
-          isHiddenService: false,
-          isMigrated: false,
-          relyingParty: {},
-        },
+        }
       ]
     };
 
@@ -153,7 +123,40 @@ describe('When retrieving manage console services for a user', () => {
 
     expect(getAllServices).toHaveBeenCalled();
     expect(getAllServices).toReturnWith(
-      { "services": [{ "description": "Service for testing purposes", "id": "service1Id", "isExternalService": true, "isHiddenService": false, "isIdOnlyService": false, "isMigrated": false, "name": "Service 1", "relyingParty": {} }, { "description": "Service for testing purposes", "id": "service2Id", "isExternalService": true, "isHiddenService": false, "isIdOnlyService": false, "isMigrated": false, "name": "Service 2", "relyingParty": {} }, { "description": "Service for testing purposes", "id": "service3Id", "isExternalService": true, "isHiddenService": false, "isIdOnlyService": false, "isMigrated": false, "name": "Service 3", "relyingParty": {} }, { "description": "Service for testing purposes", "id": "service4Id", "isExternalService": true, "isHiddenService": false, "isIdOnlyService": false, "isMigrated": false, "name": "Service 4", "relyingParty": {} }, { "description": "Service for testing purposes", "id": "service5Id", "isExternalService": true, "isHiddenService": false, "isIdOnlyService": false, "isMigrated": false, "name": "Service 5", "relyingParty": {} }, { "description": "Service for testing purposes", "id": "service6Id", "isExternalService": true, "isHiddenService": false, "isIdOnlyService": false, "isMigrated": false, "name": "Service 6", "relyingParty": {} }] },
+      {
+        "services": [
+          {
+            "description": "Service for testing purposes",
+            "id": "service1Id",
+            "isExternalService": true,
+            "isHiddenService": false,
+            "isIdOnlyService": false,
+            "isMigrated": false,
+            "name": "Service 1",
+            "relyingParty": {}
+          },
+          {
+            "description": "Service for testing purposes",
+            "id": "service2Id",
+            "isExternalService": true,
+            "isHiddenService": false,
+            "isIdOnlyService": false,
+            "isMigrated": false,
+            "name": "Service 2",
+            "relyingParty": {}
+          },
+          {
+            "description": "Service for testing purposes",
+            "id": "service3Id",
+            "isExternalService": true,
+            "isHiddenService": false,
+            "isIdOnlyService": false,
+            "isMigrated": false,
+            "name": "Service 3",
+            "relyingParty": {}
+          }
+        ]
+      },
     );
 
     const getAllServicesResult = getAllServices();
@@ -167,7 +170,7 @@ describe('When retrieving manage console services for a user', () => {
     expect(sendResult.mock.calls[0][3].user).toMatchObject({
       id: 'user1',
     });
-    expect(sendResult.mock.calls[0][3].services).toContainEqual({
+    expect(sendResult.mock.calls[0][3].allServices.services[0]).toMatchObject({
       id: 'service1Id',
       name: 'Service 1',
       description: 'Service for testing purposes',
