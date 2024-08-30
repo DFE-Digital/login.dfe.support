@@ -21,7 +21,12 @@
             <% } else { %>
             <tr>
             <% }%>
-                <td> <%=org.name%> <br>
+            <td>
+            <% if(org.category.id === "002" && org.LegalName) { %>
+                <%=org.LegalName%> <br>
+            <% } else { %>
+                <%=org.name%> <br>
+            <% } %>
                     <article class="organisation-services" style="margin-bottom: 0">
                         <section class="organisation">
                             <div class="user">
@@ -30,9 +35,14 @@
                             <div class="meta js-hidden">
                                 <div class="approvers">
                                     <dl class="inline condensed small-dt">
-                                        <% if (org.LegalName) { %>
-                                        <dt><abbr title="Registered legal name">Legal name: </abbr></dt>
-                                        <dd><%=org.LegalName%></dd>
+                                        <% if(org.category.id === "002" && org.LegalName) { %>
+                                            <dt><abbr title="Organisation name">Name: </abbr></dt>
+                                            <dd><%=org.name%></dd>
+                                        <% } else { %>
+                                            <% if (org.LegalName) { %>
+                                            <dt><abbr title="Registered legal name">Legal name: </abbr></dt>
+                                            <dd><%=org.LegalName%></dd>
+                                            <% } %>
                                         <% } %>
 
                                         <% if (org.urn) { %>

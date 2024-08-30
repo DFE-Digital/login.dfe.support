@@ -61,12 +61,19 @@ const paginationModel = {
                         <form method="post">
                             <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
                             <input type="hidden" name="selectedOrganisation" value="<%=org.id%>" />
-                            <button class="button-link"><%=org.name%></button>
+                            <% if(org.category.id === "002" && org.LegalName) { %>
+                                <button class="button-link"><%=org.LegalName%></button>
+                            <% } else { %>
+                                <button class="button-link"><%=org.name%></button>
+                            <% } %>
                         </form>
                     </h2>
                     <dl class="inline">
-
-                        <% if (org.LegalName) { %>
+                        <% if(org.category.id === "002" && org.LegalName) { %>
+                            <dt>Name</dt>
+                            <dd><%=org.name%></dd>
+                        <% } else { %>
+                            <% if (org.LegalName) { %>
                             <dt class="label">Legal name:</dt>
                             <dd><%= org.LegalName %></dd>
                         <% } %>

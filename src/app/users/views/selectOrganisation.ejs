@@ -25,7 +25,11 @@
                         <input id="<%= org.organisation.id %>" type="radio" name="selectedOrganisation" value="<%= org.organisation.id %>">
                         <label for="<%= org.organisation.id %>">
                             <span class="form-label-bold">
-                                <%= org.organisation.name %>
+                                <% if(org.organisation.category.id === "002" && org.organisation.LegalName) { %>
+                                    <%= org.organisation.LegalName %>
+                                <% } else { %>
+                                    <%= org.organisation.name %>
+                                <% } %>
                                 <%= org.organisation.status ? `(${org.organisation.status.name})` : ''%>
                             </span>
                             <% if (org.naturalIdentifiers) { %>
@@ -33,10 +37,16 @@
                                     <%= org.naturalIdentifiers.join(', ') %>
                                 </span>
                             <% } %>
-                            <% if (org.organisation.LegalName) { %>
+                            <% if (org.organisation.category.id === "002" && org.organisation.LegalName) { %>
+                                <span class="form-hint">
+                                    Name: <%= org.organisation.name %>
+                                </span>
+                            <% } else { %>
+                                <% if (org.organisation.LegalName) { %>
                                 <span class="form-hint">
                                     Legal Name: <%= org.organisation.LegalName %>
                                 </span>
+                                <% } %>
                             <% } %>
                             <% if (org.organisation.address && org.organisation.address !== 'Not recorded') { %>
                                 <span class="form-hint">
