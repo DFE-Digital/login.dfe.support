@@ -47,6 +47,10 @@ describe('when getting users organisation details', () => {
         organisation: {
           id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
           name: 'Great Big School',
+          category: {
+            id: '11',
+            name: 'Government',
+          },
         },
         approvers: [
           "user1",
@@ -56,6 +60,10 @@ describe('when getting users organisation details', () => {
         organisation: {
           id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
           name: 'Little Tiny School',
+          category: {
+            id: '11',
+            name: 'Government',
+          },
         },
         approvers: [
           "user1",
