@@ -74,8 +74,9 @@ const paginationModel = {
                             <dd><%=org.name%></dd>
                         <% } else { %>
                             <% if (org.LegalName) { %>
-                            <dt class="label">Legal name:</dt>
-                            <dd><%= org.LegalName %></dd>
+                                <dt class="label">Legal name:</dt>
+                                <dd><%= org.LegalName %></dd>
+                            <% } %>
                         <% } %>
 
                         <% if (org.type || org.providerTypeName) { %>

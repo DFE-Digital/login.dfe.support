@@ -25,12 +25,17 @@ const getOrganisations = async (userId, correlationId) => {
   const allApprovers = await getApproverDetails(orgMapping, correlationId);
 
   const organisations = await Promise.all(orgMapping.map(async (invitation) => {
+    logger.audit(JSON.stringify(invitation));
     const approvers = invitation.approvers.map((approverId) => {
       return allApprovers.find(x => x.sub.toLowerCase() === approverId.toLowerCase());
     }).filter(x => x);
     return {
       id: invitation.organisation.id,
       name: invitation.organisation.name,
+      category: {
+        id: invitation.organisation.category.id,
+        name: invitation.organisation.category.name,
+      },
       LegalName: invitation.organisation.LegalName,
       role: invitation.role,
       urn: invitation.organisation.urn,
