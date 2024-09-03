@@ -21,7 +21,11 @@
                     Organisation
                 </dt>
                 <dd class="app-check-your-answers__answer">
-                    <%=locals.organisationDetails.organisation.name%>
+                    <% if(locals.organisationDetails.organisation.category.id === "002" && locals.organisationDetails.organisation.LegalName) { %>
+                        <%=locals.organisationDetails.organisation.LegalName%>
+                    <% } else { %>
+                        <%=locals.organisationDetails.organisation.name%>
+                    <% } %>
                 </dd>
             </div>
             <% if (locals.services.length > 0) { %>

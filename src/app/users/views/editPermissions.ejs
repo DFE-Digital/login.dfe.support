@@ -7,7 +7,12 @@
             <dt>Name</dt>
             <dd><%=userFullName%></dd>
             <dt>Organisation</dt>
-            <dd><%=locals.organisation.name%></dd>
+
+            <% if(locals.organisation.Category === "002" && locals.organisation.LegalName) { %>
+                <dd><%=locals.organisation.LegalName%></dd>
+            <% } else { %>
+                <dd><%=locals.organisation.name%></dd>
+            <% } %>
             <dt>Permission level</dt>
             <dd><%=locals.role.name%></dd>
         </dl>
