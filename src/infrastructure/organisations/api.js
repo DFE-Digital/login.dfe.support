@@ -6,7 +6,7 @@ const callOrganisationsApi = async (endpoint, method, body, correlationId) => {
   const token = await jwtStrategy(config.organisations.service).getBearerToken();
 
   try {
-    return await fetchApi(`${config.organisations.service.url}/${endpoint}`,{
+    const result = await fetchApi(`${config.organisations.service.url}/${endpoint}`,{
       method: method,
       headers: {
         authorization: `bearer ${token}`,
@@ -14,6 +14,7 @@ const callOrganisationsApi = async (endpoint, method, body, correlationId) => {
       },
       body: body,
     });
+    return result;
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
     if (status === 401 || status === 404) {
@@ -27,15 +28,72 @@ const callOrganisationsApi = async (endpoint, method, body, correlationId) => {
 };
 
 const getUserOrganisations = async (userId, correlationId) => {
-  return await callOrganisationsApi(`organisations/associated-with-user/${userId}`, 'GET', undefined, correlationId);
+  const result = await callOrganisationsApi(`organisations/associated-with-user/${userId}`, 'GET', undefined, correlationId);
+  if (result instanceof Array){
+    console.log(result);
+    result.forEach((element) => {
+      if (element.organisation.category.id === "002" && element.organisation.LegalName){
+        const name = element.organisation.name;
+        element.organisation.name = element.organisation.LegalName;
+        element.organisation.LegalName = name;
+        console.log("doing the swap");
+        console.log(element);
+      }
+    });
+  } else {
+    console.log(result);
+    const name = result.name;
+    result.name = result.LegalName;
+    result.LegalName = name;
+    console.log("doing single swap");
+  }
+  return result;
 };
 
 const getUserOrganisationsV2 = async (userId, correlationId) => {
-  return await callOrganisationsApi(`organisations/v2/associated-with-user/${userId}`, 'GET', undefined, correlationId);
+  const result = await callOrganisationsApi(`organisations/v2/associated-with-user/${userId}`, 'GET', undefined, correlationId);
+  if (result instanceof Array){
+    console.log(result);
+    result.forEach((element) => {
+      if (element.organisation.category.id === "002" && element.organisation.LegalName){
+        const name = element.organisation.name;
+        element.organisation.name = element.organisation.LegalName;
+        element.organisation.LegalName = name;
+        console.log("doing the swap");
+        console.log(element);
+      }
+    });
+  } else {
+    console.log(result);
+    const name = result.name;
+    result.name = result.LegalName;
+    result.LegalName = name;
+    console.log("doing single swap");
+  }
+  return result;
 };
 
 const getInvitationOrganisations = async (invitationId, correlationId) => {
-  return await callOrganisationsApi(`invitations/v2/${invitationId}`, 'GET', undefined, correlationId);
+  const result = await callOrganisationsApi(`invitations/v2/${invitationId}`, 'GET', undefined, correlationId);
+  if (result instanceof Array){
+    console.log(result);
+    result.forEach((element) => {
+      if (element.organisation.category.id === "002" && element.organisation.LegalName){
+        const name = element.organisation.name;
+        element.organisation.name = element.organisation.LegalName;
+        element.organisation.LegalName = name;
+        console.log("doing the swap");
+        console.log(element);
+      }
+    });
+  } else {
+    console.log(result);
+    const name = result.name;
+    result.name = result.LegalName;
+    result.LegalName = name;
+    console.log("doing single swap");
+  }
+  return result;
 };
 
 const getServiceById = async (serviceId, correlationId) => {
@@ -122,7 +180,25 @@ const searchOrganisations = async (criteria, filterByCategories, filterByStatus,
   if (filterByStatus) {
     uri += filterByStatus.map(f => `&filterstatus=${f}`).join('');
   }
-  return await callOrganisationsApi(uri, 'GET', undefined, correlationId);
+  const result = await callOrganisationsApi(uri, 'GET', undefined, correlationId);
+  if (result instanceof Array){
+    result.forEach((element) => {
+      if (element.organisation.category.id === "002" && element.organisation.LegalName){
+        const name = element.organisation.name;
+        element.organisation.name = element.organisation.LegalName;
+        element.organisation.LegalName = name;
+        console.log("doing the swap");
+        console.log(element);
+      }
+    });
+  } else {
+    console.log(result);
+    const name = result.name;
+    result.name = result.LegalName;
+    result.LegalName = name;
+    console.log("doing single swap");
+  }
+  return result;
 };
 
 const setUserAccessToOrganisation = async (userId, organisationId, roleId, correlationId, status, reason, ) => {
