@@ -55,6 +55,10 @@ describe('when getting users service details', () => {
         organisation: {
           id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
           name: 'Big School',
+          category: {
+            id: '11',
+            name: 'Government',
+          },
           status: {
             id: 1,
             name: 'open'
@@ -85,6 +89,10 @@ describe('when getting users service details', () => {
         organisation: {
           id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
           name: 'Small School',
+          category: {
+            id: '11',
+            name: 'Government',
+          },
           status: {
             id: 1,
             name: 'open'

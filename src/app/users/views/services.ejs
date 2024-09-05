@@ -10,7 +10,12 @@
     <article class="organisation-services">
         <section class="organisation">
             <header>
-                <h3 class="heading-small spacer-heading"><%=org.name%>
+                <h3 class="heading-small spacer-heading">
+                    <% if(org.category.id === "002" && org.LegalName) { %>
+                        <%=org.LegalName%>
+                    <% } else { %>
+                        <%=org.name%>
+                    <% } %>
                     <%= org.status ? `(${org.status.name})` : '' %>
                     <% if (org.naturalIdentifiers && org.naturalIdentifiers.length !== 0) { %>
                         (<%= org.naturalIdentifiers.join(', ') %>)
