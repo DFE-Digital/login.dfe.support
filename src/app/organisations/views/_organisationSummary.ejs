@@ -11,10 +11,17 @@
     <div class="col-8">
         <h1 class="heading-xlarge heading-breakable">
             <span class="heading-secondary"><%= organisation.category.name %></span>
-            <%= organisation.name %>
+            <% if(organisation.category.id === "002" && organisation.LegalName) { %>
+                <%= organisation.LegalName %>
+            <% } else { %>
+                <%= organisation.name %>
+            <% } %>
         </h1>
         <dl class="inline condensed">
-            <% if (organisation.LegalName) { %>
+            <% if(organisation.category.id === "002" && organisation.LegalName) { %>
+                <dt class="label">Name:</dt>
+                <dd><%= organisation.name %></dd>
+            <% } else { %>
                 <dt class="label">Legal name:</dt>
                 <dd><%= organisation.LegalName %></dd>
             <% } %>
