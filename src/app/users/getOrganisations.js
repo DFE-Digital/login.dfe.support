@@ -23,10 +23,12 @@ const getOrganisations = async (userId, correlationId) => {
     return [];
   }
   const allApprovers = await getApproverDetails(orgMapping, correlationId);
+  // Filter out all deactivated accounts
+  const activeAccountApprovers = allApprovers.filter(approver => approver.status !== 0);
 
   const organisations = await Promise.all(orgMapping.map(async (invitation) => {
     const approvers = invitation.approvers.map((approverId) => {
-      return allApprovers.find(x => x.sub.toLowerCase() === approverId.toLowerCase());
+      return activeAccountApprovers.find(x => x.sub.toLowerCase() === approverId.toLowerCase());
     }).filter(x => x);
     return {
       id: invitation.organisation.id,

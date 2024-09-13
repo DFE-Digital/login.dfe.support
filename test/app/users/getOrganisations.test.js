@@ -126,9 +126,9 @@ describe('when getting users organisation details', () => {
     getUsersByIdV2.mockReset();
     getUsersByIdV2.mockReturnValue(
       [
-        { sub: 'user1', given_name: 'User', family_name:'One', email: 'user.one@unit.tests' },
-        { sub: 'user6', given_name: 'User', family_name:'Six', email: 'user.six@unit.tests' },
-        { sub: 'user11', given_name: 'User', family_name: 'Eleven', email: 'user.eleven@unit.tests' },
+        { sub: 'user1', given_name: 'User', family_name: 'One', email: 'user.one@unit.tests', status: 1 },
+        { sub: 'user6', given_name: 'User', family_name: 'Six', email: 'user.six@unit.tests', status: 1 },
+        { sub: 'user11', given_name: 'User', family_name: 'Eleven', email: 'user.eleven@unit.tests', status: 1 },
       ]
     );
     getPendingRequestsAssociatedWithUser.mockReset();
@@ -182,4 +182,68 @@ describe('when getting users organisation details', () => {
     });
   });
 
+  it('should filter out users with a deactivated account', async () => {
+    //Given
+    getUsersByIdV2.mockReturnValue(
+      [
+        { sub: 'user1', given_name: 'User', family_name: 'One', email: 'user.one@unit.tests', status: 1 },
+        { sub: 'user6', given_name: 'User', family_name: 'Six', email: 'user.six@unit.tests', status: 1 },
+        { sub: 'user11', given_name: 'User', family_name: 'Eleven', email: 'user.eleven@unit.tests', status: 0 },
+      ]
+    );
+
+    getUserOrganisations.mockReturnValue([
+      {
+        organisation: {
+          id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
+          name: 'Great Big School',
+        },
+        approvers: [
+          "user1", "user6"
+        ],
+      },
+      {
+        organisation: {
+          id: 'fe68a9f4-a995-4d74-aa4b-e39e0e88c15d',
+          name: 'Little Tiny School',
+        },
+        approvers: [
+          "user1", "user11"
+        ],
+      },
+    ]);
+
+    //When
+    await getOrganisations(req, res);
+
+    //Then
+    expect(getUserDetails.mock.calls).toHaveLength(1);
+    expect(getUserDetails.mock.calls[0][0]).toBe(req);
+    // Organisations[0] is Great Big School
+    expect(res.render.mock.calls[0][1].organisations[0].approvers).toMatchObject([
+      {
+        "email": "user.one@unit.tests",
+        "family_name": "One",
+        "given_name": "User",
+        "status": 1,
+        "sub": "user1",
+      },
+      {
+        sub: 'user6',
+        given_name: 'User',
+        family_name: 'Six',
+        email: 'user.six@unit.tests',
+        status: 1
+      }
+    ]);
+     // Organisations[0] is Little Tiny School
+    expect(res.render.mock.calls[0][1].organisations[1].approvers).toMatchObject([
+      {
+        "email": "user.one@unit.tests",
+        "family_name": "One",
+        "given_name": "User",
+        "status": 1,
+        "sub": "user1",
+      }]);
+  });
 });
