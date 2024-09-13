@@ -236,7 +236,7 @@ describe('when getting users organisation details', () => {
         status: 1
       }
     ]);
-     // Organisations[0] is Little Tiny School
+     // Organisations[1] is Little Tiny School
     expect(res.render.mock.calls[0][1].organisations[1].approvers).toMatchObject([
       {
         "email": "user.one@unit.tests",
