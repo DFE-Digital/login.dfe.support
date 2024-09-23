@@ -5,12 +5,13 @@
 <table class="data no-borders">
     <thead>
         <tr>
-            <th scope="col" class="cwp-40">Organisation</th>
+            <th scope="col" class="cwp-20">Organisation</th>
             <% if (!locals.isInvitation ) {%>
-            <th scope="col" class="cwp-20">Legacy ID/Name</th>
+            <th scope="col" class="cwp-15">Legacy ID/Name</th>
             <% }%>
-            <th scope="col" class="cwp-20">Permission level</th>
-            <th scope="col" class="cwp-30">Action</th>
+            <th scope="col" class="cwp-15">Permission level</th>
+            <th scope="col" class="cwp-15"></th>
+            <th scope="col" class="cwp-15"></th>
         </tr>
     </thead>
     <tbody>
@@ -87,7 +88,12 @@
                 <% if (org.requestDate) { %>
                 <td><a href="/access-requests/<%=org.requestId%>/organisation/review">Review request</a> </td>
                 <% } else { %>
-                <td><a href="/users/<%=user.id%>/organisations/<%=org.id%>/edit-permission">Edit permission level</a> </td>
+                    <td>
+                        <a class="govuk-link" href="/users/<%=user.id%>/organisations/<%=org.id%>/edit-permission">Edit <span class="visually-hidden"> user</span> permission level</a> 
+                    </td>
+                    <td>
+                        <a href="/users/<%=user.id%>/organisations/<%=org.id%>/remove-organisation">Remove <span class="visually-hidden"> user</span> organisation</a>
+                    </td>
                 <% } %>
             </tr>
         <%}%>
