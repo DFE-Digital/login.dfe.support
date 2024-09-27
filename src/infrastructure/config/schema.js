@@ -131,7 +131,6 @@ const notificationsSchema = new SimpleSchema({
   connectionString: patterns.redis
 });
 
-
 const accessIdentifiers = new SimpleSchema({
   identifiers: {
     type: Object,
@@ -139,6 +138,7 @@ const accessIdentifiers = new SimpleSchema({
   'identifiers.service': patterns.uuid,
   'identifiers.organisation': patterns.uuid,
   'identifiers.departmentForEducation': patterns.uuid,
+  'identifiers.manageServiceIdentifiers': patterns.uuid,
 });
 
 accessIdentifiers.extend(schemas.apiClient);

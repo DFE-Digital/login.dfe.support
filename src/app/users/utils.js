@@ -13,7 +13,6 @@ const {
     getServicesByUserId,
     getServicesByInvitationId
 } = require('./../../infrastructure/access');
-const { getServiceById } = require('./../../infrastructure/applications');
 const { mapUserStatus } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
 const sortBy = require('lodash/sortBy');
@@ -225,8 +224,7 @@ const mapUserToSupportModel = (user, userFromSearch) => {
 };
 
 const checkManageAccess = async (arr) => {
-    const manage = await getServiceById('manage');
-    return arr.some((entry) => entry.serviceId === manage.id);
+    return arr.some((entry) => entry.serviceId === config.access.identifiers.manageServiceIdentifiers);
 };
 
 const getUserDetailsById = async (uid, correlationId) => {
