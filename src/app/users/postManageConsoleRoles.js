@@ -6,7 +6,6 @@ const { listRolesOfService, updateUserService, addUserService } = require('../..
 const { getSingleServiceForUser, addOrChangeManageConsoleServiceTitle, checkIfRolesChanged } = require('./getManageConsoleRoles');
 const { putUserInOrganisation } = require('./../../infrastructure/organisations');
 
-
 const manageServiceId = config.access.identifiers.manageService;
 const dfeId = config.access.identifiers.departmentForEducation;
 

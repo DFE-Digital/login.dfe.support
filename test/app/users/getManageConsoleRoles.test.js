@@ -13,8 +13,6 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
   },
   access: {
     identifiers: {
-      // service: "service1",
-      // organisation: "organisation1",
       departmentForEducation: "departmentForEducation1",
       manageService: "manageService1"
     }
