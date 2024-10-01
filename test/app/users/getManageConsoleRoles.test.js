@@ -4,21 +4,22 @@ const {
   checkIfRolesChanged 
 } = require('./../../../src/app/users/getManageConsoleRoles');
 
-jest.mock('./../../../src/infrastructure/config', () => 
-  require('./../../utils').configMockFactory({
-    support: {
-      type: 'api',
-      service: {
-        url: 'http://support.test',
-      },
-    access: {
-      identifiers: {
-        manageService: 'manageServiceId',
-      },
+jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
+  support: {
+    type: 'api',
+    service: {
+      url: 'http://support.test',
     },
-    },
-  })
-);
+  },
+  access: {
+    identifiers: {
+      // service: "service1",
+      // organisation: "organisation1",
+      departmentForEducation: "departmentForEducation1",
+      manageService: "manageService1"
+    }
+  }
+}));
 
 jest.mock('./../../../src/infrastructure/utils', () => ({
   sendResult: jest.fn(),
