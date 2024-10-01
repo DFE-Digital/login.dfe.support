@@ -12,7 +12,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
       service: "service1",
       organisation: "organisation1",
       departmentForEducation: "departmentForEducation1",
-      manageServiceIdentifiers: "manageServiceIdentifiers1"
+      manageService: "manageService1"
     }
   }
 }));
@@ -107,7 +107,7 @@ describe('when changing a user\'s manage console access', () => {
     expect(updateUserService).toHaveBeenCalledTimes(1);
     expect(updateUserService).toHaveBeenCalledWith(
       'userId',
-      'manageServiceIdentifiers1', 
+      'manageService1', 
       'departmentForEducation1',
       ['role1', 'role2'],
       'correlationId'
@@ -153,7 +153,7 @@ describe('when changing a user\'s manage console access', () => {
     expect(updateUserService).not.toHaveBeenCalled()
     expect(addUserService).toHaveBeenCalledWith(
       'userId',
-      'manageServiceIdentifiers1',
+      'manageService1',
       'departmentForEducation1',
       ['role1', 'role2'],
       'correlationId'

@@ -11,6 +11,11 @@ jest.mock('./../../../src/infrastructure/config', () =>
       service: {
         url: 'http://support.test',
       },
+    access: {
+      identifiers: {
+        manageService: 'manageServiceId',
+      },
+    },
     },
   })
 );
