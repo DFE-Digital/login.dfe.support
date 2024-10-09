@@ -13,6 +13,7 @@ const {
     getServicesByUserId,
     getServicesByInvitationId
 } = require('./../../infrastructure/access');
+const { getServiceById } = require('./../../infrastructure/applications');
 const { mapUserStatus } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
 const sortBy = require('lodash/sortBy');
