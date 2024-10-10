@@ -225,8 +225,7 @@ const mapUserToSupportModel = (user, userFromSearch) => {
 };
 
 const checkManageAccess = async (arr) => {
-    const manage = await getServiceById('manage');
-    return arr.some((entry) => entry.serviceId === manage.id);
+    return arr.some((entry) => entry.serviceId === config.access.identifiers.manageServiceIdentifiers);
 };
 
 const getUserDetailsById = async (uid, correlationId) => {
