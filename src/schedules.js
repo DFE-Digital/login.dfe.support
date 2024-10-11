@@ -3,7 +3,7 @@ const logger = require('./infrastructure/logger');
 const config = require('./infrastructure/config');
 const {v4:uuid} = require('uuid');
 
-const { syncFullUsersView, syncDiffUsersView, syncUserDevicesView, syncAuditCache } = require('./app/syncViews');
+const { syncFullUsersView, syncDiffUsersView, syncAuditCache } = require('./app/syncViews');
 const { tidyIndexes } = require('./app/tidyIndexes');
 
 const scheduleTask = (name, cronSpec, action) => {
@@ -30,7 +30,6 @@ const startSchedules = () => {
   scheduleTask('audit cache', config.schedules.auditCache, syncAuditCache);
   scheduleTask('full user', config.schedules.usersFull, syncFullUsersView);
   scheduleTask('diff user', config.schedules.usersDiff, syncDiffUsersView);
-  scheduleTask('user devices', config.schedules.userDevices, syncUserDevicesView);
   scheduleTask('index tidy', config.schedules.indexTidy, tidyIndexes);
 };
 

@@ -103,7 +103,6 @@ const schedulesSchema = new SimpleSchema({
   auditCache: String,
   usersFull: String,
   usersDiff: String,
-  userDevices: String,
   accessRequests: String,
   indexTidy: String,
 });
