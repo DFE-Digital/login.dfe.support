@@ -68,7 +68,7 @@ const getPageOfInvitations = async (pageNumber, pageSize, changedAfter, correlat
 
   try {
     let uri = `${config.directories.service.url}/invitations?page=${pageNumber}&pageSize=${pageSize}`;
-    
+
     if (changedAfter) {
       uri += `&changedAfter=${changedAfter.toISOString()}`;
     }
@@ -307,7 +307,7 @@ const updateInvite = async (id, email, correlationId) => {
 const resendInvite = async (id, correlationId) => {
   try {
     const token = await jwtStrategy(config.directories.service).getBearerToken();
-    
+
     await fetchApi(`${config.directories.service.url}/invitations/${id}/resend`,{
       method: 'POST',
       headers: {
@@ -322,66 +322,9 @@ const resendInvite = async (id, correlationId) => {
   }
 };
 
-const createUserDevice = async (id, serialNumber, correlationId) => {
-  const token = await jwtStrategy(config.directories.service).getBearerToken();
-
-  try {
-    const opts = {
-      method: 'POST',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-      json: true,
-    };
-
-    opts.body = { type: 'digipass', serialNumber };
-
-    await fetchApi(`${config.directories.service.url}/users/${id}/devices`,opts);
-
-    return {
-      success: true
-    };
-  } catch (e) {
-    return {
-      success: false,
-      statusCode: e.statusCode,
-      errorMessage: e.message,
-    };
-  }
-};
-
-const deleteUserDevice = async (id, serialNumber, correlationId) => {
-  const token = await jwtStrategy(config.directories.service).getBearerToken();
-
-  try {
-    const opts = {
-      method: 'DELETE',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-    };
-
-    opts.body = { type: 'digipass', serialNumber };
-
-    await fetchApi(`${config.directories.service.url}/users/${id}/devices`,opts);
-
-    return {
-      success: true
-    };
-  } catch (e) {
-    return {
-      success: false,
-      statusCode: e.statusCode,
-      errorMessage: e.message,
-    };
-  }
-};
-
 const createChangeEmailCode = async (userId, newEmailAddress, clientId, redirectUri, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
-  
+
   try {
     return await fetchApi(`${config.directories.service.url}/usercodes/upsert`,{
       method: 'PUT',
@@ -416,7 +359,7 @@ const getChangeEmailCode = async (userId, correlationId) => {
     });
   } catch (e) {
     if (e.statusCode === 404) {
-      return null;
+      return null;create
     }
     throw e;
   }
@@ -512,8 +455,6 @@ module.exports = {
   updateInvite,
   deactivateInvite,
   reactivateInvite,
-  createUserDevice,
-  deleteUserDevice,
   createChangeEmailCode,
   getChangeEmailCode,
   deleteChangeEmailCode,

@@ -95,10 +95,6 @@ const reactivateInvite = async (inviteId, reason, correlationId) => {
   return Promise.resolve(uuid());
 };
 
-const createUserDevice = async () => {
-  return Promise.resolve();
-};
-
 const createChangeEmailCode = async (userId, newEmailAddress, clientId, redirectUri, correlationId) => {
   return Promise.resolve({});
 };
@@ -137,7 +133,6 @@ module.exports = {
   updateInvite,
   deactivateInvite,
   reactivateInvite,
-  createUserDevice,
   createChangeEmailCode,
   getChangeEmailCode,
   deleteChangeEmailCode,
