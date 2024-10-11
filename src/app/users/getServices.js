@@ -1,7 +1,7 @@
 const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
-const { getUserDevices, getInvitation } = require('./../../infrastructure/directories');
+const { getInvitation } = require('./../../infrastructure/directories');
 const { getAllServices } = require('./../../infrastructure/applications');
 const logger = require('./../../infrastructure/logger');
 
@@ -65,19 +65,8 @@ const getToken = async (userId, correlationId) => {
     }
 
     return null;
-  } else {
-    const tokens = await getUserDevices(userId, correlationId);
-    if (!tokens || tokens.length === 0) {
-      return null;
-    }
-
-    const digipass = tokens.find(t => t.type === 'digipass');
-    return {
-      type: digipass.type,
-      serialNumber: `${digipass.serialNumber.substr(0, 2)}-${digipass.serialNumber.substr(2, 7)}-${digipass.serialNumber.substr(9, 1)}`,
-      nonFormattedSerialNumber: digipass.serialNumber,
-    };
   }
+  return null; //TODO figure out what to do with this
 };
 
 const action = async (req, res) => {

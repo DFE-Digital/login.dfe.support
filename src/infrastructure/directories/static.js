@@ -53,16 +53,6 @@ const getInvitation = async (invitationId, correlationId) => {
   };
 };
 
-const getUserDevices = async (uid, correlationId) => {
-  return [
-    {
-      'id': '6eebc499-e69e-4556-95e5-dc0300c12748',
-      'type': 'digipass',
-      'serialNumber': '1234567890'
-    }
-  ];
-};
-
 const getUserAssociatedToDevice = async (type, serialNumber, correlationId) => {
   return Promise.resolve(null);
 };
@@ -124,7 +114,6 @@ module.exports = {
   getUser,
   getPageOfInvitations,
   getInvitation,
-  getUserDevices,
   getUserAssociatedToDevice,
   updateUser,
   deactivate,
