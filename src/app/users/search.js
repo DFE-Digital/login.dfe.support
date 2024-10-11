@@ -8,9 +8,6 @@ const clearNewUserSessionData = (req) => {
   if (req.session.user) {
     req.session.user = undefined;
   }
-  if (req.session.digipassSerialNumberToAssign) {
-    req.session.digipassSerialNumberToAssign = undefined;
-  }
 };
 const unpackMultiSelect = (parameter) => {
   if (!parameter) {
