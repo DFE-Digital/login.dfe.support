@@ -3,44 +3,6 @@ const jwtStrategy = require('login.dfe.jwt-strategies');
 
 const { fetchApi } = require('login.dfe.async-retry');
 
-
-const getPageOfUsers = async (pageNumber, pageSize, includeDevices, includeCodes, includeLegacyUsernames, changedAfter, correlationId) => {
-  const token = await jwtStrategy(config.directories.service).getBearerToken();
-
-  try {
-    let uri = `${config.directories.service.url}/users?page=${pageNumber}&pageSize=${pageSize}`;
-
-    if (includeDevices || includeCodes || includeLegacyUsernames) {
-      const includes = [
-        includeDevices ? 'devices' : undefined,
-        includeCodes ? 'codes' : undefined,
-        includeLegacyUsernames ? 'legacyusernames' : undefined,
-      ].filter(x => x !== undefined).join(',');
-      uri += `&include=${includes}`;
-    }
-
-    if (changedAfter) {
-      uri += `&changedAfter=${changedAfter.toISOString()}`;
-    }
-
-    const pageOfUsers = await fetchApi(uri,{
-      method: 'GET',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      }
-    });
-
-    return pageOfUsers;
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 401) {
-      return null;
-    }
-    throw e;
-  }
-};
-
 const getUser = async (uid, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
@@ -104,28 +66,6 @@ const getInvitation = async (invitationId, correlationId) => {
     });
 
     return invitation;
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 404) {
-      return null;
-    }
-    throw e;
-  }
-};
-
-const getUserAssociatedToDevice = async (type, serialNumber, correlationId) => {
-  const token = await jwtStrategy(config.directories.service).getBearerToken();
-
-  try {
-    const deviceAssociation = await fetchApi(`${config.directories.service.url}/devices/${type}/${serialNumber}`,{
-      method: 'GET',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      }
-    });
-
-    return deviceAssociation ? deviceAssociation.associatedWith : null;
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
     if (status === 404) {
@@ -414,11 +354,9 @@ const getLegacyUsernames = async (userIds, correlationId) => {
 };
 
 module.exports = {
-  getPageOfUsers,
   getUser,
   getPageOfInvitations,
   getInvitation,
-  getUserAssociatedToDevice,
   updateUser,
   deactivate,
   reactivate,

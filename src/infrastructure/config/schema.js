@@ -155,7 +155,6 @@ const schema = new SimpleSchema({
   search: new SimpleSchema({ ...schemas.apiClient }),
   audit: auditSchema,
   serviceMapping: serviceMappingSchema,
-  devices: new SimpleSchema({ ...schemas.apiClient }),
   schedules: schedulesSchema,
   toggles: togglesSchema,
   notifications: notificationsSchema,
