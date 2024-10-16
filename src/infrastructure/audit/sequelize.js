@@ -258,61 +258,11 @@ const getAuditEvent = (type, subType, unlockType) => {
   return event;
 };
 
-const getTokenAudits = async (userId, serialNumber, pageNumber, userName) => {
-  const where = {
-    key: {
-      [Op.eq]: 'deviceSerialNumber',
-    },
-    value: {
-      [Op.eq]: serialNumber,
-    },
-  };
-  const metaSubQuery = db.dialect.QueryGenerator.selectQuery('AuditLogMeta', {
-    attributes: ['AuditId'],
-    where,
-  }).slice(0, -1);
-
-  const rawAudits = await getPageOfAudits({
-    id: {
-      [Op.in]: [Sequelize.literal(metaSubQuery)],
-    },
-  }, pageNumber);
-
-
-  if (!rawAudits || !rawAudits.audits || rawAudits.audits.length === 0) {
-    return {
-      audits: [],
-      numberOfPages: 0,
-      numberOfRecords: 0,
-    };
-  }
-
-  const auditRecords = [];
-
-  for (let i = 0; i < rawAudits.audits.length; i++) {
-    const audit = rawAudits.audits[i];
-
-    auditRecords.push({
-      date: new Date(audit.timestamp),
-      name: audit.userId ? (audit.userId === userId ? userName : await getUserName(audit.userId)) : audit.userEmail,
-      success: audit.success === '0' ? 'Failure' : 'Success',
-      event: getAuditEvent(audit.type, audit.subType, audit.unlockType),
-    });
-  }
-
-  return {
-    audits: auditRecords,
-    numberOfPages: rawAudits.numberOfPages,
-    numberOfRecords: rawAudits.numberOfRecords,
-  };
-};
-
 module.exports = {
   getAllAuditsSince,
   getUserAudit,
   getUserLoginAuditsSince,
   getUserLoginAuditsForService,
   getUserChangeHistory,
-  getTokenAudits,
   getPageOfUserAudits,
 };

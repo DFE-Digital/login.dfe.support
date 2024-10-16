@@ -5,14 +5,8 @@ const config = require('./../../infrastructure/config');
 const { getOrganisationCategories } = require('./../../infrastructure/organisations');
 const { getAllServices } = require('./../../infrastructure/applications');
 const clearNewUserSessionData = (req) => {
-  if (req.session.k2sUser) {
-    req.session.k2sUser = undefined;
-  }
   if (req.session.user) {
     req.session.user = undefined;
-  }
-  if (req.session.digipassSerialNumberToAssign) {
-    req.session.digipassSerialNumberToAssign = undefined;
   }
 };
 const unpackMultiSelect = (parameter) => {
