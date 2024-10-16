@@ -22,7 +22,7 @@
                     <% if (locals.validationMessages.reason !== undefined) { %>
                     <p class="error-message" id="validation-reason"><%= locals.validationMessages.reason %></p>
                     <% } %>
-                    <textarea class="form-control full-width" rows="6" id="reason" name="reason" placeholder="Please select a reason from the dropdown menu, or type a reason here."
+                    <textarea class="form-control full-width" rows="6" id="reason" name="reason" style= "margin-bottom: 15px;" placeholder="Please select a reason from the dropdown menu, or type a reason here."
                             <% if (locals.validationMessages.reason !== undefined) { %>
                            aria-invalid="true" aria-describedby="validation-reason"
                             <% } %>
