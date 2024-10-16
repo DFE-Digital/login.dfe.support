@@ -10,7 +10,7 @@
                 <div class="govuk-form-group <%= (locals.validationMessages.reason !== undefined) ? 'form-group-error' : '' %>">
                     <label class="form-label" for="reason">Reason for deactivation of user (mandatory)</span> </label>
                     <select class="govuk-select" style="font-size: 16px; border: 2px solid black; padding: 5px 0px; margin-bottom: 15px;" name="select-reason" required>
-                        <option disabled selected value>Select a reason</option>
+                        <option selected value="Select a reason">Select a reason</option>
                         <option value="Generic email" >Generic email</option>
                         <option value="Generic/shared account" >Generic/shared account</option>
                         <option value="Username and email mismatch" >Username and email mismatch</option>

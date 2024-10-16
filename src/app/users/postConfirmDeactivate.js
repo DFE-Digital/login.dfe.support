@@ -24,11 +24,11 @@ const updateUserIndex = async (uid, correlationId) => {
 const postConfirmDeactivate = async (req, res) => {
   const user = await getUserDetails(req);
   
-  if (req.body['select-reason'] && req.body.reason.trim() === '') {
+  if (req.body['select-reason'] && req.body['select-reason'] !== 'Select a reason' && req.body.reason.trim() === '') {
     req.body.reason = req.body['select-reason'];
   };
 
-  if (req.body.reason.match(/^\s*$/) !== null) {
+  if (req.body['select-reason'] && req.body['select-reason'] === 'Select a reason' && req.body.reason.match(/^\s*$/) !== null) {
     sendResult(req, res, 'users/views/confirmDeactivate', {
       csrfToken: req.csrfToken(),
       backLink: 'services',
