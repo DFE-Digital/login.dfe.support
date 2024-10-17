@@ -7,9 +7,9 @@
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <fieldset class="govuk-fieldset">
                 <legend><p>Please confirm you would like to deactivate the user.</p></legend>
-                <div class="govuk-form-group <%= (locals.validationMessages.reason !== undefined) ? 'form-group-error' : '' %>">
+                <div class="form-group <%= (locals.validationMessages.reason !== undefined) ? 'form-group-error' : '' %>">
                     <label class="form-label" for="reason">Reason for deactivation of user (mandatory)</span> </label>
-                    <select class="govuk-select" style="font-size: 16px; border: 2px solid black; padding: 5px 0px; margin-bottom: 15px;" name="select-reason" required>
+                    <select class="govuk-select form-group select2-container--classic font-small" style="padding: 5px 0px;" name="select-reason" required>
                         <option selected value="Select a reason">Select a reason</option>
                         <option value="Generic email" >Generic email</option>
                         <option value="Generic/shared account" >Generic/shared account</option>
@@ -22,7 +22,7 @@
                     <% if (locals.validationMessages.reason !== undefined) { %>
                     <p class="error-message" id="validation-reason"><%= locals.validationMessages.reason %></p>
                     <% } %>
-                    <textarea class="form-control full-width" rows="6" id="reason" name="reason" style= "margin-bottom: 15px;" placeholder="Please select a reason from the dropdown menu, or type a reason here."
+                    <textarea class="form-control full-width form-group" rows="6" id="reason" name="reason"  placeholder="Please select a reason from the dropdown menu, or type a reason here."
                             <% if (locals.validationMessages.reason !== undefined) { %>
                            aria-invalid="true" aria-describedby="validation-reason"
                             <% } %>
