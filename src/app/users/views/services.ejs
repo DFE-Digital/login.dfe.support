@@ -26,7 +26,6 @@
                     <th scope="col" class="cwp-30">Service</th>
                     <th scope="col" class="cwp-25">User type</th>
                     <th scope="col" class="cwp-15">Activated</th>
-                    <th scope="col" class="cwp-15">Token</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -40,17 +39,6 @@
                     <%} else {%>
                     <td>Pending</td>
                     <%}%>
-                    <td>
-                        <%if (service.token && service.token.serialNumber) {%>
-                        <% if (locals.user.id.startsWith('inv-')) {%>
-                        <%=service.token ? service.token.serialNumber : ''%>
-                        <% } else {%>
-                        <a href="/userDevices/<%=service.token.nonFormattedSerialNumber%>"><%=service.token.serialNumber%></a>
-                        <% } %>
-                        <% } else { %>
-                        <a href="/users/<%=locals.user.id%>/assign-digipass/<%=service.id%>">Assign</a>
-                        <% } %>
-                    </td>
                 </tr>
                 <%}%>
                 </tbody>

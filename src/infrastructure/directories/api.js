@@ -3,44 +3,6 @@ const jwtStrategy = require('login.dfe.jwt-strategies');
 
 const { fetchApi } = require('login.dfe.async-retry');
 
-
-const getPageOfUsers = async (pageNumber, pageSize, includeDevices, includeCodes, includeLegacyUsernames, changedAfter, correlationId) => {
-  const token = await jwtStrategy(config.directories.service).getBearerToken();
-
-  try {
-    let uri = `${config.directories.service.url}/users?page=${pageNumber}&pageSize=${pageSize}`;
-
-    if (includeDevices || includeCodes || includeLegacyUsernames) {
-      const includes = [
-        includeDevices ? 'devices' : undefined,
-        includeCodes ? 'codes' : undefined,
-        includeLegacyUsernames ? 'legacyusernames' : undefined,
-      ].filter(x => x !== undefined).join(',');
-      uri += `&include=${includes}`;
-    }
-
-    if (changedAfter) {
-      uri += `&changedAfter=${changedAfter.toISOString()}`;
-    }
-
-    const pageOfUsers = await fetchApi(uri,{
-      method: 'GET',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      }
-    });
-
-    return pageOfUsers;
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 401) {
-      return null;
-    }
-    throw e;
-  }
-};
-
 const getUser = async (uid, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
@@ -68,7 +30,7 @@ const getPageOfInvitations = async (pageNumber, pageSize, changedAfter, correlat
 
   try {
     let uri = `${config.directories.service.url}/invitations?page=${pageNumber}&pageSize=${pageSize}`;
-    
+
     if (changedAfter) {
       uri += `&changedAfter=${changedAfter.toISOString()}`;
     }
@@ -104,50 +66,6 @@ const getInvitation = async (invitationId, correlationId) => {
     });
 
     return invitation;
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 404) {
-      return null;
-    }
-    throw e;
-  }
-};
-
-const getUserDevices = async (uid, correlationId) => {
-  const token = await jwtStrategy(config.directories.service).getBearerToken();
-
-  try {
-    const devices = await fetchApi(`${config.directories.service.url}/users/${uid}/devices`,{
-      method: 'GET',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      }
-    });
-
-    return devices ? devices : [];
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 401) {
-      return null;
-    }
-    throw e;
-  }
-};
-
-const getUserAssociatedToDevice = async (type, serialNumber, correlationId) => {
-  const token = await jwtStrategy(config.directories.service).getBearerToken();
-
-  try {
-    const deviceAssociation = await fetchApi(`${config.directories.service.url}/devices/${type}/${serialNumber}`,{
-      method: 'GET',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      }
-    });
-
-    return deviceAssociation ? deviceAssociation.associatedWith : null;
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
     if (status === 404) {
@@ -250,7 +168,7 @@ const reactivateInvite = async (id, reason, correlationId) => {
   }
 };
 
-const createInvite = async (givenName, familyName, email, digipassSerialNumber, clientId, redirectUri, correlationId, overrides, permission, orgName) => {
+const createInvite = async (givenName, familyName, email, clientId, redirectUri, correlationId, overrides, permission, orgName) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   const body = {
@@ -266,12 +184,6 @@ const createInvite = async (givenName, familyName, email, digipassSerialNumber, 
     isApprover: (permission && permission === 10000) ? true : false,
     orgName,
   };
-  if (digipassSerialNumber) {
-    body.device = {
-      type: 'digipass',
-      serialNumber: digipassSerialNumber,
-    };
-  }
 
   const invitation = await fetchApi(`${config.directories.service.url}/invitations`,{
     method: 'POST',
@@ -307,7 +219,7 @@ const updateInvite = async (id, email, correlationId) => {
 const resendInvite = async (id, correlationId) => {
   try {
     const token = await jwtStrategy(config.directories.service).getBearerToken();
-    
+
     await fetchApi(`${config.directories.service.url}/invitations/${id}/resend`,{
       method: 'POST',
       headers: {
@@ -322,66 +234,9 @@ const resendInvite = async (id, correlationId) => {
   }
 };
 
-const createUserDevice = async (id, serialNumber, correlationId) => {
-  const token = await jwtStrategy(config.directories.service).getBearerToken();
-
-  try {
-    const opts = {
-      method: 'POST',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-      json: true,
-    };
-
-    opts.body = { type: 'digipass', serialNumber };
-
-    await fetchApi(`${config.directories.service.url}/users/${id}/devices`,opts);
-
-    return {
-      success: true
-    };
-  } catch (e) {
-    return {
-      success: false,
-      statusCode: e.statusCode,
-      errorMessage: e.message,
-    };
-  }
-};
-
-const deleteUserDevice = async (id, serialNumber, correlationId) => {
-  const token = await jwtStrategy(config.directories.service).getBearerToken();
-
-  try {
-    const opts = {
-      method: 'DELETE',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-    };
-
-    opts.body = { type: 'digipass', serialNumber };
-
-    await fetchApi(`${config.directories.service.url}/users/${id}/devices`,opts);
-
-    return {
-      success: true
-    };
-  } catch (e) {
-    return {
-      success: false,
-      statusCode: e.statusCode,
-      errorMessage: e.message,
-    };
-  }
-};
-
 const createChangeEmailCode = async (userId, newEmailAddress, clientId, redirectUri, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
-  
+
   try {
     return await fetchApi(`${config.directories.service.url}/usercodes/upsert`,{
       method: 'PUT',
@@ -416,7 +271,7 @@ const getChangeEmailCode = async (userId, correlationId) => {
     });
   } catch (e) {
     if (e.statusCode === 404) {
-      return null;
+      return null;create
     }
     throw e;
   }
@@ -499,12 +354,9 @@ const getLegacyUsernames = async (userIds, correlationId) => {
 };
 
 module.exports = {
-  getPageOfUsers,
   getUser,
   getPageOfInvitations,
   getInvitation,
-  getUserDevices,
-  getUserAssociatedToDevice,
   updateUser,
   deactivate,
   reactivate,
@@ -512,8 +364,6 @@ module.exports = {
   updateInvite,
   deactivateInvite,
   reactivateInvite,
-  createUserDevice,
-  deleteUserDevice,
   createChangeEmailCode,
   getChangeEmailCode,
   deleteChangeEmailCode,

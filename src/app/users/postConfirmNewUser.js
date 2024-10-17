@@ -29,7 +29,7 @@ const postConfirmNewUser = async (req, res) => {
     organisation = await getOrganisationById(req.session.user.organisationId, req.id);
   }
 
-  const invitationId = await createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email, null, clientId, redirectUri, req.id, emailOverrides, req.session.user.permission, organisation?organisation.name:null);
+  const invitationId = await createInvite(req.session.user.firstName, req.session.user.lastName, req.session.user.email, clientId, redirectUri, req.id, emailOverrides, req.session.user.permission, organisation?organisation.name:null);
 
   if (invitationId) {
     logger.audit({

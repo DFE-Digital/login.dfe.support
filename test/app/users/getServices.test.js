@@ -14,7 +14,6 @@ jest.mock('ioredis');
 
 const { getUserDetails } = require('./../../../src/app/users/utils');
 const { getUserOrganisations } = require('./../../../src/infrastructure/organisations');
-const { getUserDevices } = require('./../../../src/infrastructure/directories');
 const { getClientIdForServiceId } = require('./../../../src/infrastructure/serviceMapping');
 const { getUserLoginAuditsForService } = require('./../../../src/infrastructure/audit');
 const { getAllServices } = require('./../../../src/infrastructure/applications');
@@ -104,14 +103,6 @@ describe('when getting users service details', () => {
           },
         ],
       },
-    ]);
-
-    getUserDevices.mockReset();
-    getUserDevices.mockReturnValue([
-      {
-        type: 'digipass',
-        serialNumber: '9999999999',
-      }
     ]);
 
     getClientIdForServiceId.mockReset();
@@ -274,27 +265,6 @@ describe('when getting users service details', () => {
           grantedAccessOn: new Date('2018-01-19T10:46:59.385Z'),
         },
       ]
-    });
-  });
-
-
-  it('then it should get token for each org/service', async () => {
-    await getServices(req, res);
-
-    expect(res.render.mock.calls[0][1].organisations[0].services[0].token).toMatchObject({
-      type: 'digipass',
-      serialNumber: '99-9999999-9',
-      nonFormattedSerialNumber: '9999999999'
-    });
-    expect(res.render.mock.calls[0][1].organisations[0].services[1].token).toMatchObject({
-      type: 'digipass',
-      serialNumber: '99-9999999-9',
-      nonFormattedSerialNumber: '9999999999'
-    });
-    expect(res.render.mock.calls[0][1].organisations[1].services[0].token).toMatchObject({
-      type: 'digipass',
-      serialNumber: '99-9999999-9',
-      nonFormattedSerialNumber: '9999999999'
     });
   });
 });
