@@ -23,8 +23,14 @@ const updateUserIndex = async (uid, correlationId) => {
 
 const postConfirmDeactivate = async (req, res) => {
   const user = await getUserDetails(req);
+  
+  if (req.body['select-reason'] && req.body['select-reason'] !== 'Select a reason' && req.body.reason.trim() === '') {
+    req.body.reason = req.body['select-reason'];
+  } else if (req.body['select-reason'] && req.body['select-reason'] !== 'Select a reason' && req.body.reason.length > 0) {
+    req.body.reason = `${req.body['select-reason']} - ${req.body.reason}`;
+  };
 
-  if (req.body.reason.match(/^\s*$/) !== null) {
+  if (req.body['select-reason'] && req.body['select-reason'] === 'Select a reason' && req.body.reason.match(/^\s*$/) !== null) {
     sendResult(req, res, 'users/views/confirmDeactivate', {
       csrfToken: req.csrfToken(),
       backLink: 'services',
@@ -37,26 +43,26 @@ const postConfirmDeactivate = async (req, res) => {
     await deactivate(user.id, req.id);
     await updateUserIndex(user.id, req.id);
 
-  logger.audit(
-    `${req.user.email} (id: ${req.user.sub}) deactivated user ${
-      user.email
-    } (id: ${user.id})`,
-    {
-      type: 'support',
-      subType: 'user-edit',
-      userId: req.user.sub,
-      userEmail: req.user.email,
-      editedUser: user.id,
-      editedFields: [
-        {
-          name: 'status',
-          oldValue: user.status.id,
-          newValue: 0,
-        },
-      ],
-      reason: req.body.reason,
-    }
-  );
+    logger.audit(
+      `${req.user.email} (id: ${req.user.sub}) deactivated user ${
+        user.email
+      } (id: ${user.id})`,
+      {
+        type: 'support',
+        subType: 'user-edit',
+        userId: req.user.sub,
+        userEmail: req.user.email,
+        editedUser: user.id,
+        editedFields: [
+          {
+            name: 'status',
+            oldValue: user.status.id,
+            newValue: 0,
+          },
+        ],
+        reason: req.body.reason,
+      }
+    );
 
   return res.redirect('services');
   }
