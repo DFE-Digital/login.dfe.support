@@ -26,6 +26,8 @@ const postConfirmDeactivate = async (req, res) => {
   
   if (req.body['select-reason'] && req.body['select-reason'] !== 'Select a reason' && req.body.reason.trim() === '') {
     req.body.reason = req.body['select-reason'];
+  } else if (req.body['select-reason'] && req.body['select-reason'] !== 'Select a reason' && req.body.reason.length > 0) {
+    req.body.reason = `${req.body['select-reason']} - ${req.body.reason}`;
   };
 
   if (req.body['select-reason'] && req.body['select-reason'] === 'Select a reason' && req.body.reason.match(/^\s*$/) !== null) {
