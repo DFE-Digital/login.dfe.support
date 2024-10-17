@@ -252,7 +252,7 @@ describe('When confirming deactivation of user given a reason from the select me
     });
   });
 
-  it('then it should should audit user being deactivated', async () => {
+  it('then it should audit user being deactivated', async () => {
     await postConfirmDeactivate(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
@@ -272,7 +272,7 @@ describe('When confirming deactivation of user given a reason from the select me
           newValue: 0,
         },
       ],
-      reason: 'some text reason for deactivation',
+      reason: 'some selected reason for deactivation - some text reason for deactivation',
     });
   });
 });
