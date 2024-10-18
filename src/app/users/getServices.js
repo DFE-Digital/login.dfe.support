@@ -46,7 +46,7 @@ const action = async (req, res) => {
   const allServices = await getAllServices();
   const externalServices = allServices.services.filter(x => x.isExternalService === true && !(x.relyingParty && x.relyingParty.params && x.relyingParty.params.hideSupport === 'true'));
 
-  const organisations = [];
+  const allOrganisationsForUser = [];
   for (let i = 0; i < organisationDetails.length; i++) {
     const org = Object.assign(Object.assign({}, organisationDetails[i]), { services: [], naturalIdentifiers: [] });
     org.naturalIdentifiers = [];
@@ -74,7 +74,10 @@ const action = async (req, res) => {
         org.services.push(svc);
       }
     }
-    organisations.push(org);
+
+    // Sort services alphabetically
+    org.services.sort((a, b) => a.name.localeCompare(b.name))
+    allOrganisationsForUser.push(org);
   }
   req.session.type = 'services';
   req.session.user = {
@@ -94,7 +97,7 @@ const action = async (req, res) => {
   sendResult(req, res, 'users/views/services', {
     csrfToken: req.csrfToken(),
     user,
-    organisations,
+    organisations: allOrganisationsForUser,
     isInvitation: req.params.uid.startsWith('inv-'),
   });
 };
