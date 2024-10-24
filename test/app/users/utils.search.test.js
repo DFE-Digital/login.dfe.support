@@ -266,7 +266,7 @@ describe('When processing a user search request', () => {
 
     test('then it should use sort order specified', async () => {
       req.query.sort = 'email';
-      req.query.sortdir = 'desc';
+      req.query.sortDir = 'desc';
 
       const actual = await search(req);
 
