@@ -123,7 +123,7 @@ const search = async (req) => {
 
     let sortBy = paramsSource.sort ? paramsSource.sort.toLowerCase() : 'name';
     let sortAsc =
-        (paramsSource.sortdir ? paramsSource.sortdir : 'asc').toLowerCase() ===
+        (paramsSource.sortDir ? paramsSource.sortDir : 'asc').toLowerCase() ===
         'asc';
 
     const filter = buildFilters(paramsSource);
