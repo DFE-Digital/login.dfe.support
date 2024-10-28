@@ -51,6 +51,8 @@ if (services && services.length > 0) {
             <form method="post">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                 <input type="hidden" name="showFilters" value="<%= showFilters %>"/>
+                <input type="hidden" name="sort" value="<%= sortBy %>"/>
+                <input type="hidden" name="sortDir" value="<%= sortOrder %>"/>
 
                 <% for (let i = 0; i < organisationTypes.length; i += 1) { %>
                 <% if (organisationTypes[i].isSelected) { %>
@@ -103,7 +105,6 @@ if (services && services.length > 0) {
             <h2 class="heading-medium">Actions</h2>
             <ul class="list">
                 <li><a href="/users/new-user">Invite user</a></li>
-                <li><a href="/users/new-k2s-user">Invite KtS user</a></li>
                 <% if (locals.canViewRequests) { %>
                     <li><a href="/access-requests">View user requests</a></li>
                 <% } %>
@@ -216,23 +217,23 @@ if (services && services.length > 0) {
             %>
             <tr class="sortable">
                 <th scope="col" class="cwp-15">
-                    <a href="<%=baseSortUri%>&sort=name&sortdir=<%= sort.name.nextDirection %>"
+                    <a href="<%=baseSortUri%>&sort=name&sortDir=<%= sort.name.nextDirection %>&search=true"
                        class="<% if (sort.name.applied) { %>sorted dir-<%= (sort.name.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
                     >Name</a></th>
                 <th scope="col" class="cwp-35">
-                    <a href="<%=baseSortUri%>&sort=email&sortdir=<%= sort.email.nextDirection %>"
+                    <a href="<%=baseSortUri%>&sort=email&sortDir=<%= sort.email.nextDirection %>&search=true"
                        class="<% if (sort.email.applied) { %>sorted dir-<%= (sort.email.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
                     >Email</a></th>
                 <th scope="col" class="cwp-25">
-                    <a href="<%=baseSortUri%>&sort=organisation&sortdir=<%= sort.organisation.nextDirection %>"
+                    <a href="<%=baseSortUri%>&sort=organisation&sortDir=<%= sort.organisation.nextDirection %>&search=true"
                        class="<% if (sort.organisation.applied) { %>sorted dir-<%= (sort.organisation.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
                     >Organisation</a></th>
                 <th scope="col" class="cwp-15">
-                    <a href="<%=baseSortUri%>&sort=lastlogin&sortdir=<%= sort.lastLogin.nextDirection %>"
+                    <a href="<%=baseSortUri%>&sort=lastlogin&sortDir=<%= sort.lastLogin.nextDirection %>&search=true"
                        class="<% if (sort.lastLogin.applied) { %>sorted dir-<%= (sort.lastLogin.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
                     >Last Login</a></th>
                 <th scope="col" class="cwp-10">
-                    <a href="<%=baseSortUri%>&sort=status&sortdir=<%= sort.status.nextDirection %>"
+                    <a href="<%=baseSortUri%>&sort=status&sortDir=<%= sort.status.nextDirection %>&search=true"
                        class="<% if (sort.status.applied) { %>sorted dir-<%= (sort.status.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
                     >Status</a></th>
             </tr>
