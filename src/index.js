@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const expressLayouts = require('express-ejs-layouts');
-const csurf = require('csurf');
+const { doubleCsrf } = require('csrf-csrf');
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
@@ -32,7 +32,6 @@ const redisStore = new RedisStore({
   prefix: 'CookieSession:',
 });
 
-
 configSchema.validate();
 
 https.globalAgent.maxSockets = http.globalAgent.maxSockets = config.hostingEnvironment.agentKeepAlive.maxSockets || 50;
@@ -41,19 +40,10 @@ if (config.hostingEnvironment.applicationInsights) {
   appInsights.setup(config.hostingEnvironment.applicationInsights).start();
 }
 
-
 const init = async () => {
-  const csrf = csurf({
-    cookie: {
-      secure: true,
-      httpOnly: true,
-    },
-  });
-
   const app = express();
 
   logger.info('set helmet policy defaults');
-  
 
   if (config.hostingEnvironment.hstsMaxAge) {
     app.use(helmet({
@@ -80,7 +70,6 @@ const init = async () => {
     imgSources.push('localhost');
     fontSources.push('localhost');
   }
-
 
   app.use(helmet.contentSecurityPolicy({
     directives: {
@@ -132,11 +121,11 @@ const init = async () => {
   }
 
   let expiryInMinutes = 30;
-  const sessionExpiry = parseInt(config.hostingEnvironment.sessionCookieExpiryInMinutes);
+  const sessionExpiry = parseInt(config.hostingEnvironment.sessionCookieExpiryInMinutes, 10);
   if (!isNaN(sessionExpiry)) {
     expiryInMinutes = sessionExpiry;
   }
-  //chanmge to redisStore
+
   app.use(
     session({
       name: 'session',
@@ -152,6 +141,7 @@ const init = async () => {
       },
     }),
   );
+
   app.use((req, res, next) => {
     req.session.now = Date.now();
     next();
@@ -160,7 +150,24 @@ const init = async () => {
   app.use(flash());
 
   app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(cookieParser());
+  app.use(cookieParser(config.hostingEnvironment.sessionSecret));
+
+  const { doubleCsrfProtection: csrf } = doubleCsrf({
+    getSecret: (req) => req.secret,
+    // eslint-disable-next-line no-underscore-dangle
+    getTokenFromRequest: (req) => req.body._csrf,
+    secret: config.hostingEnvironment.csrfSecret,
+    cookieName: '__host-csrf',
+    cookieOptions: {
+      sameSite: 'strict',
+      secure: true,
+      signed: true,
+    },
+    path: '/',
+    size: 64,
+    ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
+  });
+
   app.use(sanitization({
     sanitizer: (key, value) => {
       const fieldToNotSanitize = ['email-subject', 'email-contents', 'criteria', 'email', 'firstName', 'lastName', 'reason'];
@@ -176,13 +183,13 @@ const init = async () => {
   app.use(expressLayouts);
   app.set('layout', 'sharedViews/layout');
 
-    /*
+  /*
     Addressing issue with latest version of passport dependency packge
     TypeError: req.session.regenerate is not a function
     Reference: https://github.com/jaredhanson/passport/issues/907#issuecomment-1697590189
   */
   app.use((request, response, next) => {
-      if (request.session && !request.session.regenerate) {
+    if (request.session && !request.session.regenerate) {
       request.session.regenerate = (cb) => {
         cb();
       };
@@ -206,6 +213,7 @@ const init = async () => {
     assets: assetsUrl,
     assetsVersion: config.assets.version,
   }, config.hostingEnvironment.env === 'dev');
+
   app.use(getErrorHandler({
     logger,
     errorPageRenderer,

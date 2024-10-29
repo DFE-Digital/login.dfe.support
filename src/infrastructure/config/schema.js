@@ -134,9 +134,16 @@ const accessIdentifiers = new SimpleSchema({
 
 accessIdentifiers.extend(schemas.apiClient);
 
+const hostingEnvironmentSchema = new SimpleSchema({
+  csrfSecret: {
+    type: String,
+    optional: true,
+  },
+});
+
 const schema = new SimpleSchema({
   loggerSettings: new SimpleSchema({ ...schemas.loggerSettings }),
-  hostingEnvironment: new SimpleSchema({ ...schemas.hostingEnvironment }),
+  hostingEnvironment: schemas.hostingEnvironment.extend(hostingEnvironmentSchema),
   identifyingParty: identifyingPartySchema,
   cache: cacheSchema,
   claims: claimsSchema,
@@ -154,5 +161,5 @@ const schema = new SimpleSchema({
 });
 
 module.exports.validate = () => {
-  validateConfigAgainstSchema(config, schema, logger)
+  validateConfigAgainstSchema(config, schema, logger);
 };
