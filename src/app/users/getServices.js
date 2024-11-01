@@ -1,7 +1,7 @@
 const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
-const { getUserDevices, getInvitation } = require('./../../infrastructure/directories');
+const { getInvitation } = require('./../../infrastructure/directories');
 const { getAllServices } = require('./../../infrastructure/applications');
 const logger = require('./../../infrastructure/logger');
 
@@ -40,54 +40,13 @@ const getOrganisations = async (userId, correlationId) => {
   return organisations;
 };
 
-const getToken = async (userId, correlationId) => {
-  if (userId.startsWith('inv-')) {
-    const invitation = await getInvitation(userId.substr(4), correlationId);
-    let serialNumber = invitation.tokenSerialNumber;
-    if (!serialNumber && invitation.oldCredentials && invitation.oldCredentials.tokenSerialNumber) {
-      serialNumber = invitation.oldCredentials.tokenSerialNumber;
-    }
-    if (serialNumber) {
-      return {
-        type: 'digipass',
-        serialNumber: `${serialNumber.substr(0, 2)}-${serialNumber.substr(2, 7)}-${serialNumber.substr(9, 1)}`,
-        nonFormattedSerialNumber: serialNumber,
-      };
-    }
-
-    if (invitation && invitation.device) {
-      serialNumber = invitation.device.serialNumber;
-      return {
-        type: invitation.device.type,
-        serialNumber: `${serialNumber.substr(0, 2)}-${serialNumber.substr(2, 7)}-${serialNumber.substr(9, 1)}`,
-        nonFormattedSerialNumber: serialNumber,
-      };
-    }
-
-    return null;
-  } else {
-    const tokens = await getUserDevices(userId, correlationId);
-    if (!tokens || tokens.length === 0) {
-      return null;
-    }
-
-    const digipass = tokens.find(t => t.type === 'digipass');
-    return {
-      type: digipass.type,
-      serialNumber: `${digipass.serialNumber.substr(0, 2)}-${digipass.serialNumber.substr(2, 7)}-${digipass.serialNumber.substr(9, 1)}`,
-      nonFormattedSerialNumber: digipass.serialNumber,
-    };
-  }
-};
-
 const action = async (req, res) => {
   const user = await getUserDetails(req);
   const organisationDetails = await getOrganisations(user.id, req.id);
-  const token = await getToken(user.id, req.id);
   const allServices = await getAllServices();
   const externalServices = allServices.services.filter(x => x.isExternalService === true && !(x.relyingParty && x.relyingParty.params && x.relyingParty.params.hideSupport === 'true'));
 
-  const organisations = [];
+  const allOrganisationsForUser = [];
   for (let i = 0; i < organisationDetails.length; i++) {
     const org = Object.assign(Object.assign({}, organisationDetails[i]), { services: [], naturalIdentifiers: [] });
     org.naturalIdentifiers = [];
@@ -112,11 +71,13 @@ const action = async (req, res) => {
       const svc = Object.assign({}, organisationDetails[i].services[j]);
       const isExternalService = externalServices.find(x => x.id === svc.id);
       if (isExternalService) {
-        svc.token = token;
         org.services.push(svc);
       }
     }
-    organisations.push(org);
+
+    // Sort services alphabetically
+    org.services.sort((a, b) => a.name.localeCompare(b.name))
+    allOrganisationsForUser.push(org);
   }
   req.session.type = 'services';
   req.session.user = {
@@ -136,7 +97,7 @@ const action = async (req, res) => {
   sendResult(req, res, 'users/views/services', {
     csrfToken: req.csrfToken(),
     user,
-    organisations,
+    organisations: allOrganisationsForUser,
     isInvitation: req.params.uid.startsWith('inv-'),
   });
 };

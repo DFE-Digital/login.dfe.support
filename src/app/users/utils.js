@@ -6,7 +6,6 @@ const {
 } = require('./../../infrastructure/search');
 const {
     getInvitation,
-    createUserDevice,
     getUser
 } = require('./../../infrastructure/directories');
 const {
@@ -124,7 +123,7 @@ const search = async (req) => {
 
     let sortBy = paramsSource.sort ? paramsSource.sort.toLowerCase() : 'name';
     let sortAsc =
-        (paramsSource.sortdir ? paramsSource.sortdir : 'asc').toLowerCase() ===
+        (paramsSource.sortDir ? paramsSource.sortDir : 'asc').toLowerCase() ===
         'asc';
 
     const filter = buildFilters(paramsSource);
@@ -225,8 +224,7 @@ const mapUserToSupportModel = (user, userFromSearch) => {
 };
 
 const checkManageAccess = async (arr) => {
-    const manage = await getServiceById('manage');
-    return arr.some((entry) => entry.serviceId === manage.id);
+    return arr.some((entry) => entry.serviceId === config.access.identifiers.manageServiceIdentifiers);
 };
 
 const getUserDetailsById = async (uid, correlationId) => {
@@ -324,43 +322,6 @@ const getAllServicesForUserInOrg = async (
     return sortBy(services, 'name');
 };
 
-const createDevice = async (req) => {
-    const userId = req.body.userId;
-    const userEmail = req.body.email;
-    const serialNumber = req.body.serialNumber;
-
-    const result = await createUserDevice(userId, serialNumber, req.id);
-
-    if (result.success) {
-        logger.audit(
-            `Support user ${req.user.email} (id: ${req.user.sub}) linked ${userEmail} (id: ${userId}) linked to token ${serialNumber} "${serialNumber}"`,
-            {
-                type: 'support',
-                subType: 'digipass-assign',
-                success: true,
-                editedUser: userId,
-                userId: req.user.sub,
-                userEmail: req.user.email,
-                deviceSerialNumber: serialNumber
-            }
-        );
-    } else {
-        logger.audit(
-            `Support user ${req.user.email} (id: ${req.user.sub}) failed to link ${userEmail} (id: ${userId}) to token ${serialNumber} "${serialNumber}"`,
-            {
-                type: 'support',
-                subType: 'digipass-assign',
-                success: false,
-                editedUser: userId,
-                userId: req.user.sub,
-                userEmail: req.user.email,
-                deviceSerialNumber: serialNumber
-            }
-        );
-    }
-    return result.success;
-};
-
 const waitForIndexToUpdate = async (uid, updatedCheck) => {
     const abandonTime = Date.now() + 10000;
     let hasBeenUpdated = false;
@@ -389,7 +350,6 @@ module.exports = {
     getUserDetails,
     getUserDetailsById,
     updateUserDetails,
-    createDevice,
     waitForIndexToUpdate,
     getAllServicesForUserInOrg,
     mapRole

@@ -41,27 +41,7 @@ const mapSearchUserToSupportModel = (user) => {
     pendingEmail: user.pendingEmail,
   };
 };
-const mapSearchDeviceToSupportModel = (device) => {
-  let status = 'Unassigned';
-  if (device.statusId === 2) {
-    status = 'Assigned';
-  } else if (device.statusId === 3) {
-    status = 'Deactivated';
-  }
-  return {
-    organisation: device.organisationName ? {
-      name: device.organisationName,
-    } : null,
-    lastLogin: device.lastLogin ? new Date(device.lastLogin) : null,
-    device: {
-      status,
-      serialNumber: device.serialNumber,
-      serialNumberFormatted: `${device.serialNumber.substr(0, 2)}-${device.serialNumber.substr(2, 7)}-${device.serialNumber.substr(9, 1)}`,
-    },
-    id: device.assigneeId,
-    name: device.assignee,
-  };
-};
+
 const mapSupportUserSortByToSearchApi = (supportSortBy) => {
   switch (supportSortBy.toLowerCase()) {
     case 'name':
@@ -78,23 +58,6 @@ const mapSupportUserSortByToSearchApi = (supportSortBy) => {
       throw new Error(`Unexpected user sort field ${supportSortBy}`);
   }
 };
-const mapSupportDeviceSortByToSearchApi = (supportSortBy) => {
-  switch (supportSortBy.toLowerCase()) {
-    case 'serialnumber':
-      return 'serialNumber';
-    case 'status':
-      return 'statusId';
-    case 'name':
-      return 'searchableAssignee';
-    case 'organisation':
-      return 'searchableOrganisationName';
-    case 'lastlogin':
-      return 'lastLogin';
-    default:
-      throw new Error(`Unexpected device sort field ${supportSortBy}`);
-  }
-};
-
 
 const searchForUsers = async (criteria, pageNumber, sortBy, sortDirection, filters) => {
   try {
@@ -143,52 +106,6 @@ const updateUserInSearch = async (user, correlationId) => {
   await callApi(`/users/${user.id}`, 'PATCH', body, correlationId);
 };
 
-
-const searchForDevices = async (criteria, pageNumber, sortBy, sortDirection) => {
-  try {
-    let endpoint = `/devices?criteria=${criteria}&page=${pageNumber}`;
-    if (sortBy) {
-      endpoint += `&sortBy=${mapSupportDeviceSortByToSearchApi(sortBy)}`;
-    }
-    if (sortDirection) {
-      endpoint += `&sortDirection=${sortDirection}`;
-    }
-    const results = await callApi(endpoint, 'GET');
-    return {
-      numberOfPages: results.numberOfPages,
-      totalNumberOfResults: results.totalNumberOfResults,
-      userDevices: results.devices.map(mapSearchDeviceToSupportModel)
-    }
-  } catch (e) {
-    throw new Error(`Error searching for devices with criteria ${criteria} (page: ${pageNumber}) - ${e.message}`);
-  }
-};
-
-const getSearchDetailsForDeviceBySerialNumber = async (serialNumber, correlationId) => {
-  try {
-    const device = await callApi(`/devices/${serialNumber}`, 'GET', undefined, correlationId);
-    return device ? mapSearchDeviceToSupportModel(device) : undefined;
-  } catch (e) {
-    throw new Error(`Error getting device ${serialNumber} from search - ${e.message}`);
-  }
-};
-
-const updateDeviceInSearch = async (device, correlationId) => {
-  let statusId = 1;
-  if (device.device.status === 'Assigned') {
-    statusId = 2;
-  } else if (device.device.status === 'Deactivated') {
-    statusId = 3;
-  }
-  const body = {
-    assigneeId: device.id || null,
-    assignee: device.name || null,
-    organisationName: device.organisation ? device.organisation.name : null,
-    statusId,
-  };
-  await callApi(`/devices/${device.device.serialNumber}`, 'PATCH', body, correlationId);
-};
-
 const updateIndex = async (userId, body, correlationId) => {
   await callApi(`/users/${userId}`, 'PATCH', body, correlationId);
 };
@@ -204,9 +121,6 @@ module.exports = {
   searchForUsers,
   getSearchDetailsForUserById,
   updateUserInSearch,
-  searchForDevices,
-  getSearchDetailsForDeviceBySerialNumber,
-  updateDeviceInSearch,
   updateIndex,
   createIndex,
 };

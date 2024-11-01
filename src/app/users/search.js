@@ -4,17 +4,13 @@ const { userStatusMap } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
 const { getOrganisationCategories } = require('./../../infrastructure/organisations');
 const { getAllServices } = require('./../../infrastructure/applications');
+
 const clearNewUserSessionData = (req) => {
-  if (req.session.k2sUser) {
-    req.session.k2sUser = undefined;
-  }
   if (req.session.user) {
     req.session.user = undefined;
   }
-  if (req.session.digipassSerialNumberToAssign) {
-    req.session.digipassSerialNumberToAssign = undefined;
-  }
 };
+
 const unpackMultiSelect = (parameter) => {
   if (!parameter) {
     return [];
@@ -33,7 +29,6 @@ const getFiltersModel = async (req) => {
       ...req.session.params
     }
   }
-
 
   let showFilters = false;
   if (paramsSource.showFilters !== undefined && paramsSource.showFilters.toLowerCase() === 'true') {
@@ -120,6 +115,8 @@ const get = async (req, res) => {
 
   if (req.session.params?.redirectedFromSearchResult) {
     req.session.params.redirectedFromSearchResult = undefined;
+    await post(req, res);
+  } else if ((req?.query?.search ?? '' === ' true')) {
     await post(req, res);
   } else {
     const model = await buildModel(req);

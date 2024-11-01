@@ -99,15 +99,6 @@ const serviceMappingSchema = new SimpleSchema({
   key2SuccessServiceId: patterns.uuid,
 });
 
-const schedulesSchema = new SimpleSchema({
-  auditCache: String,
-  usersFull: String,
-  usersDiff: String,
-  userDevices: String,
-  accessRequests: String,
-  indexTidy: String,
-});
-
 const adapterSchema = new SimpleSchema({
   type: {
     type: String,
@@ -131,7 +122,6 @@ const notificationsSchema = new SimpleSchema({
   connectionString: patterns.redis
 });
 
-
 const accessIdentifiers = new SimpleSchema({
   identifiers: {
     type: Object,
@@ -139,6 +129,7 @@ const accessIdentifiers = new SimpleSchema({
   'identifiers.service': patterns.uuid,
   'identifiers.organisation': patterns.uuid,
   'identifiers.departmentForEducation': patterns.uuid,
+  'identifiers.manageService': patterns.uuid,
 });
 
 accessIdentifiers.extend(schemas.apiClient);
@@ -156,8 +147,6 @@ const schema = new SimpleSchema({
   search: new SimpleSchema({ ...schemas.apiClient }),
   audit: auditSchema,
   serviceMapping: serviceMappingSchema,
-  devices: new SimpleSchema({ ...schemas.apiClient }),
-  schedules: schedulesSchema,
   toggles: togglesSchema,
   notifications: notificationsSchema,
   assets: new SimpleSchema({ ...schemas.assets }),

@@ -4,6 +4,9 @@ const { getUserDetails } = require('./utils');
 const { getServiceById } = require('../../infrastructure/applications')
 const { listRolesOfService, getSingleUserService, getSingleInvitationService } = require('../../infrastructure/access');
 
+const manageServiceId = config.access.identifiers.manageService;
+const dfeId = config.access.identifiers.departmentForEducation;
+
 const getSingleServiceForUser = async (userId, organisationId, serviceId, correlationId) => {
   const userService = userId.startsWith('inv-') ? await getSingleInvitationService(userId.substr(4), serviceId, organisationId, correlationId) : await getSingleUserService(userId, serviceId, organisationId, correlationId);
   const application = await getServiceById(serviceId, correlationId);
@@ -27,11 +30,10 @@ const checkIfRolesChanged = (rolesSelectedBeforeSession, newRolesSelected) => {
 
 const getManageConsoleRoles = async (req, res) => {
 
-  const manage = await getServiceById('manage');
   const serviceSelectedByUser = await getServiceById(req.params.sid);
   const user = await getUserDetails(req);
-  const userManageRoles = await getSingleServiceForUser(req.params.uid, config.access.identifiers.departmentForEducation, manage.id, req.id);
-  const manageConsoleRolesForAllServices = await listRolesOfService(manage.id);
+  const userManageRoles = await getSingleServiceForUser(req.params.uid, dfeId, manageServiceId, req.id);
+  const manageConsoleRolesForAllServices = await listRolesOfService(manageServiceId);
   const manageConsoleRolesForSelectedService = manageConsoleRolesForAllServices.filter(service => service.code.split('_')[0] === req.params.sid);
   const manageConsoleRoleIds = manageConsoleRolesForSelectedService.map(service => service.id);
   const addOrChangeService = addOrChangeManageConsoleServiceTitle(userManageRoles, manageConsoleRoleIds);
