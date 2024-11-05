@@ -134,16 +134,9 @@ const accessIdentifiers = new SimpleSchema({
 
 accessIdentifiers.extend(schemas.apiClient);
 
-const hostingEnvironmentSchema = new SimpleSchema({
-  csrfSecret: {
-    type: String,
-    optional: true,
-  },
-});
-
 const schema = new SimpleSchema({
   loggerSettings: new SimpleSchema({ ...schemas.loggerSettings }),
-  hostingEnvironment: schemas.hostingEnvironment.extend(hostingEnvironmentSchema),
+  hostingEnvironment: schemas.hostingEnvironment,
   identifyingParty: identifyingPartySchema,
   cache: cacheSchema,
   claims: claimsSchema,
