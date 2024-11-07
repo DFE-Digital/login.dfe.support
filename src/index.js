@@ -71,17 +71,22 @@ const init = async () => {
     fontSources.push('localhost');
   }
 
-  app.use(helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: [self],
-      scriptSrc: scriptSources,
-      styleSrc: styleSources,
-      imgSrc: imgSources,
-      fontSrc: fontSources,
-      connectSrc: [self],
-      formAction: [self, '*'],
-    },
-  }));
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: [self],
+          scriptSrc: scriptSources,
+          styleSrc: styleSources,
+          imgSrc: imgSources,
+          fontSrc: fontSources,
+          connectSrc: [self],
+          formAction: [self, '*'],
+        },
+      },
+      crossOriginOpenerPolicy: { policy: "unsafe-none" }, // crossOriginOpenerPolicy: false is ignored and unsafe-none is the default on MDM
+    }),
+  );
 
   logger.info('Set helmet filters');
 

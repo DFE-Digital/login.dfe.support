@@ -33,7 +33,7 @@
                       %>
                       <%= role.id === selectedRole ? 'checked': ''%><% } }%>>
                     <label class="govuk-label govuk-checkboxes__label" for="<%=role.id%>">
-                      <%= manageConsoleRolesForSelectedService[i].name.split('-')[1] %>
+                      <%= manageConsoleRolesForSelectedService[i].name.split('-').pop() %>
                     </label>
                   </div>
                   <% } %>

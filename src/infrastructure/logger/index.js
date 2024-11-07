@@ -1,10 +1,17 @@
 'use strict';
 
-const { createLogger, format, transports } = require('winston');
-const config = require('./../config');
+const {
+  createLogger, format, transports, addColors,
+} = require('winston');
+
+const {
+  combine, prettyPrint, errors, simple, colorize,
+} = format;
+
 const WinstonSequelizeTransport = require('login.dfe.audit.winston-sequelize-transport');
 const appInsights = require('applicationinsights');
 const AppInsightsTransport = require('login.dfe.winston-appinsights');
+const config = require('../config');
 
 const logLevel = (config && config.loggerSettings && config.loggerSettings.logLevel) ? config.loggerSettings.logLevel : 'info';
 
@@ -16,26 +23,35 @@ const levelsAndColor = {
     info: 3,
     verbose: 4,
     debug: 5,
-    silly: 6,
   },
   colors: {
-    info: 'yellow',
-    ok: 'green',
-    error: 'red',
     audit: 'magenta',
+    error: 'red',
+    warn: 'yellow',
+    info: 'blue',
+    verbose: 'cyan',
+    debug: 'green',
   },
 };
+
+addColors(levelsAndColor.colors);
 
 const loggerConfig = {
   levels: levelsAndColor.levels,
-  colorize: true,
-  format: format.combine(
-    format.simple(),
-  ),
   transports: [],
 };
 
-loggerConfig.transports.push(new transports.Console({ level: logLevel, colorize: true }));
+// Formatter to hide audit records from other loggers.
+const hideAudit = format((info) => ((info.level.toLowerCase() === 'audit') ? false : info));
+
+loggerConfig.transports.push(new transports.Console({
+  level: logLevel,
+  format: combine(
+    hideAudit(),
+    colorize({ all: true }),
+    simple(),
+  ),
+}));
 
 const sequelizeTransport = WinstonSequelizeTransport(config);
 
@@ -46,6 +62,7 @@ if (sequelizeTransport) {
 if (config.hostingEnvironment.applicationInsights) {
   appInsights.setup(config.hostingEnvironment.applicationInsights).setAutoCollectConsole(false, false).start();
   loggerConfig.transports.push(new AppInsightsTransport({
+    format: combine(hideAudit(), format.json()),
     client: appInsights.defaultClient,
     applicationName: config.loggerSettings.applicationName || 'Support',
     type: 'event',
@@ -53,7 +70,15 @@ if (config.hostingEnvironment.applicationInsights) {
   }));
 }
 
-const logger = createLogger(loggerConfig);
+const logger = createLogger({
+  format: combine(
+    simple(),
+    errors({ stack: true }),
+    prettyPrint(),
+  ),
+  transports: loggerConfig.transports,
+  levels: loggerConfig.levels,
+});
 
 process.on('unhandledRejection', (reason, p) => {
   logger.error('Unhandled Rejection at:', p, 'reason:', reason);
