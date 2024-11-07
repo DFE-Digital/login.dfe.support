@@ -1,7 +1,7 @@
 const config = require('./../../infrastructure/config');
 const { sendResult } = require('./../../infrastructure/utils');
 const { getUserDetailsById } = require('./utils');
-const ServiceNotificationsClient = require('login.dfe.service-notifications.jobs.client');
+const { ServiceNotificationsClient } = require('login.dfe.jobs-client');
 
 const get = async (req, res) => {
   const user = await getUserDetailsById(req.params.uid, req.id);

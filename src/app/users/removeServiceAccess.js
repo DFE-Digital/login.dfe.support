@@ -2,7 +2,7 @@
 
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 const { getServiceById, isSupportEmailNotificationAllowed } = require('./../../infrastructure/applications');

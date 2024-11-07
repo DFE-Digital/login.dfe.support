@@ -1,7 +1,7 @@
 'use strict';
 const { getAllServices, isSupportEmailNotificationAllowed } = require('./../../infrastructure/applications');
 const config = require('./../../infrastructure/config');
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const { listRolesOfService, addInvitationService, addUserService, updateInvitationService, updateUserService } = require('./../../infrastructure/access');
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
 const logger = require('./../../infrastructure/logger');

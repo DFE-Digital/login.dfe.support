@@ -1,6 +1,6 @@
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const { deleteUserOrganisation, deleteInvitationOrganisation, getUserOrganisations } = require('./../../infrastructure/organisations');
 const { getAllServicesForUserInOrg } = require('./utils');
 const { removeServiceFromInvitation, removeServiceFromUser } = require('./../../infrastructure/access');

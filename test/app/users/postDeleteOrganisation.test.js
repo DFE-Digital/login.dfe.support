@@ -7,8 +7,8 @@ jest.mock('./../../../src/infrastructure/organisations', () => ({
 }));
 jest.mock('./../../../src/infrastructure/search');
 
-jest.mock('login.dfe.notifications.client');
-const notificationClient = require('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const { getRequestMock, getResponseMock } = require('../../utils');
 const postDeleteOrganisation = require('../../../src/app/users/postDeleteOrganisation');
 const { deleteInvitationOrganisation, deleteUserOrganisation, getUserOrganisations } = require('../../../src/infrastructure/organisations');
@@ -62,7 +62,7 @@ describe('when removing a users access to an organisation', () => {
       },
     ]);
     sendUserRemovedFromOrganisationStub = jest.fn();
-    notificationClient.mockReset().mockImplementation(() => ({
+    NotificationClient.mockReset().mockImplementation(() => ({
       sendUserRemovedFromOrganisation: sendUserRemovedFromOrganisationStub,
     }));
   });
