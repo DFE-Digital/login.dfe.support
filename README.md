@@ -10,6 +10,8 @@ Install deps
 npm install
 ```
 
+To get linting, if you're using VSCode then install the 'ESLint' extension to have it highlighted
+
 ### Run application
 ```
 npm run dev
