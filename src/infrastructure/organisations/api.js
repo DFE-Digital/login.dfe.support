@@ -108,7 +108,7 @@ const getServicesByUserId = async (id, reqId) => {
 const putSingleServiceIdentifierForUser = async (userId, serviceId, orgId, value, reqId) => {
   const body = {
     id_key: 'k2s-id',
-    id_value: value
+    id_value: value,
   };
   const result = await callOrganisationsApi(`organisations/${orgId}/services/${serviceId}/identifiers/${userId}`, 'PUT', body, reqId);
   return result === undefined;

@@ -138,6 +138,7 @@ const getServicesByInvitationId = async (iid, correlationId) => {
       },
     });
   } catch (e) {
+    console.log(e.statusCode);
     if (e.statusCode === 404) {
       return undefined;
     }
@@ -284,7 +285,7 @@ const getUserServiceRequestsByUserId = async (id, correlationId) => {
   const token = await jwtStrategy(config.access.service).getBearerToken();
 
   try {
-    return await fetchApi(`${config.access.service.url}/users/${id}/service-requests`,{
+    return await fetchApi(`${config.access.service.url}/users/${id}/service-requests`, {
       method: 'GET',
       headers: {
         authorization: `bearer ${token}`,

@@ -12,7 +12,7 @@ const getUser = async (uid, correlationId) => {
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      }
+      },
     });
 
     return user;
@@ -259,25 +259,21 @@ const resendInvite = async (id, correlationId) => {
 const createChangeEmailCode = async (userId, newEmailAddress, clientId, redirectUri, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
-  try {
-    return await fetchApi(`${config.directories.service.url}/usercodes/upsert`,{
-      method: 'PUT',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-      body: {
-        uid: userId,
-        clientId,
-        redirectUri,
-        codeType: 'changeemail',
-        email: newEmailAddress,
-        selfInvoked: false,
-      }
-    });
-  } catch (e) {
-    throw e;
-  }
+  return await fetchApi(`${config.directories.service.url}/usercodes/upsert`,{
+    method: 'PUT',
+    headers: {
+      authorization: `bearer ${token}`,
+      'x-correlation-id': correlationId,
+    },
+    body: {
+      uid: userId,
+      clientId,
+      redirectUri,
+      codeType: 'changeemail',
+      email: newEmailAddress,
+      selfInvoked: false,
+    }
+  });
 };
 
 const getChangeEmailCode = async (userId, correlationId) => {
@@ -302,17 +298,13 @@ const getChangeEmailCode = async (userId, correlationId) => {
 const deleteChangeEmailCode = async (userId, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
-  try {
-    return await fetchApi(`${config.directories.service.url}/usercodes/${userId}/changeemail`,{
-      method: 'DELETE',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      }
-    });
-  } catch (e) {
-    throw e;
-  }
+  return await fetchApi(`${config.directories.service.url}/usercodes/${userId}/changeemail`,{
+    method: 'DELETE',
+    headers: {
+      authorization: `bearer ${token}`,
+      'x-correlation-id': correlationId,
+    }
+  });
 };
 
 const getUsersById = async (ids, correlationId) => {
