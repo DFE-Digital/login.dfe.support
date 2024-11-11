@@ -3,12 +3,12 @@ jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/accessRequests');
 jest.mock('./../../../src/infrastructure/logger');
-jest.mock('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
 
 const organisations = require('./../../../src/infrastructure/organisations');
 const accessRequest = require('./../../../src/infrastructure/accessRequests');
 const logger = require('./../../../src/infrastructure/logger');
-const notificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const { putUserInOrganisation } = require('./../../../src/app/accessRequests/utils');
 
 describe('When putting a user in an organisation', () => {
@@ -24,7 +24,7 @@ describe('When putting a user in an organisation', () => {
 
     sendAccessRequestStub = jest.fn();
 
-    notificationClient.mockReset().mockImplementation(() => ({
+    NotificationClient.mockReset().mockImplementation(() => ({
       sendAccessRequest: sendAccessRequestStub,
     }));
 

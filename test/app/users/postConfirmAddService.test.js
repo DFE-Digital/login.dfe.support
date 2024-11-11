@@ -24,8 +24,8 @@ const { getUserOrganisations, getInvitationOrganisations } = require('./../../..
 
 const logger = require('./../../../src/infrastructure/logger');
 
-jest.mock('login.dfe.notifications.client');
-const notificationClient = require('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 const res = getResponseMock();
 
 describe('when adding new services to a user', () => {
@@ -155,7 +155,7 @@ describe('when adding new services to a user', () => {
     sendServiceAddedStub = jest.fn();
     sendServiceRequestApprovedStub = jest.fn();
 
-    notificationClient.mockReset().mockImplementation(() => ({
+    NotificationClient.mockReset().mockImplementation(() => ({
       sendServiceRequestApproved: sendServiceRequestApprovedStub,
       sendServiceAdded: sendServiceAddedStub,
     }));
