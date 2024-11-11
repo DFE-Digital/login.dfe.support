@@ -1,9 +1,9 @@
+/* eslint-disable no-restricted-syntax */
 const logger = require('../../infrastructure/logger');
 const { getUserDetails, getUserDetailsById, updateUserDetails, waitForIndexToUpdate } = require('./utils');
 const { deactivateInvite, getInvitation } = require('../../infrastructure/directories');
-const { getServicesByInvitationId } = require('../../infrastructure/access');
+const { getServicesByInvitationId, removeServiceFromInvitation } = require('../../infrastructure/access');
 const { sendResult } = require('../../infrastructure/utils');
-const { getInvitationOrganisations } = require('../../infrastructure/organisations');
 
 const updateUserIndex = async (uid, correlationId) => {
   const user = await getUserDetailsById(uid, correlationId);
@@ -28,36 +28,33 @@ const postConfirmDeactivate = async (req, res) => {
       },
     });
   } else {
-    // await deactivateInvite(user.id, req.body.reason, req.id);
-    // await updateUserIndex(user.id, req.id);
+    await deactivateInvite(user.id, req.body.reason, req.id);
+    await updateUserIndex(user.id, req.id);
     if (req.body['remove-services-and-requests']) {
       // Invite uuid should be in the form of 'inv-<a uuid>'
       const invitation = await getInvitation(req.params.uid.substr(4), req.id);
-      logger.info(invitation);
-      logger.info('-----------------');
-      const invitationServiceRecord = await getServicesByInvitationId(invitation.id);
-      if (invitationServiceRecord !== undefined) {
-        logger.info(invitationServiceRecord);
-        logger.info('going to delete record');
-        // removeServiceFromInvitation(invitation.id, invitationServiceRecord.serviceId, invitationServiceRecord.organisationId, req.id);
+      const invitationServiceRecords = await getServicesByInvitationId(invitation.id) || [];
+      for (const serviceRecord of invitationServiceRecords) {
+        logger.info(`Deleting invitation service record for invitationId: ${serviceRecord.invitationId}, serviceId: ${serviceRecord.serviceId} and organisationId: ${serviceRecord.organisationIdId}`);
+        removeServiceFromInvitation(serviceRecord.invitationId, serviceRecord.serviceId, serviceRecord.organisationId, req.id);
       }
     }
 
-    // logger.audit(`${req.user.email} (id: ${req.user.sub}) deactivated user invitation ${user.email} (id: ${user.id})`, {
-    //   type: 'support',
-    //   subType: 'user-edit',
-    //   userId: req.user.sub,
-    //   userEmail: req.user.email,
-    //   editedUser: user.id,
-    //   editedFields: [
-    //     {
-    //       name: 'status',
-    //       oldValue: user.status.id,
-    //       newValue: -2,
-    //     },
-    //   ],
-    //   reason: req.body.reason,
-    // });
+    logger.audit(`${req.user.email} (id: ${req.user.sub}) deactivated user invitation ${user.email} (id: ${user.id})`, {
+      type: 'support',
+      subType: 'user-edit',
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      editedUser: user.id,
+      editedFields: [
+        {
+          name: 'status',
+          oldValue: user.status.id,
+          newValue: -2,
+        },
+      ],
+      reason: req.body.reason,
+    });
 
     return res.redirect('services');
   }
