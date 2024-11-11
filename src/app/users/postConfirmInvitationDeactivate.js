@@ -1,7 +1,7 @@
-const logger = require('./../../infrastructure/logger');
+const logger = require('../../infrastructure/logger');
 const { getUserDetails, getUserDetailsById, updateUserDetails, waitForIndexToUpdate } = require('./utils');
-const { deactivateInvite } = require('./../../infrastructure/directories');
-const { sendResult } = require('./../../infrastructure/utils');
+const { deactivateInvite, getInvitation } = require('../../infrastructure/directories');
+const { sendResult } = require('../../infrastructure/utils');
 
 const updateUserIndex = async (uid, correlationId) => {
   const user = await getUserDetailsById(uid, correlationId);
@@ -22,28 +22,38 @@ const postConfirmDeactivate = async (req, res) => {
       backLink: 'services',
       reason: '',
       validationMessages: {
-        reason: 'Please give a reason for deactivation'
+        reason: 'Please give a reason for deactivation',
       },
     });
   } else {
-    await deactivateInvite(user.id, req.body.reason, req.id);
-    await updateUserIndex(user.id, req.id);
+    // await deactivateInvite(user.id, req.body.reason, req.id);
+    // await updateUserIndex(user.id, req.id);
+    if (req.body['remove-services-and-requests']) {
+      // Invite uuid should be in the form of 'inv-<a uuid>'
+      const invitation = getInvitation(req.params.uid.substr(4), req.id);
+      logger.info(invitation);
+      // Find out what type of invitation it is (services or organiation)
+      // if (services invitation) {
+      // Get invitationServices record for user
+      // removeServiceFromInvitation(service.userId, service.serviceId, service.organisationId, req.id);
+      // }
+    }
 
-    logger.audit(`${req.user.email} (id: ${req.user.sub}) deactivated user invitation ${user.email} (id: ${user.id})`, {
-      type: 'support',
-      subType: 'user-edit',
-      userId: req.user.sub,
-      userEmail: req.user.email,
-      editedUser: user.id,
-      editedFields: [
-        {
-          name: 'status',
-          oldValue: user.status.id,
-          newValue: -2,
-        }
-      ],
-      reason: req.body.reason,
-    });
+    // logger.audit(`${req.user.email} (id: ${req.user.sub}) deactivated user invitation ${user.email} (id: ${user.id})`, {
+    //   type: 'support',
+    //   subType: 'user-edit',
+    //   userId: req.user.sub,
+    //   userEmail: req.user.email,
+    //   editedUser: user.id,
+    //   editedFields: [
+    //     {
+    //       name: 'status',
+    //       oldValue: user.status.id,
+    //       newValue: -2,
+    //     },
+    //   ],
+    //   reason: req.body.reason,
+    // });
 
     return res.redirect('services');
   }
