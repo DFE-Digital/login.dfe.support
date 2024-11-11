@@ -4,7 +4,7 @@ const { getAndMapOrgRequest } = require('./utils');
 const { getSearchDetailsForUserById, updateIndex } = require('./../../infrastructure/search');
 const { waitForIndexToUpdate } = require('../users/utils');
 const { putUserInOrganisation, updateRequestById, getOrganisationById } = require('./../../infrastructure/organisations');
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 
 const get = async (req, res) => {
   const request = await getAndMapOrgRequest(req);

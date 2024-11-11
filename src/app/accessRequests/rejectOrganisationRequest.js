@@ -2,7 +2,7 @@ const { getAndMapOrgRequest } = require('./utils');
 const { updateRequestById } = require('./../../infrastructure/organisations');
 const logger = require('./../../infrastructure/logger');
 const config = require('./../../infrastructure/config');
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 
 const notificationClient = new NotificationClient({
   connectionString: config.notifications.connectionString,

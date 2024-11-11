@@ -24,8 +24,8 @@ const { getServiceById, isSupportEmailNotificationAllowed } = require('./../../.
 const { getUserOrganisations, getInvitationOrganisations } = require('./../../../src/infrastructure/organisations');
 const { removeServiceFromInvitation, removeServiceFromUser } = require('./../../../src/infrastructure/access');
 
-jest.mock('login.dfe.notifications.client');
-const notificationClient = require('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 
 const res = getResponseMock();
 
@@ -112,7 +112,7 @@ describe('when removing access to a service', () => {
     postRemoveService = require('./../../../src/app/users/removeServiceAccess').post;
 
     sendUserServiceRemovedStub = jest.fn();
-    notificationClient.mockReset().mockImplementation(() => ({
+    NotificationClient.mockReset().mockImplementation(() => ({
       sendUserServiceRemoved: sendUserServiceRemovedStub,
     }));
   });

@@ -1,13 +1,13 @@
 jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
 jest.mock('./../../../src/infrastructure/utils');
 jest.mock('./../../../src/infrastructure/organisations');
-jest.mock('login.dfe.service-notifications.jobs.client');
+jest.mock('login.dfe.jobs-client');
 jest.mock('../../../src/app/organisations/wsSynchFunCall')
 
 const { getRequestMock, getResponseMock } = require('./../../utils');
 const { sendResult } = require('./../../../src/infrastructure/utils');
 const { getOrganisationByIdV2 } = require('./../../../src/infrastructure/organisations');
-const ServiceNotificationsClient = require('login.dfe.service-notifications.jobs.client');
+const { ServiceNotificationsClient } = require('login.dfe.jobs-client');
 const webServiceSync = require('./../../../src/app/organisations/webServiceSync');
 
 const res = getResponseMock();

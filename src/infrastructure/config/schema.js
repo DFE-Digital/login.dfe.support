@@ -136,7 +136,7 @@ accessIdentifiers.extend(schemas.apiClient);
 
 const schema = new SimpleSchema({
   loggerSettings: new SimpleSchema({ ...schemas.loggerSettings }),
-  hostingEnvironment: new SimpleSchema({ ...schemas.hostingEnvironment }),
+  hostingEnvironment: schemas.hostingEnvironment,
   identifyingParty: identifyingPartySchema,
   cache: cacheSchema,
   claims: claimsSchema,
@@ -154,5 +154,5 @@ const schema = new SimpleSchema({
 });
 
 module.exports.validate = () => {
-  validateConfigAgainstSchema(config, schema, logger)
+  validateConfigAgainstSchema(config, schema, logger);
 };

@@ -8,8 +8,8 @@ const postEditPermissions = require('./../../../src/app/users/postEditPermission
 const { addInvitationOrganisation, setUserAccessToOrganisation, getUserOrganisations } = require('./../../../src/infrastructure/organisations');
 const { getSearchDetailsForUserById } = require('./../../../src/infrastructure/search');
 
-jest.mock('login.dfe.notifications.client');
-const notificationClient = require('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 
 const res = getResponseMock();
 
@@ -81,7 +81,7 @@ describe('when editing a users permission level', () => {
       },
     ]);
     sendUserPermissionChangedStub = jest.fn();
-    notificationClient.mockReset().mockImplementation(() => ({
+    NotificationClient.mockReset().mockImplementation(() => ({
       sendUserPermissionChanged: sendUserPermissionChangedStub,
     }));
   });

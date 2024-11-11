@@ -3,7 +3,7 @@ const config = require('./../../infrastructure/config');
 const accessRequests = require('../../infrastructure/accessRequests');
 const organisations = require('./../../infrastructure/organisations');
 const directories = require('./../../infrastructure/directories');
-const NotificationClient = require('login.dfe.notifications.client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 
 const unpackMultiSelect = (parameter) => {
   if (!parameter) {

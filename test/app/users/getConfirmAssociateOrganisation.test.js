@@ -8,8 +8,8 @@ const { addInvitationOrganisation, getOrganisationById, getPendingRequestsAssoci
 const getConfirmAssociateOrganisation = require('./../../../src/app/users/getConfirmAssociateOrganisation');
 const { getSearchDetailsForUserById } = require('./../../../src/infrastructure/search');
 
-jest.mock('login.dfe.notifications.client');
-const notificationClient = require('login.dfe.notifications.client');
+jest.mock('login.dfe.jobs-client');
+const { NotificationClient } = require('login.dfe.jobs-client');
 
 const res = getResponseMock();
 
@@ -72,7 +72,7 @@ describe('when confirming new organisation association', () => {
     addInvitationOrganisation.mockReset();
 
     sendUserAddedToOrganisationStub = jest.fn();
-    notificationClient.mockReset().mockImplementation(() => ({
+    NotificationClient.mockReset().mockImplementation(() => ({
       sendUserAddedToOrganisation: sendUserAddedToOrganisationStub,
     }));
   });
