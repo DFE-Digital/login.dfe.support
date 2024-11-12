@@ -75,28 +75,6 @@ const getInvitation = async (invitationId, correlationId) => {
   }
 };
 
-const getInvitationByEmail = async (email, correlationId) => {
-  const token = await jwtStrategy(config.directories.service).getBearerToken();
-
-  try {
-    const invitation = await fetchApi(`${config.directories.service.url}/invitations/by-email/${email}`, {
-      method: 'GET',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
-      },
-    });
-
-    return invitation;
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 404) {
-      return null;
-    }
-    throw e;
-  }
-};
-
 const updateUser = async (uid, givenName, familyName, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
@@ -371,7 +349,6 @@ module.exports = {
   getUser,
   getPageOfInvitations,
   getInvitation,
-  getInvitationByEmail,
   updateUser,
   deactivate,
   reactivate,

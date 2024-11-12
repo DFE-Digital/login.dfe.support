@@ -13,23 +13,13 @@ jest.mock('./../../../src/infrastructure/config', () => require('../../utils').c
 
 const { fetchApi } = require('login.dfe.async-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
-const { getServiceById } = require('../../../src/infrastructure/applications/api');
+const { getAllServices } = require('../../../src/infrastructure/applications/api');
 
-const serviceId = 'service-1';
-const apiResponse = [
-  {
-    userId: 'user-1',
-    serviceId: 'service1Id',
-    organisationId: 'organisation-1',
-    roles: [],
-  },
-  {
-    userId: 'user-1',
-    serviceId: 'service2Id',
-    organisationId: 'organisation-1',
-    roles: [],
-  },
-];
+// Need to find what the page response would look like
+const apiResponse = {
+  services: [],
+  numberOfPages: 1,
+};
 
 describe('when getting a users services mapping from api', () => {
   beforeEach(() => {
@@ -46,19 +36,18 @@ describe('when getting a users services mapping from api', () => {
     })
   });
 
-
   it('then it should call users resource with user id', async () => {
-    await getServiceById(serviceId);
+    await getAllServices();
 
     expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][0]).toBe('http://applications.test/services/service-1');
+    expect(fetchApi.mock.calls[0][0]).toBe('http://applications.test/services?page=1&pageSize=50');
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       method: 'GET',
     });
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
-    await getServiceById(serviceId);
+    await getAllServices();
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
@@ -68,7 +57,7 @@ describe('when getting a users services mapping from api', () => {
   });
 
   it('then it should include the correlation id', async () => {
-    await getServiceById(serviceId);
+    await getAllServices();
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
