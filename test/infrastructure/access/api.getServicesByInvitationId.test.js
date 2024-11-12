@@ -11,7 +11,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('../../utils').c
   },
 }));
 
-const {fetchApi} = require('login.dfe.async-retry');
+const { fetchApi } = require('login.dfe.async-retry');
 
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { getServicesByInvitationId } = require('../../../src/infrastructure/access/api');
@@ -88,5 +88,20 @@ describe('when getting a users services mapping from api', () => {
 
     const result = await getServicesByInvitationId(userId, correlationId);
     expect(result).toEqual(undefined);
+  });
+
+  it('should raise an exception on any failure status code that is not 404', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('Client Error');
+      error.statusCode = 400;
+      throw error;
+    });
+
+    try {
+      await getServicesByInvitationId(userId, correlationId);
+    } catch (e) {
+      expect(e.statusCode).toEqual(400);
+      expect(e.message).toEqual('Client Error');
+    }
   });
 });

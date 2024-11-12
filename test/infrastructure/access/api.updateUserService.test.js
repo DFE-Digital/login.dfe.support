@@ -80,12 +80,27 @@ describe('when getting a users services mapping from api', () => {
     expect(result).toEqual(false);
 
     fetchApi.mockImplementation(() => {
-      const error = new Error('not found');
+      const error = new Error('Conflict');
       error.statusCode = 409;
       throw error;
     });
 
     result = await updateUserService(userId, serviceId, organisationId, roles, correlationId);
     expect(result).toEqual(false);
+  });
+
+  it('should raise an exception on any failure status code that is not 403 or 409', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('Client Error');
+      error.statusCode = 400;
+      throw error;
+    });
+
+    try {
+      await updateUserService(userId, serviceId, organisationId, roles, correlationId);
+    } catch (e) {
+      expect(e.statusCode).toEqual(400);
+      expect(e.message).toEqual('Client Error');
+    }
   });
 });
