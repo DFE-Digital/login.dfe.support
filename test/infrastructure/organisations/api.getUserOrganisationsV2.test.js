@@ -1,6 +1,6 @@
 jest.mock('login.dfe.async-retry');
 jest.mock('login.dfe.jwt-strategies');
-jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
+jest.mock('./../../../src/infrastructure/config', () => require('../../utils').configMockFactory({
   organisations: {
     type: 'api',
     service: {
@@ -12,7 +12,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 const {fetchApi} = require('login.dfe.async-retry');
 
 const jwtStrategy = require('login.dfe.jwt-strategies');
-const { getUserOrganisations } = require('./../../../src/infrastructure/organisations/api');
+const { getUserOrganisationsV2 } = require('../../../src/infrastructure/organisations/api');
 
 const userId = 'user-1';
 const correlationId = 'abc123';
@@ -39,17 +39,17 @@ describe('when getting a users organisations mapping from api', () => {
 
 
   it('then it should call associated-with-user resource with user id', async () => {
-    await getUserOrganisations(userId, correlationId);
+    await getUserOrganisationsV2(userId, correlationId);
 
     expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][0]).toBe('http://organisations.test/organisations/associated-with-user/user-1');
+    expect(fetchApi.mock.calls[0][0]).toBe('http://organisations.test/organisations/v2/associated-with-user/user-1');
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      method: 'GET'
+      method: 'GET',
     });
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
-    await getUserOrganisations(userId, correlationId);
+    await getUserOrganisationsV2(userId, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
@@ -59,7 +59,7 @@ describe('when getting a users organisations mapping from api', () => {
   });
 
   it('then it should include the correlation id', async () => {
-    await getUserOrganisations(userId, correlationId);
+    await getUserOrganisationsV2(userId, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
@@ -75,7 +75,7 @@ describe('when getting a users organisations mapping from api', () => {
       throw error;
     });
 
-    let result = await getUserOrganisations(userId, correlationId);
+    let result = await getUserOrganisationsV2(userId, correlationId);
     expect(result).toEqual(null);
 
     fetchApi.mockImplementation(() => {
@@ -84,7 +84,7 @@ describe('when getting a users organisations mapping from api', () => {
       throw error;
     });
 
-    result = await getUserOrganisations(userId, correlationId);
+    result = await getUserOrganisationsV2(userId, correlationId);
     expect(result).toEqual(null);
   });
 
@@ -95,7 +95,7 @@ describe('when getting a users organisations mapping from api', () => {
       throw error;
     });
 
-    const result = await getUserOrganisations(userId, correlationId);
+    const result = await getUserOrganisationsV2(userId, correlationId);
     expect(result).toEqual(false);
   });
 
@@ -107,7 +107,7 @@ describe('when getting a users organisations mapping from api', () => {
     });
 
     try {
-      await getUserOrganisations(userId, correlationId);
+      await getUserOrganisationsV2(userId, correlationId);
     } catch (e) {
       expect(e.statusCode).toEqual(500);
       expect(e.message).toEqual('Server Error');
