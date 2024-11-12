@@ -11,12 +11,15 @@ jest.mock('./../../../src/infrastructure/config', () => require('../../utils').c
   },
 }));
 
-const {fetchApi} = require('login.dfe.async-retry');
-
+const { fetchApi } = require('login.dfe.async-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
-const { getServicesByInvitationId } = require('../../../src/infrastructure/access/api');
+const { addInvitationService } = require('../../../src/infrastructure/access/api');
 
-const userId = 'user-1';
+const invitationId = 'invitation-1';
+const serviceId = 'service-1';
+const organisationId = 'organisation-1';
+const externalIdentifiers = [];
+const roles = [];
 const correlationId = 'abc123';
 const apiResponse = [
   {
@@ -50,17 +53,17 @@ describe('when getting a users services mapping from api', () => {
 
 
   it('then it should call users resource with user id', async () => {
-    await getServicesByInvitationId(userId, correlationId);
+    await addInvitationService(invitationId, serviceId, organisationId, externalIdentifiers, roles, correlationId);
 
     expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][0]).toBe('http://access.test/invitations/user-1/services');
+    expect(fetchApi.mock.calls[0][0]).toBe('http://access.test/invitations/invitation-1/services/service-1/organisations/organisation-1');
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      method: 'GET',
+      method: 'PUT',
     });
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
-    await getServicesByInvitationId(userId, correlationId);
+    await addInvitationService(invitationId, serviceId, organisationId, externalIdentifiers, roles, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
@@ -70,7 +73,7 @@ describe('when getting a users services mapping from api', () => {
   });
 
   it('then it should include the correlation id', async () => {
-    await getServicesByInvitationId(userId, correlationId);
+    await addInvitationService(invitationId, serviceId, organisationId, externalIdentifiers, roles, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {

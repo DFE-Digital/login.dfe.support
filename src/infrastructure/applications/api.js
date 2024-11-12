@@ -11,11 +11,11 @@ const getServiceById = async (id) => {
   }
   const token = await jwtStrategy(config.applications.service).getBearerToken();
   try {
-    const client = await fetchApi(`${config.applications.service.url}/services/${id}`,{
+    const client = await fetchApi(`${config.applications.service.url}/services/${id}`, {
       method: 'GET',
       headers: {
         authorization: `bearer ${token}`,
-      }
+      },
     });
     return client;
   } catch (e) {
@@ -30,7 +30,7 @@ const getPageOfService = async (pageNumber, pageSize) => {
   const token = await jwtStrategy(config.applications.service).getBearerToken();
 
   try {
-    const client = await fetchApi(`${config.applications.service.url}/services?page=${pageNumber}&pageSize=${pageSize}`,{
+    const client = await fetchApi(`${config.applications.service.url}/services?page=${pageNumber}&pageSize=${pageSize}`, {
       method: 'GET',
       headers: {
         authorization: `bearer ${token}`,
@@ -62,25 +62,22 @@ const getAllServices = async () => {
   return { services };
 };
 
-
 const getEmailToggleFlag = async (params) => {
   const token = await jwtStrategy(config.applications.service).getBearerToken();
   try {
-
-    return await fetchApi(`${config.applications.service.url}${params}`,{
+    return await fetchApi(`${config.applications.service.url}${params}`, {
       method: 'GET',
       headers: {
         authorization: `bearer ${token}`,
-      }
+      },
     });
-
   } catch (e) {
     if (e.statusCode === 404) {
       return undefined;
     }
     throw e;
   }
-}
+};
 
 const retrieveToggleFlag = async (path) => {
   const emailToggleFlag = await getEmailToggleFlag(path);
@@ -88,15 +85,15 @@ const retrieveToggleFlag = async (path) => {
     return emailToggleFlag[0].flag;
   }
   return true;
-}
+};
 
 const isSupportEmailNotificationAllowed = async () => {
   return await retrieveToggleFlag(supportTogglePath);
-}
+};
 
 module.exports = {
   getServiceById,
   getPageOfService,
   getAllServices,
-  isSupportEmailNotificationAllowed
+  isSupportEmailNotificationAllowed,
 };

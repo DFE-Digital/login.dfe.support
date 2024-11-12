@@ -1,12 +1,14 @@
 jest.mock('./../../../src/infrastructure/config', () => require('../../utils').configMockFactory({}));
+jest.mock('./../../../src/infrastructure/logger', () => require('../../utils').loggerMockFactory());
 jest.mock('./../../../src/infrastructure/access');
 jest.mock('./../../../src/infrastructure/directories');
+jest.mock('./../../../src/infrastructure/utils');
 jest.mock('./../../../src/app/users/utils');
-jest.mock('./../../../src/infrastructure/logger', () => require('../../utils').loggerMockFactory());
 
 const { getRequestMock } = require('../../utils');
 const post = require('../../../src/app/users/postConfirmInvitationDeactivate');
 const { getUserDetails, getUserDetailsById, updateUserDetails } = require('../../../src/app/users/utils');
+const { sendResult } = require('../../../src/infrastructure/utils');
 const logger = require('../../../src/infrastructure/logger');
 const { getServicesByInvitationId, removeServiceFromInvitation } = require('../../../src/infrastructure/access');
 const { deactivateInvite } = require('../../../src/infrastructure/directories');
@@ -70,6 +72,27 @@ describe('When processing a post for a user invitation deactivate request', () =
 
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe('services');
+  });
+
+  it('should render an error if the reason is blank', async () => {
+    req = getRequestMock({
+      body: {
+        reason: '',
+      },
+      params: {
+        uid: 'inv-4878fe2a-28a9-4bab-a07b-dbb9747f87f5',
+      },
+    });
+    await post(req, res);
+
+    expect(sendResult.mock.calls).toHaveLength(1);
+    expect(sendResult.mock.calls[0][3]).toMatchObject({
+      csrfToken: 'token',
+      backLink: 'services',
+      reason: '',
+      validationMessages: { reason: 'Please give a reason for deactivation' },
+    });
+    expect(res.redirect.mock.calls).toHaveLength(0);
   });
 });
 

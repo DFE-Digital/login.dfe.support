@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 const logger = require('../../infrastructure/logger');
 const {
   getUserDetails, getUserDetailsById, updateUserDetails, waitForIndexToUpdate,

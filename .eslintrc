@@ -9,5 +9,8 @@
     "no-underscore-dangle": ["error", { "allowAfterThis": true }],
     "max-len": 0
   },
+  "env": {
+    "jest": true
+  },
   "plugins": ["jest"]
 }

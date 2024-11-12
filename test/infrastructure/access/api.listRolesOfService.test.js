@@ -11,24 +11,23 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
   },
 }));
 
-const {fetchApi} = require('login.dfe.async-retry');
-
+const { fetchApi } = require('login.dfe.async-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
-const { getServicesByUserId } = require('./../../../src/infrastructure/access/api');
+const { listRolesOfService } = require('../../../src/infrastructure/access/api');
 
-const userId = 'user-1';
+const serviceId = 'service-1';
 const correlationId = 'abc123';
 const apiResponse = [
   {
-    userId: "user-1",
-    serviceId: "service1Id",
-    organisationId: "organisation-1",
+    userId: 'user-1',
+    serviceId: 'service1Id',
+    organisationId: 'organisation-1',
     roles: [],
   },
   {
-    userId: "user-1",
-    serviceId: "service2Id",
-    organisationId: "organisation-1",
+    userId: 'user-1',
+    serviceId: 'service2Id',
+    organisationId: 'organisation-1',
     roles: [],
   },
 ];
@@ -48,19 +47,18 @@ describe('when getting a users services mapping from api', () => {
     })
   });
 
-
   it('then it should call users resource with user id', async () => {
-    await getServicesByUserId(userId, correlationId);
+    await listRolesOfService(serviceId, correlationId);
 
     expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][0]).toBe('http://access.test/users/user-1/services');
+    expect(fetchApi.mock.calls[0][0]).toBe('http://access.test/services/service-1/roles');
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      method: 'GET'
+      method: 'GET',
     });
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
-    await getServicesByUserId(userId, correlationId);
+    await listRolesOfService(serviceId, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
@@ -70,7 +68,7 @@ describe('when getting a users services mapping from api', () => {
   });
 
   it('then it should include the correlation id', async () => {
-    await getServicesByUserId(userId, correlationId);
+    await listRolesOfService(serviceId, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
