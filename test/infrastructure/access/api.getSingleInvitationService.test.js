@@ -67,4 +67,15 @@ describe('when getting a users services mapping from api', () => {
       },
     });
   });
+
+  it('should return false on a 404 response', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('not found');
+      error.statusCode = 404;
+      throw error;
+    });
+
+    const result = await getSingleInvitationService(invitationId, serviceId, organisationId, correlationId);
+    expect(result).toEqual(undefined);
+  });
 });

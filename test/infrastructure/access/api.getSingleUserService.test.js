@@ -44,7 +44,7 @@ describe('when getting a users services mapping from api', () => {
     expect(fetchApi.mock.calls).toHaveLength(1);
     expect(fetchApi.mock.calls[0][0]).toBe('http://access.test/users/user-1/services/service-1/organisations/org-1');
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      method: 'GET'
+      method: 'GET',
     });
   });
 
@@ -66,5 +66,16 @@ describe('when getting a users services mapping from api', () => {
         'x-correlation-id': correlationId,
       },
     });
+  });
+
+  it('should return false on a 404 response', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('not found');
+      error.statusCode = 404;
+      throw error;
+    });
+
+    const result = await getSingleUserService(userId, serviceId, organisationId, correlationId);
+    expect(result).toEqual(undefined);
   });
 });

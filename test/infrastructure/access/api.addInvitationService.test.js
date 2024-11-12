@@ -81,4 +81,24 @@ describe('when getting a users services mapping from api', () => {
       },
     });
   });
+
+  it('should return false on a 403 or 409 response', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('not found');
+      error.statusCode = 403;
+      throw error;
+    });
+
+    let result = await addInvitationService(invitationId, serviceId, organisationId, externalIdentifiers, roles, correlationId);
+    expect(result).toEqual(false);
+
+    fetchApi.mockImplementation(() => {
+      const error = new Error('conflict');
+      error.statusCode = 409;
+      throw error;
+    });
+
+    result = await addInvitationService(invitationId, serviceId, organisationId, externalIdentifiers, roles, correlationId);
+    expect(result).toEqual(false);
+  });
 });

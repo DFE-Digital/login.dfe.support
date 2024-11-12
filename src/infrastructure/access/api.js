@@ -15,7 +15,7 @@ const addInvitationService = async (invitationId, serviceId, organisationId, ext
       body: {
         identifiers: externalIdentifiers,
         roles,
-      }
+      },
     });
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;

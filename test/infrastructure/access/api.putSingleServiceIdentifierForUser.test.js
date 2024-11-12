@@ -69,4 +69,24 @@ describe('when getting a users services mapping from api', () => {
       },
     });
   });
+
+  it('should return false on a 404 or 409 response', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('not found');
+      error.statusCode = 404;
+      throw error;
+    });
+
+    let result = await putSingleServiceIdentifierForUser(userId, serviceId, organisationId, identifierKey, identifierValue, correlationId);
+    expect(result).toEqual(undefined);
+
+    fetchApi.mockImplementation(() => {
+      const error = new Error('conflict');
+      error.statusCode = 409;
+      throw error;
+    });
+
+    result = await putSingleServiceIdentifierForUser(userId, serviceId, organisationId, identifierKey, identifierValue, correlationId);
+    expect(result).toEqual(undefined);
+  });
 });
