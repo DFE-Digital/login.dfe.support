@@ -67,4 +67,30 @@ describe('when getting a users services mapping from api', () => {
       },
     });
   });
+
+  it('should return false on a 404 response', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('not found');
+      error.statusCode = 404;
+      throw error;
+    });
+
+    const result = await getServiceIdentifierDetails(serviceId, identifierKey, identifierValue, correlationId);
+    expect(result).toEqual(undefined);
+  });
+
+  it('should raise an exception on any failure status code that is not 404', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('Client Error');
+      error.statusCode = 400;
+      throw error;
+    });
+
+    try {
+      await getServiceIdentifierDetails(serviceId, identifierKey, identifierValue, correlationId);
+    } catch (e) {
+      expect(e.statusCode).toEqual(400);
+      expect(e.message).toEqual('Client Error');
+    }
+  });
 });

@@ -1,10 +1,10 @@
 jest.mock('login.dfe.async-retry');
 jest.mock('login.dfe.jwt-strategies');
-jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
-  access: {
+jest.mock('./../../../src/infrastructure/config', () => require('../../utils').configMockFactory({
+  applications: {
     type: 'api',
     service: {
-      url: 'http://access.test',
+      url: 'http://applications.test',
       retryFactor: 0,
       numberOfRetries: 2,
     },
@@ -13,10 +13,10 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 
 const { fetchApi } = require('login.dfe.async-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
-const { listRolesOfService } = require('../../../src/infrastructure/access/api');
+const { getPageOfService } = require('../../../src/infrastructure/applications/api');
 
-const serviceId = 'service-1';
-const correlationId = 'abc123';
+const pageNumber = 1;
+const pageSize = 20;
 const apiResponse = [
   {
     userId: 'user-1',
@@ -48,17 +48,17 @@ describe('when getting a users services mapping from api', () => {
   });
 
   it('then it should call users resource with user id', async () => {
-    await listRolesOfService(serviceId, correlationId);
+    await getPageOfService(pageNumber, pageSize);
 
     expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][0]).toBe('http://access.test/services/service-1/roles');
+    expect(fetchApi.mock.calls[0][0]).toBe('http://applications.test/services?page=1&pageSize=20');
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       method: 'GET',
     });
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
-    await listRolesOfService(serviceId, correlationId);
+    await getPageOfService(pageNumber, pageSize);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
@@ -68,38 +68,12 @@ describe('when getting a users services mapping from api', () => {
   });
 
   it('then it should include the correlation id', async () => {
-    await listRolesOfService(serviceId, correlationId);
+    await getPageOfService(pageNumber, pageSize);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
-        'x-correlation-id': correlationId,
+        authorization: 'bearer token',
       },
     });
-  });
-
-  it('should return false on a 404 response', async () => {
-    fetchApi.mockImplementation(() => {
-      const error = new Error('not found');
-      error.statusCode = 404;
-      throw error;
-    });
-
-    const result = await listRolesOfService(serviceId, correlationId);
-    expect(result).toEqual(undefined);
-  });
-
-  it('should raise an exception on any failure status code that is not 404', async () => {
-    fetchApi.mockImplementation(() => {
-      const error = new Error('Client Error');
-      error.statusCode = 400;
-      throw error;
-    });
-
-    try {
-      await listRolesOfService(serviceId, correlationId);
-    } catch (e) {
-      expect(e.statusCode).toEqual(400);
-      expect(e.message).toEqual('Client Error');
-    }
   });
 });

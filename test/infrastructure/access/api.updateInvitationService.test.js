@@ -11,17 +11,29 @@ jest.mock('./../../../src/infrastructure/config', () => require('../../utils').c
   },
 }));
 
-const {fetchApi} = require('login.dfe.async-retry');
-
+const { fetchApi } = require('login.dfe.async-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
-const { updateUserService } = require('../../../src/infrastructure/access/api');
+const { updateInvitationService } = require('../../../src/infrastructure/access/api');
 
-const userId = 'user-1';
+const invitationId = 'invitation-1';
 const serviceId = 'service-1';
 const organisationId = 'organisation-1';
-const roles = ['role-1'];
+const roles = [];
 const correlationId = 'abc123';
-const apiResponse = jest.fn();
+const apiResponse = [
+  {
+    userId: 'user-1',
+    serviceId: 'service1Id',
+    organisationId: 'organisation-1',
+    roles: [],
+  },
+  {
+    userId: 'user-1',
+    serviceId: 'service2Id',
+    organisationId: 'organisation-1',
+    roles: [],
+  },
+];
 
 describe('when getting a users services mapping from api', () => {
   beforeEach(() => {
@@ -40,17 +52,17 @@ describe('when getting a users services mapping from api', () => {
 
 
   it('then it should call users resource with user id', async () => {
-    await updateUserService(userId, serviceId, organisationId, roles, correlationId);
+    await updateInvitationService(invitationId, serviceId, organisationId, roles, correlationId);
 
     expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][0]).toBe('http://access.test/users/user-1/services/service-1/organisations/organisation-1');
+    expect(fetchApi.mock.calls[0][0]).toBe('http://access.test/invitations/invitation-1/services/service-1/organisations/organisation-1');
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      method: 'PATCH'
+      method: 'PATCH',
     });
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
-    await updateUserService(userId, serviceId, organisationId, roles, correlationId);
+    await updateInvitationService(invitationId, serviceId, organisationId, roles, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
@@ -60,7 +72,7 @@ describe('when getting a users services mapping from api', () => {
   });
 
   it('then it should include the correlation id', async () => {
-    await updateUserService(userId, serviceId, organisationId, roles, correlationId);
+    await updateInvitationService(invitationId, serviceId, organisationId, roles, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
@@ -76,16 +88,16 @@ describe('when getting a users services mapping from api', () => {
       throw error;
     });
 
-    let result = await updateUserService(userId, serviceId, organisationId, roles, correlationId);
+    let result = await updateInvitationService(invitationId, serviceId, organisationId, roles, correlationId);
     expect(result).toEqual(false);
 
     fetchApi.mockImplementation(() => {
-      const error = new Error('Conflict');
+      const error = new Error('conflict');
       error.statusCode = 409;
       throw error;
     });
 
-    result = await updateUserService(userId, serviceId, organisationId, roles, correlationId);
+    result = await updateInvitationService(invitationId, serviceId, organisationId, roles, correlationId);
     expect(result).toEqual(false);
   });
 
@@ -97,7 +109,7 @@ describe('when getting a users services mapping from api', () => {
     });
 
     try {
-      await updateUserService(userId, serviceId, organisationId, roles, correlationId);
+      await updateInvitationService(invitationId, serviceId, organisationId, roles, correlationId);
     } catch (e) {
       expect(e.statusCode).toEqual(400);
       expect(e.message).toEqual('Client Error');
