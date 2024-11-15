@@ -66,23 +66,25 @@ describe('when getting a users organisations mapping from api', () => {
     });
   });
 
-  it('should return null on a 401 or 404 response', async () => {
+  it('should return null on a 401 response', async () => {
     fetchApi.mockImplementation(() => {
       const error = new Error('not found');
       error.statusCode = 404;
       throw error;
     });
 
-    let result = await getOrganisationByIdV2(organisationId, correlationId);
+    const result = await getOrganisationByIdV2(organisationId, correlationId);
     expect(result).toEqual(null);
+  });
 
+  it('should return null on a 404 response', async () => {
     fetchApi.mockImplementation(() => {
       const error = new Error('unauthorized');
       error.statusCode = 401;
       throw error;
     });
 
-    result = await getOrganisationByIdV2(organisationId, correlationId);
+    const result = await getOrganisationByIdV2(organisationId, correlationId);
     expect(result).toEqual(null);
   });
 
@@ -104,11 +106,11 @@ describe('when getting a users organisations mapping from api', () => {
       throw error;
     });
 
-    try {
-      await getOrganisationByIdV2(organisationId, correlationId);
-    } catch (e) {
-      expect(e.statusCode).toEqual(500);
-      expect(e.message).toEqual('Server Error');
-    }
+    const act = () => getOrganisationByIdV2(organisationId, correlationId);
+
+    await expect(act).rejects.toThrow(expect.objectContaining({
+      message: 'Server Error',
+      statusCode: 500,
+    }));
   });
 });
