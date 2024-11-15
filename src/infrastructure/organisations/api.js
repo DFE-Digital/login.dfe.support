@@ -6,7 +6,7 @@ const callOrganisationsApi = async (endpoint, method, body, correlationId) => {
   const token = await jwtStrategy(config.organisations.service).getBearerToken();
 
   try {
-    return await fetchApi(`${config.organisations.service.url}/${endpoint}`,{
+    return await fetchApi(`${config.organisations.service.url}/${endpoint}`, {
       method: method,
       headers: {
         authorization: `bearer ${token}`,
@@ -87,7 +87,6 @@ const addInvitationService = async (invitationId, organisationId, serviceId, rol
   };
 
   return await callOrganisationsApi(`organisations/${organisationId}/services/${serviceId}/invitations/${invitationId}`, 'PUT', body, correlationId);
-
 };
 
 const addInvitationOrganisation = async (invitationId, organisationId, roleId, correlationId) => {
@@ -98,7 +97,7 @@ const addInvitationOrganisation = async (invitationId, organisationId, roleId, c
 };
 
 const deleteInvitationOrganisation = async (invitationId, organisationId, correlationId) => {
-  return callOrganisationsApi(`organisations/${organisationId}/invitations/${invitationId}`, 'DELETE', correlationId);
+  return callOrganisationsApi(`organisations/${organisationId}/invitations/${invitationId}`, 'DELETE', undefined, correlationId);
 };
 
 const getServicesByUserId = async (id, reqId) => {
@@ -131,7 +130,7 @@ const setUserAccessToOrganisation = async (userId, organisationId, roleId, corre
 };
 
 const deleteUserOrganisation = async (userId, organisationId, correlationId) => {
-  return callOrganisationsApi(`organisations/${organisationId}/users/${userId}`, 'DELETE', correlationId);
+  return callOrganisationsApi(`organisations/${organisationId}/users/${userId}`, 'DELETE', undefined, correlationId);
 };
 
 const getOrganisationCategories = async (correlationId) => {
