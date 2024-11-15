@@ -75,23 +75,25 @@ describe('when getting a service by id from api', () => {
     });
   });
 
-  it('should return null on a 401 or 404 response', async () => {
+  it('should return null on a 401 response', async () => {
     fetchApi.mockImplementation(() => {
       const error = new Error('not found');
       error.statusCode = 404;
       throw error;
     });
 
-    let result = await addInvitationService(invitationId, organisationId, serviceId, roleId, externalIdentifiers, correlationId);
+    const result = await addInvitationService(invitationId, organisationId, serviceId, roleId, externalIdentifiers, correlationId);
     expect(result).toEqual(null);
+  });
 
+  it('should return null on a 404 response', async () => {
     fetchApi.mockImplementation(() => {
       const error = new Error('unauthorized');
       error.statusCode = 401;
       throw error;
     });
 
-    result = await addInvitationService(invitationId, organisationId, serviceId, roleId, externalIdentifiers, correlationId);
+    const result = await addInvitationService(invitationId, organisationId, serviceId, roleId, externalIdentifiers, correlationId);
     expect(result).toEqual(null);
   });
 

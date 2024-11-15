@@ -10,9 +10,12 @@ jest.mock('./../../../src/infrastructure/config', () => require('../../utils').c
 }));
 
 const { fetchApi } = require('login.dfe.async-retry');
-const jwtStrategy = require('login.dfe.jwt-strategies');
-const { getAllServices } = require('../../../src/infrastructure/organisations/api');
 
+const jwtStrategy = require('login.dfe.jwt-strategies');
+const { listInvitationServices } = require('../../../src/infrastructure/organisations/api');
+
+const page = 1;
+const pageSize = 10;
 const correlationId = 'abc123';
 const apiResponse = {
   users: [],
@@ -35,17 +38,17 @@ describe('when getting a users organisations mapping from api', () => {
   });
 
   it('then it should call associated-with-user resource with user id', async () => {
-    await getAllServices(correlationId);
+    await listInvitationServices(page, pageSize, correlationId);
 
     expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][0]).toBe('http://organisations.test/services');
+    expect(fetchApi.mock.calls[0][0]).toBe('http://organisations.test//invitations?page=1&pageSize=10');
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       method: 'GET',
     });
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
-    await getAllServices(correlationId);
+    await listInvitationServices(page, pageSize, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
@@ -55,7 +58,7 @@ describe('when getting a users organisations mapping from api', () => {
   });
 
   it('then it should include the correlation id', async () => {
-    await getAllServices(correlationId);
+    await listInvitationServices(page, pageSize, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
@@ -71,7 +74,7 @@ describe('when getting a users organisations mapping from api', () => {
       throw error;
     });
 
-    const result = await getAllServices(correlationId);
+    const result = await listInvitationServices(page, pageSize, correlationId);
     expect(result).toEqual(null);
   });
 
@@ -82,7 +85,7 @@ describe('when getting a users organisations mapping from api', () => {
       throw error;
     });
 
-    const result = await getAllServices(correlationId);
+    const result = await listInvitationServices(page, pageSize, correlationId);
     expect(result).toEqual(null);
   });
 
@@ -93,7 +96,7 @@ describe('when getting a users organisations mapping from api', () => {
       throw error;
     });
 
-    const result = await getAllServices(correlationId);
+    const result = await listInvitationServices(page, pageSize, correlationId);
     expect(result).toEqual(false);
   });
 
@@ -104,11 +107,11 @@ describe('when getting a users organisations mapping from api', () => {
       throw error;
     });
 
-    try {
-      await getAllServices(correlationId);
-    } catch (e) {
-      expect(e.statusCode).toEqual(500);
-      expect(e.message).toEqual('Server Error');
-    }
+    const act = () => listInvitationServices(page, pageSize, correlationId);
+
+    await expect(act).rejects.toThrow(expect.objectContaining({
+      message: 'Server Error',
+      statusCode: 500,
+    }));
   });
 });

@@ -67,23 +67,25 @@ describe('when getting a users organisations mapping from api', () => {
     });
   });
 
-  it('should return null on a 401 or 404 response', async () => {
+  it('should return null on a 401 response', async () => {
     fetchApi.mockImplementation(() => {
       const error = new Error('not found');
       error.statusCode = 404;
       throw error;
     });
 
-    let result = await getUserOrganisations(userId, correlationId);
+    const result = await getUserOrganisations(userId, correlationId);
     expect(result).toEqual(null);
+  });
 
+  it('should return null on a 404 response', async () => {
     fetchApi.mockImplementation(() => {
       const error = new Error('unauthorized');
       error.statusCode = 401;
       throw error;
     });
 
-    result = await getUserOrganisations(userId, correlationId);
+    const result = await getUserOrganisations(userId, correlationId);
     expect(result).toEqual(null);
   });
 
