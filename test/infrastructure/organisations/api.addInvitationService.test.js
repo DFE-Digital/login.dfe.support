@@ -75,7 +75,7 @@ describe('when getting a service by id from api', () => {
     });
   });
 
-  it('should return null on a 401 response', async () => {
+  it('should return null on a 404 response', async () => {
     fetchApi.mockImplementation(() => {
       const error = new Error('not found');
       error.statusCode = 404;
@@ -86,7 +86,7 @@ describe('when getting a service by id from api', () => {
     expect(result).toEqual(null);
   });
 
-  it('should return null on a 404 response', async () => {
+  it('should return null on a 401 response', async () => {
     fetchApi.mockImplementation(() => {
       const error = new Error('unauthorized');
       error.statusCode = 401;
