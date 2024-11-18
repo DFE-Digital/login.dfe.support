@@ -49,7 +49,7 @@
     "login.dfe.express-error-handling": "github:DFE-Digital/login.dfe.express-error-handling#v3.0.1",
     "login.dfe.express-flash-2": "github:DFE-Digital/login.dfe.express-flash-2#v2.0.1",
     "login.dfe.healthcheck": "github:DFE-Digital/login.dfe.healthcheck#v3.0.1",
-    "login.dfe.jobs-client": "github:DFE-Digital/login.dfe.jobs-client#v6.0.0",
+    "login.dfe.jobs-client": "github:DFE-Digital/login.dfe.jobs-client#v6.0.1",
     "login.dfe.jwt-strategies": "github:DFE-Digital/login.dfe.jwt-strategies#v4.1.1",
     "login.dfe.policy-engine": "github:DFE-Digital/login.dfe.policy-engine#v3.1.1",
     "login.dfe.sanitization": "github:DFE-Digital/login.dfe.sanitization#v3.0.1",
