@@ -9,8 +9,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
   },
 }));
 
-const {fetchApi} = require('login.dfe.async-retry');
-
+const { fetchApi } = require('login.dfe.async-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { getLegacyUsernames } = require('./../../../src/infrastructure/directories/api');
 
@@ -36,7 +35,6 @@ describe('when getting a legacy user by userid', () => {
       };
     })
   });
-
 
   it('then it calls directories api with ids', async () => {
     await getLegacyUsernames(userIds, correlationId);
@@ -68,4 +66,29 @@ describe('when getting a legacy user by userid', () => {
     });
   });
 
+  it('should return null on a 404 response', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('Not found');
+      error.statusCode = 404;
+      throw error;
+    });
+
+    const result = await getLegacyUsernames(userIds, correlationId);
+    expect(result).toEqual(null);
+  });
+
+  it('should raise an exception on any failure status code that is not 404', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('Server Error');
+      error.statusCode = 500;
+      throw error;
+    });
+
+    const act = () => getLegacyUsernames(userIds, correlationId);
+
+    await expect(act).rejects.toThrow(expect.objectContaining({
+      message: 'Server Error',
+      statusCode: 500,
+    }));
+  });
 });

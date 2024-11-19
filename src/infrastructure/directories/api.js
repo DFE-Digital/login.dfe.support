@@ -35,12 +35,12 @@ const getPageOfInvitations = async (pageNumber, pageSize, changedAfter, correlat
       uri += `&changedAfter=${changedAfter.toISOString()}`;
     }
 
-    const pageOfInvitations = await fetchApi( uri,{
+    const pageOfInvitations = await fetchApi(uri, {
       method: 'GET',
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
-      }
+      },
     });
 
     return pageOfInvitations;
@@ -141,7 +141,7 @@ const deactivateInvite = async (id, reason, correlationId) => {
       body: {
         reason: reason,
         deactivated: true,
-      }
+      },
     });
   } catch (e) {
     console.log(e);
@@ -161,7 +161,7 @@ const reactivateInvite = async (id, reason, correlationId) => {
       body: {
         reason: reason,
         deactivated: false,
-      }
+      },
     });
   } catch (e) {
     console.log(e);
@@ -191,7 +191,7 @@ const createInvite = async (givenName, familyName, email, clientId, redirectUri,
       authorization: `bearer ${token}`,
       'x-correlation-id': correlationId,
     },
-    body
+    body,
   });
 
   return invitation.id;
