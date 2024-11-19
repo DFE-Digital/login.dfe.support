@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config();
 const appInsights = require('applicationinsights');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -8,7 +8,6 @@ const expressLayouts = require('express-ejs-layouts');
 const { doubleCsrf } = require('csrf-csrf');
 const http = require('http');
 const https = require('https');
-const fs = require('fs');
 const path = require('path');
 const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
@@ -16,9 +15,9 @@ const moment = require('moment');
 const flash = require('login.dfe.express-flash-2');
 const setCorrelationId = require('express-mw-correlation-id');
 const { getErrorHandler, ejsErrorPages } = require('login.dfe.express-error-handling');
-const registerRoutes = require('./routes');
 const Redis = require('ioredis');
 const RedisStore = require('connect-redis').default;
+const registerRoutes = require('./routes');
 const oidc = require('./infrastructure/oidc');
 const config = require('./infrastructure/config');
 const logger = require('./infrastructure/logger');
@@ -43,7 +42,7 @@ if (config.hostingEnvironment.applicationInsights) {
 const init = async () => {
   const app = express();
 
-  logger.info('set helmet policy defaults');
+  logger.debug('set helmet policy defaults');
 
   if (config.hostingEnvironment.hstsMaxAge) {
     app.use(helmet({
@@ -88,13 +87,13 @@ const init = async () => {
     }),
   );
 
-  logger.info('Set helmet filters');
+  logger.debug('Set helmet filters');
 
   app.use(helmet.xssFilter());
   app.use(helmet.frameguard('false'));
   app.use(helmet.ieNoOpen());
 
-  logger.info('helmet setup complete');
+  logger.debug('helmet setup complete');
 
   app.use(setCorrelationId('X-Correlation-ID'));
 

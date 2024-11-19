@@ -1,10 +1,8 @@
 const Redis = require('ioredis');
-const config = require('./../config');
 const { fetchApi } = require('login.dfe.async-retry');
-
-
-const {v4:uuid} = require('uuid');
-const logger = require('./../logger');
+const { v4: uuid } = require('uuid');
+const config = require('../config');
+const logger = require('../logger');
 
 const client = new Redis(config.cache.params.indexPointerConnectionString);
 
@@ -237,7 +235,7 @@ const updateIndex = async (users, index) => {
 };
 
 const updateActiveIndex = async (index) => {
-  await client.set('CurrentIndex_Users', index)
+  await client.set('CurrentIndex_Users', index);
 };
 
 const deleteUnusedIndexes = async () => {
@@ -249,7 +247,6 @@ const deleteUnusedIndexes = async () => {
   for (let i = 0; i < unusedIndexes.length; i++) {
     if (unusedIndexes[i] !== currentIndexName) {
       try {
-
         await fetchApi(getAzureSearchUri(unusedIndexes[i]),{
           method: 'DELETE',
           headers: {
@@ -270,7 +267,7 @@ const deleteUnusedIndexes = async () => {
     method: 'GET',
     headers: {
       'api-key': config.cache.params.apiKey,
-    }
+    },
   });
   const indexesAppearingUnused = indexesResponse.value.map(x => x.name).filter(x => x !== currentIndexName && x.match(/^users-/i));
   await client.set('UnusedIndexes_Users', JSON.stringify(indexesAppearingUnused));

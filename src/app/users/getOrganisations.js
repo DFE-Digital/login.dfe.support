@@ -1,11 +1,11 @@
-const { sendResult } = require('./../../infrastructure/utils');
-const { getUserDetails } = require('./utils');
-const { getUserOrganisations, getInvitationOrganisations, getPendingRequestsAssociatedWithUser } = require('./../../infrastructure/organisations');
-const { getUsersByIdV2 } = require('./../../infrastructure/directories');
-const logger = require('./../../infrastructure/logger');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
 const sortBy = require('lodash/sortBy');
+const { sendResult } = require('../../infrastructure/utils');
+const { getUserDetails } = require('./utils');
+const { getUserOrganisations, getInvitationOrganisations, getPendingRequestsAssociatedWithUser } = require('../../infrastructure/organisations');
+const { getUsersByIdV2 } = require('../../infrastructure/directories');
+const logger = require('../../infrastructure/logger');
 
 const getApproverDetails = async (organisations, correlationId) => {
   const allApproverIds = flatten(organisations.map((org) => org.approvers));
@@ -16,7 +16,6 @@ const getApproverDetails = async (organisations, correlationId) => {
   return await getUsersByIdV2(distinctApproverIds, correlationId);
 };
 
-
 const getOrganisations = async (userId, correlationId) => {
   const orgMapping = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), correlationId) : await getUserOrganisations(userId, correlationId);
   if (!orgMapping) {
@@ -24,12 +23,12 @@ const getOrganisations = async (userId, correlationId) => {
   }
   const allApprovers = await getApproverDetails(orgMapping, correlationId);
   // Filter out all deactivated accounts
-  const activeAccountApprovers = allApprovers.filter(approver => approver.status !== 0);
+  const activeAccountApprovers = allApprovers.filter((approver) => approver.status !== 0);
 
   const organisations = await Promise.all(orgMapping.map(async (invitation) => {
     const approvers = invitation.approvers.map((approverId) => {
       return activeAccountApprovers.find(x => x.sub.toLowerCase() === approverId.toLowerCase());
-    }).filter(x => x);
+    }).filter((x) => x);
     return {
       id: invitation.organisation.id,
       name: invitation.organisation.name,
@@ -75,7 +74,7 @@ const action = async (req, res) => {
     lastName: user.lastName,
     email: user.email,
   };
-  req.session.type = "organisations";
+  req.session.type = 'organisations';
   req.session.params = {
     ...req.session.params,
     ...req.query,
@@ -84,7 +83,7 @@ const action = async (req, res) => {
   // Check if it's possible to re-populate search with the current params.
   if (
     req.session.params.showFilters === 'true'
-    || (typeof req.session.params.criteria !== "undefined" && req.session.params.criteria !== '')
+    || (typeof req.session.params.criteria !== 'undefined' && req.session.params.criteria !== '')
   ) {
     req.session.params.redirectedFromSearchResult = true;
   } else {

@@ -1,9 +1,8 @@
-const { sendResult } = require('./../../infrastructure/utils');
+const { sendResult } = require('../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
-const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
-const { getInvitation } = require('./../../infrastructure/directories');
-const { getAllServices } = require('./../../infrastructure/applications');
-const logger = require('./../../infrastructure/logger');
+const { getUserOrganisations, getInvitationOrganisations } = require('../../infrastructure/organisations');
+const { getAllServices } = require('../../infrastructure/applications');
+const logger = require('../../infrastructure/logger');
 
 const getOrganisations = async (userId, correlationId) => {
   const orgServiceMapping = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), correlationId) : await getUserOrganisations(userId, correlationId);
@@ -11,10 +10,8 @@ const getOrganisations = async (userId, correlationId) => {
     return [];
   }
 
-
   const organisations = await Promise.all(orgServiceMapping.map(async (invitation) => {
     const services = await Promise.all(invitation.services.map(async (service) => {
-
       return {
         id: service.id,
         name: service.name,
@@ -44,39 +41,39 @@ const action = async (req, res) => {
   const user = await getUserDetails(req);
   const organisationDetails = await getOrganisations(user.id, req.id);
   const allServices = await getAllServices();
-  const externalServices = allServices.services.filter(x => x.isExternalService === true && !(x.relyingParty && x.relyingParty.params && x.relyingParty.params.hideSupport === 'true'));
+  const externalServices = allServices.services.filter((x) => x.isExternalService === true && !(x.relyingParty && x.relyingParty.params && x.relyingParty.params.hideSupport === 'true'));
 
   const allOrganisationsForUser = [];
   for (let i = 0; i < organisationDetails.length; i++) {
     const org = Object.assign(Object.assign({}, organisationDetails[i]), { services: [], naturalIdentifiers: [] });
     org.naturalIdentifiers = [];
-    const urn = org.urn;
-    const uid = org.uid;
-    const upin = org.upin;
-    const ukprn = org.ukprn;
+    const { urn } = org;
+    const { uid } = org;
+    const { upin } = org;
+    const { ukprn } = org;
     if (urn) {
-      org.naturalIdentifiers.push(`URN: ${urn}`)
+      org.naturalIdentifiers.push(`URN: ${urn}`);
     }
     if (uid) {
-      org.naturalIdentifiers.push(`UID: ${uid}`)
+      org.naturalIdentifiers.push(`UID: ${uid}`);
     }
     if (upin) {
-      org.naturalIdentifiers.push(`UPIN: ${upin}`)
+      org.naturalIdentifiers.push(`UPIN: ${upin}`);
     }
     if (ukprn) {
-      org.naturalIdentifiers.push(`UKPRN: ${ukprn}`)
+      org.naturalIdentifiers.push(`UKPRN: ${ukprn}`);
     }
 
     for (let j = 0; j < organisationDetails[i].services.length; j++) {
       const svc = Object.assign({}, organisationDetails[i].services[j]);
-      const isExternalService = externalServices.find(x => x.id === svc.id);
+      const isExternalService = externalServices.find((x) => x.id === svc.id);
       if (isExternalService) {
         org.services.push(svc);
       }
     }
 
     // Sort services alphabetically
-    org.services.sort((a, b) => a.name.localeCompare(b.name))
+    org.services.sort((a, b) => a.name.localeCompare(b.name));
     allOrganisationsForUser.push(org);
   }
   req.session.type = 'services';

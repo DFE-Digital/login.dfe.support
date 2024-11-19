@@ -1,15 +1,15 @@
 'use strict';
 
-const logger = require('./../../infrastructure/logger');
-const config = require('./../../infrastructure/config');
 const { NotificationClient } = require('login.dfe.jobs-client');
-const { removeServiceFromUser, removeServiceFromInvitation } = require('./../../infrastructure/access');
-const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
-const { getServiceById, isSupportEmailNotificationAllowed } = require('./../../infrastructure/applications');
+const logger = require('../../infrastructure/logger');
+const config = require('../../infrastructure/config');
+const { removeServiceFromUser, removeServiceFromInvitation } = require('../../infrastructure/access');
+const { getUserOrganisations, getInvitationOrganisations } = require('../../infrastructure/organisations');
+const { getServiceById, isSupportEmailNotificationAllowed } = require('../../infrastructure/applications');
 
 const get = async (req, res) => {
   const userId = req.params.uid;
-  if(!req.session.user) {
+  if (!req.session.user) {
     return res.redirect(`/users/${userId}/organisations`);
   }
 
@@ -32,8 +32,8 @@ const get = async (req, res) => {
 };
 
 const post = async (req, res) => {
-  const uid = req.params.uid;
-  if(!req.session.user) {
+  const { uid } = req.params;
+  if (!req.session.user) {
     return res.redirect(`/users/${uid}/organisations`);
   }
 
@@ -41,17 +41,17 @@ const post = async (req, res) => {
   const organisationId = req.params.orgId;
   const service = await getServiceById(req.params.sid, req.id);
   const userOrganisations = uid.startsWith('inv-') ? await getInvitationOrganisations(uid.substr(4), req.id) : await getUserOrganisations(uid, req.id);
-  const organisationDetails = userOrganisations.find(x => x.organisation.id === req.params.orgId);
+  const organisationDetails = userOrganisations.find((x) => x.organisation.id === req.params.orgId);
   const isEmailAllowed = await isSupportEmailNotificationAllowed();
 
-  if(uid.startsWith('inv-')) {
+  if (uid.startsWith('inv-')) {
     await removeServiceFromInvitation(uid.substr(4), serviceId, organisationId, req.id);
   } else {
     await removeServiceFromUser(uid, serviceId, organisationId, req.id);
-    if(isEmailAllowed){
-      const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});
-      await notificationClient.sendUserServiceRemoved(req.session.user.email, req.session.user.firstName, req.session.user.lastName, service.name,organisationDetails.organisation.name);
-    } 
+    if (isEmailAllowed) {
+      const notificationClient = new NotificationClient({ connectionString: config.notifications.connectionString });
+      await notificationClient.sendUserServiceRemoved(req.session.user.email, req.session.user.firstName, req.session.user.lastName, service.name, organisationDetails.organisation.name);
+    }
   }
 
   logger.audit(`${req.user.email} (id: ${req.user.sub}) removed service ${service.name} for organisation id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`, {

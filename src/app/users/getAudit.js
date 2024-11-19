@@ -169,7 +169,7 @@ const getAudit = async (req, res) => {
   cachedServiceIds = {};
   cachedServices = {};
   cachedUsers = {};
-
+  const correlationId = req.id;
   const user = await getCachedUserById(req.params.uid, req.id);
   const userOrganisations = await getUserOrganisations(req.params.uid, req.id);
   req.session.type = "audit";
@@ -201,7 +201,7 @@ const getAudit = async (req, res) => {
       if (serviceId) {
         service = await getCachedServiceById(serviceId, req.id);
       } else {
-        logger.info(`User audit tab - No service mapping for client ${clientId} using client id`);
+        logger.info(`User audit tab - No service mapping for client ${clientId} using client id`, { correlationId });
         service = { name: clientId };
       }
     }

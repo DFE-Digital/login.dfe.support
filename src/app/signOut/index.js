@@ -10,7 +10,7 @@ const sessionTimeout = require('./session-timeout');
 const router = express.Router({ mergeParams: true });
 
 const signout = () => {
-  logger.info('Mounting signOut route');
+  logger.debug('Mounting signOut route');
   router.get('/', isLoggedIn, signOutUser);
   router.get('/complete', complete);
   router.get('/session-timeout', sessionTimeout);
