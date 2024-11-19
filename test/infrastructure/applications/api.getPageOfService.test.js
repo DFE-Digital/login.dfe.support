@@ -76,4 +76,30 @@ describe('when getting a users services mapping from api', () => {
       },
     });
   });
+
+  it('should return false on a 404 response', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('Not found');
+      error.statusCode = 404;
+      throw error;
+    });
+
+    const result = await getPageOfService(pageNumber, pageSize);
+    expect(result).toEqual(undefined);
+  });
+
+  it('should raise an exception on any failure status code that is not 404', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('Server Error');
+      error.statusCode = 500;
+      throw error;
+    });
+
+    const act = () => getPageOfService(pageNumber, pageSize);
+
+    await expect(act).rejects.toThrow(expect.objectContaining({
+      message: 'Server Error',
+      statusCode: 500,
+    }));
+  });
 });

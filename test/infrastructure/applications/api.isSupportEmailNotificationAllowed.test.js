@@ -13,21 +13,11 @@ jest.mock('./../../../src/infrastructure/config', () => require('../../utils').c
 
 const { fetchApi } = require('login.dfe.async-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
-const { getServiceById } = require('../../../src/infrastructure/applications/api');
+const { isSupportEmailNotificationAllowed } = require('../../../src/infrastructure/applications/api');
 
-const serviceId = 'service-1';
 const apiResponse = [
   {
-    userId: 'user-1',
-    serviceId: 'service1Id',
-    organisationId: 'organisation-1',
-    roles: [],
-  },
-  {
-    userId: 'user-1',
-    serviceId: 'service2Id',
-    organisationId: 'organisation-1',
-    roles: [],
+    flag: true,
   },
 ];
 
@@ -46,26 +36,19 @@ describe('when getting a users services mapping from api', () => {
     })
   });
 
-  it('then it should return undefined if no id is provided', async () => {
-    const blankServiceId = '';
-    const result = await getServiceById(blankServiceId);
-
-    expect(result).toBe(undefined);
-    expect(fetchApi.mock.calls).toHaveLength(0);
-  });
-
   it('then it should call users resource with user id', async () => {
-    await getServiceById(serviceId);
+    const result = await isSupportEmailNotificationAllowed();
 
+    expect(result).toBe(true);
     expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][0]).toBe('http://applications.test/services/service-1');
+    expect(fetchApi.mock.calls[0][0]).toBe('http://applications.test/constants/toggleflags/email/support');
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       method: 'GET',
     });
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
-    await getServiceById(serviceId);
+    await isSupportEmailNotificationAllowed();
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
@@ -75,7 +58,7 @@ describe('when getting a users services mapping from api', () => {
   });
 
   it('then it should include the correlation id', async () => {
-    await getServiceById(serviceId);
+    await isSupportEmailNotificationAllowed();
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
@@ -84,15 +67,27 @@ describe('when getting a users services mapping from api', () => {
     });
   });
 
-  it('should return false on a 404 response', async () => {
+  it('then it should return false if false is returned from the API', async () => {
+    fetchApi.mockImplementation(() => {
+      return [
+        {
+          flag: false,
+        },
+      ];
+    });
+    const result = await isSupportEmailNotificationAllowed();
+    expect(result).toBe(false);
+  });
+
+  it('should return true on a 404 response', async () => {
     fetchApi.mockImplementation(() => {
       const error = new Error('Not found');
       error.statusCode = 404;
       throw error;
     });
 
-    const result = await getServiceById(serviceId);
-    expect(result).toEqual(undefined);
+    const result = await isSupportEmailNotificationAllowed();
+    expect(result).toEqual(true);
   });
 
   it('should raise an exception on any failure status code that is not 404', async () => {
@@ -102,7 +97,7 @@ describe('when getting a users services mapping from api', () => {
       throw error;
     });
 
-    const act = () => getServiceById(serviceId);
+    const act = () => isSupportEmailNotificationAllowed();
 
     await expect(act).rejects.toThrow(expect.objectContaining({
       message: 'Server Error',
