@@ -48,6 +48,28 @@ describe('when searching for users', () => {
     });
   });
 
+  it('should include sortBy in the url if one is specified', async () => {
+    const testSortBy = 'name';
+    await searchForUsers(criteria, pageNumber, testSortBy, sortDirection, filters);
+
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('http://search.test/users?criteria=testCriteria&page=1&sortBy=searchableName');
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'GET',
+    });
+  });
+
+  it('should include sortDirection in the url if one is specified', async () => {
+    const ascSortDirection = 'asc';
+    await searchForUsers(criteria, pageNumber, sortBy, ascSortDirection, filters);
+
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('http://search.test/users?criteria=testCriteria&page=1&sortDirection=asc');
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'GET',
+    });
+  });
+
   it('then it should use the token from jwt strategy as bearer token', async () => {
     await searchForUsers(criteria, pageNumber, sortBy, sortDirection, filters);
 
