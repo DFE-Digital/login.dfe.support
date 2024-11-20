@@ -124,7 +124,7 @@ const searchOrganisations = async (criteria, filterByCategories, filterByStatus,
   return await callOrganisationsApi(uri, 'GET', undefined, correlationId);
 };
 
-const setUserAccessToOrganisation = async (userId, organisationId, roleId, correlationId, status, reason, ) => {
+const setUserAccessToOrganisation = async (userId, organisationId, roleId, correlationId, status, reason) => {
   const body = { roleId, status, reason };
   return await callOrganisationsApi(`organisations/${organisationId}/users/${userId}`, 'PUT', body, correlationId);
 };
@@ -150,7 +150,7 @@ const listInvitationServices = async (page, pageSize, correlationId) => {
 };
 
 const listOrganisationStatus = async (correlationId) => {
-  return callOrganisationsApi('organisations/states', 'GET', undefined);
+  return callOrganisationsApi('organisations/states', 'GET', undefined, correlationId);
 };
 
 const listRequests = async (page, filterStates, correlationId) => {
@@ -172,16 +172,16 @@ const getRequestById = async (requestId, correlationId) => {
 const updateRequestById = async (requestId, status, actionedBy, actionedReason, actionedAt, correlationId) => {
   const body = {};
   if (status) {
-    body.status = status
+    body.status = status;
   }
   if (actionedBy) {
-    body.actioned_by = actionedBy
+    body.actioned_by = actionedBy;
   }
   if (actionedReason) {
-    body.actioned_reason = actionedReason
+    body.actioned_reason = actionedReason;
   }
   if (actionedAt) {
-    body.actioned_at = actionedAt
+    body.actioned_at = actionedAt;
   }
   return callOrganisationsApi(`organisations/requests/${requestId}`, 'PATCH', body, correlationId);
 };

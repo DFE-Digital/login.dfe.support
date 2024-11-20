@@ -10,11 +10,15 @@ jest.mock('./../../../src/infrastructure/config', () => require('../../utils').c
 }));
 
 const { fetchApi } = require('login.dfe.async-retry');
-const jwtStrategy = require('login.dfe.jwt-strategies');
-const { deleteInvitationOrganisation } = require('../../../src/infrastructure/organisations/api');
 
-const invitationId = 'inv-1';
-const organisationId = 'org-1';
+const jwtStrategy = require('login.dfe.jwt-strategies');
+const { updateRequestById } = require('../../../src/infrastructure/organisations/api');
+
+const requestId = 'request-1';
+const status = 1;
+const actionedBy = 'internal-user-1';
+const actionedReason = 'A reason';
+const actionedAt = '2024-10-25T10:27:54.393';
 const correlationId = 'abc123';
 const apiResponse = {
   users: [],
@@ -36,18 +40,40 @@ describe('when getting a users organisations mapping from api', () => {
     })
   });
 
-  it('then it should call associated-with-user resource with user id', async () => {
-    await deleteInvitationOrganisation(invitationId, organisationId, correlationId);
+  it('should call the api with the request body', async () => {
+    await updateRequestById(requestId, status, actionedBy, actionedReason, actionedAt, correlationId);
 
     expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][0]).toBe('http://organisations.test/organisations/org-1/invitations/inv-1');
+    expect(fetchApi.mock.calls[0][0]).toBe('http://organisations.test/organisations/requests/request-1');
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      method: 'DELETE',
+      method: 'PATCH',
+      body: {
+        status: 1,
+        actioned_by: 'internal-user-1',
+        actioned_reason: 'A reason',
+        actioned_at: '2024-10-25T10:27:54.393',
+      },
     });
   });
 
-  it('then it should use the token from jwt strategy as bearer token', async () => {
-    await deleteInvitationOrganisation(invitationId, organisationId, correlationId);
+  it('should call the api with not all 4 values if they are not all provided', async () => {
+    const actionedByUndef = undefined;
+    const actionedReasonUndef = undefined;
+    await updateRequestById(requestId, status, actionedByUndef, actionedReasonUndef, actionedAt, correlationId);
+
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('http://organisations.test/organisations/requests/request-1');
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'PATCH',
+      body: {
+        status: 1,
+        actioned_at: '2024-10-25T10:27:54.393',
+      },
+    });
+  });
+
+  it('should use the token from jwt strategy as bearer token', async () => {
+    await updateRequestById(requestId, status, actionedBy, actionedReason, actionedAt, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
@@ -56,8 +82,9 @@ describe('when getting a users organisations mapping from api', () => {
     });
   });
 
-  it('then it should include the correlation id', async () => {
-    await deleteInvitationOrganisation(invitationId, organisationId, correlationId);
+  it('should include the correlation id', async () => {
+    await updateRequestById(requestId, status, actionedBy, actionedReason, actionedAt, correlationId);
+
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
         'x-correlation-id': correlationId,
@@ -72,7 +99,7 @@ describe('when getting a users organisations mapping from api', () => {
       throw error;
     });
 
-    const result = await deleteInvitationOrganisation(invitationId, organisationId, correlationId);
+    const result = await updateRequestById(requestId, status, actionedBy, actionedReason, actionedAt, correlationId);
     expect(result).toEqual(null);
   });
 
@@ -83,7 +110,7 @@ describe('when getting a users organisations mapping from api', () => {
       throw error;
     });
 
-    const result = await deleteInvitationOrganisation(invitationId, organisationId, correlationId);
+    const result = await updateRequestById(requestId, status, actionedBy, actionedReason, actionedAt, correlationId);
     expect(result).toEqual(null);
   });
 
@@ -94,7 +121,7 @@ describe('when getting a users organisations mapping from api', () => {
       throw error;
     });
 
-    const result = await deleteInvitationOrganisation(invitationId, organisationId, correlationId);
+    const result = await updateRequestById(requestId, status, actionedBy, actionedReason, actionedAt, correlationId);
     expect(result).toEqual(false);
   });
 
@@ -105,7 +132,7 @@ describe('when getting a users organisations mapping from api', () => {
       throw error;
     });
 
-    const act = () => deleteInvitationOrganisation(invitationId, organisationId, correlationId);
+    const act = () => updateRequestById(requestId, status, actionedBy, actionedReason, actionedAt, correlationId);
 
     await expect(act).rejects.toThrow(expect.objectContaining({
       message: 'Server Error',

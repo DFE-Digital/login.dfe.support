@@ -7,7 +7,7 @@ const callApi = async (endpoint, method, body, correlationId) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();
 
   try {
-    return await fetchApi(`${config.search.service.url}${endpoint}`,{
+    return await fetchApi(`${config.search.service.url}${endpoint}`, {
       method: method,
       headers: {
         authorization: `bearer ${token}`,
@@ -80,7 +80,7 @@ const searchForUsers = async (criteria, pageNumber, sortBy, sortDirection, filte
       numberOfPages: results.numberOfPages,
       totalNumberOfResults: results.totalNumberOfResults,
       users: results.users.map(mapSearchUserToSupportModel)
-    }
+    };
   } catch (e) {
     throw new Error(`Error searching for users with criteria ${criteria} (page: ${pageNumber}) - ${e.message}`);
   }
@@ -112,7 +112,7 @@ const updateIndex = async (userId, body, correlationId) => {
 
 const createIndex = async (id, correlationId) => {
   const body = {
-    id
+    id,
   };
   await callApi('/users/update-index', 'POST', body, correlationId);
 };
