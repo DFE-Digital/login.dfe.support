@@ -157,7 +157,7 @@ const putSingleServiceIdentifierForUser = async (userId, serviceId, orgId, key, 
       },
       body: {
         value: value
-      }
+      },
     });
     return true;
   } catch (e) {

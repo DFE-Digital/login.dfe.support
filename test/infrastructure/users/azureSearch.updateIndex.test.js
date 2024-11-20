@@ -12,7 +12,6 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 jest.mock('login.dfe.async-retry');
 jest.mock('uuid', () => ({v4: jest.fn().mockReturnValue('some-uuid')}));
 
-
 const users = [
   {
     id: 'user1',
@@ -28,7 +27,7 @@ const users = [
   },
 ];
 
-const {fetchApi} = require('login.dfe.async-retry');
+const { fetchApi } = require('login.dfe.async-retry');
 
 describe('when updating an index with new data in azure search', () => {
   let updateIndex;
@@ -45,7 +44,7 @@ describe('when updating an index with new data in azure search', () => {
     expect(fetchApi.mock.calls).toHaveLength(1);
     expect(fetchApi.mock.calls[0][0]).toBe('https://test-search.search.windows.net/indexes/new-index-name/docs/index?api-version=2016-09-01');
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      method: 'POST'
+      method: 'POST',
     });
   });
 

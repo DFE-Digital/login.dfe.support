@@ -48,15 +48,31 @@ describe('when searching for users', () => {
     });
   });
 
-  it('should include sortBy in the url if one is specified', async () => {
-    const testSortBy = 'name';
+  it.each([
+    ['searchableName', 'name'],
+    ['searchableEmail', 'email'],
+    ['primaryOrganisation', 'organisation'],
+    ['lastLogin', 'lastlogin'],
+    ['statusId', 'status'],
+  ])('should return a url with %s as a sortBy param when %s is provided', async (expectedResult, testSortBy) => {
     await searchForUsers(criteria, pageNumber, testSortBy, sortDirection, filters);
 
     expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][0]).toBe('http://search.test/users?criteria=testCriteria&page=1&sortBy=searchableName');
+    expect(fetchApi.mock.calls[0][0]).toBe(`http://search.test/users?criteria=testCriteria&page=1&sortBy=${expectedResult}`);
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       method: 'GET',
     });
+  });
+
+  it('should throw an exception if the sortBy value is not recognised', async () => {
+    const testSortBy = 'willFail';
+
+    const act = () => searchForUsers(criteria, pageNumber, testSortBy, sortDirection, filters);
+
+    await expect(act).rejects.toThrow(expect.objectContaining({
+      name: 'Error',
+      message: 'Error searching for users with criteria testCriteria (page: 1) - Unexpected user sort field willFail',
+    }));
   });
 
   it('should include sortDirection in the url if one is specified', async () => {
@@ -65,6 +81,19 @@ describe('when searching for users', () => {
 
     expect(fetchApi.mock.calls).toHaveLength(1);
     expect(fetchApi.mock.calls[0][0]).toBe('http://search.test/users?criteria=testCriteria&page=1&sortDirection=asc');
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'GET',
+    });
+  });
+
+  it('it should include a filter if one is provided', async () => {
+    const testFilter = {
+      organisationTypes: [52],
+    };
+    await searchForUsers(criteria, pageNumber, sortBy, sortDirection, testFilter);
+
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('http://search.test/users?criteria=testCriteria&page=1&filter_organisationTypes=52');
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       method: 'GET',
     });

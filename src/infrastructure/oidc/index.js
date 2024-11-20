@@ -8,11 +8,10 @@ const asyncRetry = require('login.dfe.async-retry');
 const { getSingleUserService } = require('./../../infrastructure/access');
 
 custom.setHttpOptionsDefaults({
-  timeout: 10000
-})
+  timeout: 10000,
+});
 
 const getPassportStrategy = async () => {
-
   const issuer = await asyncRetry(async () => await Issuer.discover(config.identifyingParty.url), asyncRetry.strategies.apiStrategy);
 
   const client = new issuer.Client({
@@ -27,7 +26,7 @@ const getPassportStrategy = async () => {
     client,
     params: {
       redirect_uri: `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/auth/cb`,
-      scope: 'openid profile email'
+      scope: 'openid profile email',
     },
   }, (tokenset, authUserInfo, done) => {
     client.userinfo(tokenset.access_token)
@@ -114,9 +113,9 @@ const init = async (app) => {
         checkSessionAndRedirect();
       }
 
-      if(allUserServices && allUserServices.roles){
+      if (allUserServices && allUserServices.roles) {
         const roles = allUserServices.roles.sort((a, b) => a.name.localeCompare(b.name, 'es', {sensitivity: 'base'}));
-        const supportClaims = {isRequestApprover: roles.some(i => i.code === 'request_approver'), isSupportUser: roles.some(i => i.code === 'support_user')};
+        const supportClaims = { isRequestApprover: roles.some(i => i.code === 'request_approver'), isSupportUser: roles.some(i => i.code === 'support_user')};
         if (!supportClaims || !supportClaims.isSupportUser) {
           checkSessionAndRedirect();
         } else {
@@ -143,7 +142,6 @@ const init = async (app) => {
     })(req, res, next);
   });
 };
-
 
 module.exports = {
   init,
