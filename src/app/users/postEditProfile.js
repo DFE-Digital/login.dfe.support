@@ -1,8 +1,8 @@
-const logger = require('./../../infrastructure/logger');
-const { sendResult } = require('./../../infrastructure/utils');
+const logger = require('../../infrastructure/logger');
+const { sendResult } = require('../../infrastructure/utils');
 const { getUserDetails, getUserDetailsById, updateUserDetails, waitForIndexToUpdate } = require('./utils');
-const { updateUser } = require('./../../infrastructure/directories');
-const { putSingleServiceIdentifierForUser } = require('./../../infrastructure/access');
+const { updateUser } = require('../../infrastructure/directories');
+const { putSingleServiceIdentifierForUser } = require('../../infrastructure/access');
 
 const validate = (req) => {
   const validationMessages = {};

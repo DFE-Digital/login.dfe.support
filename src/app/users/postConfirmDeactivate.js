@@ -26,7 +26,7 @@ const updateUserIndex = async (uid, correlationId) => {
 
 const postConfirmDeactivate = async (req, res) => {
   const user = await getUserDetails(req);
-
+  const correlationId = req.id;
   // If just the dropdown is selected, have the reason be that.  If both dropdown and text are used, then the reason
   //  is both of them separated with a '-'
   if (req.body['select-reason'] && req.body['select-reason'] !== 'Select a reason' && req.body.reason.trim() === '') {
@@ -52,7 +52,7 @@ const postConfirmDeactivate = async (req, res) => {
       for (const serviceRequest of userServiceRequests) {
         // Request status 0 is 'pending', 2 is 'overdue', 3 is 'no approvers'
         if (serviceRequest.status === 0 || serviceRequest.status === 2 || serviceRequest.status === 3) {
-          logger.info(`Rejecting service request with id: ${serviceRequest.id}`);
+          logger.info(`Rejecting service request with id: ${serviceRequest.id}`, { correlationId });
           const requestBody = {
             status: -1,
             actioned_reason: 'User deactivation',
@@ -67,7 +67,7 @@ const postConfirmDeactivate = async (req, res) => {
       for (const organisationRequest of organisationRequests) {
         // Request status 0 is 'pending', 2 is 'overdue' and 3 is 'no approvers'
         if (organisationRequest.status.id === 0 || organisationRequest.status.id === 2 || organisationRequest.status.id === 3) {
-          logger.info(`Rejecting organisation request with id: ${organisationRequest.id}`);
+          logger.info(`Rejecting organisation request with id: ${organisationRequest.id}`, { correlationId });
           const status = -1;
           const actionedReason = 'User deactivation';
           const actionedBy = req.user.sub;
@@ -78,7 +78,7 @@ const postConfirmDeactivate = async (req, res) => {
 
       const userServices = await getServicesByUserId(user.id) || [];
       for (const service of userServices) {
-        logger.info(`Removing service from user: ${service.userId} with serviceId: ${service.serviceId} and organisationId: ${service.organisationId}`);
+        logger.info(`Removing service from user: ${service.userId} with serviceId: ${service.serviceId} and organisationId: ${service.organisationId}`, { correlationId });
         removeServiceFromUser(service.userId, service.serviceId, service.organisationId, req.id);
       }
     }

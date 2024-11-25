@@ -1,11 +1,18 @@
 'use strict';
-const { getAllServices, isSupportEmailNotificationAllowed } = require('./../../infrastructure/applications');
-const config = require('./../../infrastructure/config');
+
 const { NotificationClient } = require('login.dfe.jobs-client');
-const { listRolesOfService, addInvitationService, addUserService, updateInvitationService, updateUserService } = require('./../../infrastructure/access');
-const { getUserOrganisations, getInvitationOrganisations } = require('./../../infrastructure/organisations');
-const logger = require('./../../infrastructure/logger');
 const { get: getSafePath } = require('lodash');
+const { getAllServices, isSupportEmailNotificationAllowed } = require('../../infrastructure/applications');
+const config = require('../../infrastructure/config');
+const {
+  listRolesOfService,
+  addInvitationService,
+  addUserService,
+  updateInvitationService,
+  updateUserService,
+} = require('../../infrastructure/access');
+const { getUserOrganisations, getInvitationOrganisations } = require('../../infrastructure/organisations');
+const logger = require('../../infrastructure/logger');
 
 const get = async (req, res) => {
   const userId = req.params.uid;
@@ -13,10 +20,10 @@ const get = async (req, res) => {
     return res.redirect(`/users/${userId}/organisations`);
   }
   const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisations(userId, req.id);
-  const organisationDetails = userOrganisations.find(x => x.organisation.id === req.params.orgId);
+  const organisationDetails = userOrganisations.find((x) => x.organisation.id === req.params.orgId);
 
   const userServices = getSafePath(req, 'session.user.services', []);
-  const services = userServices.map(service => ({
+  const services = userServices.map((service) => ({
     id: service.serviceId,
     name: '',
     roles: service.roles,
@@ -27,9 +34,9 @@ const get = async (req, res) => {
 
     for (let i = 0; i < services.length; i++) {
       const service = services[i];
-      const serviceDetails = allServices.services.find(x => x.id === service.id);
+      const serviceDetails = allServices.services.find((x) => x.id === service.id);
       const allRolesOfService = await listRolesOfService(service.id, req.id);
-      const roleDetails = allRolesOfService.filter(x => service.roles.find(y => y.toLowerCase() === x.id.toLowerCase()));
+      const roleDetails = allRolesOfService.filter((x) => service.roles.find((y) => y.toLowerCase() === x.id.toLowerCase()));
       service.name = serviceDetails.name;
       service.roles = roleDetails;
     }
@@ -53,7 +60,7 @@ const get = async (req, res) => {
 };
 
 const post = async (req, res) => {
-  const uid = req.params.uid;
+  const { uid } = req.params;
   if (!req.session.user) {
     return res.redirect(`/users/${uid}/organisations`);
   }
@@ -78,16 +85,16 @@ const post = async (req, res) => {
         const userOrganisations = invitationId
           ? await getInvitationOrganisations(invitationId, req.id)
           : await getUserOrganisations(uid, req.id);
-        const organisationDetails = userOrganisations.find(x => x.organisation.id === organisationId);
+        const organisationDetails = userOrganisations.find((x) => x.organisation.id === organisationId);
         const userOrgPermission = {
           id: organisationDetails.role.id,
           name: organisationDetails.role.name,
         };
-        const serviceDetails = allServices.services.find(x => x.id === service.serviceId);
+        const serviceDetails = allServices.services.find((x) => x.id === service.serviceId);
         const allRolesOfService = await listRolesOfService(service.serviceId, req.id);
-        const roleDetails = allRolesOfService.filter(x => service.roles.find(y => y.toLowerCase() === x.id.toLowerCase()));
+        const roleDetails = allRolesOfService.filter((x) => service.roles.find((y) => y.toLowerCase() === x.id.toLowerCase()));
 
-        const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});
+        const notificationClient = new NotificationClient({ connectionString: config.notifications.connectionString });
         await notificationClient.sendServiceRequestApproved(
           req.session.user.email,
           req.session.user.firstName,
@@ -113,7 +120,7 @@ const post = async (req, res) => {
         newValue: req.session.user.services,
       }],
     });
-    res.flash('info', `Services successfully added`);
+    res.flash('info', 'Services successfully added');
   } else {
     logger.audit(`${req.user.email} (id: ${req.user.sub}) updated service ${req.session.user.services[0].name} for organisation id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`, {
       type: 'support',
@@ -128,10 +135,10 @@ const post = async (req, res) => {
     });
     res.flash('info', `${req.session.user.services[0].name} updated successfully`);
   }
-  res.redirect(`/users/${uid}/services`)
+  res.redirect(`/users/${uid}/services`);
 };
 
 module.exports = {
   get,
-  post
+  post,
 };

@@ -5,7 +5,7 @@ const {
 } = require('winston');
 
 const {
-  combine, prettyPrint, errors, simple, colorize,
+  combine, prettyPrint, errors, simple, json, timestamp,
 } = format;
 
 const WinstonSequelizeTransport = require('login.dfe.audit.winston-sequelize-transport');
@@ -15,7 +15,7 @@ const config = require('../config');
 
 const logLevel = (config && config.loggerSettings && config.loggerSettings.logLevel) ? config.loggerSettings.logLevel : 'info';
 
-const levelsAndColor = {
+const customLevels = {
   levels: {
     audit: 0,
     error: 1,
@@ -34,10 +34,10 @@ const levelsAndColor = {
   },
 };
 
-addColors(levelsAndColor.colors);
+addColors(customLevels.colors);
 
 const loggerConfig = {
-  levels: levelsAndColor.levels,
+  levels: customLevels.levels,
   transports: [],
 };
 
@@ -48,8 +48,8 @@ loggerConfig.transports.push(new transports.Console({
   level: logLevel,
   format: combine(
     hideAudit(),
-    colorize({ all: true }),
-    simple(),
+    timestamp(),
+    json(),
   ),
 }));
 
@@ -60,14 +60,22 @@ if (sequelizeTransport) {
 }
 
 if (config.hostingEnvironment.applicationInsights) {
-  appInsights.setup(config.hostingEnvironment.applicationInsights).setAutoCollectConsole(false, false).start();
-  loggerConfig.transports.push(new AppInsightsTransport({
-    format: combine(hideAudit(), format.json()),
-    client: appInsights.defaultClient,
-    applicationName: config.loggerSettings.applicationName || 'Support',
-    type: 'event',
-    treatErrorsAsExceptions: true,
-  }));
+  appInsights
+    .setup(config.hostingEnvironment.applicationInsights)
+    .setAutoCollectConsole(false, false).start();
+
+  loggerConfig.transports.push(
+    new AppInsightsTransport({
+      format: combine(
+        hideAudit(),
+        format.json(),
+      ),
+      client: appInsights.defaultClient,
+      applicationName: config.loggerSettings.applicationName || 'Support',
+      type: 'event',
+      treatErrorsAsExceptions: true,
+    }),
+  );
 }
 
 const logger = createLogger({
