@@ -123,7 +123,7 @@ const notificationsSchema = new SimpleSchema({
 });
 
 const entraSchema = new SimpleSchema({
-  enableEntraSignIn: {
+  useEntraForAccountRegistration: {
     type: Boolean,
     optional: true,
     defaultValue: false,

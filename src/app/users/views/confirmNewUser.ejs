@@ -75,7 +75,7 @@
                     <label class="form-label" for="email-contents">Email contents</label>
                     <div class="email-editor">
                         <p>Dear <%=user.firstName%> <%=user.lastName%></p>
-                        <% if (locals.entra && locals.entra.enableEntraSignIn === true) { %>
+                        <% if (locals.entra && locals.entra.useEntraForAccountRegistration === true) { %>
                             <textarea class="form-control full-width" rows="8" name="email-contents" id="email-contents">Your email address <%=locals.user.email%> can now be used to create a DfE Sign-in account.</textarea>
                             <p>Visit the registration page to create your account.</p>
                             

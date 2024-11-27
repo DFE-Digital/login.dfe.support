@@ -108,7 +108,7 @@ const init = async () => {
       assets: assetsUrl,
     },
     entra: {
-      enableEntraSignIn: config.entra.enableEntraSignIn,
+      useEntraForAccountRegistration: config.entra.useEntraForAccountRegistration,
     },
     app: {
       title: 'DfE Sign-in Support Console',
