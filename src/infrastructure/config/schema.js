@@ -119,7 +119,15 @@ const togglesSchema = new SimpleSchema({
 });
 
 const notificationsSchema = new SimpleSchema({
-  connectionString: patterns.redis
+  connectionString: patterns.redis,
+});
+
+const entraSchema = new SimpleSchema({
+  useEntraForAccountRegistration: {
+    type: Boolean,
+    optional: true,
+    defaultValue: false,
+  },
 });
 
 const accessIdentifiers = new SimpleSchema({
@@ -151,6 +159,7 @@ const schema = new SimpleSchema({
   notifications: notificationsSchema,
   assets: new SimpleSchema({ ...schemas.assets }),
   adapter: adapterSchema,
+  entra: entraSchema,
 });
 
 module.exports.validate = () => {

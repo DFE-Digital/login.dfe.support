@@ -107,6 +107,9 @@ const init = async () => {
       interactions: config.hostingEnvironment.interactionsUrl,
       assets: assetsUrl,
     },
+    entra: {
+      useEntraForAccountRegistration: config.entra.useEntraForAccountRegistration,
+    },
     app: {
       title: 'DfE Sign-in Support Console',
       environmentBannerMessage:
