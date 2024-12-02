@@ -25,7 +25,7 @@ const apiResponse = {
   id: invitationId
 };
 
-describe('when getting a page of users from directories api', () => {
+describe('when updating an invite', () => {
   beforeEach(() => {
     fetchApi.mockReset();
     fetchApi.mockImplementation(() => {
@@ -40,7 +40,7 @@ describe('when getting a page of users from directories api', () => {
     })
   });
 
-  it('then it should call invitations resource with invitation id', async () => {
+  it('then it should PATCH the invitations resource with invitation id', async () => {
     await updateInvite(invitationId, email, correlationId);
 
     expect(fetchApi.mock.calls).toHaveLength(1);

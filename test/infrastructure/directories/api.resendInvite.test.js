@@ -24,7 +24,7 @@ const apiResponse = {
   id: invitationId,
 };
 
-describe('when getting a page of users from directories api', () => {
+describe('when resending an invite', () => {
   beforeEach(() => {
     fetchApi.mockReset();
     fetchApi.mockImplementation(() => {
@@ -39,7 +39,7 @@ describe('when getting a page of users from directories api', () => {
     })
   });
 
-  it('then it should call invitations resource with invitation id', async () => {
+  it('should POST to the invitations resource with invitation id', async () => {
     await resendInvite(invitationId, correlationId);
 
     expect(fetchApi.mock.calls).toHaveLength(1);

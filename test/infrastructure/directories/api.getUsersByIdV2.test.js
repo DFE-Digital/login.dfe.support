@@ -35,7 +35,7 @@ describe('when getting a page of users from directories api', () => {
     })
   });
 
-  it('then it calls directories api with Ids', async () => {
+  it('then it sends a POST directories api with ids in the body', async () => {
     await getUsersByIdV2(userIds, correlationId);
 
     expect(fetchApi.mock.calls).toHaveLength(1);
@@ -44,6 +44,7 @@ describe('when getting a page of users from directories api', () => {
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       method: 'POST',
     });
+    expect(fetchApi.mock.calls[0][1].body.ids).toBe('user1,user2');
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {

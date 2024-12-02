@@ -46,7 +46,7 @@ describe('when creating a change email code in the directories api', () => {
     })
   });
 
-  it('then it should call user codes resource with uid', async () => {
+  it('should POST to the invitations endpoint when given valid parameters', async () => {
     await createInvite(givenName, familyName, email, clientId, redirectUri, correlationId, overrides, permission, orgName);
 
     expect(fetchApi.mock.calls).toHaveLength(1);

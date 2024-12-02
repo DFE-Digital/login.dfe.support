@@ -23,7 +23,7 @@ const apiResponse = {
   tokenSerialNumber: '12345678901',
 };
 
-describe('when getting a page of users from directories api', () => {
+describe('when getting a change email code', () => {
   beforeEach(() => {
     fetchApi.mockReset();
     fetchApi.mockImplementation(() => {

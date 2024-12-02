@@ -47,7 +47,7 @@ describe('when getting a users services mapping from api', () => {
     })
   });
 
-  it('then it should call users resource with user id', async () => {
+  it('should get the services when the endpoint is called with valid parameters', async () => {
     await getPageOfService(pageNumber, pageSize);
 
     expect(fetchApi.mock.calls).toHaveLength(1);
@@ -77,7 +77,7 @@ describe('when getting a users services mapping from api', () => {
     });
   });
 
-  it('should return false on a 404 response', async () => {
+  it('should return undefined on a 404 response', async () => {
     fetchApi.mockImplementation(() => {
       const error = new Error('Not found');
       error.statusCode = 404;

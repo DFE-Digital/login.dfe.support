@@ -36,7 +36,7 @@ describe('when getting a users services mapping from api', () => {
     })
   });
 
-  it('then it should call users resource with user id', async () => {
+  it('should get the flag when the endpoint is called', async () => {
     const result = await isSupportEmailNotificationAllowed();
 
     expect(result).toBe(true);
@@ -48,16 +48,6 @@ describe('when getting a users services mapping from api', () => {
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
-    await isSupportEmailNotificationAllowed();
-
-    expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      headers: {
-        authorization: 'bearer token',
-      },
-    });
-  });
-
-  it('then it should include the correlation id', async () => {
     await isSupportEmailNotificationAllowed();
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
