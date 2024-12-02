@@ -1,7 +1,7 @@
 const SimpleSchema = require('simpl-schema').default;
 const { validateConfigAgainstSchema, schemas, patterns } = require('login.dfe.config.schema.common');
 const config = require('./index');
-const logger = require('./../logger');
+const logger = require('../logger');
 
 const identifyingPartySchema = new SimpleSchema({
   url: patterns.url,
@@ -119,7 +119,15 @@ const togglesSchema = new SimpleSchema({
 });
 
 const notificationsSchema = new SimpleSchema({
-  connectionString: patterns.redis
+  connectionString: patterns.redis,
+});
+
+const entraSchema = new SimpleSchema({
+  useEntraForAccountRegistration: {
+    type: Boolean,
+    optional: true,
+    defaultValue: false,
+  },
 });
 
 const accessIdentifiers = new SimpleSchema({
@@ -151,6 +159,7 @@ const schema = new SimpleSchema({
   notifications: notificationsSchema,
   assets: new SimpleSchema({ ...schemas.assets }),
   adapter: adapterSchema,
+  entra: entraSchema,
 });
 
 module.exports.validate = () => {

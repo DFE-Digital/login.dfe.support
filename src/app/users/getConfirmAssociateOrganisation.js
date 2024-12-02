@@ -1,15 +1,21 @@
-const logger = require('./../../infrastructure/logger');
-const config = require('./../../infrastructure/config');
 const { NotificationClient } = require('login.dfe.jobs-client');
-const { addInvitationOrganisation, setUserAccessToOrganisation, getOrganisationById, getPendingRequestsAssociatedWithUser, updateRequestById } = require('./../../infrastructure/organisations');
-const { getSearchDetailsForUserById, updateIndex } = require('./../../infrastructure/search');
+const logger = require('../../infrastructure/logger');
+const config = require('../../infrastructure/config');
+const {
+  addInvitationOrganisation,
+  setUserAccessToOrganisation,
+  getOrganisationById,
+  getPendingRequestsAssociatedWithUser,
+  updateRequestById,
+} = require('../../infrastructure/organisations');
+const { getSearchDetailsForUserById, updateIndex } = require('../../infrastructure/search');
 const { waitForIndexToUpdate } = require('./utils');
-const { isSupportEmailNotificationAllowed } = require ('./../../infrastructure/applications');
+const { isSupportEmailNotificationAllowed } = require('../../infrastructure/applications');
 
 const addOrganisationToInvitation = async (uid, req) => {
   const invitationId = uid.substr(4);
-  const organisationId = req.session.user.organisationId;
-  const organisationName = req.session.user.organisationName;
+  const { organisationId } = req.session.user;
+  const { organisationName } = req.session.user;
   const permissionId = req.session.user.permission;
 
   await addInvitationOrganisation(invitationId, organisationId, permissionId, req.id);
@@ -24,14 +30,14 @@ const addOrganisationToInvitation = async (uid, req) => {
   });
 };
 const addOrganisationToUser = async (uid, req) => {
-  const organisationId = req.session.user.organisationId;
-  const organisationName = req.session.user.organisationName;
+  const { organisationId } = req.session.user;
+  const { organisationName } = req.session.user;
   const permissionId = req.session.user.permission;
 
   await setUserAccessToOrganisation(uid, organisationId, permissionId, req.id);
 
   const pendingOrgRequests = await getPendingRequestsAssociatedWithUser(uid, req.id);
-  const requestForOrg = pendingOrgRequests.find(x => x.org_id === organisationId);
+  const requestForOrg = pendingOrgRequests.find((x) => x.org_id === organisationId);
   if (requestForOrg) {
     // mark request as approved if outstanding for same org
     await updateRequestById(requestForOrg.id, 1, req.user.sub, null, Date.now(), req.id);
@@ -52,15 +58,15 @@ const addOrganisationToUser = async (uid, req) => {
 };
 
 const getConfirmAssociateOrganisation = async (req, res) => {
-  const uid = req.params.uid;
+  const { uid } = req.params;
   const isEmailAllowed = await isSupportEmailNotificationAllowed();
 
   if (uid.startsWith('inv-')) {
     await addOrganisationToInvitation(uid, req);
   } else {
     await addOrganisationToUser(uid, req);
-    if(isEmailAllowed){
-      const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});
+    if (isEmailAllowed) {
+      const notificationClient = new NotificationClient({ connectionString: config.notifications.connectionString });
       await notificationClient.sendUserAddedToOrganisation(req.session.user.email, req.session.user.firstName, req.session.user.lastName, req.session.user.organisationName);
     }
     res.flash('info', `${req.session.user.email} added to organisation`);
@@ -69,7 +75,7 @@ const getConfirmAssociateOrganisation = async (req, res) => {
   // patch search with new org
   const searchDetails = await getSearchDetailsForUserById(uid);
   if (searchDetails) {
-    const organisations = searchDetails.organisations;
+    const { organisations } = searchDetails;
     const newOrgById = await getOrganisationById(req.session.user.organisationId, req.id);
     const newOrgForSearch = {
       id: newOrgById.id,
@@ -80,13 +86,12 @@ const getConfirmAssociateOrganisation = async (req, res) => {
     };
     organisations.push(newOrgForSearch);
     const patchBody = {
-      organisations
+      organisations,
     };
     await updateIndex(uid, patchBody, req.id);
     await waitForIndexToUpdate(uid, (updated) => updated.organisations.length === organisations.length)
   }
 
-  
   return res.redirect(`/users/${uid}/services`);
 };
 

@@ -1,11 +1,10 @@
 /* eslint-disable no-param-reassign */
-const config = require('../config');
 const passport = require('passport');
 const { Strategy, Issuer, custom } = require('openid-client');
-const logger = require('../logger');
-const { getUserSupportClaims } = require('./../supportClaims');
 const asyncRetry = require('login.dfe.async-retry');
-const { getSingleUserService } = require('./../../infrastructure/access');
+const logger = require('../logger');
+const config = require('../config');
+const { getSingleUserService } = require('../access');
 
 custom.setHttpOptionsDefaults({
   timeout: 10000,
@@ -38,7 +37,7 @@ const getPassportStrategy = async () => {
         done(null, userInfo);
       })
       .catch((err) => {
-        logger.error(err);
+        logger.error('getPassportStrategy', { error: { ...err } });
         done(err);
       });
   });
@@ -53,7 +52,6 @@ const hasJwtExpired = (exp) => {
   const now = Date.now();
   return expires < now;
 };
-
 
 const init = async (app) => {
   passport.use('oidc', await getPassportStrategy());
@@ -73,6 +71,7 @@ const init = async (app) => {
   app.get('/auth', passport.authenticate('oidc'));
   app.get('/auth/cb', (req, res, next) => {
     const defaultLoggedInPath = '/';
+    const correlationId = req.id;
 
     const checkSessionAndRedirect = () => {
       if (!req.session.redirectUrl.toLowerCase().endsWith('signout')) {
@@ -91,7 +90,7 @@ const init = async (app) => {
           req.session = null;
           return res.redirect(defaultLoggedInPath);
         }
-        logger.error(`Error in auth callback - ${err}`);
+        logger.error(`Error in auth callback - ${err}`, { correlationId });
         return next(err);
       }
       if (!user) {
@@ -109,20 +108,20 @@ const init = async (app) => {
       try {
         allUserServices = await getSingleUserService(user.sub, config.access.identifiers.service, config.access.identifiers.organisation, req.id);
       } catch (error) {
-        logger.error(`Login error in auth callback-allUserServices - ${error}`);
+        logger.error('Login error in auth callback-allUserServices', { correlationId, error: { ...error } });
         checkSessionAndRedirect();
       }
 
       if (allUserServices && allUserServices.roles) {
-        const roles = allUserServices.roles.sort((a, b) => a.name.localeCompare(b.name, 'es', {sensitivity: 'base'}));
-        const supportClaims = { isRequestApprover: roles.some(i => i.code === 'request_approver'), isSupportUser: roles.some(i => i.code === 'support_user')};
+        const roles = allUserServices.roles.sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
+        const supportClaims = { isRequestApprover: roles.some(i => i.code === 'request_approver'), isSupportUser: roles.some((i) => i.code === 'support_user') };
         if (!supportClaims || !supportClaims.isSupportUser) {
           checkSessionAndRedirect();
         } else {
           Object.assign(userDetails, supportClaims);
         }
       } else {
-        logger.error(`Login error in auth callback - No services OR roles found for user ${user.sub}`);
+        logger.error(`Login error in auth callback - No services OR roles found for user ${user.sub}`, { correlationId });
         checkSessionAndRedirect();
       }
 
@@ -133,7 +132,7 @@ const init = async (app) => {
 
       return req.logIn(userDetails, (loginErr) => {
         if (loginErr) {
-          logger.error(`Login error in auth callback - ${loginErr}`);
+          logger.error(`Login error in auth callback - ${loginErr}`, { correlationId });
           return next(loginErr);
         }
         if (redirectUrl.endsWith('signout/complete')) redirectUrl = '/';

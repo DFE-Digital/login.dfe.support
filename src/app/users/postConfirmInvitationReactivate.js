@@ -1,6 +1,11 @@
-const logger = require('./../../infrastructure/logger');
-const { getUserDetails, getUserDetailsById, updateUserDetails, waitForIndexToUpdate } = require('./utils');
-const { reactivateInvite } = require('./../../infrastructure/directories');
+const logger = require('../../infrastructure/logger');
+const {
+  getUserDetails,
+  getUserDetailsById,
+  updateUserDetails,
+  waitForIndexToUpdate,
+} = require('./utils');
+const { reactivateInvite } = require('../../infrastructure/directories');
 
 const updateUserIndex = async (uid, correlationId) => {
   const user = await getUserDetailsById(uid, correlationId);

@@ -1,10 +1,10 @@
-const logger = require('./../../infrastructure/logger');
-const config = require('./../../infrastructure/config');
-const { getAndMapOrgRequest } = require('./utils');
-const { getSearchDetailsForUserById, updateIndex } = require('./../../infrastructure/search');
-const { waitForIndexToUpdate } = require('../users/utils');
-const { putUserInOrganisation, updateRequestById, getOrganisationById } = require('./../../infrastructure/organisations');
 const { NotificationClient } = require('login.dfe.jobs-client');
+const logger = require('../../infrastructure/logger');
+const config = require('../../infrastructure/config');
+const { getAndMapOrgRequest } = require('./utils');
+const { getSearchDetailsForUserById, updateIndex } = require('../../infrastructure/search');
+const { waitForIndexToUpdate } = require('../users/utils');
+const { putUserInOrganisation, updateRequestById, getOrganisationById } = require('../../infrastructure/organisations');
 
 const get = async (req, res) => {
   const request = await getAndMapOrgRequest(req);
@@ -14,7 +14,7 @@ const get = async (req, res) => {
     request,
     title: 'Select permission level - DfE Sign-in',
     backLink: true,
-    cancelLink: (req.params.from==='organisation')?`/access-requests/${req.params.rid}/${req.params.from}/review`:`/access-requests/${req.params.rid}/review`,
+    cancelLink: (req.params.from === 'organisation') ? `/access-requests/${req.params.rid}/${req.params.from}/review` : `/access-requests/${req.params.rid}/review`,
     selectedLevel: null,
     validationMessages: {},
   });
@@ -24,23 +24,23 @@ const validate = async (req) => {
   const request = await getAndMapOrgRequest(req);
   const validPermissionLevels = [0, 10000];
 
-  const level = parseInt(req.body.selectedLevel);
+  const level = parseInt(req.body.selectedLevel, 10);
   const model = {
     request,
     title: 'Select permission level - DfE Sign-in',
     backLink: true,
     requestFrom: req.params.from,
-    cancelLink: (req.params.from==='organisation')?`/access-requests/${req.params.rid}/${req.params.from}/review`:`/access-requests/${req.params.rid}/review`,
+    cancelLink: (req.params.from === 'organisation') ? `/access-requests/${req.params.rid}/${req.params.from}/review` : `/access-requests/${req.params.rid}/review`,
     selectedLevel: isNaN(level) ? undefined : level,
     validationMessages: {},
   };
 
   if (model.selectedLevel === undefined || model.selectedLevel === null) {
     model.validationMessages.selectedLevel = 'A permission level must be selected';
-  } else if (validPermissionLevels.find(x => x === model.selectedLevel) === undefined) {
+  } else if (validPermissionLevels.find((x) => x === model.selectedLevel) === undefined) {
     model.validationMessages.selectedLevel = 'A permission level must be selected';
   } else if (model.request.approverEmail) {
-    model.validationMessages.reason = `Request already actioned by ${model.request.approverEmail}`
+    model.validationMessages.reason = `Request already actioned by ${model.request.approverEmail}`;
   }
 
   return model;
@@ -90,7 +90,7 @@ const post = async (req, res) => {
     await updateRequestById(model.request.id, 1, req.user.sub, null, actionedDate, req.id);
 
     // send approved email
-    const notificationClient = new NotificationClient({connectionString: config.notifications.connectionString});
+    const notificationClient = new NotificationClient({ connectionString: config.notifications.connectionString });
     await notificationClient.sendAccessRequest(model.request.usersEmail, model.request.usersName, organisation.name, true, null);
 
     // audit organisation approved
@@ -110,7 +110,7 @@ const post = async (req, res) => {
   }
 
   res.flash('info', `Request approved - an email has been sent to ${model.request.usersEmail}. You can now add services for this user.`);
-  if(model.requestFrom && model.requestFrom === "organisation")
+  if (model.requestFrom && model.requestFrom === 'organisation')
     return res.redirect(`/users/${model.request.user_id}/organisations`);
   else
     return res.redirect('/access-requests');

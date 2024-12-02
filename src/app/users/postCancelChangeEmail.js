@@ -1,6 +1,11 @@
-const logger = require('./../../infrastructure/logger');
-const { deleteChangeEmailCode } = require('./../../infrastructure/directories');
-const { getUserDetails, getUserDetailsById, updateUserDetails, waitForIndexToUpdate } = require('./utils');
+const logger = require('../../infrastructure/logger');
+const { deleteChangeEmailCode } = require('../../infrastructure/directories');
+const {
+  getUserDetails,
+  getUserDetailsById,
+  updateUserDetails,
+  waitForIndexToUpdate,
+} = require('./utils');
 
 const updateUserIndex = async (uid, correlationId) => {
   const user = await getUserDetailsById(uid, correlationId);

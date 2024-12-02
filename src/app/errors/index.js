@@ -1,13 +1,13 @@
 'use strict';
 
 const express = require('express');
-const logger = require('../../infrastructure/logger');
 const { asyncWrapper } = require('login.dfe.express-error-handling');
+const logger = require('../../infrastructure/logger');
 
 const router = express.Router({ mergeParams: true });
 
 const errors = () => {
-  logger.info('Mounting error routes');
+  logger.debug('Mounting error routes');
 
   router.get('/not-authorised', asyncWrapper((req, res) => {
     res.status(401).render('errors/views/notAuthorised');

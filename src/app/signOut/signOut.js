@@ -4,12 +4,12 @@
 
 const url = require('url');
 const passport = require('passport');
-const config = require('./../../infrastructure/config');
+const config = require('../../infrastructure/config');
 const logger = require('../../infrastructure/logger');
 
 const logout = (req, res) => {
   req.logout(() => {
-    logger.info('user logged out.');
+    logger.debug('user logged out.', { correlationId: req.id });
   });
   req.session = null; // Needed to clear session and completely logout
 };

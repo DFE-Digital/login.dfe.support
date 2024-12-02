@@ -75,21 +75,34 @@
                     <label class="form-label" for="email-contents">Email contents</label>
                     <div class="email-editor">
                         <p>Dear <%=user.firstName%> <%=user.lastName%></p>
-                        <textarea class="form-control full-width" rows="8" name="email-contents" id="email-contents">You've received this email because you've been invited to join DfE Sign-in.</textarea>
-                        <p>Please follow the link at the bottom of this email and enter the code below so we can create your account.</p>
-                        <div class="static-text">
-                            <p>Your verification code is:</p>
+                        <% if (locals.entra && locals.entra.useEntraForAccountRegistration === true) { %>
+                            <textarea class="form-control full-width" rows="8" name="email-contents" id="email-contents">Your email address <%=locals.user.email%> can now be used to create a DfE Sign-in account.</textarea>
+                            <p>Visit the registration page to create your account.</p>
+                            
+                            <div class="static-text">
+                                <p >Kind regards,
+                                    <br>The Department for Education
+                                    <br><b>Need support?</b> <a class="govuk-link" href="<%=locals.urls.help%>">Contact us for further help?</a>
+                                </p> 
+                            </div>
+                          <% } else { %>
+                            <textarea class="form-control full-width" rows="8" name="email-contents" id="email-contents">You've received this email because you've been invited to join DfE Sign-in.</textarea>
+                            <p>Please follow the link at the bottom of this email and enter the code below so we can create your account.</p>
 
-                            <p class="code">VERFICATION CODE</p>
-
-                            <p>To verify your email address and set up your account, please follow the link below: <em>LINK TO THE SERVICE </em></p>
-
-                            <p><em>If you received this email in error, please ignore it.</em></p>
-
-                            <p>Kind regards,</p>
-
-                            <p>DfE Sign-in</p>
-                        </div>
+                            <div class="static-text">
+                                <p>Your verification code is:</p>
+    
+                                <p class="code">VERFICATION CODE</p>
+    
+                                <p>To verify your email address and set up your account, please follow the link below: <em>LINK TO THE SERVICE </em></p>
+    
+                                <p><em>If you received this email in error, please ignore it.</em></p>
+    
+                                <p>Kind regards,</p>
+    
+                                <p>DfE Sign-in</p>
+                            </div>
+                        <% } %>
                     </div>
                 </div>
             </div>

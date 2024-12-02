@@ -1,9 +1,9 @@
-const logger = require('./../../infrastructure/logger');
-const config = require('./../../infrastructure/config');
-const accessRequests = require('../../infrastructure/accessRequests');
-const organisations = require('./../../infrastructure/organisations');
-const directories = require('./../../infrastructure/directories');
 const { NotificationClient } = require('login.dfe.jobs-client');
+const logger = require('../../infrastructure/logger');
+const config = require('../../infrastructure/config');
+const accessRequests = require('../../infrastructure/accessRequests');
+const organisations = require('../../infrastructure/organisations');
+const directories = require('../../infrastructure/directories');
 
 const unpackMultiSelect = (parameter) => {
   if (!parameter) {
@@ -18,7 +18,7 @@ const unpackMultiSelect = (parameter) => {
 const search = async (req) => {
   const paramsSource = req.method === 'POST' ? req.body : req.query;
 
-  let page = paramsSource.page ? parseInt(paramsSource.page) : 1;
+  let page = paramsSource.page ? parseInt(paramsSource.page, 10) : 1;
   if (isNaN(page)) {
     page = 1;
   }
@@ -55,17 +55,16 @@ const putUserInOrganisation = async (req) => {
   let role = 0;
   let reason = req.body.message;
 
-  if(status === 1) {
+  if (status === 1) {
     reason = '';
     role = req.body.role.toLowerCase() === 'approver' ? 10000 : 1;
   }
 
-  await organisations.setUserAccessToOrganisation(userId,orgId, role, req.id, status, reason );
+  await organisations.setUserAccessToOrganisation(userId, orgId, role, req.id, status, reason);
 
-  if(req.body.email) {
-    await notificationClient.sendAccessRequest(req.body.email,req.body.name,req.body.org_name,status===1,reason);
+  if (req.body.email) {
+    await notificationClient.sendAccessRequest(req.body.email, req.body.name, req.body.org_name, status === 1, reason);
   }
-
 
   logger.audit(`User ${req.user.email} (id: ${req.user.sub}) has set set user id ${userId} to status "${req.body.approve_reject}"`, {
     type: 'organisation',

@@ -1,15 +1,14 @@
-const { getAndMapOrgRequest } = require('./utils');
-const { updateRequestById } = require('./../../infrastructure/organisations');
-const logger = require('./../../infrastructure/logger');
-const config = require('./../../infrastructure/config');
 const { NotificationClient } = require('login.dfe.jobs-client');
+const { getAndMapOrgRequest } = require('./utils');
+const { updateRequestById } = require('../../infrastructure/organisations');
+const logger = require('../../infrastructure/logger');
+const config = require('../../infrastructure/config');
 
 const notificationClient = new NotificationClient({
   connectionString: config.notifications.connectionString,
 });
 
 const get = async (req, res) => {
-
   return res.render('accessRequests/views/rejectOrganisationRequest', {
     csrfToken: req.csrfToken(),
     title: 'Reason for rejection - DfE Sign-in',
@@ -26,7 +25,7 @@ const validate = async (req) => {
     title: 'Reason for rejection - DfE Sign-in',
     backLink: true,
     requestFrom: req.params.from,
-    cancelLink: (req.params.from==='organisation')?`/access-requests/${req.params.rid}/${req.params.from}/review`:`/access-requests/${req.params.rid}/review`,
+    cancelLink: (req.params.from === 'organisation') ? `/access-requests/${req.params.rid}/${req.params.from}/review` : `/access-requests/${req.params.rid}/review`,
     reason: req.body.reason,
     request,
     validationMessages: {},
@@ -34,7 +33,7 @@ const validate = async (req) => {
   if (model.reason.length > 1000) {
     model.validationMessages.reason = 'Reason cannot be longer than 1000 characters';
   } else if (model.request.approverEmail) {
-    model.validationMessages.reason = `Request already actioned by ${model.request.approverEmail}`
+    model.validationMessages.reason = `Request already actioned by ${model.request.approverEmail}`;
   }
   return model;
 };
@@ -63,7 +62,7 @@ const post = async (req, res) => {
   });
 
   res.flash('info', `Request rejected - an email has been sent to ${model.request.usersEmail}.`);
-  if(model.requestFrom && model.requestFrom === "organisation")
+  if (model.requestFrom && model.requestFrom === 'organisation')
     return res.redirect(`/users/${model.request.user_id}/organisations`);
   else
     return res.redirect('/access-requests');

@@ -49,6 +49,38 @@ describe('When processing a post for a user invitation deactivate request', () =
     expect(deactivateInvite.mock.calls[0][2]).toBe(req.id);
   });
 
+  test('when given a reason from the select menu, it updates the user setting status to deactivated', async () => {
+    req = getRequestMock({
+      body: {
+        reason: '',
+        'select-reason': 'some selected reason for deactivation',
+      },
+    });
+
+    await post(req, res);
+
+    expect(deactivateInvite.mock.calls).toHaveLength(1);
+    expect(deactivateInvite.mock.calls[0][0]).toBe(expectedUserId);
+    expect(deactivateInvite.mock.calls[0][1]).toBe('some selected reason for deactivation');
+    expect(deactivateInvite.mock.calls[0][2]).toBe(req.id);
+  });
+  
+  test('when given a reason from the select menu and further information in the textarea, it updates the user setting status to deactivated', async () => {
+    req = getRequestMock({
+      body: {
+        reason: 'some text reason for deactivation',
+        'select-reason': 'some selected reason for deactivation',
+      },
+    });
+
+    await post(req, res);
+
+    expect(deactivateInvite.mock.calls).toHaveLength(1);
+    expect(deactivateInvite.mock.calls[0][0]).toBe(expectedUserId);
+    expect(deactivateInvite.mock.calls[0][1]).toBe('some selected reason for deactivation - some text reason for deactivation');
+    expect(deactivateInvite.mock.calls[0][2]).toBe(req.id);
+  });
+
   test('then the user index is updated', async () => {
     await post(req, res);
 
@@ -78,11 +110,13 @@ describe('When processing a post for a user invitation deactivate request', () =
     req = getRequestMock({
       body: {
         reason: '',
+        'select-reason': 'Select a reason',
       },
       params: {
         uid: 'inv-4878fe2a-28a9-4bab-a07b-dbb9747f87f5',
       },
     });
+
     await post(req, res);
 
     expect(sendResult.mock.calls).toHaveLength(1);

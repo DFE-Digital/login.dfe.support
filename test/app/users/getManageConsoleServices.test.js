@@ -78,7 +78,6 @@ describe('When retrieving manage console services for a user', () => {
           isExternalService: true,
           isIdOnlyService: false,
           isHiddenService: false,
-          isMigrated: false,
           relyingParty: {},
         },
         {
@@ -88,7 +87,6 @@ describe('When retrieving manage console services for a user', () => {
           isExternalService: true,
           isIdOnlyService: false,
           isHiddenService: false,
-          isMigrated: false,
           relyingParty: {},
         },
         {
@@ -98,7 +96,6 @@ describe('When retrieving manage console services for a user', () => {
           isExternalService: true,
           isIdOnlyService: false,
           isHiddenService: false,
-          isMigrated: false,
           relyingParty: {},
         }
       ]
@@ -131,7 +128,6 @@ describe('When retrieving manage console services for a user', () => {
             "isExternalService": true,
             "isHiddenService": false,
             "isIdOnlyService": false,
-            "isMigrated": false,
             "name": "Service 1",
             "relyingParty": {}
           },
@@ -141,7 +137,6 @@ describe('When retrieving manage console services for a user', () => {
             "isExternalService": true,
             "isHiddenService": false,
             "isIdOnlyService": false,
-            "isMigrated": false,
             "name": "Service 2",
             "relyingParty": {}
           },
@@ -151,7 +146,6 @@ describe('When retrieving manage console services for a user', () => {
             "isExternalService": true,
             "isHiddenService": false,
             "isIdOnlyService": false,
-            "isMigrated": false,
             "name": "Service 3",
             "relyingParty": {}
           }
@@ -177,7 +171,6 @@ describe('When retrieving manage console services for a user', () => {
       isExternalService: true,
       isIdOnlyService: false,
       isHiddenService: false,
-      isMigrated: false,
       relyingParty: {},
     });
 

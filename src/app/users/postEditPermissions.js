@@ -1,14 +1,14 @@
-const logger = require('./../../infrastructure/logger');
-const config = require('./../../infrastructure/config');
 const { NotificationClient } = require('login.dfe.jobs-client');
-const { setUserAccessToOrganisation, addInvitationOrganisation, getUserOrganisations } = require('./../../infrastructure/organisations');
-const { getSearchDetailsForUserById, updateIndex } = require('./../../infrastructure/search');
-const { isSupportEmailNotificationAllowed } = require ('./../../infrastructure/applications');
-const { mapRole } = require('./../users/utils');
+const logger = require('../../infrastructure/logger');
+const config = require('../../infrastructure/config');
+const { setUserAccessToOrganisation, addInvitationOrganisation, getUserOrganisations } = require('../../infrastructure/organisations');
+const { getSearchDetailsForUserById, updateIndex } = require('../../infrastructure/search');
+const { isSupportEmailNotificationAllowed } = require('../../infrastructure/applications');
+const { mapRole } = require('./utils');
 
 const validatePermissions = (req) => {
   const validPermissions = [0, 10000];
-  const level = parseInt(req.body.selectedLevel);
+  const level = parseInt(req.body.selectedLevel, 10);
   const model = {
     userFullName: `${req.session.user.firstName} ${req.session.user.lastName}`,
     organisationName: req.session.org.name,
@@ -76,20 +76,19 @@ const postEditPermissions = async (req, res) => {
   const userSearchDetails = await getSearchDetailsForUserById(uid);
   if (userSearchDetails) {
     const currentOrgDetails = userSearchDetails.organisations;
-    const organisations = currentOrgDetails.map( org => {
+    const organisations = currentOrgDetails.map((org) => {
       if (org.id === req.params.id) {
         return Object.assign({}, org, {roleId:model.selectedLevel})
       }
-      return org
+      return org;
     });
     const patchBody = {
-      organisations
+      organisations,
     };
     await updateIndex(uid, patchBody, req.id);
   }
 
-  const fullname = model.userFullName;
-  const organisationName = model.organisationName;
+  const { organisationName } = model;
   logger.audit(`${req.user.email} (id: ${req.user.sub}) edited permission level to ${permissionName} for organisation ${organisationName} (id: ${req.params.id}) for user ${req.session.user.email} (id: ${uid})`, {
     type: 'support',
     subType: 'user-org-permission-edited',
