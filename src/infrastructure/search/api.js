@@ -13,7 +13,7 @@ const callApi = async (endpoint, method, body, correlationId) => {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
-      body: body
+      body: body,
     });
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
@@ -79,7 +79,7 @@ const searchForUsers = async (criteria, pageNumber, sortBy, sortDirection, filte
     return {
       numberOfPages: results.numberOfPages,
       totalNumberOfResults: results.totalNumberOfResults,
-      users: results.users.map(mapSearchUserToSupportModel)
+      users: results.users.map(mapSearchUserToSupportModel),
     };
   } catch (e) {
     throw new Error(`Error searching for users with criteria ${criteria} (page: ${pageNumber}) - ${e.message}`);

@@ -1,6 +1,6 @@
 jest.mock('login.dfe.async-retry');
 jest.mock('login.dfe.jwt-strategies');
-jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
+jest.mock('./../../../src/infrastructure/config', () => require('../../utils').configMockFactory({
   directories: {
     type: 'api',
     service: {
@@ -11,18 +11,14 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
 
 const { fetchApi } = require('login.dfe.async-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
-const { getInvitation } = require('./../../../src/infrastructure/directories/api');
+const { getUsersByIdV2 } = require('../../../src/infrastructure/directories/api');
 
 const correlationId = 'abc123';
-const invitationId = 'invite1';
 const apiResponse = {
-  firstName: 'Some',
-  lastName: 'User',
-  email: 'some.user@test.local',
-  keyToSuccessId: '1234567',
-  tokenSerialNumber: '12345678901',
-  id: invitationId
+  users: [],
+  numberOfPages: 1,
 };
+const userIds = ['user1', 'user2'];
 
 describe('when getting a page of users from directories api', () => {
   beforeEach(() => {
@@ -39,19 +35,20 @@ describe('when getting a page of users from directories api', () => {
     })
   });
 
-
-  it('then it should call invitations resource with invitation id', async () => {
-    await getInvitation(invitationId, correlationId);
+  it('then it sends a POST directories api with ids in the body', async () => {
+    await getUsersByIdV2(userIds, correlationId);
 
     expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][0]).toBe('http://directories.test/invitations/invite1');
+    expect(fetchApi.mock.calls[0][0]).toBe('http://directories.test/users/by-ids');
+    // Why does a get function have a POST in it??
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      method: 'GET',
+      method: 'POST',
     });
+    expect(fetchApi.mock.calls[0][1].body.ids).toBe('user1,user2');
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
-    await getInvitation(invitationId, correlationId);
+    await getUsersByIdV2(userIds, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
@@ -61,7 +58,7 @@ describe('when getting a page of users from directories api', () => {
   });
 
   it('then it should include the correlation id', async () => {
-    await getInvitation(invitationId, correlationId);
+    await getUsersByIdV2(userIds, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
@@ -77,7 +74,7 @@ describe('when getting a page of users from directories api', () => {
       throw error;
     });
 
-    const result = await getInvitation(invitationId, correlationId);
+    const result = await getUsersByIdV2(userIds, correlationId);
     expect(result).toEqual(null);
   });
 
@@ -88,7 +85,7 @@ describe('when getting a page of users from directories api', () => {
       throw error;
     });
 
-    const act = () => getInvitation(invitationId, correlationId);
+    const act = () => getUsersByIdV2(userIds, correlationId);
 
     await expect(act).rejects.toThrow(expect.objectContaining({
       message: 'Server Error',

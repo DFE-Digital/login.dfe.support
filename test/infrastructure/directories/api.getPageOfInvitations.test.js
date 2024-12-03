@@ -9,8 +9,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
   },
 }));
 
-const {fetchApi} = require('login.dfe.async-retry');
-
+const { fetchApi } = require('login.dfe.async-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { getPageOfInvitations } = require('./../../../src/infrastructure/directories/api');
 
@@ -45,14 +44,24 @@ describe('when getting a page of users from directories api', () => {
     })
   });
 
-
   it('then it should call users resource with page & pagesize', async () => {
     await getPageOfInvitations(pageNumber, pageSize, undefined, correlationId);
 
     expect(fetchApi.mock.calls).toHaveLength(1);
     expect(fetchApi.mock.calls[0][0]).toBe('http://directories.test/invitations?page=1&pageSize=123');
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      method: 'GET'
+      method: 'GET',
+    });
+  });
+
+  it('then it should call users resource with page & pagesize and changedAfter', async () => {
+    const changedAfter = new Date('2024-03-20');
+    await getPageOfInvitations(pageNumber, pageSize, changedAfter, correlationId);
+
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][0]).toBe('http://directories.test/invitations?page=1&pageSize=123&changedAfter=2024-03-20T00:00:00.000Z');
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      method: 'GET',
     });
   });
 
@@ -80,5 +89,31 @@ describe('when getting a page of users from directories api', () => {
     const actual = await getPageOfInvitations(pageNumber, pageSize, undefined, correlationId);
 
     expect(actual).toMatchObject(apiResponse);
+  });
+
+  it('should return null on a 404 response', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('Not found');
+      error.statusCode = 404;
+      throw error;
+    });
+
+    const result = await getPageOfInvitations(pageNumber, pageSize, undefined, correlationId);
+    expect(result).toEqual(null);
+  });
+
+  it('should raise an exception on any failure status code that is not 404', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('Server Error');
+      error.statusCode = 500;
+      throw error;
+    });
+
+    const act = () => getPageOfInvitations(pageNumber, pageSize, undefined, correlationId);
+
+    await expect(act).rejects.toThrow(expect.objectContaining({
+      message: 'Server Error',
+      statusCode: 500,
+    }));
   });
 });

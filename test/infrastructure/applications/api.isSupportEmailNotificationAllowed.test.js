@@ -1,30 +1,27 @@
 jest.mock('login.dfe.async-retry');
 jest.mock('login.dfe.jwt-strategies');
-jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
-  directories: {
+jest.mock('./../../../src/infrastructure/config', () => require('../../utils').configMockFactory({
+  applications: {
     type: 'api',
     service: {
-      url: 'http://directories.test',
+      url: 'http://applications.test',
+      retryFactor: 0,
+      numberOfRetries: 2,
     },
   },
 }));
 
 const { fetchApi } = require('login.dfe.async-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
-const { getInvitation } = require('./../../../src/infrastructure/directories/api');
+const { isSupportEmailNotificationAllowed } = require('../../../src/infrastructure/applications/api');
 
-const correlationId = 'abc123';
-const invitationId = 'invite1';
-const apiResponse = {
-  firstName: 'Some',
-  lastName: 'User',
-  email: 'some.user@test.local',
-  keyToSuccessId: '1234567',
-  tokenSerialNumber: '12345678901',
-  id: invitationId
-};
+const apiResponse = [
+  {
+    flag: true,
+  },
+];
 
-describe('when getting a page of users from directories api', () => {
+describe('when getting a users services mapping from api', () => {
   beforeEach(() => {
     fetchApi.mockReset();
     fetchApi.mockImplementation(() => {
@@ -39,19 +36,19 @@ describe('when getting a page of users from directories api', () => {
     })
   });
 
+  it('should get the flag when the endpoint is called', async () => {
+    const result = await isSupportEmailNotificationAllowed();
 
-  it('then it should call invitations resource with invitation id', async () => {
-    await getInvitation(invitationId, correlationId);
-
+    expect(result).toBe(true);
     expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][0]).toBe('http://directories.test/invitations/invite1');
+    expect(fetchApi.mock.calls[0][0]).toBe('http://applications.test/constants/toggleflags/email/support');
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       method: 'GET',
     });
   });
 
   it('then it should use the token from jwt strategy as bearer token', async () => {
-    await getInvitation(invitationId, correlationId);
+    await isSupportEmailNotificationAllowed();
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
@@ -60,25 +57,27 @@ describe('when getting a page of users from directories api', () => {
     });
   });
 
-  it('then it should include the correlation id', async () => {
-    await getInvitation(invitationId, correlationId);
-
-    expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      headers: {
-        'x-correlation-id': correlationId,
-      },
+  it('then it should return false if false is returned from the API', async () => {
+    fetchApi.mockImplementation(() => {
+      return [
+        {
+          flag: false,
+        },
+      ];
     });
+    const result = await isSupportEmailNotificationAllowed();
+    expect(result).toBe(false);
   });
 
-  it('should return null on a 404 response', async () => {
+  it('should return true on a 404 response', async () => {
     fetchApi.mockImplementation(() => {
       const error = new Error('Not found');
       error.statusCode = 404;
       throw error;
     });
 
-    const result = await getInvitation(invitationId, correlationId);
-    expect(result).toEqual(null);
+    const result = await isSupportEmailNotificationAllowed();
+    expect(result).toEqual(true);
   });
 
   it('should raise an exception on any failure status code that is not 404', async () => {
@@ -88,7 +87,7 @@ describe('when getting a page of users from directories api', () => {
       throw error;
     });
 
-    const act = () => getInvitation(invitationId, correlationId);
+    const act = () => isSupportEmailNotificationAllowed();
 
     await expect(act).rejects.toThrow(expect.objectContaining({
       message: 'Server Error',

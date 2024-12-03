@@ -9,8 +9,7 @@ jest.mock('./../../../src/infrastructure/config', () => require('./../../utils')
   },
 }));
 
-const {fetchApi} = require('login.dfe.async-retry');
-
+const { fetchApi } = require('login.dfe.async-retry');
 const jwtStrategy = require('login.dfe.jwt-strategies');
 const { getUser } = require('./../../../src/infrastructure/directories/api');
 
@@ -47,7 +46,7 @@ describe('when getting a page of users from directories api', () => {
     expect(fetchApi.mock.calls).toHaveLength(1);
     expect(fetchApi.mock.calls[0][0]).toBe('http://directories.test/users/user1');
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      method: 'GET'
+      method: 'GET',
     });
   });
 
@@ -69,5 +68,31 @@ describe('when getting a page of users from directories api', () => {
         'x-correlation-id': correlationId,
       },
     });
+  });
+
+  it('should return null on a 404 response', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('Not found');
+      error.statusCode = 404;
+      throw error;
+    });
+
+    const result = await getUser(userId, correlationId);
+    expect(result).toEqual(null);
+  });
+
+  it('should raise an exception on any failure status code that is not 404', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('Server Error');
+      error.statusCode = 500;
+      throw error;
+    });
+
+    const act = () => getUser(userId, correlationId);
+
+    await expect(act).rejects.toThrow(expect.objectContaining({
+      message: 'Server Error',
+      statusCode: 500,
+    }));
   });
 });

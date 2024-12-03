@@ -34,7 +34,7 @@ const getPageOfService = async (pageNumber, pageSize) => {
       method: 'GET',
       headers: {
         authorization: `bearer ${token}`,
-      }
+      },
     });
     return client;
   } catch (e) {

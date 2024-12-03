@@ -110,4 +110,30 @@ describe('When updating a user using the api', () => {
     expect(fetchApi.mock.calls).toHaveLength(1);
     expect(fetchApi.mock.calls[0][1].family_name).toBeUndefined();
   });
+
+  it('should return null on a 401 response', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('Unauthorized');
+      error.statusCode = 401;
+      throw error;
+    });
+
+    const result = await updateUser('user1', 'Hermione', 'Granger', 'correlation-id');
+    expect(result).toEqual(null);
+  });
+
+  it('should raise an exception on any failure status code that is not 404', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('Server Error');
+      error.statusCode = 500;
+      throw error;
+    });
+
+    const act = () => updateUser('user1', 'Hermione', 'Granger', 'correlation-id');
+
+    await expect(act).rejects.toThrow(expect.objectContaining({
+      message: 'Server Error',
+      statusCode: 500,
+    }));
+  });
 });

@@ -160,7 +160,7 @@ const listRequests = async (page, filterStates, correlationId) => {
       uri += `&filterstatus=${status}`;
     });
   } else {
-    uri += `&filterstatus=0&filterstatus=2&filterstatus=3`
+    uri += '&filterstatus=0&filterstatus=2&filterstatus=3';
   }
   return callOrganisationsApi(uri, 'GET', undefined, correlationId);
 };

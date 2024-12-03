@@ -74,4 +74,15 @@ describe('when reactivating an invite from the directories api', () => {
       },
     });
   });
+
+  it('should consume the exception and return undefined if a non-success status is returned', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('Server Error');
+      error.statusCode = 500;
+      throw error;
+    });
+
+    const result = await reactivateInvite(invitationId, reason, correlationId);
+    await expect(result).toBe(undefined);
+  });
 });

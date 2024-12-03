@@ -46,6 +46,13 @@ describe('when getting a users services mapping from api', () => {
     })
   });
 
+  it('then it should return undefined if no id is provided', async () => {
+    const blankServiceId = '';
+    const result = await getServiceById(blankServiceId);
+
+    expect(result).toBe(undefined);
+    expect(fetchApi.mock.calls).toHaveLength(0);
+  });
 
   it('then it should call users resource with user id', async () => {
     await getServiceById(serviceId);
@@ -75,5 +82,31 @@ describe('when getting a users services mapping from api', () => {
         authorization: 'bearer token',
       },
     });
+  });
+
+  it('should return false on a 404 response', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('Not found');
+      error.statusCode = 404;
+      throw error;
+    });
+
+    const result = await getServiceById(serviceId);
+    expect(result).toEqual(undefined);
+  });
+
+  it('should raise an exception on any failure status code that is not 404', async () => {
+    fetchApi.mockImplementation(() => {
+      const error = new Error('Server Error');
+      error.statusCode = 500;
+      throw error;
+    });
+
+    const act = () => getServiceById(serviceId);
+
+    await expect(act).rejects.toThrow(expect.objectContaining({
+      message: 'Server Error',
+      statusCode: 500,
+    }));
   });
 });
