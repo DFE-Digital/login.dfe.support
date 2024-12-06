@@ -29,6 +29,8 @@ const getOrganisationPermissions = require('./getOrganisationPermissions');
 const postOrganisationPermissions = require('./postOrganisationPermissions');
 const getConfirmNewUser = require('./getConfirmNewUser');
 const postConfirmNewUser = require('./postConfirmNewUser');
+const getBulkUserActions = require('./getBulkUserActions');
+const postBulkUserActions = require('./postBulkUserActions');
 const postCancelChangeEmail = require('./postCancelChangeEmail');
 const getConfirmAssociateOrganisation = require('./getConfirmAssociateOrganisation');
 const postResendInvite = require('./postResendInvite');
@@ -67,6 +69,8 @@ const users = (csrf) => {
   router.post('/organisation-permissions', csrf, asyncWrapper(postOrganisationPermissions));
   router.get('/confirm-new-user', csrf, asyncWrapper(getConfirmNewUser));
   router.post('/confirm-new-user', csrf, asyncWrapper(postConfirmNewUser));
+  router.get('/bulk-user-actions', csrf, asyncWrapper(getBulkUserActions));
+  router.post('/bulk-user-actions', csrf, asyncWrapper(postBulkUserActions));
 
   router.get('/:uid', asyncWrapper((req, res) => {
     res.redirect(`/users/${req.params.uid}/organisations`);
