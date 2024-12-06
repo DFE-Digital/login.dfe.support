@@ -10,9 +10,13 @@ const {
 } = require('./../../infrastructure/directories');
 const {
     getServicesByUserId,
-    getServicesByInvitationId
+    getServicesByInvitationId,
+    getUserServiceRequestsByUserId,
+    removeServiceFromUser,
+    updateUserServiceRequest
 } = require('./../../infrastructure/access');
 const { getServiceById } = require('./../../infrastructure/applications');
+const { getPendingRequestsAssociatedWithUser, updateRequestById } = require('../../infrastructure/organisations');
 const { mapUserStatus } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
 const sortBy = require('lodash/sortBy');
@@ -193,6 +197,116 @@ const search = async (req) => {
     };
 };
 
+const searchForBulkUsersPage = async (email) => {
+  let paramsSource = {};
+  let criteria = email.trim();
+
+  const userRegex = /^[^±!£$%^&*+§¡€#¢§¶•ªº«\\/<>?:;|=,~"]{1,256}$/i;
+  let filteredError;
+  /**
+   * Check minimum characters and special characters in search criteria if:
+   * user is not using the filters toggle (to open or close) and filters are not visible
+   */
+  if (
+      paramsSource.isFilterToggle !== 'true' &&
+      paramsSource.showFilters !== 'true'
+  ) {
+      if (!criteria || criteria.length < 4) {
+          return {
+              validationMessages: {
+                  criteria: 'Please enter at least 4 characters'
+              }
+          };
+      }
+      if (!userRegex.test(criteria)) {
+          return {
+              validationMessages: {
+                  criteria: 'Special characters cannot be used'
+              }
+          };
+      }
+      /**
+       * Check special characters in search criteria if:
+       * user is filtering filtering and had specified a criteria
+       */
+  } else if (!userRegex.test(criteria) && criteria.length > 0) {
+      criteria = '';
+      // here we normally just return the error but we
+      // want to keep the last set of filtered results
+      // and append the error to the result
+      filteredError = {
+          criteria: 'Special characters cannot be used'
+      };
+  }
+
+  let safeCriteria = criteria;
+  if (criteria.indexOf('-') !== -1) {
+      criteria = '"' + criteria + '"';
+  }
+
+  let page = paramsSource.page ? parseInt(paramsSource.page) : 1;
+  if (isNaN(page)) {
+      page = 1;
+  }
+
+  let sortBy = paramsSource.sort ? paramsSource.sort.toLowerCase() : 'name';
+  let sortAsc =
+      (paramsSource.sortDir ? paramsSource.sortDir : 'asc').toLowerCase() ===
+      'asc';
+
+  const filter = buildFilters(paramsSource);
+
+  const results = await searchForUsers(
+      criteria + '*',
+      page,
+      sortBy,
+      sortAsc ? 'asc' : 'desc',
+      filter
+  );
+
+  return {
+      criteria: safeCriteria,
+      page,
+      sortBy,
+      sortOrder: sortAsc ? 'asc' : 'desc',
+      numberOfPages: results.numberOfPages,
+      totalNumberOfResults: results.totalNumberOfResults,
+      users: results.users,
+      validationMessages: filteredError,
+      sort: {
+          name: {
+              nextDirection:
+                  sortBy === 'name' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+              applied: sortBy === 'name'
+          },
+          email: {
+              nextDirection:
+                  sortBy === 'email' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+              applied: sortBy === 'email'
+          },
+          organisation: {
+              nextDirection:
+                  sortBy === 'organisation'
+                      ? sortAsc
+                          ? 'desc'
+                          : 'asc'
+                      : 'asc',
+              applied: sortBy === 'organisation'
+          },
+          lastLogin: {
+              nextDirection:
+                  sortBy === 'lastlogin' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+              applied: sortBy === 'lastlogin'
+          },
+          status: {
+              nextDirection:
+                  sortBy === 'status' ? (sortAsc ? 'desc' : 'asc') : 'asc',
+              applied: sortBy === 'status'
+          }
+      }
+  };
+};
+
 const getUserDetails = async (req) => {
     return getUserDetailsById(req.params.uid, req.id);
 };
@@ -345,12 +459,69 @@ const mapRole = (roleId) => {
     return { id: 0, description: 'End user' };
 };
 
+const rejectOpenUserServiceRequestsForUser = async (userId, req) => {
+  const userServiceRequests = await getUserServiceRequestsByUserId(userId) || [];
+  for (const serviceRequest of userServiceRequests) {
+    // Request status 0 is 'pending', 2 is 'overdue', 3 is 'no approvers'
+    if (serviceRequest.status === 0 || serviceRequest.status === 2 || serviceRequest.status === 3) {
+      logger.info(`Rejecting service request with id: ${serviceRequest.id}`, { correlationId });
+      const requestBody = {
+        status: -1,
+        actioned_reason: 'User deactivation',
+        actioned_by: req.user.sub,
+        actioned_at: new Date(),
+      };
+      updateUserServiceRequest(serviceRequest.id, requestBody, req.id);
+    }
+  }
+}
+
+const rejectOpenOrganisationRequestsForUser = async (userId, req) => {
+  const correlationId = req.id;
+  const organisationRequests = await getPendingRequestsAssociatedWithUser(userId) || [];
+  for (const organisationRequest of organisationRequests) {
+    // Request status 0 is 'pending', 2 is 'overdue' and 3 is 'no approvers'
+    if (organisationRequest.status.id === 0 || organisationRequest.status.id === 2 || organisationRequest.status.id === 3) {
+      logger.info(`Rejecting organisation request with id: ${organisationRequest.id}`, { correlationId });
+      const status = -1;
+      const actionedReason = 'User deactivation';
+      const actionedBy = req.user.sub;
+      const actionedAt = new Date();
+      updateRequestById(organisationRequest.id, status, actionedBy, actionedReason, actionedAt, req.id);
+    }
+  }
+}
+
+const removeAllServicesForUser = async (userId, req) => {
+  const correlationId = req.id;
+  const userServices = await getServicesByUserId(userId) || [];
+  for (const service of userServices) {
+    logger.info(`Removing service from user: ${service.userId} with serviceId: ${service.serviceId} and organisationId: ${service.organisationId}`, { correlationId });
+    removeServiceFromUser(service.userId, service.serviceId, service.organisationId, req.id);
+  }
+}
+
+const removeAllServicesForInvitedUser = async (userId, req) => {
+  const correlationId = req.id;
+  logger.info(`Attemping to remove services from invite with id: ${userId}`, { correlationId });
+  const invitationServiceRecords = await getServicesByInvitationId(userId.substr(4)) || [];
+  for (const serviceRecord of invitationServiceRecords) {
+    logger.info(`Deleting invitation service record for invitationId: ${serviceRecord.invitationId}, serviceId: ${serviceRecord.serviceId} and organisationId: ${serviceRecord.organisationIdId}`, { correlationId });
+    removeServiceFromInvitation(serviceRecord.invitationId, serviceRecord.serviceId, serviceRecord.organisationId, correlationId);
+  }
+}
+
 module.exports = {
     search,
+    searchForBulkUsersPage,
     getUserDetails,
     getUserDetailsById,
     updateUserDetails,
     waitForIndexToUpdate,
     getAllServicesForUserInOrg,
-    mapRole
+    mapRole,
+    rejectOpenUserServiceRequestsForUser,
+    rejectOpenOrganisationRequestsForUser,
+    removeAllServicesForUser,
+    removeAllServicesForInvitedUser,
 };

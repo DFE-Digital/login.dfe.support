@@ -1,0 +1,26 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
+const { searchForBulkUsersPage } = require('./utils');
+
+const getBulkUserActionsEmails = async (req, res) => {
+  const emails = req.session.emails;
+  const users = [];
+
+  const emailsArray = emails.split(',');
+  for (const email of emailsArray) {
+    const result = await searchForBulkUsersPage(email.trim());
+    for (const user of result.users) {
+      users.push(user);
+    }
+  }
+
+  const model = {
+    csrfToken: req.csrfToken(),
+    users,
+    validationMessages: {},
+  };
+
+  res.render('users/views/bulkUserActionsEmails', model);
+};
+
+module.exports = getBulkUserActionsEmails;

@@ -1,0 +1,35 @@
+<a href="../" class="link-back">Back</a>
+<div class="row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Bulk user actions
+        </h1>
+        <p class="lede">Add all the emails you wish to work on in the text box, each separted by a comma</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <form method="post" id="form-new-user">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <fieldset>
+                <legend class="vh">Emails</legend>
+                <div class="form-group <%= (locals.validationMessages.emails !== undefined) ? 'form-group-error' : '' %>">
+                    <% if (locals.validationMessages.emails !== undefined) { %>
+                    <p class="error-message" id="validation-emails"><%= locals.validationMessages.emails %></p>
+                    <% } %>
+                    <textarea class="form-control full-width form-group" rows="6" id="emails" name="emails"  placeholder="Input emails separated by a comma"
+                            <% if (locals.validationMessages.emails !== undefined) { %>
+                           aria-invalid="true" aria-describedby="validation-reason"
+                            <% } %>
+                           value="<%= locals.emails %>"></textarea>
+                </div>
+            </fieldset>
+
+            <div class="form-submit submit-buttons">
+                <button type="submit" class="button">Continue</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
