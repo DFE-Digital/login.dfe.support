@@ -12,6 +12,7 @@ const getBulkUserActionsEmails = (req, res) => {
     // if (user exists) {
     users.push(
       {
+        id: 'abc-123',
         name: 'Timmy Tester',
         email: 'timmy@tester.test',
         organisation: {
