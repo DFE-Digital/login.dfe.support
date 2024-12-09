@@ -31,6 +31,8 @@ const getConfirmNewUser = require('./getConfirmNewUser');
 const postConfirmNewUser = require('./postConfirmNewUser');
 const getBulkUserActions = require('./getBulkUserActions');
 const postBulkUserActions = require('./postBulkUserActions');
+const getBulkUserActionsEmails = require('./getBulkUserActionsEmails');
+const postBulkUserActionsEmails = require('./postBulkUserActionsEmails');
 const postCancelChangeEmail = require('./postCancelChangeEmail');
 const getConfirmAssociateOrganisation = require('./getConfirmAssociateOrganisation');
 const postResendInvite = require('./postResendInvite');
@@ -41,8 +43,8 @@ const postDeleteOrganisation = require('./postDeleteOrganisation');
 const getSecureAccess = require('./getSecureAccessDetails');
 const postUpdateAuditLog = require('./postUpdateAuditLog');
 const getManageConsoleServices = require('./getManageConsoleServices');
-const postManageConsoleRoles = require('./postManageConsoleRoles')
-const { getManageConsoleRoles } = require('./getManageConsoleRoles')
+const postManageConsoleRoles = require('./postManageConsoleRoles');
+const { getManageConsoleRoles } = require('./getManageConsoleRoles');
 const { get: getAssociateServices, post: postAssociateServices } = require('./associateServices');
 const { get: getSelectOrganisation, post: postSelectOrganisation } = require('./selectOrganisation');
 const { get: getAssociateRoles, post: postAssociateRoles } = require('./associateRoles');
@@ -71,6 +73,8 @@ const users = (csrf) => {
   router.post('/confirm-new-user', csrf, asyncWrapper(postConfirmNewUser));
   router.get('/bulk-user-actions', csrf, asyncWrapper(getBulkUserActions));
   router.post('/bulk-user-actions', csrf, asyncWrapper(postBulkUserActions));
+  router.get('/bulk-user-actions/emails', csrf, asyncWrapper(getBulkUserActionsEmails));
+  router.post('/bulk-user-actions/emails', csrf, asyncWrapper(postBulkUserActionsEmails));
 
   router.get('/:uid', asyncWrapper((req, res) => {
     res.redirect(`/users/${req.params.uid}/organisations`);

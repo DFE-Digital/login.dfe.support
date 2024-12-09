@@ -1,4 +1,4 @@
-const { emailPolicy } = require('login.dfe.validation');
+//const { emailPolicy } = require('login.dfe.validation');
 const { sendResult } = require('../../infrastructure/utils');
 const { search } = require('./utils');
 
@@ -10,9 +10,13 @@ const validateInput = async (req) => {
 
   if (!model.email) {
     model.validationMessages.email = 'Please enter an email address';
-  } else if (!emailPolicy.doesEmailMeetPolicy(model.email)) {
-    model.validationMessages.email = 'Please enter a valid email address';
   }
+  // Split it by comma
+  // For (email in emails) {
+  // } if (!emailPolicy.doesEmailMeetPolicy(email)) {
+  //   model.validationMessages.email = `Please enter a valid email address for ${email}`;
+  // }
+  // }
 
   return model;
 };
@@ -24,17 +28,14 @@ const postBulkUserActions = async (req, res) => {
     return sendResult(req, res, 'users/views/bulkUserActions', model);
   }
 
-  const result = await search(req);
-  console.log(result);
+  // const result = await search(req);
+  // console.log(model);
+  // model.csrfToken = req.csrfToken();
+  // return sendResult(req, res, 'users/views/bulkUserActions', model);
 
-  if (!req.session.user) {
-    req.session.user = {};
-  }
-  req.session.user.firstName = model.firstName;
-  req.session.user.lastName = model.lastName;
-  req.session.user.email = model.email;
-  const redirectLink = (req.query.review && req.query.review === 'true') ? 'confirm-new-user' : 'associate-organisation';
-  return res.redirect(redirectLink);
+  console.log(req.body.emails);
+  req.session.emails = req.body.emails;
+  return res.redirect('bulk-user-actions/emails');
 };
 
 module.exports = postBulkUserActions;
