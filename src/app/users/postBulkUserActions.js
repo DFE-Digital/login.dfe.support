@@ -1,22 +1,25 @@
-//const { emailPolicy } = require('login.dfe.validation');
+const { emailPolicy } = require('login.dfe.validation');
 const { sendResult } = require('../../infrastructure/utils');
-const { search } = require('./utils');
 
 const validateInput = async (req) => {
   const model = {
-    email: req.body.emails || '',
+    emails: req.body.emails || '',
     validationMessages: {},
   };
 
-  if (!model.email) {
+  if (!model.emails) {
     model.validationMessages.email = 'Please enter an email address';
+    return model;
   }
-  // Split it by comma
-  // For (email in emails) {
-  // } if (!emailPolicy.doesEmailMeetPolicy(email)) {
-  //   model.validationMessages.email = `Please enter a valid email address for ${email}`;
-  // }
-  // }
+
+  const emailsArray = model.emails.split(',');
+  // eslint-disable-next-line no-restricted-syntax
+  for (const email of emailsArray) {
+    if (!emailPolicy.doesEmailMeetPolicy(email)) {
+      // TODO currently only reports on 1 error at a time.  Is this acceptable or should we report on many?
+      model.validationMessages.email = `Please enter a valid email address for ${email}`;
+    }
+  }
 
   return model;
 };
@@ -28,13 +31,7 @@ const postBulkUserActions = async (req, res) => {
     return sendResult(req, res, 'users/views/bulkUserActions', model);
   }
 
-  // const result = await search(req);
-  // console.log(model);
-  // model.csrfToken = req.csrfToken();
-  // return sendResult(req, res, 'users/views/bulkUserActions', model);
-
-  console.log(req.body.emails);
-  req.session.emails = req.body.emails;
+  req.session.emails = model.emails;
   return res.redirect('bulk-user-actions/emails');
 };
 

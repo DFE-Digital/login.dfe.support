@@ -11,19 +11,68 @@
     <div class="col-12">
         <form method="post" id="form-new-user">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <fieldset>
-                <legend class="vh">Emails</legend>
-                <div class="form-group <%= (locals.validationMessages.emails !== undefined) ? 'form-group-error' : '' %>">
-                    <% if (locals.validationMessages.emails !== undefined) { %>
-                    <p class="error-message" id="validation-emails"><%= locals.validationMessages.emails %></p>
+
+            <div class="col-12 %>">
+                <table class="data">
+                    <thead>
+                    <%
+                    let baseSortUri = ``;
+                    %>
+                    <tr class="sortable">
+                        <th scope="col" class="cwp-15">
+                            <a href="<%=baseSortUri%>&sort=name&sortDir=a&search=true"
+                                class="a"
+                            >Name</a></th>
+                        <th scope="col" class="cwp-35">
+                            <a href="<%=baseSortUri%>&sort=email&sortDir=a&search=true"
+                                class="a"
+                            >Email</a></th>
+                        <th scope="col" class="cwp-25">
+                            <a href="<%=baseSortUri%>&sort=organisation&sortDir=a&search=true"
+                                class="a"
+                            >Organisation</a></th>
+                        <th scope="col" class="cwp-15">
+                            <a href="<%=baseSortUri%>&sort=lastlogin&sortDir=a&search=true"
+                                class="a"
+                            >Last Login</a></th>
+                        <th scope="col" class="cwp-10">
+                            <a href="<%=baseSortUri%>&sort=status&sortDir=a&search=true"
+                               class="a"
+                            >Status</a></th>
+                        <th scope="col" class="cwp-10">Selected?</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% if(locals.users.length === 0) { %>
+                    <tr>
+                        <td colspan="5"><span class="empty-state">No users found</span></td>
+                    </tr>
                     <% } %>
-                    <textarea class="form-control full-width form-group" rows="6" id="emails" name="emails"  placeholder="Input emails separated by a comma"
-                            <% if (locals.validationMessages.emails !== undefined) { %>
-                           aria-invalid="true" aria-describedby="validation-reason"
+                    <% for (let i = 0; i < locals.users.length; i++) { %>
+                    <tr>
+                        <td><a class="breakable" href="/users/<%= users[i].id %>/organisations<%= baseSortUri %>"><%= users[i].name %></a></td>
+                        <td><span class="breakable"><%= users[i].email %></span></td>
+                        <td>
+                            <% if(users[i].organisation) { %>
+                            <%= users[i].organisation.name %>
+                            <% }else { %>
+                            Unknown
                             <% } %>
-                           value="<%= locals.emails %>"></textarea>
-                </div>
-            </fieldset>
+                        </td>
+                        <td>
+                            <% if(locals.users[i].lastLogin) { %>
+                            <%= locals.moment(locals.users[i].lastLogin).fromNow() %>
+                            <% } else { %>
+                            Never
+                            <% } %>
+                        </td>
+                        <td><%= users[i].status.description %></td>
+                        <td><input type="checkbox" id="user-123" name="user-123" value=""></td>
+                    </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+            </div>
 
             <div class="form-submit submit-buttons">
                 <button type="submit" class="button">Continue</button>

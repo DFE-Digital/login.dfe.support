@@ -5,10 +5,6 @@ const getBulkUserActions = (req, res) => {
     validationMessages: {},
   };
 
-  if (req.session.user) {
-    model.emails = req.session.user.email;
-  }
-
   res.render('users/views/bulkUserActions', model);
 };
 
