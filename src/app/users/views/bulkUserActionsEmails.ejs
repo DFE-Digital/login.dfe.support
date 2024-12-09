@@ -1,0 +1,71 @@
+<a href="../" class="link-back">Back</a>
+<div class="row">
+    <div class="col-8">
+        <h1 class="heading-xlarge">
+            Bulk user actions
+        </h1>
+        <p class="lede">Select all the users you want to affect</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <form method="post" id="form-new-user">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+
+            <div class="col-12 %>">
+                <table class="data">
+                    <thead>
+                    <%
+                    let baseSortUri = ``;
+                    %>
+                    <tr>
+                        <th scope="col" class="cwp-15">Name</th>
+                        <th scope="col" class="cwp-35">Email</th>
+                        <th scope="col" class="cwp-25">Organisation</th>
+                        <th scope="col" class="cwp-15">Last Login</th>
+                        <th scope="col" class="cwp-10">Status</th>
+                        <th scope="col" class="cwp-10">Selected</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% if(locals.users.length === 0) { %>
+                    <tr>
+                        <td colspan="5"><span class="empty-state">No users found</span></td>
+                    </tr>
+                    <% } %>
+                    <% for (let i = 0; i < locals.users.length; i++) { %>
+                    <tr>
+                        <td><%= users[i].name %></td>
+                        <td><span class="breakable"><%= users[i].email %></span></td>
+                        <td>
+                            <% if(users[i].organisation) { %>
+                            <%= users[i].organisation.name %>
+                            <% }else { %>
+                            Unknown
+                            <% } %>
+                        </td>
+                        <td>
+                            <% if(locals.users[i].lastLogin) { %>
+                            <%= locals.moment(locals.users[i].lastLogin).fromNow() %>
+                            <% } else { %>
+                            Never
+                            <% } %>
+                        </td>
+                        <td><%= users[i].status.description %></td>
+                        <td><input type="checkbox" id="user-<%= users[i].id %>" name="user-<%= users[i].id %>" value="<%= users[i].id %>"></td>
+                    </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+                <input type="checkbox" id="deactivate-users" name="deactivate-users" value="deactivate-users"><label for="deactivate-users">Deactivate users</label><br>
+                <input type="checkbox" id="remove-services-and-requests" name="remove-services-and-requests" value="remove-services-and-requests"><label for="remove-services-and-requests">Remove services and requests</label>
+            </div>
+
+            <div class="form-submit submit-buttons">
+                <button type="submit" class="button">Continue</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
