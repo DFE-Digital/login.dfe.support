@@ -9,7 +9,7 @@ const validateInput = async (req) => {
   };
 
   if (!model.emails) {
-    model.validationMessages.email = 'Please enter an email address';
+    model.validationMessages.emails = 'Please enter an email address';
     return model;
   }
 
@@ -22,7 +22,7 @@ const validateInput = async (req) => {
 
   for (const email of trimmedEmails) {
     if (!emailPolicy.doesEmailMeetPolicy(email)) {
-      model.validationMessages.email = `Please enter a valid email address for ${email}`;
+      model.validationMessages.emails = `Please enter a valid email address for ${email}`;
     }
   }
 
