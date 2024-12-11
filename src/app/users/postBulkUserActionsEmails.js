@@ -28,7 +28,7 @@ const validateInput = async (req) => {
   const isDeactivateTicked = reqBody['deactivate-users'] || false;
   const isRemoveServicesAndRequestsTicked = reqBody['remove-services-and-requests'] || false;
   if (!isDeactivateTicked && !isRemoveServicesAndRequestsTicked) {
-    model.validationMessages.email = 'An action needs to be ticked';
+    model.validationMessages.email = 'At least 1 action needs to be ticked';
   }
 
   return model;
@@ -76,7 +76,7 @@ const postBulkUserActionsEmails = async (req, res) => {
     const emailsArray = emails.split(',');
     for (const email of emailsArray) {
       const result = await searchForBulkUsersPage(email);
-      for (const user of result.users) {
+      for (const user of result) {
         model.users.push(user);
       }
     }
@@ -111,8 +111,11 @@ const postBulkUserActionsEmails = async (req, res) => {
       }
     }
   }
-  // Clear out the emails in session (if we need to)
-  // Flash success message
+
+  // Clean up session value
+  req.session.emails = '';
+  const userText = tickedUsers.length > 1 ? 'users' : 'user';
+  res.flash('info', `Requested actions performed successfully on ${tickedUsers.length} ${userText}`);
 
   return res.redirect('/users');
 };

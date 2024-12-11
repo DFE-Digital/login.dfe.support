@@ -197,114 +197,47 @@ const search = async (req) => {
     };
 };
 
+/**
+ * Modified user search used for the bulk user actions screen.
+ *
+ * @param email - A string representing the email that will be searched for
+ */
 const searchForBulkUsersPage = async (email) => {
-  let paramsSource = {};
   let criteria = email.trim();
-
   const userRegex = /^[^±!£$%^&*+§¡€#¢§¶•ªº«\\/<>?:;|=,~"]{1,256}$/i;
-  let filteredError;
-  /**
-   * Check minimum characters and special characters in search criteria if:
-   * user is not using the filters toggle (to open or close) and filters are not visible
-   */
-  if (
-      paramsSource.isFilterToggle !== 'true' &&
-      paramsSource.showFilters !== 'true'
-  ) {
-      if (!criteria || criteria.length < 4) {
-          return {
-              validationMessages: {
-                  criteria: 'Please enter at least 4 characters'
-              }
-          };
-      }
-      if (!userRegex.test(criteria)) {
-          return {
-              validationMessages: {
-                  criteria: 'Special characters cannot be used'
-              }
-          };
-      }
-      /**
-       * Check special characters in search criteria if:
-       * user is filtering filtering and had specified a criteria
-       */
-  } else if (!userRegex.test(criteria) && criteria.length > 0) {
-      criteria = '';
-      // here we normally just return the error but we
-      // want to keep the last set of filtered results
-      // and append the error to the result
-      filteredError = {
-          criteria: 'Special characters cannot be used'
+
+  if (!criteria || criteria.length < 4) {
+    return {
+        validationMessages: {
+            criteria: 'Please enter at least 4 characters'
+        }
+    };
+  }
+  if (!userRegex.test(criteria)) {
+      return {
+          validationMessages: {
+              criteria: 'Special characters cannot be used'
+          }
       };
   }
 
-  let safeCriteria = criteria;
   if (criteria.indexOf('-') !== -1) {
       criteria = '"' + criteria + '"';
   }
-
-  let page = paramsSource.page ? parseInt(paramsSource.page) : 1;
-  if (isNaN(page)) {
-      page = 1;
-  }
-
-  let sortBy = paramsSource.sort ? paramsSource.sort.toLowerCase() : 'name';
-  let sortAsc =
-      (paramsSource.sortDir ? paramsSource.sortDir : 'asc').toLowerCase() ===
-      'asc';
-
-  const filter = buildFilters(paramsSource);
+  const page = 1;
+  const sortBy = 'name';
+  const sortAsc = 'asc';
+  const filter = undefined;
 
   const results = await searchForUsers(
       criteria + '*',
       page,
       sortBy,
-      sortAsc ? 'asc' : 'desc',
+      sortAsc,
       filter
   );
 
-  return {
-      criteria: safeCriteria,
-      page,
-      sortBy,
-      sortOrder: sortAsc ? 'asc' : 'desc',
-      numberOfPages: results.numberOfPages,
-      totalNumberOfResults: results.totalNumberOfResults,
-      users: results.users,
-      validationMessages: filteredError,
-      sort: {
-          name: {
-              nextDirection:
-                  sortBy === 'name' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-              applied: sortBy === 'name'
-          },
-          email: {
-              nextDirection:
-                  sortBy === 'email' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-              applied: sortBy === 'email'
-          },
-          organisation: {
-              nextDirection:
-                  sortBy === 'organisation'
-                      ? sortAsc
-                          ? 'desc'
-                          : 'asc'
-                      : 'asc',
-              applied: sortBy === 'organisation'
-          },
-          lastLogin: {
-              nextDirection:
-                  sortBy === 'lastlogin' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-              applied: sortBy === 'lastlogin'
-          },
-          status: {
-              nextDirection:
-                  sortBy === 'status' ? (sortAsc ? 'desc' : 'asc') : 'asc',
-              applied: sortBy === 'status'
-          }
-      }
-  };
+  return results.users;
 };
 
 const getUserDetails = async (req) => {

@@ -8,23 +8,26 @@ const validateInput = async (req) => {
     validationMessages: {},
   };
 
-  model.emails = model.emails.trim();
-  // Removes any newline characters
-  model.emails = model.emails.replace('&#13;', '');
-  model.emails = model.emails.replace('&#10;', '');
-
   if (!model.emails) {
     model.validationMessages.email = 'Please enter an email address';
     return model;
   }
 
-  const emailsArray = model.emails.split(',');
-  for (const email of emailsArray) {
+  // Removes any newline characters
+  model.emails = model.emails.replace('&#13;', '');
+  model.emails = model.emails.replace('&#10;', '');
+
+  // Trim whitespace around each email provided
+  const trimmedEmails = model.emails.split(',').map((email) => email.trim());
+
+  for (const email of trimmedEmails) {
     if (!emailPolicy.doesEmailMeetPolicy(email)) {
-      // TODO currently only reports on 1 error at a time.  Is this acceptable or should we report on many?
       model.validationMessages.email = `Please enter a valid email address for ${email}`;
     }
   }
+
+  // Reglue array together back into a comma separated string
+  model.emails = trimmedEmails.join();
 
   return model;
 };

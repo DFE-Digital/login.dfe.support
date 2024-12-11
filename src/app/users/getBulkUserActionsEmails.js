@@ -9,7 +9,7 @@ const getBulkUserActionsEmails = async (req, res) => {
   const emailsArray = emails.split(',');
   for (const email of emailsArray) {
     const result = await searchForBulkUsersPage(email.trim());
-    for (const user of result.users) {
+    for (const user of result) {
       users.push(user);
     }
   }
