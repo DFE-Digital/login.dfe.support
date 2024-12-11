@@ -36,12 +36,12 @@ const paginationModel = {
             <% const audit = locals.audits[a]; %>
                 <tr>
                     <%if (audit.startDate){%>
-                    <td><%= locals.moment(audit.startDate).format('DD/MMM/YYYY HH:mm:ss') %></td>
+                    <td><%= locals.moment(audit.startDate).format('DD MMM YYYY hh:mma') %></td>
                         <%}else{%>
                             <td></td>
                         <%}%>
                     <%if (audit.endDate){%>
-                    <td><%= locals.moment(audit.endDate).format('DD/MMM/YYYY HH:mm:ss') %></td>
+                    <td><%= locals.moment(audit.endDate).format('DD MMM YYYY hh:mma') %></td>
                         <%}else{%>
                             <td></td>
                         <%}%>

@@ -58,7 +58,7 @@
             </h1>
             <dl class="inline condensed">
                 <dt class="label">Last login:</dt>
-                <dd><%= locals.user.lastLogin ? locals.moment(locals.user.lastLogin).format('DD MMM YYYY, HH:mm:ss') : 'Never' %></dd>
+                <dd><%= locals.user.lastLogin ? locals.moment(locals.user.lastLogin).format('DD MMM YYYY hh:mma') : 'Never' %></dd>
                 <dt class="label">Account status:</dt>
                 <dd><%= user.status.description %></dd>
                 <dt class="label">Number of logins in last 12 months:</dt>
