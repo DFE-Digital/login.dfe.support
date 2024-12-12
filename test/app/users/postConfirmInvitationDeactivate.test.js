@@ -64,7 +64,7 @@ describe('When processing a post for a user invitation deactivate request', () =
     expect(deactivateInvite.mock.calls[0][1]).toBe('some selected reason for deactivation');
     expect(deactivateInvite.mock.calls[0][2]).toBe(req.id);
   });
-  
+
   test('when given a reason from the select menu and further information in the textarea, it updates the user setting status to deactivated', async () => {
     req = getRequestMock({
       body: {
