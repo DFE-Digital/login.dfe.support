@@ -22,13 +22,13 @@ const validateInput = async (req) => {
   const reqBody = req.body;
   const res = Object.keys(reqBody).filter((v) => v.startsWith('user-'));
   if (res.length === 0) {
-    model.validationMessages.users = 'At least 1 user need to be ticked';
+    model.validationMessages.users = 'At least 1 user needs to be ticked';
   }
 
   const isDeactivateTicked = reqBody['deactivate-users'] || false;
   const isRemoveServicesAndRequestsTicked = reqBody['remove-services-and-requests'] || false;
   if (!isDeactivateTicked && !isRemoveServicesAndRequestsTicked) {
-    model.validationMessages.email = 'At least 1 action needs to be ticked';
+    model.validationMessages.actions = 'At least 1 action needs to be ticked';
   }
 
   return model;
@@ -51,7 +51,6 @@ const updateInvitedUserIndex = async (uid, correlationId) => {
   user.status.description = 'Deactivated Invitation';
 
   await updateUserDetails(user, correlationId);
-
   await waitForIndexToUpdate(uid, (updated) => updated.status.id === -2);
 };
 
@@ -92,6 +91,7 @@ const postBulkUserActionsEmails = async (req, res) => {
 
   // eslint-disable-next-line no-restricted-syntax
   for (const tickedUser of tickedUsers) {
+    // TODO add logging
     const userId = reqBody[tickedUser];
     if (isDeactivateTicked) {
       if (userId.startsWith('inv-')) {

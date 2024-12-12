@@ -4,6 +4,9 @@ const { searchForBulkUsersPage } = require('./utils');
 
 const getBulkUserActionsEmails = async (req, res) => {
   const emails = req.session.emails;
+  if (!emails) {
+    return res.redirect('/users');
+  }
   const users = [];
 
   const emailsArray = emails.split(',');

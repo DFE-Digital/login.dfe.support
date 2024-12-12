@@ -30,7 +30,7 @@ describe('When processing a get for a bulk user action request', () => {
         csrfToken: 'token',
         emails: '',
         validationMessages: {},
-      }
+      },
     );
   });
 

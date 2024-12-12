@@ -75,4 +75,17 @@ describe('When processing a post for the bulk user actions request', () => {
     expect(res.redirect.mock.calls[0][0]).toBe('bulk-user-actions/emails');
     expect(testReq.session).toMatchObject({ emails: 'test@test.com,example@blah.com,thirdExample@testing.com' });
   });
+
+  it('removes duplicate emails', async () => {
+    const testReq = getRequestMock({
+      body: {
+        emails: 'test@test.com,test@test.com,example@blah.com',
+      },
+    });
+    await postBulkUserActions(testReq, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe('bulk-user-actions/emails');
+    expect(testReq.session).toMatchObject({ emails: 'test@test.com,example@blah.com' });
+  });
 });

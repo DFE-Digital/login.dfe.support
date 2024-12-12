@@ -17,17 +17,18 @@ const validateInput = async (req) => {
   model.emails = model.emails.replace('&#13;', '');
   model.emails = model.emails.replace('&#10;', '');
 
-  // Trim whitespace around each email provided
+  // Trim whitespace around each email provided and remove duplicates
   const trimmedEmails = model.emails.split(',').map((email) => email.trim());
+  const deduplicatedEmails = [...new Set(trimmedEmails)];
 
-  for (const email of trimmedEmails) {
+  for (const email of deduplicatedEmails) {
     if (!emailPolicy.doesEmailMeetPolicy(email)) {
       model.validationMessages.emails = `Please enter a valid email address for ${email}`;
     }
   }
 
   // Reglue array together back into a comma separated string
-  model.emails = trimmedEmails.join();
+  model.emails = deduplicatedEmails.join();
 
   return model;
 };
