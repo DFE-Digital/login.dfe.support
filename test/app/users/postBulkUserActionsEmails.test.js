@@ -42,7 +42,9 @@ describe('When processing a post for the bulk user actions emails request for us
       flash: jest.fn(),
     };
 
-    searchForBulkUsersPage.mockReset().mockReturnValue(userSearchResult);
+    searchForBulkUsersPage.mockReset().mockReturnValue({
+      users: userSearchResult,
+    });
     getUserDetailsById.mockReset().mockReturnValue(userSearchResult);
   });
 

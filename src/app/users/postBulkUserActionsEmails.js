@@ -75,7 +75,7 @@ const postBulkUserActionsEmails = async (req, res) => {
     const emailsArray = emails.split(',');
     for (const email of emailsArray) {
       const result = await searchForBulkUsersPage(email);
-      for (const user of result) {
+      for (const user of result.users) {
         model.users.push(user);
       }
     }

@@ -41,7 +41,9 @@ describe('When processing a get for a bulk user action emails request', () => {
       redirect: jest.fn(),
     };
 
-    searchForBulkUsersPage.mockReset().mockReturnValue(userSearchResult);
+    searchForBulkUsersPage.mockReset().mockReturnValue({
+      users: userSearchResult,
+    });
   });
 
   it('then it should render the buildUserActionsEmails view', async () => {

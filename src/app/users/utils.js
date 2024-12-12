@@ -13,6 +13,7 @@ const {
     getServicesByInvitationId,
     getUserServiceRequestsByUserId,
     removeServiceFromUser,
+    removeServiceFromInvitation,
     updateUserServiceRequest
 } = require('./../../infrastructure/access');
 const { getServiceById } = require('./../../infrastructure/applications');
@@ -237,7 +238,9 @@ const searchForBulkUsersPage = async (email) => {
       filter
   );
 
-  return results.users;
+  return {
+    users: results.users
+  };
 };
 
 const getUserDetails = async (req) => {
@@ -393,6 +396,7 @@ const mapRole = (roleId) => {
 };
 
 const rejectOpenUserServiceRequestsForUser = async (userId, req) => {
+  const correlationId = req.id;
   const userServiceRequests = await getUserServiceRequestsByUserId(userId) || [];
   for (const serviceRequest of userServiceRequests) {
     // Request status 0 is 'pending', 2 is 'overdue', 3 is 'no approvers'
