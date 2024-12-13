@@ -1,23 +1,20 @@
-<a href="../" class="link-back">Back</a>
+<a href="../bulk-user-actions" class="link-back">Back</a>
 <div class="row">
     <div class="col-8">
         <h1 class="heading-xlarge">
             Bulk user actions
         </h1>
-        <p class="lede">Select all the users you want to affect</p>
+        <p class="lede">Select all the users you want to affect and the action you wish to perform on each one</p>
     </div>
 </div>
 <div class="row">
     <div class="col-12">
-        <form method="post" id="form-new-user">
+        <form method="post" id="form-bulk-user-actions">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
 
             <div class="col-12 %>">
                 <table class="data">
                     <thead>
-                    <%
-                    let baseSortUri = ``;
-                    %>
                     <tr>
                         <th scope="col" class="cwp-15">Name</th>
                         <th scope="col" class="cwp-35">Email</th>
@@ -57,12 +54,33 @@
                     <% } %>
                     </tbody>
                 </table>
-                <input type="checkbox" id="deactivate-users" name="deactivate-users" value="deactivate-users"><label for="deactivate-users">Deactivate users</label><br>
-                <input type="checkbox" id="remove-services-and-requests" name="remove-services-and-requests" value="remove-services-and-requests"><label for="remove-services-and-requests">Remove services and requests</label>
             </div>
+            <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset">
+                  <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                    <h1 class="govuk-fieldset__heading">
+                      Select which actions to apply to all the selected users
+                    </h1>
+                  </legend>
+                  <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                      <input class="govuk-checkboxes__input" id="deactivate-users" name="deactivate-users" type="checkbox" value="deactivate-users">
+                      <label class="govuk-label govuk-checkboxes__label" for="deactivate-users">
+                        Deactivate users
+                      </label>
+                    </div>
+                    <div class="govuk-checkboxes__item">
+                      <input class="govuk-checkboxes__input" id="remove-services-and-requests" name="remove-services-and-requests" type="checkbox" value="remove-services-and-requests">
+                      <label class="govuk-label govuk-checkboxes__label" for="remove-services-and-requests">
+                        Remove services and requests
+                      </label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
 
             <div class="form-submit submit-buttons">
-                <button type="submit" class="button">Continue</button>
+                <button type="submit" class="button">Submit</button>
             </div>
 
         </form>

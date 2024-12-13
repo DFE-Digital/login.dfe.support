@@ -4,7 +4,7 @@ jest.mock('./../../../src/infrastructure/access');
 const { getServicesByInvitationId, removeServiceFromInvitation } = require('../../../src/infrastructure/access');
 const { removeAllServicesForInvitedUser } = require('../../../src/app/users/utils');
 
-describe('When getting user details', () => {
+describe('When removing all services for an invited user', () => {
   const userId = 'inv-user-id';
   let req;
 
@@ -25,7 +25,7 @@ describe('When getting user details', () => {
     };
   });
 
-  it('then it should get user from users index', async () => {
+  it('then it should call removeServiceFromInvitation when a service is returned', async () => {
     await removeAllServicesForInvitedUser(userId, req);
 
     expect(getServicesByInvitationId.mock.calls).toHaveLength(1);

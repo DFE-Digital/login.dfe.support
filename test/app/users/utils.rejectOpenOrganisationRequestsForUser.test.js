@@ -4,7 +4,7 @@ jest.mock('./../../../src/infrastructure/organisations');
 const { getPendingRequestsAssociatedWithUser, updateRequestById } = require('../../../src/infrastructure/organisations');
 const { rejectOpenOrganisationRequestsForUser } = require('../../../src/app/users/utils');
 
-describe('When removing all services for a user', () => {
+describe('When rejecting all organisation requests for a user', () => {
   const userId = 'user-1';
   let req;
 
@@ -39,7 +39,7 @@ describe('When removing all services for a user', () => {
     };
   });
 
-  it('then it should get user from users index', async () => {
+  it('then it should call updateRequestById when a pending request is found', async () => {
     await rejectOpenOrganisationRequestsForUser(userId, req);
 
     expect(getPendingRequestsAssociatedWithUser.mock.calls).toHaveLength(1);

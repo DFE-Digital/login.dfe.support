@@ -13,6 +13,8 @@ const validateInput = async (req) => {
     return model;
   }
 
+  // Remove trailing comma (if present)
+  model.emails = model.emails.replace(/,$/, '');
   // Removes any newline characters
   model.emails = model.emails.replace('&#13;', '');
   model.emails = model.emails.replace('&#10;', '');
@@ -21,9 +23,13 @@ const validateInput = async (req) => {
   const trimmedEmails = model.emails.split(',').map((email) => email.trim());
   const deduplicatedEmails = [...new Set(trimmedEmails)];
 
-  for (const email of deduplicatedEmails) {
-    if (!emailPolicy.doesEmailMeetPolicy(email)) {
-      model.validationMessages.emails = `Please enter a valid email address for ${email}`;
+  if (deduplicatedEmails.length > 100) {
+    model.validationMessages.emails = 'A maximum of 100 emails can be provided';
+  } else {
+    for (const email of deduplicatedEmails) {
+      if (!emailPolicy.doesEmailMeetPolicy(email)) {
+        model.validationMessages.emails = `Please enter a valid email address for ${email}`;
+      }
     }
   }
 
