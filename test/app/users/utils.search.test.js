@@ -203,6 +203,19 @@ describe('When processing a user search request', () => {
       });
     });
 
+    test('then it should not search and return validation error if criteria has special characters in it', async () => {
+      req.query.criteria = 'test!"£$%^&*@test.com';
+
+      const result = await search(req);
+
+      expect(searchForUsers).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        validationMessages: {
+          criteria: 'Special characters cannot be used',
+        },
+      });
+    });
+
     test('then it should include posted criteria', async () => {
       const actual = await search(req);
 

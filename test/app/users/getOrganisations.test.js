@@ -1,17 +1,17 @@
-jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
-jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
+jest.mock('./../../../src/infrastructure/config', () => require('../../utils').configMockFactory());
+jest.mock('./../../../src/infrastructure/logger', () => require('../../utils').loggerMockFactory());
 jest.mock('./../../../src/app/users/utils');
 jest.mock('./../../../src/infrastructure/organisations');
 jest.mock('./../../../src/infrastructure/directories');
 jest.mock('./../../../src/infrastructure/serviceMapping');
 jest.mock('./../../../src/infrastructure/audit');
 jest.mock('ioredis');
-const { getUserDetails } = require('./../../../src/app/users/utils');
-const { getUserOrganisations, getPendingRequestsAssociatedWithUser } = require('./../../../src/infrastructure/organisations');
-const { getUsersByIdV2 } = require('./../../../src/infrastructure/directories');
-const { getClientIdForServiceId } = require('./../../../src/infrastructure/serviceMapping');
-const { getUserLoginAuditsForService } = require('./../../../src/infrastructure/audit');
-const getOrganisations = require('./../../../src/app/users/getOrganisations');
+const { getUserDetails } = require('../../../src/app/users/utils');
+const { getUserOrganisations, getPendingRequestsAssociatedWithUser } = require('../../../src/infrastructure/organisations');
+const { getUsersByIdV2 } = require('../../../src/infrastructure/directories');
+const { getClientIdForServiceId } = require('../../../src/infrastructure/serviceMapping');
+const { getUserLoginAuditsForService } = require('../../../src/infrastructure/audit');
+const getOrganisations = require('../../../src/app/users/getOrganisations');
 
 describe('when getting users organisation details', () => {
   let req;
@@ -49,7 +49,7 @@ describe('when getting users organisation details', () => {
           name: 'Great Big School',
         },
         approvers: [
-          "user1",
+          'user1',
         ],
       },
       {
@@ -58,7 +58,7 @@ describe('when getting users organisation details', () => {
           name: 'Little Tiny School',
         },
         approvers: [
-          "user1",
+          'user1',
         ],
       },
     ]);
@@ -183,7 +183,7 @@ describe('when getting users organisation details', () => {
   });
 
   it('should filter out users with a deactivated account', async () => {
-    //Given
+    // Given
     getUsersByIdV2.mockReturnValue(
       [
         { sub: 'user1', given_name: 'User', family_name: 'One', email: 'user.one@unit.tests', status: 1 },
@@ -199,7 +199,7 @@ describe('when getting users organisation details', () => {
           name: 'Great Big School',
         },
         approvers: [
-          "user1", "user6"
+          'user1', 'user6',
         ],
       },
       {
@@ -208,42 +208,69 @@ describe('when getting users organisation details', () => {
           name: 'Little Tiny School',
         },
         approvers: [
-          "user1", "user11"
+          'user1', 'user11',
         ],
       },
     ]);
 
-    //When
+    // When
     await getOrganisations(req, res);
 
-    //Then
+    // Then
     expect(getUserDetails.mock.calls).toHaveLength(1);
     expect(getUserDetails.mock.calls[0][0]).toBe(req);
     // Organisations[0] is Great Big School
     expect(res.render.mock.calls[0][1].organisations[0].approvers).toMatchObject([
       {
-        "email": "user.one@unit.tests",
-        "family_name": "One",
-        "given_name": "User",
-        "status": 1,
-        "sub": "user1",
+        email: 'user.one@unit.tests',
+        family_name: 'One',
+        given_name: 'User',
+        status: 1,
+        sub: 'user1',
       },
       {
         sub: 'user6',
         given_name: 'User',
         family_name: 'Six',
         email: 'user.six@unit.tests',
-        status: 1
-      }
+        status: 1,
+      },
     ]);
-     // Organisations[1] is Little Tiny School
+    // Organisations[1] is Little Tiny School
     expect(res.render.mock.calls[0][1].organisations[1].approvers).toMatchObject([
       {
-        "email": "user.one@unit.tests",
-        "family_name": "One",
-        "given_name": "User",
-        "status": 1,
-        "sub": "user1",
+        email: 'user.one@unit.tests',
+        family_name: 'One',
+        given_name: 'User',
+        status: 1,
+        sub: 'user1',
       }]);
+  });
+
+  it('should return an empty approvers section if the organisation does not have any approvers', async () => {
+    // Test might sound pointless, but getApproverDetails defines what happens if there are no approvers
+    // so we need a unit test to verify it's working as intended
+
+    // Given
+    getUserOrganisations.mockReturnValue([
+      {
+        organisation: {
+          id: '88a1ed39-5a98-43da-b66e-78e564ea72b0',
+          name: 'Great Big School',
+        },
+        approvers: [],
+      },
+    ]);
+
+    // When
+    await getOrganisations(req, res);
+
+    // Then
+    expect(getUserDetails.mock.calls).toHaveLength(1);
+    expect(getUserDetails.mock.calls[0][0]).toBe(req);
+    expect(getUsersByIdV2.mock.calls).toHaveLength(0);
+
+    // Organisations[0] is Great Big School
+    expect(res.render.mock.calls[0][1].organisations[0].approvers).toMatchObject([]);
   });
 });

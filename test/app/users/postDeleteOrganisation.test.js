@@ -1,18 +1,22 @@
 jest.mock('./../../../src/infrastructure/config', () => require('../../utils').configMockFactory());
 jest.mock('./../../../src/infrastructure/logger', () => require('../../utils').loggerMockFactory());
+jest.mock('./../../../src/infrastructure/access');
 jest.mock('./../../../src/infrastructure/organisations', () => ({
   deleteInvitationOrganisation: jest.fn(),
   deleteUserOrganisation: jest.fn(),
   getUserOrganisations: jest.fn(),
 }));
 jest.mock('./../../../src/infrastructure/search');
+jest.mock('./../../../src/app/users/utils');
 
 jest.mock('login.dfe.jobs-client');
 const { NotificationClient } = require('login.dfe.jobs-client');
 const { getRequestMock, getResponseMock } = require('../../utils');
+const { getAllServicesForUserInOrg } = require('../../../src/app/users/utils');
 const postDeleteOrganisation = require('../../../src/app/users/postDeleteOrganisation');
 const { deleteInvitationOrganisation, deleteUserOrganisation, getUserOrganisations } = require('../../../src/infrastructure/organisations');
 const { getSearchDetailsForUserById } = require('../../../src/infrastructure/search');
+const { removeServiceFromInvitation } = require('../../../src/infrastructure/access');
 
 const res = getResponseMock();
 
@@ -22,6 +26,7 @@ describe('when removing a users access to an organisation', () => {
   const expectedFirstName = 'James';
   const expectedLastName = 'Howlett';
   const expectedOrgName = 'X-Men';
+  const sendUserRemovedFromOrganisationStub = jest.fn();
 
   beforeEach(() => {
     req = getRequestMock({
@@ -61,7 +66,17 @@ describe('when removing a users access to an organisation', () => {
         organisation: { id: 'test-org-id' },
       },
     ]);
-    sendUserRemovedFromOrganisationStub = jest.fn();
+
+    removeServiceFromInvitation.mockReset();
+
+    getAllServicesForUserInOrg.mockReset().mockReturnValue([{
+      id: 'service2',
+      dateActivated: '10/10/2018',
+      name: 'service name',
+      status: 'active',
+      isExternalService: true,
+    }]);
+
     NotificationClient.mockReset().mockImplementation(() => ({
       sendUserRemovedFromOrganisation: sendUserRemovedFromOrganisationStub,
     }));

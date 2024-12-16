@@ -21,7 +21,7 @@ const apiResponse = {
   email: 'some.user@test.local',
   keyToSuccessId: '1234567',
   tokenSerialNumber: '12345678901',
-  id: invitationId
+  id: invitationId,
 };
 
 describe('when getting a page of users from directories api', () => {

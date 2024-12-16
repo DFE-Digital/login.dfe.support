@@ -30,7 +30,7 @@ describe('When getting user details', () => {
       status: {
         id: 1,
         description: 'Active',
-        changedOn: new Date("2017-10-24T12:35:51.633Z"),
+        changedOn: new Date('2017-10-24T12:35:51.633Z'),
       },
     });
 
@@ -43,7 +43,7 @@ describe('When getting user details', () => {
       status: {
         id: 1,
         description: 'Active',
-        changedOn: new Date("2017-10-24T12:35:51.633Z"),
+        changedOn: new Date('2017-10-24T12:35:51.633Z'),
       },
     });
 
@@ -60,24 +60,4 @@ describe('When getting user details', () => {
     expect(getSearchDetailsForUserById.mock.calls).toHaveLength(1);
     expect(getSearchDetailsForUserById.mock.calls[0][0]).toBe('user1');
   });
-
-/*  it('then it should map user and login data to result', async () => {
-    const actual = await getUserDetails(req);
-
-    expect(actual).toMatchObject({
-      name: 'Albus Dumbledore',
-      firstName: 'Albus',
-      lastName: 'Dumbledore',
-      email: 'headmaster@hogwarts.com',
-      lastLogin: new Date('2017-10-24T12:35:51.633Z'),
-      status: {
-        id: 1,
-        description: 'Active',
-        changedOn: new Date("2017-10-24T12:35:51.633Z"),
-      },
-      loginsInPast12Months: {
-        successful: 2,
-      },
-    });
-  });*/
 });
