@@ -12,6 +12,9 @@ describe('When processing a post for the bulk user actions request', () => {
       body: {
         emails: 'test@test.com,exampleUser@example.com',
       },
+      session: {
+        save: jest.fn(cb => cb()),
+      },
     });
 
     res = {
@@ -89,12 +92,38 @@ describe('When processing a post for the bulk user actions request', () => {
     );
   });
 
+  it('renders the page with an error if an error occurs during the session.save', async () => {
+    const testReq = getRequestMock({
+      body: {
+        emails: 'test@test.com,exampleUser@example.com',
+      },
+      session: {
+        save: jest.fn(cb => cb('Something went wrong')),
+      },
+    });
+
+    await postBulkUserActions(testReq, res);
+
+    expect(res.render.mock.calls[0][0]).toBe('users/views/bulkUserActions');
+    expect(res.render.mock.calls[0][1]).toMatchObject(
+      {
+        csrfToken: 'token',
+        emails: 'test@test.com,exampleUser@example.com',
+        validationMessages: { emails: 'Something went wrong submitting data, please try again' },
+      },
+    );
+  });
+
   it('removes newline characters and extra spaces around the emails', async () => {
     const testReq = getRequestMock({
       body: {
         emails: 'test@test.com,  example@blah.com  ,&#13;&#10;thirdExample@testing.com',
       },
+      session: {
+        save: jest.fn(cb => cb()),
+      },
     });
+
     await postBulkUserActions(testReq, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
@@ -107,7 +136,11 @@ describe('When processing a post for the bulk user actions request', () => {
       body: {
         emails: 'test@test.com,example@blah.com,thirdExample@testing.com,',
       },
+      session: {
+        save: jest.fn(cb => cb()),
+      },
     });
+
     await postBulkUserActions(testReq, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
@@ -120,7 +153,11 @@ describe('When processing a post for the bulk user actions request', () => {
       body: {
         emails: 'test@test.com,test@test.com,example@blah.com',
       },
+      session: {
+        save: jest.fn(cb => cb()),
+      },
     });
+
     await postBulkUserActions(testReq, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);

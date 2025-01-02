@@ -1,6 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 const { emailPolicy } = require('login.dfe.validation');
 const { sendResult } = require('../../infrastructure/utils');
+const logger = require('../../infrastructure/logger');
 
 const validateInput = async (req) => {
   const model = {
@@ -47,7 +48,17 @@ const postBulkUserActions = async (req, res) => {
   }
 
   req.session.emails = model.emails;
-  return res.redirect('bulk-user-actions/emails');
+  req.session.save((error) => {
+    if (error) {
+      // Any error saving to session should hopefully be temporary. Assuming this, we log the error
+      // and just display an error message saying to try again.
+      logger.error('An error occurred when saving to the session', error);
+      model.validationMessages.emails = 'Something went wrong submitting data, please try again';
+      model.csrfToken = req.csrfToken();
+      return sendResult(req, res, 'users/views/bulkUserActions', model);
+    }
+    return res.redirect('bulk-user-actions/emails');
+  });
 };
 
 module.exports = postBulkUserActions;
