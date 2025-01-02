@@ -200,27 +200,12 @@ const search = async (req) => {
 
 /**
  * Modified user search used for the bulk user actions screen.
+ * Assumes email validation has already been done.
  *
  * @param email - A string representing the email that will be searched for
  */
 const searchForBulkUsersPage = async (email) => {
   let criteria = email.trim();
-  const userRegex = /^[^±!£$%^&*+§¡€#¢§¶•ªº«\\/<>?:;|=,~"]{1,256}$/i;
-
-  if (!criteria || criteria.length < 4) {
-    return {
-        validationMessages: {
-            criteria: 'Please enter at least 4 characters'
-        }
-    };
-  }
-  if (!userRegex.test(criteria)) {
-      return {
-          validationMessages: {
-              criteria: 'Special characters cannot be used'
-          }
-      };
-  }
 
   if (criteria.indexOf('-') !== -1) {
       criteria = '"' + criteria + '"';

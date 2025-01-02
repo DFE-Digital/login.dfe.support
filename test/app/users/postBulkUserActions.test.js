@@ -1,3 +1,5 @@
+jest.mock('./../../../src/infrastructure/config', () => require('../../utils').configMockFactory({}));
+
 const { getRequestMock } = require('../../utils');
 const postBulkUserActions = require('../../../src/app/users/postBulkUserActions');
 

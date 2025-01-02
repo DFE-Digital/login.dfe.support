@@ -60,32 +60,6 @@ describe('When processing a user search request', () => {
       expect(searchForUsers.mock.calls[0][0]).toBe('test@test.com*');
     });
 
-    test('then it should not search and return validation error if criteria does not meet minimum length', async () => {
-      const emptyEmail = '';
-
-      const result = await searchForBulkUsersPage(emptyEmail);
-
-      expect(searchForUsers).not.toHaveBeenCalled();
-      expect(result).toEqual({
-        validationMessages: {
-          criteria: 'Please enter at least 4 characters',
-        },
-      });
-    });
-
-    test('then it should not search and return validation error if criteria does not meet minimum length', async () => {
-      const specialCharactersEmail = 'test!"£$%&*@test.com';
-
-      const result = await searchForBulkUsersPage(specialCharactersEmail);
-
-      expect(searchForUsers).not.toHaveBeenCalled();
-      expect(result).toEqual({
-        validationMessages: {
-          criteria: 'Special characters cannot be used',
-        },
-      });
-    });
-
     test('then it should include posted criteria', async () => {
       const actual = await searchForBulkUsersPage(email);
       expect(actual).toMatchObject({ users: usersSearchResult.users });
