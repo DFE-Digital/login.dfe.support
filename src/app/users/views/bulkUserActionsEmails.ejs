@@ -55,29 +55,23 @@
                     </tbody>
                 </table>
             </div>
-            <div class="govuk-form-group">
-                <fieldset class="govuk-fieldset">
-                  <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                    <h1 class="govuk-fieldset__heading">
-                      Select which actions to apply to all the selected users
-                    </h1>
-                  </legend>
-                  <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                    <div class="govuk-checkboxes__item">
-                      <input class="govuk-checkboxes__input" id="deactivate-users" name="deactivate-users" type="checkbox" value="deactivate-users">
-                      <label class="govuk-label govuk-checkboxes__label" for="deactivate-users">
-                        Deactivate users
-                      </label>
-                    </div>
-                    <div class="govuk-checkboxes__item">
-                      <input class="govuk-checkboxes__input" id="remove-services-and-requests" name="remove-services-and-requests" type="checkbox" value="remove-services-and-requests">
-                      <label class="govuk-label govuk-checkboxes__label" for="remove-services-and-requests">
-                        Remove services and requests
-                      </label>
-                    </div>
-                  </div>
-                </fieldset>
-              </div>
+
+            <legend>
+              <span class="body-text">Select which actions to apply to all the selected users</span>
+            </legend>
+
+            <div class="form-group">
+              <fieldset class="govuk-fieldset">
+                <div class="multiple-choice">
+                  <input id="deactivate-users" type="checkbox" name="deactivate-users" value="deactivate-users">
+                  <label for="deactivate-users">Deactivate users</label>
+                </div>
+                <div class="multiple-choice">
+                  <input id="remove-services-and-requests" type="checkbox" name="remove-services-and-requests" value="remove-services-and-requests">
+                  <label for="remove-services-and-requests">Remove services and requests</label>
+                </div>
+              </fieldset>
+            </div>
 
             <div class="form-submit submit-buttons">
                 <button type="submit" class="button">Submit</button>
