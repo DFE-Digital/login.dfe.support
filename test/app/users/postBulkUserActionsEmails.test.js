@@ -3,7 +3,6 @@ jest.mock('./../../../src/app/users/utils');
 jest.mock('./../../../src/infrastructure/directories');
 
 const { getRequestMock } = require('../../utils');
-//const { deactivate } = require('../../../src/infrastructure/directories');
 const { getUserDetailsById, searchForBulkUsersPage } = require('../../../src/app/users/utils');
 const postBulkUserActionsEmails = require('../../../src/app/users/postBulkUserActionsEmails');
 
