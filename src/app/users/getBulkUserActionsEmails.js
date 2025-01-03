@@ -1,7 +1,6 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 const { searchForBulkUsersPage } = require('./utils');
-const { sendResult } = require('../../infrastructure/utils');
 
 const getBulkUserActionsEmails = async (req, res) => {
   const emails = req.session.emails;
@@ -21,6 +20,7 @@ const getBulkUserActionsEmails = async (req, res) => {
   const model = {
     csrfToken: req.csrfToken(),
     layout: 'sharedViews/layoutNew.ejs',
+    backLink: '../bulk-user-actions',
     users,
     validationMessages: {},
   };

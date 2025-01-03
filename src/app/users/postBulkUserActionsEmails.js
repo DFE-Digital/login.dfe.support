@@ -16,6 +16,7 @@ const {
 const validateInput = async (req) => {
   const model = {
     layout: 'sharedViews/layoutNew.ejs',
+    backLink: '../bulk-user-actions',
     users: [],
     validationMessages: {},
   };
@@ -92,7 +93,6 @@ const postBulkUserActionsEmails = async (req, res) => {
 
   // eslint-disable-next-line no-restricted-syntax
   for (const tickedUser of tickedUsers) {
-    // TODO add logging
     const userId = reqBody[tickedUser];
     if (isDeactivateTicked) {
       if (userId.startsWith('inv-')) {

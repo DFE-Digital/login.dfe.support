@@ -6,6 +6,7 @@ const logger = require('../../infrastructure/logger');
 const validateInput = async (req) => {
   const model = {
     layout: 'sharedViews/layoutNew.ejs',
+    backLink: '../bulk-user-actions',
     emails: req.body.emails || '',
     validationMessages: {},
   };
