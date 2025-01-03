@@ -15,6 +15,7 @@ const {
 
 const validateInput = async (req) => {
   const model = {
+    layout: 'sharedViews/layoutNew.ejs',
     users: [],
     validationMessages: {},
   };

@@ -1,17 +1,56 @@
-<a href="../" class="link-back">Back</a>
-<div class="row">
+<div class="govuk-width-container">
     <div class="col-8">
-        <h1 class="heading-xlarge">
-            Bulk user actions
+        <a href="../" class="govuk-back-link">Back</a>
+        <h1 class="govuk-heading-xl">
+        Bulk user actions
         </h1>
-        <p class="lede">Add all the emails you wish to perform bulk actions on</p>
-        <p>The emails to be comma separated (e.g., emailA@test.com,emailB@test.com).  A maximum of 100 emails can be provided</p>
+        <form method="post">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+            <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset" aria-describedby="role-hint" id="roleSelection">
+                <div class="govuk-form-group">
+                    <h1 class="govuk-label-wrapper">
+                        <label class="govuk-label govuk-label--l" for="emails">
+                        Add all the emails you wish to perform bulk actions on
+                        </label>
+                    </h1>
+                    <div id="emails-hint" class="govuk-hint">
+                        The emails to be comma separated (e.g., emailA@test.com,emailB@test.com).  A maximum of 100 emails can be provided
+                    </div>
+                    <% if (locals.validationMessages.emails !== undefined) { %>
+                    <p id="emails-error" class="govuk-error-message">
+                        <span class="govuk-visually-hidden">Error:</span> <%= locals.validationMessages.emails %>
+                    </p>
+                    <% } %>   
+                    <textarea class="govuk-textarea" id="emails" name="emails" rows="5" 
+                    aria-describedby="emails-hint
+                    <% if (locals.validationMessages.emails !== undefined) { %>
+                        emails-error
+                    <% } %>
+                    "></textarea>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="govuk-button-group">
+                <button type="submit" class="govuk-button" data-module="govuk-button">
+                Continue
+                </button>
+        </form>
     </div>
 </div>
+
+  <!-- <p id="more-detail-error" class="govuk-error-message">
+    <span class="govuk-visually-hidden">Error:</span> Enter more detail
+  </p>
+  <textarea class="govuk-textarea govuk-textarea--error" id="more-detail" name="moreDetail" rows="5" aria-describedby="more-detail-hint more-detail-error"></textarea>
+  
+  
+  
+
+<a href="../" class="link-back">Back</a>
 <div class="row">
     <div class="col-12">
         <form method="post" id="form-new-user">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <fieldset>
                 <legend class="vh">Emails</legend>
                 <div class="form-group <%= (locals.validationMessages.emails !== undefined) ? 'form-group-error' : '' %>">
@@ -32,5 +71,5 @@
 
         </form>
     </div>
-</div>
+</div> -->
 
