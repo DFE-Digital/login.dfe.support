@@ -2,6 +2,7 @@ const Account = require('./../../infrastructure/directories');
 const flatten = require('lodash/flatten');
 const uniq = require('lodash/uniq');
 const { sendResult } = require('./../../infrastructure/utils');
+const { dateFormat } = require('../helpers/dateFormatterHelper');
 const { mapStatusForSupport, userStatusMap, unpackMultiSelect, search } = require('./utils');
 
 const getUserDetails = async (usersForApproval) => {
@@ -47,7 +48,8 @@ const buildModel = async (req) => {
     const usersEmail = userFound ? userFound.email : '';
     const usersName = userFound ? `${userFound.given_name} ${userFound.family_name}` : 'No Name Supplied';
     const statusText = mapStatusForSupport(user.status);
-    return Object.assign({usersEmail}, {usersName}, {statusText}, user);
+    const formattedCreatedDate = user.created_date ? dateFormat(user.created_date, 'shortDateFormat') : '';
+    return Object.assign({usersEmail}, {usersName}, {statusText}, {formattedCreatedDate}, user);
   });
 
   const model = {

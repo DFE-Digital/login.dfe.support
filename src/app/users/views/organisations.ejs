@@ -82,7 +82,7 @@
                 <td><%=org.role.name%></td>
                 <% } else { %>
                     <td>
-                        Requested <br> <%= locals.moment(org.requestDate).format('DD MMM YYYY') %>
+                        Requested <br> <%= org.formattedRequestDate %>
                     </td>
                 <% } %>
                 <% if (org.requestDate) { %>

@@ -15,6 +15,7 @@ const usersResult = {
   users: [
     {
       id: 'user-1',
+      lastLogin: new Date('2024-05-17T11:29:28.133Z'),
       organisations: [
         {
           id: 'org-0',
@@ -63,6 +64,8 @@ describe('when displaying organisation users', () => {
         users: [
           {
             id: 'user-1',
+            lastLogin: new Date('2024-05-17T11:29:28.133Z'),
+            formattedLastLogin: '17 May 2024',
             organisations: [
               {
                 id: 'org-0',

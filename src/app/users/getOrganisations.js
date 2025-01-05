@@ -3,6 +3,7 @@ const uniq = require('lodash/uniq');
 const sortBy = require('lodash/sortBy');
 const { sendResult } = require('../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
+const { dateFormat } = require('../helpers/dateFormatterHelper');
 const { getUserOrganisations, getInvitationOrganisations, getPendingRequestsAssociatedWithUser } = require('../../infrastructure/organisations');
 const { getUsersByIdV2 } = require('../../infrastructure/directories');
 const logger = require('../../infrastructure/logger');
@@ -60,14 +61,19 @@ const getPendingRequests = async (userId, correlationId) => {
     status: request.org_status,
     requestDate: request.created_date,
     requestId: request.id,
-  }))
+  }));
 };
 
 const action = async (req, res) => {
   const user = await getUserDetails(req);
+  user.formattedLastLogin = user.lastLogin ? dateFormat(user.lastLogin, 'longDateFormat') : '';
   const organisationDetails = await getOrganisations(user.id, req.id);
   const organisationRequests = !user.id.startsWith('inv-') ? await getPendingRequests(user.id, req.id) : [];
-  const allOrgs = organisationDetails.concat(organisationRequests);
+  const formattedOrganisationRequests = organisationRequests.map((organisation) => ({
+    ...organisation,
+    formattedRequestDate: organisation.requestDate ? dateFormat(organisation.requestDate, 'shortDateFormat') : '',
+  }));
+  const allOrgs = organisationDetails.concat(formattedOrganisationRequests);
   const sortedOrgs = sortBy(allOrgs, 'name');
   req.session.user = {
     firstName: user.firstName,

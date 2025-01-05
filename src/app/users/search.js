@@ -1,4 +1,5 @@
 const { search } = require('./utils');
+const { dateFormat } = require('../helpers/dateFormatterHelper');
 const { sendResult } = require('./../../infrastructure/utils');
 const { userStatusMap } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
@@ -99,6 +100,11 @@ const buildModel = async (req, result = {}) => {
 
 const doSearchAndBuildModel = async (req) => {
   const result = await search(req);
+  if (!result.validationMessages) {
+    result.users = result.users.map((user) => ({
+    ...user,
+    formattedLastLogin: user.lastLogin ? dateFormat(user.lastLogin, 'shortDateFormat') : '',
+  }))}
   const model = await buildModel(req, result);
   return model;
 };

@@ -36,7 +36,7 @@
                     Date
                 </dt>
                 <dd class="app-check-your-answers__answer">
-                    <%= locals.moment(locals.request.created_date).format('DD MMM YYYY hh:mma') %>
+                    <%= request.formattedCreatedDate %>
                 </dd>
             </div>
 
