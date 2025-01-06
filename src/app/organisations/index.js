@@ -10,6 +10,8 @@ const organisationUsers = require('./organisationUsers');
 const webServiceSync = require('./webServiceSync');
 const getppsyncStatus = require('./getppsyncStatus');
 const postppsyncStatus = require('./postPpsyncStatus');
+const getCreateOrganisation = require('./getCreateOrganisation');
+const postCreateOrganisation = require('./postCreateOrganisation');
 
 const router = express.Router({ mergeParams: true });
 
@@ -24,6 +26,9 @@ const users = (csrf) => {
   // DO NOT UNCOMMENT
   router.get('/run-pp-sync', csrf, asyncWrapper(getppsyncStatus));
   router.post('/run-pp-sync', csrf, asyncWrapper(postppsyncStatus));
+
+  router.get('/create', csrf, asyncWrapper(getCreateOrganisation));
+  router.post('/create', csrf, asyncWrapper(postCreateOrganisation));
 
   router.get('/:id', (req, res) => {
     res.redirect('users');

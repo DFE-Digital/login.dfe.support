@@ -1,0 +1,39 @@
+<div class="govuk-width-container">
+  <div class="col-8">
+    <h1 class="govuk-heading-xl">
+        Create new organisation
+    </h1>
+      <form method="post">
+        <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="name">
+            Name
+          </label>
+          <% if (locals.validationMessages.name !== undefined) { %>
+          <p id="name-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.name %>
+          </p>
+          <% } %>
+          <input class="govuk-input" id="name" name="name" type="text" spellcheck="false">
+        </div>
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="address">
+            Address
+          </label>
+          <% if (locals.validationMessages.address !== undefined) { %>
+            <p id="address-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.address %>
+            </p>
+            <% } %>
+          <input class="govuk-input" id="address" name="address" type="text" spellcheck="false">
+        </div>
+        <div class="govuk-button-group">
+          <button type="submit" class="govuk-button" data-module="govuk-button">
+            Continue
+          </button>
+        </div>
+    </form>
+</div>
+
+
+
