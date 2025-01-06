@@ -12,6 +12,8 @@ const getppsyncStatus = require('./getppsyncStatus');
 const postppsyncStatus = require('./postPpsyncStatus');
 const getCreateOrganisation = require('./getCreateOrganisation');
 const postCreateOrganisation = require('./postCreateOrganisation');
+const getConfirmCreateOrganisation = require('./getConfirmCreateOrganisation');
+const postConfirmCreateOrganisation = require('./postConfirmCreateOrganisation');
 
 const router = express.Router({ mergeParams: true });
 
@@ -27,8 +29,10 @@ const users = (csrf) => {
   router.get('/run-pp-sync', csrf, asyncWrapper(getppsyncStatus));
   router.post('/run-pp-sync', csrf, asyncWrapper(postppsyncStatus));
 
-  router.get('/create', csrf, asyncWrapper(getCreateOrganisation));
-  router.post('/create', csrf, asyncWrapper(postCreateOrganisation));
+  router.get('/create-org', csrf, asyncWrapper(getCreateOrganisation));
+  router.post('/create-org', csrf, asyncWrapper(postCreateOrganisation));
+  router.get('/confirm-create-org', csrf, asyncWrapper(getConfirmCreateOrganisation));
+  router.post('/confirm-create-org', csrf, asyncWrapper(postConfirmCreateOrganisation));
 
   router.get('/:id', (req, res) => {
     res.redirect('users');

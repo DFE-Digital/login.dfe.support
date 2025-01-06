@@ -1,12 +1,16 @@
 const { sendResult } = require('../../infrastructure/utils');
+const logger = require('../../infrastructure/logger');
 
 const validateInput = async (req) => {
   const nameRegEx = /^[^±!@£$%^&*_+§¡€#¢§¶•ªº«\\/<>?:;|=.,~"]{1,60}$/i;
   const model = {
     name: req.body.name || '',
     address: req.body.address || '',
+    ukprn: req.body.ukprn || '',
+    category: req.body.category || '',
+    upin: req.body.upin || '',
+    urn: req.body.urn || '',
     validationMessages: {},
-    layout: 'sharedViews/layoutNew.ejs',
   };
 
   if (!model.name) {
@@ -21,6 +25,25 @@ const validateInput = async (req) => {
     model.validationMessages.address = 'Special characters cannot be used';
   }
 
+  // TODO validate it's a number with x digits
+  if (!nameRegEx.test(model.ukprn)) {
+    model.validationMessages.ukprn = 'Special characters cannot be used';
+  }
+
+  if (!model.category) {
+    model.validationMessages.category = 'Please enter a category';
+  }
+
+  // TODO validate it's a number with x digits
+  if (!nameRegEx.test(model.upin)) {
+    model.validationMessages.upin = 'Special characters cannot be used';
+  }
+
+  // TODO validate it's a number with x digits
+  if (!nameRegEx.test(model.urn)) {
+    model.validationMessages.urn = 'Special characters cannot be used';
+  }
+
   return model;
 };
 
@@ -28,11 +51,24 @@ const postCreateOrganisation = async (req, res) => {
   const model = await validateInput(req);
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
+    model.layout = 'sharedViews/layoutNew.ejs';
     return sendResult(req, res, 'organisations/views/createOrganisation', model);
   }
 
-  console.log('Hit organisation API to create org');
-  return res.redirect('/organisations');
+  req.session.createOrgData = model;
+
+  req.session.save((error) => {
+    if (error) {
+      // Any error saving to session should hopefully be temporary. Assuming this, we log the error
+      // and just display an error message saying to try again.
+      logger.error('An error occurred when saving to the session', error);
+      model.validationMessages.name = 'Something went wrong submitting data, please try again';
+      model.csrfToken = req.csrfToken();
+      model.layout = 'sharedViews/layoutNew.ejs';
+      return sendResult(req, res, 'organisations/views/createOrganisation', model);
+    }
+    return res.redirect('confirm-create-org');
+  });
 };
 
 module.exports = postCreateOrganisation;
