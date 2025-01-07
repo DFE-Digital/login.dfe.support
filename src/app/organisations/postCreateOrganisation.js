@@ -58,9 +58,28 @@ const validateInput = async (req) => {
 const postCreateOrganisation = async (req, res) => {
   const model = await validateInput(req);
 
-  const result = searchOrganisations(model.name, undefined, undefined, 1, req.id);
-  console.log(result);
-  // TODO validate on name, ukprn, urn and upin to ensure it's unique
+  if (Object.keys(model.validationMessages).length === 0) {
+    // Validate no duplicate organisations exist.  Currently the validation is a bit of a blunt
+    // tool as the search just searches if ANY field matches the value (123 could find an org with a
+    // name of '123 test' as well as one with a UKPRN of 123). It's likely that false positives will
+    // happen, so we'll have to improve this on a future iteration.  We MUST do some validation
+    // because the create org endpoint will update an organisation with the provided information
+    // if it already exists, so a false positive is the preferred result.
+    if (model.ukprn) {
+      const ukprnResult = await searchOrganisations(model.ukprn, undefined, undefined, 1, req.id);
+      if (ukprnResult.totalNumberOfRecords > 0) {
+        model.validationMessages.ukprn = 'An organisation with this UKPRN already exists';
+      }
+    }
+
+    if (model.urn) {
+      const urnResult = await searchOrganisations(model.urn, undefined, undefined, 1, req.id);
+      if (urnResult.totalNumberOfRecords > 0) {
+        model.validationMessages.urn = 'An organisation with this URN already exists';
+      }
+    }
+  }
+
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
     model.layout = 'sharedViews/layoutNew.ejs';
@@ -76,6 +95,7 @@ const postCreateOrganisation = async (req, res) => {
       logger.error('An error occurred when saving to the session', error);
       model.validationMessages.name = 'Something went wrong submitting data, please try again';
       model.csrfToken = req.csrfToken();
+      model.currentPage = 'organisations';
       model.layout = 'sharedViews/layoutNew.ejs';
       return sendResult(req, res, 'organisations/views/createOrganisation', model);
     }

@@ -14,7 +14,7 @@
             <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.name %>
           </p>
           <% } %>
-          <input class="govuk-input" id="name" name="name" type="text" spellcheck="false">
+          <input class="govuk-input" id="name" name="name" type="text" spellcheck="false" value="<%= locals.name %>">
         </div>
         <div class="govuk-form-group">
           <label class="govuk-label" for="address">
@@ -25,7 +25,7 @@
               <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.address %>
             </p>
             <% } %>
-          <input class="govuk-input" id="address" name="address" type="text" spellcheck="false">
+          <input class="govuk-input" id="address" name="address" type="text" spellcheck="false" value="<%= locals.address %>">
         </div>
         <div class="govuk-form-group">
           <label class="govuk-label" for="ukprn">
@@ -36,7 +36,7 @@
               <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.ukprn %>
             </p>
             <% } %>
-          <input class="govuk-input" id="ukprn" name="ukprn" type="text" spellcheck="false">
+          <input class="govuk-input" id="ukprn" name="ukprn" type="text" spellcheck="false" value="<%= locals.ukprn %>">
         </div>
 
         <div class="govuk-form-group <%= (locals.validationMessages.category !== undefined) ? 'govuk-form-group--error' : '' %>">
@@ -49,8 +49,8 @@
           </p>
           <% } %>
           <select class="govuk-select <%= (locals.validationMessages.category !== undefined) ? 'govuk-select--error' : '' %>" id="category" name="category" aria-describedby="category-error">
-            <option value="" selected>Select a category</option>
-            <option value="008">008 (Other stakeholders)</option>
+            <option value="" <%= (locals.category === undefined) ? 'selected' : '' %>>Select a category</option>
+            <option value="008" <%= (locals.category === "008") ? 'selected' : '' %>>008 (Other stakeholders)</option>
           </select>
         </div>
 
@@ -63,7 +63,7 @@
               <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.upin %>
             </p>
             <% } %>
-          <input class="govuk-input" id="upin" name="upin" type="text" spellcheck="false">
+          <input class="govuk-input" id="upin" name="upin" type="text" spellcheck="false" value="<%= locals.upin %>">
         </div>
         <div class="govuk-form-group">
           <label class="govuk-label" for="urn">
@@ -74,7 +74,7 @@
               <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.urn %>
             </p>
             <% } %>
-          <input class="govuk-input" id="urn" name="urn" type="text" spellcheck="false">
+          <input class="govuk-input" id="urn" name="urn" type="text" spellcheck="false" value="<%= locals.urn %>">
         </div>
         <div class="govuk-button-group">
           <button type="submit" class="govuk-button" data-module="govuk-button">
