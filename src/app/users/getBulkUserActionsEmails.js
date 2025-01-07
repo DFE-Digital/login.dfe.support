@@ -27,8 +27,6 @@ const getBulkUserActionsEmails = async (req, res) => {
     }
   }
 
-  console.log(users);
-
   const model = {
     csrfToken: req.csrfToken(),
     layout: 'sharedViews/layoutNew.ejs',
