@@ -1,4 +1,5 @@
 const { sendResult } = require('../../infrastructure/utils');
+const { searchOrganisations } = require('../../infrastructure/organisations');
 const logger = require('../../infrastructure/logger');
 
 const validateInput = async (req) => {
@@ -12,6 +13,13 @@ const validateInput = async (req) => {
     urn: req.body.urn || '',
     validationMessages: {},
   };
+
+  model.name = model.name.trim();
+  model.address = model.address.trim();
+  model.ukprn = model.ukprn.trim();
+  model.category = model.category.trim();
+  model.upin = model.upin.trim();
+  model.urn = model.urn.trim();
 
   if (!model.name) {
     model.validationMessages.name = 'Please enter a name';
@@ -49,6 +57,10 @@ const validateInput = async (req) => {
 
 const postCreateOrganisation = async (req, res) => {
   const model = await validateInput(req);
+
+  const result = searchOrganisations(model.name, undefined, undefined, 1, req.id);
+  console.log(result);
+  // TODO validate on name, ukprn, urn and upin to ensure it's unique
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
     model.layout = 'sharedViews/layoutNew.ejs';

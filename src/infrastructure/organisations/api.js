@@ -7,12 +7,12 @@ const callOrganisationsApi = async (endpoint, method, body, correlationId) => {
 
   try {
     return await fetchApi(`${config.organisations.service.url}/${endpoint}`, {
-      method: method,
+      method,
       headers: {
         authorization: `bearer ${token}`,
         'x-correlation-id': correlationId,
       },
-      body: body,
+      body,
     });
   } catch (e) {
     const status = e.statusCode ? e.statusCode : 500;
@@ -153,6 +153,10 @@ const listOrganisationStatus = async (correlationId) => {
   return callOrganisationsApi('organisations/states', 'GET', undefined, correlationId);
 };
 
+const createOrganisation = async (body, correlationId) => {
+  return callOrganisationsApi(`organisations/`, 'POST', body, correlationId);
+};
+
 const listRequests = async (page, filterStates, correlationId) => {
   let uri = `organisations/requests?page=${page}`;
   if (filterStates && filterStates.length > 0) {
@@ -198,8 +202,8 @@ const getCategories = async () => {
   return await callOrganisationsApi('organisations/categories', 'GET',undefined, undefined);
 }
 
-
 module.exports = {
+  createOrganisation,
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
@@ -228,5 +232,5 @@ module.exports = {
   putUserInOrganisation,
   listOrganisationStatus,
   getPendingRequestsAssociatedWithUser,
-  getCategories
+  getCategories,
 };
