@@ -109,6 +109,50 @@ describe('when searching for organisations', () => {
       });
     });
 
+    describe('when search criteria is >= 4 characters with + special character', () => {
+      beforeEach(() => {
+        req[requestConfig.dataLocation] = {
+          criteria: 'org1+',
+          page: 2,
+        };
+      });
+
+      it('then it should send page of organisations', async () => {
+        await requestConfig.action(req, res);
+
+        expect(sendResult).toHaveBeenCalledTimes(1);
+        expect(sendResult).toHaveBeenCalledWith(req, res, 'organisations/views/search', {
+          csrfToken: req.csrfToken(),
+          criteria: 'org1+',
+          page: 2,
+          numberOfPages: orgsResult.totalNumberOfPages,
+          totalNumberOfResults: orgsResult.totalNumberOfRecords,
+          organisations: orgsResult.organisations,
+          organisationTypes: orgsResult.organisationTypes,
+          organisationStatuses: orgsResult.organisationStatuses,
+          showFilters: false,
+          validationMessages: {},
+        });
+      });
+
+      it('then it should search orgs with criteria specified', async () => {
+        await requestConfig.action(req, res);
+
+        expect(searchOrganisations).toHaveBeenCalledTimes(1);
+        expect(searchOrganisations).toHaveBeenCalledWith('org1+', [], [], 2, req.id);
+      });
+
+      it('then it should request page 1 if no page specified', async () => {
+        req[requestConfig.dataLocation].page = undefined;
+
+        await requestConfig.action(req, res);
+
+        expect(searchOrganisations).toHaveBeenCalledTimes(1);
+        expect(searchOrganisations).toHaveBeenCalledWith('org1+', [], [], 1, req.id);
+      });
+    });
+
+
     describe('when search criteria is >= 4 characters', () => {
       beforeEach(() => {
         req[requestConfig.dataLocation] = {
@@ -132,6 +176,33 @@ describe('when searching for organisations', () => {
           showFilters: false,
           validationMessages: {
             criteria: 'Please enter at least 4 characters',
+          },
+        });
+      });
+    });
+    describe('when search criteria is >= 4 characters and blocked special characters are used', () => {
+      beforeEach(() => {
+        req[requestConfig.dataLocation] = {
+          criteria: 'org1%',
+        };
+      });
+
+      it('then it should not search orgs and return validation error', async () => {
+        await requestConfig.action(req, res);
+
+        expect(searchOrganisations).not.toHaveBeenCalledTimes(1);
+        expect(sendResult).toHaveBeenCalledWith(req, res, 'organisations/views/search', {
+          csrfToken: req.csrfToken(),
+          criteria: undefined,
+          page: undefined,
+          numberOfPages: undefined,
+          totalNumberOfResults: undefined,
+          organisations: undefined,
+          organisationTypes: [],
+          organisationStatuses: [],
+          showFilters: false,
+          validationMessages: {
+            criteria: 'Special characters cannot be used',
           },
         });
       });
