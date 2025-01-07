@@ -7,6 +7,7 @@ const validateInput = async (req) => {
   const model = {
     layout: 'sharedViews/layoutNew.ejs',
     backLink: '../bulk-user-actions',
+    currentPage: 'users',
     emails: req.body.emails || '',
     validationMessages: {},
   };
