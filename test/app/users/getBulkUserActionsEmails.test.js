@@ -46,7 +46,7 @@ describe('When processing a get for a bulk user action emails request', () => {
     });
   });
 
-  it('then it should render the buildUserActionsEmails view', async () => {
+  it('should render the buildUserActionsEmails view', async () => {
     await getBulkUserActionsEmails(req, res);
 
     expect(res.render.mock.calls[0][0]).toBe('users/views/bulkUserActionsEmails');
@@ -54,6 +54,68 @@ describe('When processing a get for a bulk user action emails request', () => {
       {
         csrfToken: 'token',
         users: userSearchResult,
+        validationMessages: {},
+      },
+    );
+  });
+
+  it('should remove duplicates if any are returned in the search', async () => {
+    // Search can return multiple results if there is an alias account for that user.
+    // This test has 3 results come back in the search between the 2 emails, but the rendered
+    // page should only have 2 results.
+    const userSearchResultWithAliases = [{
+      id: '34080a9c-fd79-45a6-a092-4756264d5c85',
+      name: 'User One',
+      email: 'user.one@unit.test',
+      organisation: {
+        name: 'Testing school',
+      },
+      lastLogin: null,
+      status: {
+        description: 'Active',
+      },
+    },
+    {
+      id: '34080a9c-fd79-45a6-a092-4756264d5c85',
+      name: 'User One',
+      email: 'user.one+1@unit.test',
+      organisation: {
+        name: 'Testing school',
+      },
+      lastLogin: null,
+      status: {
+        description: 'Active',
+      },
+    }];
+
+    const aliasUserSearchResult = [{
+      id: '34080a9c-fd79-45a6-a092-4756264d5c85',
+      name: 'User One',
+      email: 'user.one+1@unit.test',
+      organisation: {
+        name: 'Testing school',
+      },
+      lastLogin: null,
+      status: {
+        description: 'Active',
+      },
+    }];
+
+    searchForBulkUsersPage.mockReset()
+      .mockReturnValueOnce({
+        users: userSearchResultWithAliases,
+      }).mockReturnValueOnce({
+        users: aliasUserSearchResult,
+      });
+
+    req.session.emails = 'user.one@unit.test, user.one+1@unit.test';
+    await getBulkUserActionsEmails(req, res);
+
+    expect(res.render.mock.calls[0][0]).toBe('users/views/bulkUserActionsEmails');
+    expect(res.render.mock.calls[0][1]).toMatchObject(
+      {
+        csrfToken: 'token',
+        users: userSearchResultWithAliases,
         validationMessages: {},
       },
     );

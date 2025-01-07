@@ -75,6 +75,75 @@ describe('When processing a post for the bulk user actions emails request for us
     );
   });
 
+  it('renders the page with no duplicate users when an error is rendered', async () => {
+    // Search can return multiple results if there is an alias account for that user.
+    // This test has 3 results come back in the search between the 2 emails, but the rendered
+    // page should only have 2 results.
+    const userSearchResultWithAliases = [{
+      id: '34080a9c-fd79-45a6-a092-4756264d5c85',
+      name: 'User One',
+      email: 'user.one@unit.test',
+      organisation: {
+        name: 'Testing school',
+      },
+      lastLogin: null,
+      status: {
+        description: 'Active',
+      },
+    },
+    {
+      id: '34080a9c-fd79-45a6-a092-4756264d5c85',
+      name: 'User One',
+      email: 'user.one+1@unit.test',
+      organisation: {
+        name: 'Testing school',
+      },
+      lastLogin: null,
+      status: {
+        description: 'Active',
+      },
+    }];
+
+    const aliasUserSearchResult = [{
+      id: '34080a9c-fd79-45a6-a092-4756264d5c85',
+      name: 'User One',
+      email: 'user.one+1@unit.test',
+      organisation: {
+        name: 'Testing school',
+      },
+      lastLogin: null,
+      status: {
+        description: 'Active',
+      },
+    }];
+
+    searchForBulkUsersPage.mockReset()
+      .mockReturnValueOnce({
+        users: userSearchResultWithAliases,
+      }).mockReturnValueOnce({
+        users: aliasUserSearchResult,
+      });
+
+    req = getRequestMock({
+      session: {
+        emails: 'user.one@unit.test, user.one+1@unit.test',
+      },
+      body: {
+        'deactivate-users': 'deactivate-users',
+      },
+    });
+    await postBulkUserActionsEmails(req, res);
+
+    expect(res.render.mock.calls[0][0]).toBe('users/views/bulkUserActionsEmails');
+    expect(res.render.mock.calls[0][1]).toMatchObject(
+      {
+        csrfToken: 'token',
+        validationMessages: { users: 'At least 1 user needs to be ticked' },
+        users: userSearchResultWithAliases,
+      },
+    );
+  });
+
   it('renders the page with an error when no actions are ticked', async () => {
     req = getRequestMock({
       session: {
