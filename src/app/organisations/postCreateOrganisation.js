@@ -3,7 +3,7 @@ const { searchOrganisations } = require('../../infrastructure/organisations');
 const logger = require('../../infrastructure/logger');
 
 const validateInput = async (req) => {
-  const nameRegEx = /^[^±!@£$%^&*_+§¡€#¢§¶•ªº«\\/<>?:;|=.,~"]{1,60}$/i;
+
   const model = {
     name: req.body.name || '',
     address: req.body.address || '',
@@ -21,35 +21,45 @@ const validateInput = async (req) => {
   model.upin = model.upin.trim();
   model.urn = model.urn.trim();
 
+  const nameRegEx = /^[^±!@£$%^*_+§¡€#¢§¶•ªº«\\/<>:;|=.~"]+$/i;
   if (!model.name) {
     model.validationMessages.name = 'Please enter a name';
   } else if (!nameRegEx.test(model.name)) {
     model.validationMessages.name = 'Special characters cannot be used';
+  } else if (model.name.length > 255) {
+    model.validationMessages.name = 'Name cannot be longer than 255 characters';
   }
 
-  if (!model.address) {
-    model.validationMessages.address = 'Please enter an address';
-  } else if (!nameRegEx.test(model.address)) {
-    model.validationMessages.address = 'Special characters cannot be used';
+  if (model.address) {
+    const addressRegex = /^[^±!@£$%^*_+§¡€#¢§¶•ªº«\\/<>:;|=.~"]+$/i;
+    if (!addressRegex.test(model.address)) {
+      model.validationMessages.address = 'Special characters cannot be used';
+    }
   }
 
-  // TODO validate it's a number with x digits
-  if (!nameRegEx.test(model.ukprn)) {
-    model.validationMessages.ukprn = 'Special characters cannot be used';
+  if (model.ukprn) {
+    const ukprnRegex = /^\d{8}$/i;
+    if (!ukprnRegex.test(model.ukprn)) {
+      model.validationMessages.ukprn = 'UKPRN can only an 8 digit number';
+    }
   }
 
   if (!model.category) {
     model.validationMessages.category = 'Please enter a category';
   }
 
-  // TODO validate it's a number with x digits
-  if (!nameRegEx.test(model.upin)) {
-    model.validationMessages.upin = 'Special characters cannot be used';
+  if (model.upin) {
+    const upinRegex = /^\d{6}$/i;
+    if (!upinRegex.test(model.upin)) {
+      model.validationMessages.upin = 'UPIN can only an 6 digit number';
+    }
   }
 
-  // TODO validate it's a number with x digits
-  if (!nameRegEx.test(model.urn)) {
-    model.validationMessages.urn = 'Special characters cannot be used';
+  if (model.urn) {
+    const urnRegex = /^\d{6}$/i;
+    if (!urnRegex.test(model.urn)) {
+      model.validationMessages.urn = 'URN can only an 6 digit number';
+    }
   }
 
   return model;
@@ -61,7 +71,7 @@ const postCreateOrganisation = async (req, res) => {
   if (Object.keys(model.validationMessages).length === 0) {
     // Validate no duplicate organisations exist.  Currently the validation is a bit of a blunt
     // tool as the search just searches if ANY field matches the value (123 could find an org with a
-    // name of '123 test' as well as one with a UKPRN of 123). It's likely that false positives will
+    // name of '123 test' as well as one with a UKPRN of 123). It's possible for false positives to
     // happen, so we'll have to improve this on a future iteration.  We MUST do some validation
     // because the create org endpoint will update an organisation with the provided information
     // if it already exists, so a false positive is the preferred result.
@@ -82,12 +92,13 @@ const postCreateOrganisation = async (req, res) => {
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
+    model.currentPage = 'organisations';
     model.layout = 'sharedViews/layoutNew.ejs';
+    model.backLink = true;
     return sendResult(req, res, 'organisations/views/createOrganisation', model);
   }
 
   req.session.createOrgData = model;
-
   req.session.save((error) => {
     if (error) {
       // Any error saving to session should hopefully be temporary. Assuming this, we log the error
@@ -97,6 +108,7 @@ const postCreateOrganisation = async (req, res) => {
       model.csrfToken = req.csrfToken();
       model.currentPage = 'organisations';
       model.layout = 'sharedViews/layoutNew.ejs';
+      model.backLink = true;
       return sendResult(req, res, 'organisations/views/createOrganisation', model);
     }
     return res.redirect('confirm-create-org');
