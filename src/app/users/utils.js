@@ -10,9 +10,14 @@ const {
 } = require('./../../infrastructure/directories');
 const {
     getServicesByUserId,
-    getServicesByInvitationId
+    getServicesByInvitationId,
+    getUserServiceRequestsByUserId,
+    removeServiceFromUser,
+    removeServiceFromInvitation,
+    updateUserServiceRequest
 } = require('./../../infrastructure/access');
 const { getServiceById } = require('./../../infrastructure/applications');
+const { getPendingRequestsAssociatedWithUser, updateRequestById } = require('../../infrastructure/organisations');
 const { mapUserStatus } = require('./../../infrastructure/utils');
 const config = require('./../../infrastructure/config');
 const sortBy = require('lodash/sortBy');
@@ -193,6 +198,36 @@ const search = async (req) => {
     };
 };
 
+/**
+ * Modified user search used for the bulk user actions screen.
+ * Assumes email validation has already been done.
+ *
+ * @param email - A string representing the email that will be searched for
+ */
+const searchForBulkUsersPage = async (email) => {
+  let criteria = email.trim();
+
+  if (criteria.indexOf('-') !== -1) {
+      criteria = '"' + criteria + '"';
+  }
+  const page = 1;
+  const sortBy = 'name';
+  const sortAsc = 'asc';
+  const filter = undefined;
+
+  const results = await searchForUsers(
+      criteria + '*',
+      page,
+      sortBy,
+      sortAsc,
+      filter
+  );
+
+  return {
+    users: results.users
+  };
+};
+
 const getUserDetails = async (req) => {
     return getUserDetailsById(req.params.uid, req.id);
 };
@@ -345,12 +380,70 @@ const mapRole = (roleId) => {
     return { id: 0, description: 'End user' };
 };
 
+const rejectOpenUserServiceRequestsForUser = async (userId, req) => {
+  const correlationId = req.id;
+  const userServiceRequests = await getUserServiceRequestsByUserId(userId) || [];
+  for (const serviceRequest of userServiceRequests) {
+    // Request status 0 is 'pending', 2 is 'overdue', 3 is 'no approvers'
+    if (serviceRequest.status === 0 || serviceRequest.status === 2 || serviceRequest.status === 3) {
+      logger.info(`Rejecting service request with id: ${serviceRequest.id}`, { correlationId });
+      const requestBody = {
+        status: -1,
+        actioned_reason: 'User deactivation',
+        actioned_by: req.user.sub,
+        actioned_at: new Date(),
+      };
+      updateUserServiceRequest(serviceRequest.id, requestBody, req.id);
+    }
+  }
+}
+
+const rejectOpenOrganisationRequestsForUser = async (userId, req) => {
+  const correlationId = req.id;
+  const organisationRequests = await getPendingRequestsAssociatedWithUser(userId) || [];
+  for (const organisationRequest of organisationRequests) {
+    // Request status 0 is 'pending', 2 is 'overdue' and 3 is 'no approvers'
+    if (organisationRequest.status.id === 0 || organisationRequest.status.id === 2 || organisationRequest.status.id === 3) {
+      logger.info(`Rejecting organisation request with id: ${organisationRequest.id}`, { correlationId });
+      const status = -1;
+      const actionedReason = 'User deactivation';
+      const actionedBy = req.user.sub;
+      const actionedAt = new Date();
+      updateRequestById(organisationRequest.id, status, actionedBy, actionedReason, actionedAt, req.id);
+    }
+  }
+}
+
+const removeAllServicesForUser = async (userId, req) => {
+  const correlationId = req.id;
+  const userServices = await getServicesByUserId(userId) || [];
+  for (const service of userServices) {
+    logger.info(`Removing service from user: ${service.userId} with serviceId: ${service.serviceId} and organisationId: ${service.organisationId}`, { correlationId });
+    removeServiceFromUser(service.userId, service.serviceId, service.organisationId, req.id);
+  }
+}
+
+const removeAllServicesForInvitedUser = async (userId, req) => {
+  const correlationId = req.id;
+  logger.info(`Attemping to remove services from invite with id: ${userId}`, { correlationId });
+  const invitationServiceRecords = await getServicesByInvitationId(userId.substr(4)) || [];
+  for (const serviceRecord of invitationServiceRecords) {
+    logger.info(`Deleting invitation service record for invitationId: ${serviceRecord.invitationId}, serviceId: ${serviceRecord.serviceId} and organisationId: ${serviceRecord.organisationIdId}`, { correlationId });
+    removeServiceFromInvitation(serviceRecord.invitationId, serviceRecord.serviceId, serviceRecord.organisationId, correlationId);
+  }
+}
+
 module.exports = {
     search,
+    searchForBulkUsersPage,
     getUserDetails,
     getUserDetailsById,
     updateUserDetails,
     waitForIndexToUpdate,
     getAllServicesForUserInOrg,
-    mapRole
+    mapRole,
+    rejectOpenUserServiceRequestsForUser,
+    rejectOpenOrganisationRequestsForUser,
+    removeAllServicesForUser,
+    removeAllServicesForInvitedUser,
 };
