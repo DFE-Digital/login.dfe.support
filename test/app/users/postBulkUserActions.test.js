@@ -32,6 +32,22 @@ describe('When processing a post for the bulk user actions request', () => {
     expect(req.session).toMatchObject({ emails: 'test@test.com,exampleUser@example.com' });
   });
 
+  it('redirects to the bulk-user-actions/email page on success when a extra comma and spaces are present', async () => {
+    req = getRequestMock({
+      body: {
+        emails: 'test@test.com,exampleUser@example.com, , ',
+      },
+      session: {
+        save: jest.fn(cb => cb()),
+      },
+    });
+    await postBulkUserActions(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe('bulk-user-actions/emails');
+    expect(req.session).toMatchObject({ emails: 'test@test.com,exampleUser@example.com' });
+  });
+
   it('renders the page with an error when no emails are supplied', async () => {
     const testReq = getRequestMock({
       body: {
@@ -45,6 +61,24 @@ describe('When processing a post for the bulk user actions request', () => {
       {
         csrfToken: 'token',
         emails: '',
+        validationMessages: { emails: 'Please enter an email address' },
+      },
+    );
+  });
+
+  it('renders the page with an error when only commas and spaces are supplied', async () => {
+    const testReq = getRequestMock({
+      body: {
+        emails: ', , ',
+      },
+    });
+    await postBulkUserActions(testReq, res);
+
+    expect(res.render.mock.calls[0][0]).toBe('users/views/bulkUserActions');
+    expect(res.render.mock.calls[0][1]).toMatchObject(
+      {
+        csrfToken: 'token',
+        emails: ', , ',
         validationMessages: { emails: 'Please enter an email address' },
       },
     );

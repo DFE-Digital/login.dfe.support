@@ -6,16 +6,11 @@ const logger = require('../../infrastructure/logger');
 const validateInput = async (req) => {
   const model = {
     layout: 'sharedViews/layoutNew.ejs',
-    backLink: '../bulk-user-actions',
+    backLink: '../',
     currentPage: 'users',
     emails: req.body.emails || '',
     validationMessages: {},
   };
-
-  if (!model.emails) {
-    model.validationMessages.emails = 'Please enter an email address';
-    return model;
-  }
 
   // Remove trailing comma (if present)
   model.emails = model.emails.replace(/,$/, '');
@@ -25,7 +20,14 @@ const validateInput = async (req) => {
 
   // Trim whitespace around each email provided and remove duplicates
   const trimmedEmails = model.emails.split(',').map((email) => email.trim());
-  const deduplicatedEmails = [...new Set(trimmedEmails)];
+  let deduplicatedEmails = [...new Set(trimmedEmails)];
+  // Removes all falsy values. This removes empty strings caused by commas (e.g., 'email@test.com, , ')
+  deduplicatedEmails = deduplicatedEmails.filter(Boolean);
+
+  if (deduplicatedEmails.length === 0) {
+    model.validationMessages.emails = 'Please enter an email address';
+    return model;
+  }
 
   if (deduplicatedEmails.length > 100) {
     model.validationMessages.emails = 'A maximum of 100 emails can be provided';

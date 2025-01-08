@@ -64,6 +64,7 @@
                 </tbody>
             </table>
 
+            <% if(locals.users.length > 0) { %>
             <div class="govuk-form-group">
                 <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -97,6 +98,7 @@
                 Continue
                 </button>
             </div>
+            <% } %>
         </form>
     </div>
 </div>
