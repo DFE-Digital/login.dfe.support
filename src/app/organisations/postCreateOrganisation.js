@@ -3,7 +3,6 @@ const { searchOrganisations } = require('../../infrastructure/organisations');
 const logger = require('../../infrastructure/logger');
 
 const validateInput = async (req) => {
-
   const model = {
     name: req.body.name || '',
     address: req.body.address || '',
@@ -26,8 +25,8 @@ const validateInput = async (req) => {
     model.validationMessages.name = 'Please enter a name';
   } else if (!nameRegEx.test(model.name)) {
     model.validationMessages.name = 'Special characters cannot be used';
-  } else if (model.name.length > 255) {
-    model.validationMessages.name = 'Name cannot be longer than 255 characters';
+  } else if (model.name.length > 256) {
+    model.validationMessages.name = 'Name cannot be longer than 256 characters';
   }
 
   if (model.address) {
@@ -71,10 +70,13 @@ const postCreateOrganisation = async (req, res) => {
   if (Object.keys(model.validationMessages).length === 0) {
     // Validate no duplicate organisations exist.  Currently the validation is a bit of a blunt
     // tool as the search just searches if ANY field matches the value (123 could find an org with a
-    // name of '123 test' as well as one with a UKPRN of 123). It's possible for false positives to
-    // happen, so we'll have to improve this on a future iteration.  We MUST do some validation
-    // because the create org endpoint will update an organisation with the provided information
-    // if it already exists, so a false positive is the preferred result.
+    // name of '123 test' as well as one with a UKPRN of 123). The dupclicate check when creating an
+    // currently checks legacyId, urn, ukprn, uid and establishmentNumber (the last one only happens if
+    // the category is 002).
+    //
+    // It's possible for false positives to happen, so we'll have to improve this if it's an issue.
+    // We MUST do some validation because the create org endpoint will update an organisation with the
+    // provided information if it already exists, so a false positive is the preferred result.
     if (model.ukprn) {
       const ukprnResult = await searchOrganisations(model.ukprn, undefined, undefined, 1, req.id);
       if (ukprnResult.totalNumberOfRecords > 0) {
