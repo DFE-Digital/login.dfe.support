@@ -258,7 +258,7 @@ if (services && services.length > 0) {
                 </td>
                 <td>
                     <% if(locals.users[i].lastLogin) { %>
-                    <%= locals.moment(locals.users[i].lastLogin).fromNow() %>
+                    <%= locals.users[i].formattedLastLogin %>
                     <% } else { %>
                     Never
                     <% } %>

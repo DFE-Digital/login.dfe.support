@@ -110,7 +110,7 @@ const paginationModel = {
                 <% } else { %>
                 <% for (let i = 0; i < locals.requests.length; i++) { %>
                     <tr>
-                        <td><time datetime="<%= locals.requests[i].created_date %>"><%= moment(locals.requests[i].created_date).fromNow() %></time></td>
+                        <td><time datetime="<%= locals.requests[i].created_date %>"><%= locals.requests[i].formattedCreatedDate %></time></td>
                         <td><span class="breakable"><%= locals.requests[i].org_name %></span> </td>
                         <td><span class="breakable"><%= locals.requests[i].usersName %></span> </td>
                         <td><span class="breakable"><%= locals.requests[i].usersEmail %></span> </td>
