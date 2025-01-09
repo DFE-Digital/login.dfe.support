@@ -2,7 +2,7 @@ const { sendResult } = require('../../infrastructure/utils');
 
 const getConfirmCreateOrganisation = async (req, res) => {
   if (!req.session.createOrgData) {
-    return res.redirect('/');
+    return res.redirect('/organisations');
   }
 
   sendResult(req, res, 'organisations/views/confirmCreateOrganisation', {
