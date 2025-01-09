@@ -4,7 +4,7 @@ const logger = require('../../infrastructure/logger');
 const postCreateOrganisation = async (req, res) => {
   const correlationId = req.id;
   if (!req.session.createOrgData) {
-    return res.redirect('/');
+    return res.redirect('/organisations');
   }
 
   const model = req.session.createOrgData;
