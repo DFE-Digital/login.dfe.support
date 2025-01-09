@@ -20,7 +20,6 @@ const updateUserIndex = async (uid, correlationId) => {
   };
 
   await updateUserDetails(user, correlationId);
-
   await waitForIndexToUpdate(uid, (updated) => updated.status.id === 0);
 };
 

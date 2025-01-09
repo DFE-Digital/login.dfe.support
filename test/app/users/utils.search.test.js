@@ -63,6 +63,28 @@ describe('When processing a user search request', () => {
       expect(searchForUsers.mock.calls[0][0]).toBe('test*');
     });
 
+    test('then it should search if criteria includes + character', async () => {
+      req.body.criteria = 'user.one+1@unit.test';
+
+      const result = await search(req);
+
+      expect(searchForUsers).toHaveBeenCalled();
+      expect(result.criteria).toEqual('user.one+1@unit.test');
+    });
+    
+    test('then it should not search if criteria includes any other special characters', async () => {
+      req.body.criteria = 'user.one£@unit.test';
+
+      const result = await search(req);
+
+      expect(searchForUsers).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        validationMessages: {
+          criteria: 'Special characters cannot be used',
+        },
+      });
+    });
+
     test('then it should not search and return validation error if criteria does not meet minimum length', async () => {
       req.body.criteria = '';
 
@@ -199,6 +221,19 @@ describe('When processing a user search request', () => {
       expect(result).toEqual({
         validationMessages: {
           criteria: 'Please enter at least 4 characters',
+        },
+      });
+    });
+
+    test('then it should not search and return validation error if criteria has special characters in it', async () => {
+      req.query.criteria = 'test!"£$%^&*@test.com';
+
+      const result = await search(req);
+
+      expect(searchForUsers).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        validationMessages: {
+          criteria: 'Special characters cannot be used',
         },
       });
     });
