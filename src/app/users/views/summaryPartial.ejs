@@ -4,9 +4,6 @@
             <div class="notification">
                 <p>
                     This account was deactivated
-                    <% if(locals.user.status.changedOn) { %>
-                    on <%= locals.moment(locals.user.status.changedOn).format('DD MMM YYYY') %>.
-                    <% } %>
                     <a href="confirm-reactivation" class="action">Reactivate</a>
                 </p>
             </div>
@@ -19,9 +16,6 @@
                 <div class="notification">
                     <p>
                         This account invitation was deactivated
-                        <% if(locals.user.status.changedOn) { %>
-                        on <%= locals.moment(locals.user.status.changedOn).format('DD MMM YYYY') %>.
-                        <% } %>
                         <a href="confirm-invitation-reactivation" class="action">Reactivate invitation</a>
                     </p>
                 </div>
@@ -58,7 +52,7 @@
             </h1>
             <dl class="inline condensed">
                 <dt class="label">Last login:</dt>
-                <dd><%= locals.user.lastLogin ? locals.moment(locals.user.lastLogin).format('DD MMM YYYY, HH:mm:ss') : 'Never' %></dd>
+                <dd><%= user.formattedLastLogin ? user.formattedLastLogin : 'Never' %></dd>
                 <dt class="label">Account status:</dt>
                 <dd><%= user.status.description %></dd>
                 <dt class="label">Number of logins in last 12 months:</dt>

@@ -34,8 +34,8 @@
                 <tr>
                     <td><a href="organisations/<%=org.id%>/services/<%=service.id%>"><%=service.name%></a></td>
                     <td><%=service.userType.name%></td>
-                    <%if(service.grantedAccessOn) {%>
-                    <td><%=locals.moment(service.grantedAccessOn).format('DD MMM YYYY')%></td>
+                    <%if(service.formattedRequestDate) {%>
+                    <td><%= service.formattedRequestDate %></td>
                     <%} else {%>
                     <td>Pending</td>
                     <%}%>

@@ -35,13 +35,13 @@ const paginationModel = {
             <% for(let a = 0;a < locals.audits.length; a++) { %>
             <% const audit = locals.audits[a]; %>
                 <tr>
-                    <%if (audit.startDate){%>
-                    <td><%= locals.moment(audit.startDate).format('DD/MMM/YYYY HH:mm:ss') %></td>
+                    <%if (audit.formattedStartDate){%>
+                    <td><%= audit.formattedStartDate %></td>
                         <%}else{%>
                             <td></td>
                         <%}%>
-                    <%if (audit.endDate){%>
-                    <td><%= locals.moment(audit.endDate).format('DD/MMM/YYYY HH:mm:ss') %></td>
+                    <%if (audit.formattedEndDate){%>
+                    <td><%= audit.formattedEndDate %></td>
                         <%}else{%>
                             <td></td>
                         <%}%>

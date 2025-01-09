@@ -66,7 +66,7 @@ const search = async (req) => {
 
   let criteria = inputSource.criteria ? inputSource.criteria.trim() : '';
 
-  const organisationRegex = /^[a-zA-Z0-9\s-'&(),.@\\/:]{1,256}$/;
+  const organisationRegex = /^[a-zA-Z0-9\s-'&()#?!*+,.@\\/:]{1,256}$/;
   let filteredError;
   /**
    * Check minimum characters and special characters in search criteria if:

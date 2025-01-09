@@ -1,4 +1,5 @@
 const { sendResult } = require('./../../infrastructure/utils');
+const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { getOrganisationByIdV2 } = require('./../../infrastructure/organisations');
 const { searchForUsers } = require('./../../infrastructure/search');
 const { mapRole } = require('./../users/utils');
@@ -18,6 +19,7 @@ const render = async (req, res, dataSource) => {
     const viewUser = Object.assign({}, user);
     viewUser.organisation = Object.assign({}, user.organisations.find(o => o.id.toUpperCase() === organisation.id.toUpperCase()));
     viewUser.organisation.role = mapRole(viewUser.organisation.roleId);
+    viewUser.formattedLastLogin = viewUser.lastLogin ? dateFormat(viewUser.lastLogin, 'shortDateFormat') : '';
     return viewUser;
   });
 

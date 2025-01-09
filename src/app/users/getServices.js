@@ -1,5 +1,6 @@
 const { sendResult } = require('../../infrastructure/utils');
 const { getUserDetails } = require('./utils');
+const { dateFormat } = require('../helpers/dateFormatterHelper');
 const { getUserOrganisations, getInvitationOrganisations } = require('../../infrastructure/organisations');
 const { getAllServices } = require('../../infrastructure/applications');
 const logger = require('../../infrastructure/logger');
@@ -17,6 +18,7 @@ const getOrganisations = async (userId, correlationId) => {
         name: service.name,
         userType: invitation.role,
         grantedAccessOn: service.requestDate ? new Date(service.requestDate) : null,
+        formattedRequestDate: service.requestDate ? dateFormat(service.requestDate, 'shortDateFormat') : '',
         lastLogin: null,
         token: null,
       };
@@ -39,6 +41,7 @@ const getOrganisations = async (userId, correlationId) => {
 
 const action = async (req, res) => {
   const user = await getUserDetails(req);
+  user.formattedLastLogin = user.lastLogin ? dateFormat(user.lastLogin, 'longDateFormat') : '';
   const organisationDetails = await getOrganisations(user.id, req.id);
   const allServices = await getAllServices();
   const externalServices = allServices.services.filter((x) => x.isExternalService === true && !(x.relyingParty && x.relyingParty.params && x.relyingParty.params.hideSupport === 'true'));

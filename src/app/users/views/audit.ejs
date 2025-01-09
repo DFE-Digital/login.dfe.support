@@ -37,7 +37,7 @@
             <% for(let a = 0;a < locals.audits.length; a++) { %>
             <% const audit = locals.audits[a]; %>
                 <tr>
-                    <td><%= locals.moment(audit.timestamp).format('DD/MMM/YYYY HH:mm:ss') %></td>
+                    <td><%= audit.formattedTimestamp %></td>
                     <td class="breakable"><%= audit.event.description %></td>
                     <td class="breakable"><%= audit.service ? audit.service.name : '' %></td>
                     <td class="breakable"><%= audit.organisation ? audit.organisation.name: '' %></td>

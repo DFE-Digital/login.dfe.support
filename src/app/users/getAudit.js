@@ -1,5 +1,6 @@
 const { sendResult, mapUserStatus } = require('./../../infrastructure/utils');
 const { getUserDetailsById } = require('./utils');
+const { dateFormat } = require('../helpers/dateFormatterHelper');
 const { getPageOfUserAudits, cache } = require('./../../infrastructure/audit');
 const logger = require('./../../infrastructure/logger');
 const { getServiceIdForClientId } = require('./../../infrastructure/serviceMapping');
@@ -171,6 +172,7 @@ const getAudit = async (req, res) => {
   cachedUsers = {};
   const correlationId = req.id;
   const user = await getCachedUserById(req.params.uid, req.id);
+  user.formattedLastLogin = user.lastLogin ? dateFormat(user.lastLogin, 'longDateFormat') : '';
   const userOrganisations = await getUserOrganisations(req.params.uid, req.id);
   req.session.type = "audit";
   const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
@@ -211,6 +213,7 @@ const getAudit = async (req, res) => {
 
     audits.push({
       timestamp: new Date(audit.timestamp),
+      formattedTimestamp: audit.timestamp ? dateFormat(audit.timestamp, "longDateFormat") : "",
       event: {
         type: audit.type,
         subType: audit.subType,

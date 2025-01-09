@@ -32,8 +32,8 @@ const paginationModel = {
                     <td class="breakable"><%=user.email%></td>
                     <td class="breakable"><%=user.organisation.role.description%></td>
                     <td class="breakable">
-                        <% if (user.lastLogin) {%>
-                            <%=locals.moment(user.lastLogin).fromNow()%>
+                        <% if (user.formattedLastLogin) {%>
+                            <%= user.formattedLastLogin %>
                         <% } else {%>
                             Never
                         <% } %>

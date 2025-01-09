@@ -1,7 +1,9 @@
 const { getAndMapOrgRequest } = require('./utils');
+const { dateFormat } = require('../helpers/dateFormatterHelper');
 
 const get = async (req, res) => {
   const request = await getAndMapOrgRequest(req);
+  request.formattedCreatedDate = request.created_date ? dateFormat(request.created_date, 'longDateFormat') : '';
 if(req.params.from==='organisation'){
   req._cancelLink = `/users/${request.user_id}/organisations`
 }else{
