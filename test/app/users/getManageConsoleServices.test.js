@@ -1,11 +1,4 @@
 // eslint-disable-next-line global-require
-// jest.mock('./../../../src/infrastructure/config', () => require('../../utils').configMockFactory()
-// );
-// jest.mock('./../../../src/infrastructure/utils');
-// jest.mock('./../../../src/infrastructure/applications');
-// jest.mock('./../../../src/infrastructure/access');
-// jest.mock('./../../../src/app/users/utils');
-
 jest.mock('./../../../src/infrastructure/config', () => require('../../utils').configMockFactory());
 jest.mock('./../../../src/infrastructure/utils', () => ({
   sendResult: jest.fn(),
@@ -158,8 +151,6 @@ describe('When retrieving manage console services for a user', () => {
     getPageOfService.mockReturnValue(pageOfServices);
   });
   
-  
-
   it('should call getUserDetails', async () => {
     await getManageConsoleServices(req, res);
 
@@ -228,7 +219,6 @@ describe('When retrieving manage console services for a user', () => {
       isHiddenService: false,
       relyingParty: {},
     });
-
   });
 });
 
