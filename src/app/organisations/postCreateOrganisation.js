@@ -39,7 +39,7 @@ const validateInput = async (req) => {
   if (model.ukprn) {
     const ukprnRegex = /^\d{8}$/i;
     if (!ukprnRegex.test(model.ukprn)) {
-      model.validationMessages.ukprn = 'UKPRN can only an 8 digit number';
+      model.validationMessages.ukprn = 'UKPRN can only be an 8 digit number';
     }
   }
 
@@ -50,14 +50,14 @@ const validateInput = async (req) => {
   if (model.upin) {
     const upinRegex = /^\d{6}$/i;
     if (!upinRegex.test(model.upin)) {
-      model.validationMessages.upin = 'UPIN can only an 6 digit number';
+      model.validationMessages.upin = 'UPIN can only be a 6 digit number';
     }
   }
 
   if (model.urn) {
     const urnRegex = /^\d{6}$/i;
     if (!urnRegex.test(model.urn)) {
-      model.validationMessages.urn = 'URN can only an 6 digit number';
+      model.validationMessages.urn = 'URN can only be a 6 digit number';
     }
   }
 

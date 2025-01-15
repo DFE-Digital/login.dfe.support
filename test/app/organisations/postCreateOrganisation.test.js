@@ -146,7 +146,7 @@ describe('when displaying the get create organisations', () => {
   it('should render an the page with an error in validationMessages if validation fails on ukprn', async () => {
     req.body.ukprn = '1234567890';
     exampleErrorResponse.ukprn = '1234567890';
-    exampleErrorResponse.validationMessages.ukprn = 'UKPRN can only an 8 digit number';
+    exampleErrorResponse.validationMessages.ukprn = 'UKPRN can only be an 8 digit number';
 
     await postCreateOrganisation(req, res);
 
@@ -168,7 +168,7 @@ describe('when displaying the get create organisations', () => {
   it('should render an the page with an error in validationMessages if validation fails on upin', async () => {
     req.body.upin = '1234567';
     exampleErrorResponse.upin = '1234567';
-    exampleErrorResponse.validationMessages.upin = 'UPIN can only an 6 digit number';
+    exampleErrorResponse.validationMessages.upin = 'UPIN can only be a 6 digit number';
 
     await postCreateOrganisation(req, res);
 
@@ -179,7 +179,7 @@ describe('when displaying the get create organisations', () => {
   it('should render an the page with an error in validationMessages if validation fails on urn', async () => {
     req.body.urn = '1234567';
     exampleErrorResponse.urn = '1234567';
-    exampleErrorResponse.validationMessages.urn = 'URN can only an 6 digit number';
+    exampleErrorResponse.validationMessages.urn = 'URN can only be a 6 digit number';
 
     await postCreateOrganisation(req, res);
 
