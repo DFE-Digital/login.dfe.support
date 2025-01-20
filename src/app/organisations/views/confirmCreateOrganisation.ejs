@@ -1,0 +1,66 @@
+<div class="govuk-width-container">
+  <main class="govuk-main-wrapper " id="main-content" role="main">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds-from-desktop">
+        <h1 class="govuk-heading-l">Review create organisation</h1>
+        <h2 class="govuk-heading-m">Review details</h2>
+        <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Name
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= locals.name %>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Address
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= locals.address %>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              UKPRN
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= locals.ukprn %>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Category
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= locals.category %>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              UPIN
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= locals.upin %>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              URN
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= locals.urn %>
+            </dd>
+          </div>
+        </dl>
+        <form method="post" novalidate>
+          <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+          <button type="submit" class="govuk-button" data-module="govuk-button">
+            Create organisation
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>

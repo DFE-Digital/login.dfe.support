@@ -171,11 +171,16 @@ const getPendingRequestsAssociatedWithUser = async (userId, correlationId) => {
   return Promise.resolve();
 };
 
+const createOrganisation = async (body, correlationId) => {
+  return Promise.resolve();
+};
+
 const getCategories = async (id) => {
   return (await getCategories());
 };
 
 module.exports = {
+  createOrganisation,
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
