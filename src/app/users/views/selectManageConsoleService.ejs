@@ -9,6 +9,17 @@
         </div>
     <% } %>
 </div>
+
+<%
+const paginationModel = {
+    csrfToken,
+    currentPage: locals.page,
+    numberOfPages: locals.numberOfPages,
+    totalNumberOfResults: locals.totalNumberOfResults,
+    numberOfResultsOnPage: locals.numberOfResultsOnPage
+}
+%>
+
 <div class="row">
     <div class="col-8">
         <h1 class="heading-xlarge heading-breakable">
@@ -27,7 +38,9 @@
         </dl>
     </div>
 </div>
-<% if (allServices.services.length > 0) { %>
+<div>
+<% if (pageOfServices.services.length > 0) { %>
+    <%- include('../../sharedViews/pagination', paginationModel); %>
     <table class="data no-borders">
         <thead>
             <tr>
@@ -37,15 +50,17 @@
             </tr>
         </thead>
         <tbody>
-            <% for(let i=0; i< allServices.services.length; i++ ) {%>
+            <% for(let i=0; i< pageOfServices.services.length; i++ ) {%>
                 <tr>
-                    <td><a href="add-manage-console-roles/<%= allServices.services[i].id %>"><%= allServices.services[i].name %></a></td>
-                    <td><%= allServices.services[i].isIdOnlyService ? 'ID only' : 'Role'%></td>
-                    <td><%= allServices.services[i].isHiddenService ? 'Hidden' : 'Visible'%></td>
+                    <td><a href="add-manage-console-roles/<%= pageOfServices.services[i].id %>"><%= pageOfServices.services[i].name %></a></td>
+                    <td><%= pageOfServices.services[i].isIdOnlyService ? 'ID only' : 'Role'%></td>
+                    <td><%= pageOfServices.services[i].isHiddenService ? 'Hidden' : 'Visible'%></td>
                 </tr>
             <%}%>
         </tbody>
     </table>
+    <%- include('../../sharedViews/pagination', paginationModel); %>
 <% } else { %>
     <p>This user does not have any services mapped to their account.</p>
 <% }; %>
+</div>

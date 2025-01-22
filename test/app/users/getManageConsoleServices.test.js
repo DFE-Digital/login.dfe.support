@@ -1,14 +1,23 @@
-jest.mock('./../../../src/infrastructure/config', () =>
-  require('./../../utils').configMockFactory()
-);
-jest.mock('./../../../src/infrastructure/utils');
-jest.mock('./../../../src/infrastructure/applications');
-jest.mock('./../../../src/infrastructure/access');
-jest.mock('./../../../src/app/users/utils');
+// eslint-disable-next-line global-require
+jest.mock('./../../../src/infrastructure/config', () => require('../../utils').configMockFactory());
+jest.mock('./../../../src/infrastructure/utils', () => ({
+  sendResult: jest.fn(),
+}));
+jest.mock('./../../../src/infrastructure/applications', () => ({
+  getAllServices: jest.fn(),
+  getPageOfService: jest.fn(),
+}));
+jest.mock('./../../../src/infrastructure/access', () => ({
+  getServicesByUserId: jest.fn(),
+}));
+jest.mock('./../../../src/app/users/utils', () => ({
+  getUserDetails: jest.fn(),
+}));
+
 
 const getManageConsoleServices = require('./../../../src/app/users/getManageConsoleServices');
 const { sendResult } = require('./../../../src/infrastructure/utils');
-const { getAllServices } = require('./../../../src/infrastructure/applications');
+const { getAllServices, getPageOfService } = require('./../../../src/infrastructure/applications');
 const { getServicesByUserId } = require('./../../../src/infrastructure/access');
 const { getUserDetails } = require('./../../../src/app/users/utils');
 
@@ -18,6 +27,8 @@ describe('When retrieving manage console services for a user', () => {
 
   beforeEach(() => {
     req = {
+      method: 'GET',
+      query: 'GET',
       id: 'correlationId',
       csrfToken: () => 'token',
       accepts: () => ['text/html'],
@@ -100,11 +111,46 @@ describe('When retrieving manage console services for a user', () => {
         }
       ]
     };
-
+    
     getAllServices.mockReset();
     getAllServices.mockReturnValue(allServices);
-  });
+    
+    const pageOfServices = {
+      services: [
+        {
+          id: 'service1Id',
+          name: 'Service 1',
+          description: 'Service for testing purposes',
+          isExternalService: true,
+          isIdOnlyService: false,
+          isHiddenService: false,
+          relyingParty: {},
+        },
+        {
+          id: 'service2Id',
+          name: 'Service 2',
+          description: 'Service for testing purposes',
+          isExternalService: true,
+          isIdOnlyService: false,
+          isHiddenService: false,
+          relyingParty: {},
+        },
+        {
+          id: 'service3Id',
+          name: 'Service 3',
+          description: 'Service for testing purposes',
+          isExternalService: true,
+          isIdOnlyService: false,
+          isHiddenService: false,
+          relyingParty: {},
+        }
+      ]
+    };
 
+    getPageOfService.mockReset();
+    getPageOfService.mockReturnValue(pageOfServices);
+  });
+  
   it('should call getUserDetails', async () => {
     await getManageConsoleServices(req, res);
 
@@ -115,11 +161,11 @@ describe('When retrieving manage console services for a user', () => {
     });
   });
 
-  it('should call getAllServices', async () => {
+  it('should call getPageOfService', async () => {
     await getManageConsoleServices(req, res);
 
-    expect(getAllServices).toHaveBeenCalled();
-    expect(getAllServices).toReturnWith(
+    expect(getPageOfService).toHaveBeenCalled();
+    expect(getPageOfService).toReturnWith(
       {
         "services": [
           {
@@ -153,9 +199,19 @@ describe('When retrieving manage console services for a user', () => {
       },
     );
 
-    const getAllServicesResult = getAllServices();
-    expect(getAllServicesResult.services[0].id).toBe('service1Id');
+    const getPageOfServiceResult = getPageOfService();
+    expect(getPageOfServiceResult.services[0].id).toBe('service1Id');
   });
+
+  it('should set pageOfServices to {services: []} if a undefined is returned from getPageOfService call', async () => {
+    getPageOfService.mockReturnValue(undefined);
+
+    await getManageConsoleServices(req, res);
+
+    expect(sendResult.mock.calls[0][3].pageOfServices).toMatchObject({
+      services: []
+    });
+  })
 
   it('should call sendResult', async () => {
     await getManageConsoleServices(req, res);
@@ -164,7 +220,7 @@ describe('When retrieving manage console services for a user', () => {
     expect(sendResult.mock.calls[0][3].user).toMatchObject({
       id: 'user1',
     });
-    expect(sendResult.mock.calls[0][3].allServices.services[0]).toMatchObject({
+    expect(sendResult.mock.calls[0][3].pageOfServices.services[0]).toMatchObject({
       id: 'service1Id',
       name: 'Service 1',
       description: 'Service for testing purposes',
@@ -173,7 +229,6 @@ describe('When retrieving manage console services for a user', () => {
       isHiddenService: false,
       relyingParty: {},
     });
-
   });
 });
 
