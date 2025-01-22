@@ -203,7 +203,7 @@ describe('When retrieving manage console services for a user', () => {
     expect(getPageOfServiceResult.services[0].id).toBe('service1Id');
   });
 
-  it('should set getPageOfService to {services: []} if a undefined is returned', async () => {
+  it('should set pageOfServices to {services: []} if a undefined is returned from getPageOfService call', async () => {
     getPageOfService.mockReturnValue(undefined);
 
     await getManageConsoleServices(req, res);
