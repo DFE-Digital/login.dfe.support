@@ -69,40 +69,51 @@
             <div class="pnl js-hidden" id="custom-email-contents">
                 <div class="form-group">
                     <label class="form-label" for="email-subject">Email subject line</label>
-                    <input class="form-control full-width" name="email-subject" id="email-subject" value="You’ve been invited to join DfE Sign-in">
+                    <% if (locals.entra && locals.entra.useEntraForAccountRegistration === true) { %>
+                        <input class="form-control full-width" name="email-subject" id="email-subject" value="You’ve been invited to join DfE Sign-in">
+                    <% } else { %>
+                        <input class="form-control full-width" name="email-subject" id="email-subject" value="((VERIFICATION CODE)) is your DfE Sign-in verification code">
+                    <% } %>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="email-contents">Email contents</label>
                     <div class="email-editor">
                         <p>Dear <%=user.firstName%> <%=user.lastName%></p>
+
                         <% if (locals.entra && locals.entra.useEntraForAccountRegistration === true) { %>
                             <textarea class="form-control full-width" rows="8" name="email-contents" id="email-contents">Your email address <%=locals.user.email%> can now be used to create a DfE Sign-in account.</textarea>
                             <p>Visit the registration page to create your account.</p>
-                            
-                            <div class="static-text">
-                                <p >Kind regards,
-                                    <br>The Department for Education
-                                    <br><b>Need support?</b> <a class="govuk-link" href="<%=locals.urls.help%>">Contact us for further help?</a>
-                                </p> 
-                            </div>
-                          <% } else { %>
-                            <textarea class="form-control full-width" rows="8" name="email-contents" id="email-contents">You've received this email because you've been invited to join DfE Sign-in.</textarea>
-                            <p>Please follow the link at the bottom of this email and enter the code below so we can create your account.</p>
+                        <% } else { %>
+                            <textarea class="form-control full-width" rows="8" name="email-contents" id="email-contents"></textarea>
+
+                            <%if (organisation) {%>
+                                <p>You have been invited to set up a DfE Sign-in account for ((ORGANISATION)).</p> 
+                            <%} else {%>
+                                <p>You have been invited to set up a DfE Sign-in account.</p>  
+                            <%}%>
+                            <%if (role.name !== '' && role.name === "Approver") {%>
+                                <p>You will have an approver account. Approvers can manage other users at their organisation and add services to their account.</p>
+                            <%}%>
+
+                            <p>To create a DfE Sign-in account, please verify your email and set a password by selecting the link below.</p>
 
                             <div class="static-text">
-                                <p>Your verification code is:</p>
-    
-                                <p class="code">VERFICATION CODE</p>
-    
-                                <p>To verify your email address and set up your account, please follow the link below: <em>LINK TO THE SERVICE </em></p>
-    
-                                <p><em>If you received this email in error, please ignore it.</em></p>
-    
-                                <p>Kind regards,</p>
-    
-                                <p>DfE Sign-in</p>
+                                <p>Your verification code:</p>
+                                <p class="code">VERIFICATION CODE</p>
+                                <p>The verification code will expire after 24 hours.</p>
+                                <p>[Verify email and set password](link)</p>
                             </div>
                         <% } %>
+                        
+                        <div class="static-text">
+                            <p>Kind regards,
+                                <br>The Department for Education Sign-in Team
+                                <br><b>Need support?</b> <a class="govuk-link" href="<%=locals.urls.help%>">Contact us for further help?</a>
+                            </p>
+                            <p>This is an automatically generated email; do not reply.
+                                <br>Received this email in error? No action is necessary.
+                            </p> 
+                        </div>
                     </div>
                 </div>
             </div>
