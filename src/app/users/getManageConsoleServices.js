@@ -23,7 +23,8 @@ const buildModel = async (req) => {
     page = 1;
   };
 
-  const pageOfServices = await getPageOfService(page, numberOfResultsOnPage);
+  const pageOfServices = (await getPageOfService(page, numberOfResultsOnPage)) ?? {services: []};
+  
   const model = {
     csrfToken: req.csrfToken(),
     backLink: `/users/${user.id}/organisations`,
