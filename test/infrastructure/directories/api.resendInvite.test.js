@@ -1,30 +1,32 @@
-jest.mock('login.dfe.async-retry');
-jest.mock('login.dfe.jwt-strategies');
-jest.mock('./../../../src/infrastructure/config', () => require('../../utils').configMockFactory({
-  directories: {
-    type: 'api',
-    service: {
-      url: 'http://directories.test',
+jest.mock("login.dfe.async-retry");
+jest.mock("login.dfe.jwt-strategies");
+jest.mock("./../../../src/infrastructure/config", () =>
+  require("../../utils").configMockFactory({
+    directories: {
+      type: "api",
+      service: {
+        url: "http://directories.test",
+      },
     },
-  },
-}));
+  }),
+);
 
-const { fetchApi } = require('login.dfe.async-retry');
-const jwtStrategy = require('login.dfe.jwt-strategies');
-const { resendInvite } = require('../../../src/infrastructure/directories/api');
+const { fetchApi } = require("login.dfe.async-retry");
+const jwtStrategy = require("login.dfe.jwt-strategies");
+const { resendInvite } = require("../../../src/infrastructure/directories/api");
 
-const correlationId = 'abc123';
-const invitationId = 'invite1';
+const correlationId = "abc123";
+const invitationId = "invite1";
 const apiResponse = {
-  firstName: 'Some',
-  lastName: 'User',
-  email: 'some.user@test.local',
-  keyToSuccessId: '1234567',
-  tokenSerialNumber: '12345678901',
+  firstName: "Some",
+  lastName: "User",
+  email: "some.user@test.local",
+  keyToSuccessId: "1234567",
+  tokenSerialNumber: "12345678901",
   id: invitationId,
 };
 
-describe('when resending an invite', () => {
+describe("when resending an invite", () => {
   beforeEach(() => {
     fetchApi.mockReset();
     fetchApi.mockImplementation(() => {
@@ -34,44 +36,46 @@ describe('when resending an invite', () => {
     jwtStrategy.mockReset();
     jwtStrategy.mockImplementation(() => {
       return {
-        getBearerToken: jest.fn().mockReturnValue('token'),
+        getBearerToken: jest.fn().mockReturnValue("token"),
       };
-    })
+    });
   });
 
-  it('should POST to the invitations resource with invitation id', async () => {
+  it("should POST to the invitations resource with invitation id", async () => {
     await resendInvite(invitationId, correlationId);
 
     expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][0]).toBe('http://directories.test/invitations/invite1/resend');
+    expect(fetchApi.mock.calls[0][0]).toBe(
+      "http://directories.test/invitations/invite1/resend",
+    );
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      method: 'POST',
+      method: "POST",
     });
   });
 
-  it('then it should use the token from jwt strategy as bearer token', async () => {
+  it("then it should use the token from jwt strategy as bearer token", async () => {
     await resendInvite(invitationId, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
-        authorization: 'bearer token',
+        authorization: "bearer token",
       },
     });
   });
 
-  it('then it should include the correlation id', async () => {
+  it("then it should include the correlation id", async () => {
     await resendInvite(invitationId, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
-        'x-correlation-id': correlationId,
+        "x-correlation-id": correlationId,
       },
     });
   });
 
-  it('should return false on any non-success response', async () => {
+  it("should return false on any non-success response", async () => {
     fetchApi.mockImplementation(() => {
-      const error = new Error('Not found');
+      const error = new Error("Not found");
       error.statusCode = 404;
       throw error;
     });

@@ -6,7 +6,7 @@ const addUserService = async () => {
   return Promise.resolve(null);
 };
 
-const getServicesByUserId = async() => {
+const getServicesByUserId = async () => {
   return Promise.resolve(null);
 };
 
@@ -42,22 +42,21 @@ const updateInvitationService = async () => {
   return Promise.resolve(null);
 };
 
-const removeServiceFromUser = async(uid, sid, oid, correlationId) => {
+const removeServiceFromUser = async (uid, sid, oid, correlationId) => {
   return Promise.resolve();
 };
 
-const removeServiceFromInvitation = async(iid, sid, oid, correlationId) => {
+const removeServiceFromInvitation = async (iid, sid, oid, correlationId) => {
   return Promise.resolve();
 };
 
-const getUserServiceRequestsByUserId = async() => {
+const getUserServiceRequestsByUserId = async () => {
   return Promise.resolve(null);
 };
 
-const updateUserServiceRequest = async() => {
+const updateUserServiceRequest = async () => {
   return Promise.resolve(null);
 };
-
 
 module.exports = {
   addInvitationService,
@@ -74,5 +73,5 @@ module.exports = {
   removeServiceFromInvitation,
   removeServiceFromUser,
   getUserServiceRequestsByUserId,
-  updateUserServiceRequest
+  updateUserServiceRequest,
 };

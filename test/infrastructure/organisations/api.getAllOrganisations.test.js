@@ -1,27 +1,31 @@
-jest.mock('login.dfe.async-retry');
-jest.mock('login.dfe.jwt-strategies');
-jest.mock('./../../../src/infrastructure/config', () => require('../../utils').configMockFactory({
-  organisations: {
-    type: 'api',
-    service: {
-      url: 'http://organisations.test',
+jest.mock("login.dfe.async-retry");
+jest.mock("login.dfe.jwt-strategies");
+jest.mock("./../../../src/infrastructure/config", () =>
+  require("../../utils").configMockFactory({
+    organisations: {
+      type: "api",
+      service: {
+        url: "http://organisations.test",
+      },
     },
-  },
-}));
+  }),
+);
 
-const {fetchApi} = require('login.dfe.async-retry');
+const { fetchApi } = require("login.dfe.async-retry");
 
-const jwtStrategy = require('login.dfe.jwt-strategies');
-const { getAllOrganisations } = require('../../../src/infrastructure/organisations/api');
+const jwtStrategy = require("login.dfe.jwt-strategies");
+const {
+  getAllOrganisations,
+} = require("../../../src/infrastructure/organisations/api");
 
-const userId = 'user-1';
-const correlationId = 'abc123';
+const userId = "user-1";
+const correlationId = "abc123";
 const apiResponse = {
   organisations: [],
   totalNumberOfPages: 1,
 };
 
-describe('when getting a users organisations mapping from api', () => {
+describe("when getting a users organisations mapping from api", () => {
   beforeEach(() => {
     fetchApi.mockReset();
     fetchApi.mockImplementation(() => {
@@ -31,49 +35,49 @@ describe('when getting a users organisations mapping from api', () => {
     jwtStrategy.mockReset();
     jwtStrategy.mockImplementation(() => {
       return {
-        getBearerToken: jest.fn().mockReturnValue('token'),
+        getBearerToken: jest.fn().mockReturnValue("token"),
       };
-    })
+    });
   });
 
-
-
-  it('then it should call associated-with-user resource with user id', async () => {
+  it("then it should call associated-with-user resource with user id", async () => {
     await getAllOrganisations(userId, correlationId);
 
     expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][0]).toBe('http://organisations.test/organisations?page=1');
+    expect(fetchApi.mock.calls[0][0]).toBe(
+      "http://organisations.test/organisations?page=1",
+    );
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      method: 'GET',
+      method: "GET",
     });
   });
 
-  it('then it should use the token from jwt strategy as bearer token', async () => {
+  it("then it should use the token from jwt strategy as bearer token", async () => {
     await getAllOrganisations(userId, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
-        authorization: 'bearer token',
+        authorization: "bearer token",
       },
     });
   });
 
-  it('then it should include the correlation id', async () => {
+  it("then it should include the correlation id", async () => {
     await getAllOrganisations(userId, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
-        'x-correlation-id': undefined,
+        "x-correlation-id": undefined,
       },
     });
   });
 
-  it('should return a TypeError on a status 401 from the api', async () => {
+  it("should return a TypeError on a status 401 from the api", async () => {
     // Returns a TypeError because the function doesn't handle errors appropriately and always
     // assumes the return value object with an 'organisations' field whos value is an iterable.
     // This needs to be improved.
     fetchApi.mockImplementation(() => {
-      const error = new Error('Unauthorzed');
+      const error = new Error("Unauthorzed");
       error.statusCode = 401;
       throw error;
     });
@@ -82,16 +86,18 @@ describe('when getting a users organisations mapping from api', () => {
       await getAllOrganisations(userId, correlationId);
     } catch (e) {
       expect(e).toBeInstanceOf(TypeError);
-      expect(e.message).toEqual('Cannot read properties of null (reading \'organisations\')');
+      expect(e.message).toEqual(
+        "Cannot read properties of null (reading 'organisations')",
+      );
     }
   });
 
-  it('should return a TypeError on a status 404 from the api', async () => {
+  it("should return a TypeError on a status 404 from the api", async () => {
     // Returns a TypeError because the function doesn't handle errors appropriately and always
     // assumes the return value object with an 'organisations' field whos value is an iterable.
     // This needs to be improved.
     fetchApi.mockImplementation(() => {
-      const error = new Error('Not found');
+      const error = new Error("Not found");
       error.statusCode = 404;
       throw error;
     });
@@ -100,16 +106,18 @@ describe('when getting a users organisations mapping from api', () => {
       await getAllOrganisations(userId, correlationId);
     } catch (e) {
       expect(e).toBeInstanceOf(TypeError);
-      expect(e.message).toEqual('Cannot read properties of null (reading \'organisations\')');
+      expect(e.message).toEqual(
+        "Cannot read properties of null (reading 'organisations')",
+      );
     }
   });
 
-  it('should return a TypeError on a status 409 from the api', async () => {
+  it("should return a TypeError on a status 409 from the api", async () => {
     // Returns a TypeError because the function doesn't handle errors appropriately and always
     // assumes the return value object with an 'organisations' field whos value is an iterable.
     // This needs to be improved.
     fetchApi.mockImplementation(() => {
-      const error = new Error('Conflict');
+      const error = new Error("Conflict");
       error.statusCode = 409;
       throw error;
     });
@@ -118,13 +126,15 @@ describe('when getting a users organisations mapping from api', () => {
       await getAllOrganisations(userId, correlationId);
     } catch (e) {
       expect(e).toBeInstanceOf(TypeError);
-      expect(e.message).toEqual('Cannot read properties of undefined (reading \'forEach\')');
+      expect(e.message).toEqual(
+        "Cannot read properties of undefined (reading 'forEach')",
+      );
     }
   });
 
-  it('should raise an exception on any failure status code that is not 401, 404 or 409', async () => {
+  it("should raise an exception on any failure status code that is not 401, 404 or 409", async () => {
     fetchApi.mockImplementation(() => {
-      const error = new Error('Server Error');
+      const error = new Error("Server Error");
       error.statusCode = 500;
       throw error;
     });
@@ -133,7 +143,7 @@ describe('when getting a users organisations mapping from api', () => {
       await getAllOrganisations(userId, correlationId);
     } catch (e) {
       expect(e.statusCode).toEqual(500);
-      expect(e.message).toEqual('Server Error');
+      expect(e.message).toEqual("Server Error");
     }
   });
 });

@@ -1,30 +1,38 @@
-jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
-jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
-jest.mock('./../../../src/app/users/utils');
-jest.mock('./../../../src/infrastructure/directories');
+jest.mock("./../../../src/infrastructure/config", () =>
+  require("./../../utils").configMockFactory(),
+);
+jest.mock("./../../../src/infrastructure/logger", () =>
+  require("./../../utils").loggerMockFactory(),
+);
+jest.mock("./../../../src/app/users/utils");
+jest.mock("./../../../src/infrastructure/directories");
 
-const logger = require('./../../../src/infrastructure/logger');
-const { getUserDetails, getUserDetailsById, updateUserDetails } = require('./../../../src/app/users/utils');
-const { reactivate } = require('./../../../src/infrastructure/directories');
-const postConfirmReactivate = require('./../../../src/app/users/postConfirmReactivate');
+const logger = require("./../../../src/infrastructure/logger");
+const {
+  getUserDetails,
+  getUserDetailsById,
+  updateUserDetails,
+} = require("./../../../src/app/users/utils");
+const { reactivate } = require("./../../../src/infrastructure/directories");
+const postConfirmReactivate = require("./../../../src/app/users/postConfirmReactivate");
 
-describe('When reactivating an user account', () => {
+describe("When reactivating an user account", () => {
   let req;
   let res;
 
   beforeEach(() => {
     req = {
-      id: 'correlationId',
-      csrfToken: () => 'token',
-      accepts: () => ['text/html'],
+      id: "correlationId",
+      csrfToken: () => "token",
+      accepts: () => ["text/html"],
       params: {
-        uid: '915a7382-576b-4699-ad07-a9fd329d3867',
+        uid: "915a7382-576b-4699-ad07-a9fd329d3867",
       },
       body: {},
       user: {
-        sub: 'suser1',
-        email: 'super.user@unit.test',
-      }
+        sub: "suser1",
+        email: "super.user@unit.test",
+      },
     };
 
     res = {
@@ -36,16 +44,16 @@ describe('When reactivating an user account', () => {
 
     getUserDetails.mockReset();
     getUserDetails.mockReturnValue({
-      id: '915a7382-576b-4699-ad07-a9fd329d3867',
-      name: 'Rupert Grint',
-      firstName: 'Rupert',
-      lastName: 'Grint',
-      email: 'rupert.grint@hogwarts.test',
-      organisationName: 'Hogwarts School of Witchcraft and Wizardry',
+      id: "915a7382-576b-4699-ad07-a9fd329d3867",
+      name: "Rupert Grint",
+      firstName: "Rupert",
+      lastName: "Grint",
+      email: "rupert.grint@hogwarts.test",
+      organisationName: "Hogwarts School of Witchcraft and Wizardry",
       lastLogin: null,
       status: {
         id: 0,
-        description: 'Deactivated'
+        description: "Deactivated",
       },
       loginsInPast12Months: {
         successful: 0,
@@ -53,16 +61,16 @@ describe('When reactivating an user account', () => {
     });
 
     getUserDetailsById.mockReset().mockReturnValue({
-      id: '915a7382-576b-4699-ad07-a9fd329d3867',
-      name: 'Rupert Grint',
-      firstName: 'Rupert',
-      lastName: 'Grint',
-      email: 'rupert.grint@hogwarts.test',
-      organisationName: 'Hogwarts School of Witchcraft and Wizardry',
+      id: "915a7382-576b-4699-ad07-a9fd329d3867",
+      name: "Rupert Grint",
+      firstName: "Rupert",
+      lastName: "Grint",
+      email: "rupert.grint@hogwarts.test",
+      organisationName: "Hogwarts School of Witchcraft and Wizardry",
       lastLogin: null,
       status: {
         id: 0,
-        description: 'Deactivated'
+        description: "Deactivated",
       },
       loginsInPast12Months: {
         successful: 0,
@@ -72,64 +80,68 @@ describe('When reactivating an user account', () => {
     updateUserDetails.mockReset();
   });
 
-  it('then it should redirect to view user profile', async () => {
+  it("then it should redirect to view user profile", async () => {
     await postConfirmReactivate(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe('services');
+    expect(res.redirect.mock.calls[0][0]).toBe("services");
   });
 
-  it('then it should activate user in directories', async () => {
+  it("then it should activate user in directories", async () => {
     await postConfirmReactivate(req, res);
 
     expect(reactivate.mock.calls).toHaveLength(1);
-    expect(reactivate.mock.calls[0][0]).toBe('915a7382-576b-4699-ad07-a9fd329d3867');
-    expect(reactivate.mock.calls[0][1]).toBe('correlationId');
+    expect(reactivate.mock.calls[0][0]).toBe(
+      "915a7382-576b-4699-ad07-a9fd329d3867",
+    );
+    expect(reactivate.mock.calls[0][1]).toBe("correlationId");
   });
 
-  it('then it should update user in search index', async () => {
+  it("then it should update user in search index", async () => {
     await postConfirmReactivate(req, res);
 
     expect(updateUserDetails.mock.calls).toHaveLength(1);
     expect(updateUserDetails.mock.calls[0][0]).toMatchObject({
-      id: '915a7382-576b-4699-ad07-a9fd329d3867',
-      name: 'Rupert Grint',
-      email: 'rupert.grint@hogwarts.test',
-      organisationName: 'Hogwarts School of Witchcraft and Wizardry',
+      id: "915a7382-576b-4699-ad07-a9fd329d3867",
+      name: "Rupert Grint",
+      email: "rupert.grint@hogwarts.test",
+      organisationName: "Hogwarts School of Witchcraft and Wizardry",
       lastLogin: null,
-      status:{
+      status: {
         id: 1,
-        description: 'Active'
-      }
-    })
+        description: "Active",
+      },
+    });
   });
 
-  it('then it should should audit user being reactivated', async () => {
+  it("then it should should audit user being reactivated", async () => {
     await postConfirmReactivate(req, res);
 
     expect(logger.audit.mock.calls).toHaveLength(1);
-    expect(logger.audit.mock.calls[0][0]).toBe('super.user@unit.test (id: suser1) reactivated user rupert.grint@hogwarts.test (id: 915a7382-576b-4699-ad07-a9fd329d3867)');
+    expect(logger.audit.mock.calls[0][0]).toBe(
+      "super.user@unit.test (id: suser1) reactivated user rupert.grint@hogwarts.test (id: 915a7382-576b-4699-ad07-a9fd329d3867)",
+    );
     expect(logger.audit.mock.calls[0][1]).toMatchObject({
-      type: 'support',
-      subType: 'user-edit',
-      userId: 'suser1',
-      userEmail: 'super.user@unit.test',
-      editedUser: '915a7382-576b-4699-ad07-a9fd329d3867',
+      type: "support",
+      subType: "user-edit",
+      userId: "suser1",
+      userEmail: "super.user@unit.test",
+      editedUser: "915a7382-576b-4699-ad07-a9fd329d3867",
       editedFields: [
         {
-          name: 'status',
+          name: "status",
           oldValue: 0,
           newValue: 1,
-        }
+        },
       ],
     });
   });
 
-  it('then a flash message is shown to the user', async () => {
+  it("then a flash message is shown to the user", async () => {
     await postConfirmReactivate(req, res);
 
     expect(res.flash.mock.calls).toHaveLength(1);
-    expect(res.flash.mock.calls[0][0]).toBe('info');
-    expect(res.flash.mock.calls[0][1]).toBe('The account has been reactivated')
+    expect(res.flash.mock.calls[0][0]).toBe("info");
+    expect(res.flash.mock.calls[0][1]).toBe("The account has been reactivated");
   });
 });

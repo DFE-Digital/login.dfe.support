@@ -1,6 +1,6 @@
 {
-    "name": "login.dfe.support",
-    "script": "src/index.js",
-    "instances": "max",
-    "exec_mode": "cluster"
-  }
+  "name": "login.dfe.support",
+  "script": "src/index.js",
+  "instances": "max",
+  "exec_mode": "cluster"
+}

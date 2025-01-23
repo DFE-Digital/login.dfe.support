@@ -1,9 +1,9 @@
-const isLoggedIn = require('./isLoggedIn');
-const setCurrentArea = require('./setCurrentArea');
-const sendResult = require('./sendResult');
-const { mapUserStatus, userStatusMap } = require('./mapUserStatus');
-const patchChangeHistory = require('./patchChangeHistory');
-const isRequestApprover = require('./isRequestApprover');
+const isLoggedIn = require("./isLoggedIn");
+const setCurrentArea = require("./setCurrentArea");
+const sendResult = require("./sendResult");
+const { mapUserStatus, userStatusMap } = require("./mapUserStatus");
+const patchChangeHistory = require("./patchChangeHistory");
+const isRequestApprover = require("./isRequestApprover");
 
 module.exports = {
   isLoggedIn,

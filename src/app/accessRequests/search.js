@@ -1,6 +1,6 @@
-'use strict';
-const { sendResult } = require('./../../infrastructure/utils');
-const { search } = require('./utils');
+"use strict";
+const { sendResult } = require("./../../infrastructure/utils");
+const { search } = require("./utils");
 
 const buildModelAndDoSearch = async (req) => {
   let result = await search(req);
@@ -19,12 +19,12 @@ const buildModelAndDoSearch = async (req) => {
 
 const get = async (req, res) => {
   const model = await buildModelAndDoSearch(req);
-  sendResult(req, res, 'accessRequests/views/search', model);
+  sendResult(req, res, "accessRequests/views/search", model);
 };
 
 const post = async (req, res) => {
   const model = await buildModelAndDoSearch(req);
-  sendResult(req, res, 'accessRequests/views/search', model);
+  sendResult(req, res, "accessRequests/views/search", model);
 };
 
 module.exports = {

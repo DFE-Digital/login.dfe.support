@@ -1,7 +1,7 @@
-const { sendResult } = require('./../../infrastructure/utils');
+const { sendResult } = require("./../../infrastructure/utils");
 
 const getConfirmReactivate = async (req, res) => {
-  sendResult(req, res, 'users/views/confirmReactivate', {
+  sendResult(req, res, "users/views/confirmReactivate", {
     csrfToken: req.csrfToken(),
   });
 };

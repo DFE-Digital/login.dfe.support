@@ -1,9 +1,11 @@
-const { tidyIndexes } = require('./../src/app/tidyIndexes');
+const { tidyIndexes } = require("./../src/app/tidyIndexes");
 
-tidyIndexes().then(() => {
-  console.info('done');
-  process.exit();
-}).catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+tidyIndexes()
+  .then(() => {
+    console.info("done");
+    process.exit();
+  })
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });

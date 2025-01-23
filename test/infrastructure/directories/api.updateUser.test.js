@@ -1,139 +1,148 @@
-jest.mock('./../../../src/infrastructure/config', () => {
+jest.mock("./../../../src/infrastructure/config", () => {
   return {
     directories: {
-      type: 'api',
+      type: "api",
       service: {
-        url: 'https://directories.api.test',
+        url: "https://directories.api.test",
         auth: {
-          type: 'aad',
-          tenant: 'tenant.omicrosoft.com',
-          authorityHostUrl: 'https://login.microsoftonline.com/uuid',
-          clientId: 'app-id',
-          clientSecret: 'secure-secret',
-          resource: 'service-id'
-        }
-      }
+          type: "aad",
+          tenant: "tenant.omicrosoft.com",
+          authorityHostUrl: "https://login.microsoftonline.com/uuid",
+          clientId: "app-id",
+          clientSecret: "secure-secret",
+          resource: "service-id",
+        },
+      },
     },
     hostingEnvironment: {
-      agentKeepAlive: {}
+      agentKeepAlive: {},
     },
-  }
+  };
 });
-jest.mock('agentkeepalive', () => {
+jest.mock("agentkeepalive", () => {
   return {
-    HttpsAgent: jest.fn()
-  }
+    HttpsAgent: jest.fn(),
+  };
 });
-jest.mock('login.dfe.async-retry');
-jest.mock('login.dfe.jwt-strategies', () => {
+jest.mock("login.dfe.async-retry");
+jest.mock("login.dfe.jwt-strategies", () => {
   return jest.fn().mockImplementation(() => {
     return {
-      getBearerToken: jest.fn().mockReturnValue('token'),
+      getBearerToken: jest.fn().mockReturnValue("token"),
     };
   });
 });
 
-const {fetchApi} = require('login.dfe.async-retry');
+const { fetchApi } = require("login.dfe.async-retry");
 
-const { updateUser } = require('./../../../src/infrastructure/directories/api');
+const { updateUser } = require("./../../../src/infrastructure/directories/api");
 
-describe('When updating a user using the api', () => {
+describe("When updating a user using the api", () => {
   beforeEach(() => {
     fetchApi.mockReset();
   });
 
-
-  it('then it should PATCH user at api', async () => {
-    await updateUser('user1', 'Hermione', 'Granger', 'correlation-id');
+  it("then it should PATCH user at api", async () => {
+    await updateUser("user1", "Hermione", "Granger", "correlation-id");
 
     expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][0]).toBe('https://directories.api.test/users/user1');
+    expect(fetchApi.mock.calls[0][0]).toBe(
+      "https://directories.api.test/users/user1",
+    );
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      method: 'PATCH'
+      method: "PATCH",
     });
   });
 
-  it('then it should authorize using the bearer token', async () => {
-    await updateUser('user1', 'Hermione', 'Granger', 'correlation-id');
-
-    expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      headers: {
-        authorization: 'bearer token',
-      },
-    });
-  });
-
-  it('then it should include correlation id', async () => {
-    await updateUser('user1', 'Hermione', 'Granger', 'correlation-id');
+  it("then it should authorize using the bearer token", async () => {
+    await updateUser("user1", "Hermione", "Granger", "correlation-id");
 
     expect(fetchApi.mock.calls).toHaveLength(1);
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
-        'x-correlation-id': 'correlation-id',
+        authorization: "bearer token",
       },
     });
   });
 
-  it('then it should include given_name if value passed', async () => {
-    await updateUser('user1', 'Hermione', 'Granger', 'correlation-id');
+  it("then it should include correlation id", async () => {
+    await updateUser("user1", "Hermione", "Granger", "correlation-id");
+
+    expect(fetchApi.mock.calls).toHaveLength(1);
+    expect(fetchApi.mock.calls[0][1]).toMatchObject({
+      headers: {
+        "x-correlation-id": "correlation-id",
+      },
+    });
+  });
+
+  it("then it should include given_name if value passed", async () => {
+    await updateUser("user1", "Hermione", "Granger", "correlation-id");
 
     expect(fetchApi.mock.calls).toHaveLength(1);
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       body: {
-        given_name: 'Hermione'
+        given_name: "Hermione",
       },
     });
   });
 
-  it('then it should not include given_name if value not passed', async () => {
-    await updateUser('user1', null, 'Granger', 'correlation-id');
+  it("then it should not include given_name if value not passed", async () => {
+    await updateUser("user1", null, "Granger", "correlation-id");
 
     expect(fetchApi.mock.calls).toHaveLength(1);
     expect(fetchApi.mock.calls[0][0].given_name).toBeUndefined();
   });
 
-  it('then it should include family_name if value passed', async () => {
-    await updateUser('user1', 'Hermione', 'Granger', 'correlation-id');
+  it("then it should include family_name if value passed", async () => {
+    await updateUser("user1", "Hermione", "Granger", "correlation-id");
 
     expect(fetchApi.mock.calls).toHaveLength(1);
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       body: {
-        family_name: 'Granger'
+        family_name: "Granger",
       },
     });
   });
 
-  it('then it should not include given_name if value not passed', async () => {
-    await updateUser('user1', 'Hermione', null, 'correlation-id');
+  it("then it should not include given_name if value not passed", async () => {
+    await updateUser("user1", "Hermione", null, "correlation-id");
 
     expect(fetchApi.mock.calls).toHaveLength(1);
     expect(fetchApi.mock.calls[0][1].family_name).toBeUndefined();
   });
 
-  it('should return null on a 401 response', async () => {
+  it("should return null on a 401 response", async () => {
     fetchApi.mockImplementation(() => {
-      const error = new Error('Unauthorized');
+      const error = new Error("Unauthorized");
       error.statusCode = 401;
       throw error;
     });
 
-    const result = await updateUser('user1', 'Hermione', 'Granger', 'correlation-id');
+    const result = await updateUser(
+      "user1",
+      "Hermione",
+      "Granger",
+      "correlation-id",
+    );
     expect(result).toEqual(null);
   });
 
-  it('should raise an exception on any failure status code that is not 404', async () => {
+  it("should raise an exception on any failure status code that is not 404", async () => {
     fetchApi.mockImplementation(() => {
-      const error = new Error('Server Error');
+      const error = new Error("Server Error");
       error.statusCode = 500;
       throw error;
     });
 
-    const act = () => updateUser('user1', 'Hermione', 'Granger', 'correlation-id');
+    const act = () =>
+      updateUser("user1", "Hermione", "Granger", "correlation-id");
 
-    await expect(act).rejects.toThrow(expect.objectContaining({
-      message: 'Server Error',
-      statusCode: 500,
-    }));
+    await expect(act).rejects.toThrow(
+      expect.objectContaining({
+        message: "Server Error",
+        statusCode: 500,
+      }),
+    );
   });
 });

@@ -1,6 +1,6 @@
-const Sequelize = require('sequelize');
-const { logs, db } = require('./sequelize-schema');
-const { getUser } = require('./../../infrastructure/directories');
+const Sequelize = require("sequelize");
+const { logs, db } = require("./sequelize-schema");
+const { getUser } = require("./../../infrastructure/directories");
 
 const { Op } = Sequelize;
 const { QueryTypes } = Sequelize;
@@ -8,38 +8,43 @@ const pageSize = 25;
 
 const mapAuditEntity = (auditEntity) => {
   const audit = {
-    type: auditEntity.getDataValue('type'),
-    subType: auditEntity.getDataValue('subType'),
-    userId: auditEntity.getDataValue('userId') ? auditEntity.getDataValue('userId').toLowerCase() : '',
-    level: auditEntity.getDataValue('level'),
-    message: auditEntity.getDataValue('message'),
-    timestamp: auditEntity.getDataValue('createdAt'),
-    organisationId: auditEntity.getDataValue('organisationId'),
+    type: auditEntity.getDataValue("type"),
+    subType: auditEntity.getDataValue("subType"),
+    userId: auditEntity.getDataValue("userId")
+      ? auditEntity.getDataValue("userId").toLowerCase()
+      : "",
+    level: auditEntity.getDataValue("level"),
+    message: auditEntity.getDataValue("message"),
+    timestamp: auditEntity.getDataValue("createdAt"),
+    organisationId: auditEntity.getDataValue("organisationId"),
   };
 
   auditEntity.metaData.forEach((meta) => {
-    const key = meta.getDataValue('key');
-    const value = meta.getDataValue('value');
-    const isJson = key === 'editedFields';
+    const key = meta.getDataValue("key");
+    const value = meta.getDataValue("value");
+    const isJson = key === "editedFields";
     audit[key] = isJson ? JSON.parse(value) : value;
   });
 
   return audit;
 };
 
-
 const getPageOfAudits = async (where, pageNumber) => {
   const auditLogs = await logs.findAll({
     where,
-    order: [['createdAt', 'DESC']],
+    order: [["createdAt", "DESC"]],
     offset: (pageNumber - 1) * pageSize,
     limit: pageSize,
-    include: ['metaData'],
+    include: ["metaData"],
   });
-  const count = (await logs.findAll({
-    attributes: [[Sequelize.fn('COUNT', Sequelize.col('id')), 'CountOfAudits']],
-    where,
-  }))[0].get('CountOfAudits');
+  const count = (
+    await logs.findAll({
+      attributes: [
+        [Sequelize.fn("COUNT", Sequelize.col("id")), "CountOfAudits"],
+      ],
+      where,
+    })
+  )[0].get("CountOfAudits");
 
   return {
     audits: auditLogs.map(mapAuditEntity),
@@ -68,7 +73,12 @@ const getPageOfUserAudits = async (userId, pageNumber) => {
     replacements: { userId },
   };
   const skip = (pageNumber - 1) * pageSize;
-  const { count } = (await db.query(`SELECT COUNT(1) count FROM AuditLogs ALPage ${queryWhere};`, queryOpts))[0];
+  const { count } = (
+    await db.query(
+      `SELECT COUNT(1) count FROM AuditLogs ALPage ${queryWhere};`,
+      queryOpts,
+    )
+  )[0];
   const rows = await db.query(
     `SELECT AuditLogs.*, AuditLogMeta.[key], AuditLogMeta.[value]
       FROM (
@@ -91,7 +101,7 @@ const getPageOfUserAudits = async (userId, pageNumber) => {
         id: currentRow.id,
         type: currentRow.type,
         subType: currentRow.subType,
-        userId: currentRow.userId ? currentRow.userId.toLowerCase() : '',
+        userId: currentRow.userId ? currentRow.userId.toLowerCase() : "",
         level: currentRow.level,
         message: currentRow.message,
         timestamp: currentRow.createdAt,
@@ -101,11 +111,13 @@ const getPageOfUserAudits = async (userId, pageNumber) => {
     }
 
     if (currentRow.key) {
-      if (currentRow.key === 'userId' && currentRow.value ){
-        currentRow.value = currentRow.value.replace(/['"]+/g, '');
+      if (currentRow.key === "userId" && currentRow.value) {
+        currentRow.value = currentRow.value.replace(/['"]+/g, "");
       }
-      const isJson = currentRow.key === 'editedFields';
-      currentEntity[currentRow.key] = isJson ? JSON.parse(currentRow.value) : currentRow.value;
+      const isJson = currentRow.key === "editedFields";
+      currentEntity[currentRow.key] = isJson
+        ? JSON.parse(currentRow.value)
+        : currentRow.value;
     }
   }
   return {
@@ -121,7 +133,6 @@ const getUserName = async (userId) => {
   return `${user.given_name} ${user.family_name}`;
 };
 
-
 const getAllAuditsSince = async (sinceDate) => {
   const auditLogs = await logs.findAll({
     where: {
@@ -130,26 +141,26 @@ const getAllAuditsSince = async (sinceDate) => {
       },
     },
     limit: 1000,
-    order: [['createdAt', 'ASC']],
-    include: ['metaData'],
+    order: [["createdAt", "ASC"]],
+    include: ["metaData"],
   });
 
   return auditLogs.map(mapAuditEntity);
 };
 
 const getUserAudit = async (userId, pageNumber) => {
-  const metaSubQuery = db.dialect.QueryGenerator.selectQuery('AuditLogMeta', {
-    attributes: ['AuditId'],
+  const metaSubQuery = db.dialect.QueryGenerator.selectQuery("AuditLogMeta", {
+    attributes: ["AuditId"],
     where: {
       [Op.or]: [
         {
           key: {
-            [Op.eq]: 'editedUser',
+            [Op.eq]: "editedUser",
           },
         },
         {
           key: {
-            [Op.eq]: 'viewedUser',
+            [Op.eq]: "viewedUser",
           },
         },
       ],
@@ -159,9 +170,9 @@ const getUserAudit = async (userId, pageNumber) => {
     },
   }).slice(0, -1);
 
-  return getPageOfAudits({
-    [Op.or]:
-      {
+  return getPageOfAudits(
+    {
+      [Op.or]: {
         userId: {
           [Op.eq]: userId,
         },
@@ -169,7 +180,9 @@ const getUserAudit = async (userId, pageNumber) => {
           [Op.in]: [Sequelize.literal(metaSubQuery)],
         },
       },
-  }, pageNumber);
+    },
+    pageNumber,
+  );
 };
 
 const getUserLoginAuditsSince = async (userId, sinceDate) => {
@@ -179,25 +192,25 @@ const getUserLoginAuditsSince = async (userId, sinceDate) => {
         [Op.eq]: userId,
       },
       type: {
-        [Op.eq]: 'sign-in',
+        [Op.eq]: "sign-in",
       },
       createdAt: {
         [Op.gte]: sinceDate,
       },
     },
-    order: [['createdAt', 'DESC']],
-    include: ['metaData'],
+    order: [["createdAt", "DESC"]],
+    include: ["metaData"],
   });
 
   return auditLogs.map(mapAuditEntity);
 };
 
 const getUserLoginAuditsForService = async (userId, clientId, pageNumber) => {
-  const metaSubQuery = db.dialect.QueryGenerator.selectQuery('AuditLogMeta', {
-    attributes: ['AuditId'],
+  const metaSubQuery = db.dialect.QueryGenerator.selectQuery("AuditLogMeta", {
+    attributes: ["AuditId"],
     where: {
       key: {
-        [Op.eq]: 'ClientId',
+        [Op.eq]: "ClientId",
       },
       value: {
         [Op.eq]: clientId,
@@ -205,22 +218,25 @@ const getUserLoginAuditsForService = async (userId, clientId, pageNumber) => {
     },
   }).slice(0, -1);
 
-  return getPageOfAudits({
-    userId: {
-      [Op.eq]: userId,
+  return getPageOfAudits(
+    {
+      userId: {
+        [Op.eq]: userId,
+      },
+      id: {
+        [Op.in]: [Sequelize.literal(metaSubQuery)],
+      },
     },
-    id: {
-      [Op.in]: [Sequelize.literal(metaSubQuery)],
-    },
-  }, pageNumber);
+    pageNumber,
+  );
 };
 
 const getUserChangeHistory = async (userId, pageNumber) => {
-  const metaSubQuery = db.dialect.QueryGenerator.selectQuery('AuditLogMeta', {
-    attributes: ['AuditId'],
+  const metaSubQuery = db.dialect.QueryGenerator.selectQuery("AuditLogMeta", {
+    attributes: ["AuditId"],
     where: {
       key: {
-        [Op.eq]: 'editedUser',
+        [Op.eq]: "editedUser",
       },
       value: {
         [Op.eq]: userId,
@@ -228,32 +244,35 @@ const getUserChangeHistory = async (userId, pageNumber) => {
     },
   }).slice(0, -1);
 
-  return getPageOfAudits({
-    type: {
-      [Op.eq]: 'support',
+  return getPageOfAudits(
+    {
+      type: {
+        [Op.eq]: "support",
+      },
+      subType: {
+        [Op.eq]: "user-edit",
+      },
+      id: {
+        [Op.in]: [Sequelize.literal(metaSubQuery)],
+      },
     },
-    subType: {
-      [Op.eq]: 'user-edit',
-    },
-    id: {
-      [Op.in]: [Sequelize.literal(metaSubQuery)],
-    },
-  }, pageNumber);
+    pageNumber,
+  );
 };
 
 const getAuditEvent = (type, subType, unlockType) => {
   let event = `Digipass event ${type} - ${subType}`;
 
-  if (type === 'sign-in' && subType === 'digipass') {
-    event = 'Login';
-  } else if (subType === 'digipass-resync') {
+  if (type === "sign-in" && subType === "digipass") {
+    event = "Login";
+  } else if (subType === "digipass-resync") {
     event = `${type} - Resync`;
-  } else if (type === 'support' && subType === 'digipass-unlock') {
+  } else if (type === "support" && subType === "digipass-unlock") {
     event = `Unlock - UnlockType: "${unlockType}"`;
-  } else if (type === 'support' && subType === 'digipass-deactivate') {
-    event = 'Deactivate';
-  } else if (type === 'support' && subType === 'digipass-assign') {
-    event = 'Assigned';
+  } else if (type === "support" && subType === "digipass-deactivate") {
+    event = "Deactivate";
+  } else if (type === "support" && subType === "digipass-assign") {
+    event = "Assigned";
   }
   return event;
 };

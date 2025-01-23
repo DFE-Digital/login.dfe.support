@@ -1,20 +1,27 @@
-const logger = require('../../infrastructure/logger');
-const { sendResult } = require('../../infrastructure/utils');
-const { getUserDetails, getUserDetailsById, updateUserDetails, waitForIndexToUpdate } = require('./utils');
-const { updateUser } = require('../../infrastructure/directories');
-const { putSingleServiceIdentifierForUser } = require('../../infrastructure/access');
+const logger = require("../../infrastructure/logger");
+const { sendResult } = require("../../infrastructure/utils");
+const {
+  getUserDetails,
+  getUserDetailsById,
+  updateUserDetails,
+  waitForIndexToUpdate,
+} = require("./utils");
+const { updateUser } = require("../../infrastructure/directories");
+const {
+  putSingleServiceIdentifierForUser,
+} = require("../../infrastructure/access");
 
 const validate = (req) => {
   const validationMessages = {};
   let isValid = true;
 
   if (!req.body.firstName) {
-    validationMessages.firstName = 'Please specify a first name';
+    validationMessages.firstName = "Please specify a first name";
     isValid = false;
   }
 
   if (!req.body.lastName) {
-    validationMessages.lastName = 'Please specify a last name';
+    validationMessages.lastName = "Please specify a last name";
     isValid = false;
   }
 
@@ -32,7 +39,11 @@ const updateUserIndex = async (uid, firstName, lastName, correlationId) => {
 
   await updateUserDetails(user, correlationId);
 
-  await waitForIndexToUpdate(uid, (updated) => updated.firstName === firstName && updated.lastName === lastName);
+  await waitForIndexToUpdate(
+    uid,
+    (updated) =>
+      updated.firstName === firstName && updated.lastName === lastName,
+  );
 };
 
 const auditEdit = (req, user) => {
@@ -40,7 +51,7 @@ const auditEdit = (req, user) => {
 
   if (req.body.firstName !== user.firstName) {
     editedFields.push({
-      name: 'given_name',
+      name: "given_name",
       oldValue: user.firstName,
       newValue: req.body.firstName,
     });
@@ -48,27 +59,30 @@ const auditEdit = (req, user) => {
 
   if (req.body.lastName !== user.lastName) {
     editedFields.push({
-      name: 'family_name',
+      name: "family_name",
       oldValue: user.lastName,
       newValue: req.body.lastName,
     });
   }
 
-  logger.audit(`${req.user.email} (id: ${req.user.sub}) updated user ${user.email} (id: ${user.id})`, {
-    type: 'support',
-    subType: 'user-edit',
-    userId: req.user.sub,
-    userEmail: req.user.email,
-    editedUser: user.id,
-    editedFields,
-  });
+  logger.audit(
+    `${req.user.email} (id: ${req.user.sub}) updated user ${user.email} (id: ${user.id})`,
+    {
+      type: "support",
+      subType: "user-edit",
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      editedUser: user.id,
+      editedFields,
+    },
+  );
 };
 
 const postEditProfile = async (req, res) => {
   const user = await getUserDetails(req);
   const validationResult = validate(req);
   if (!validationResult.isValid) {
-    sendResult(req, res, 'users/views/editProfile', {
+    sendResult(req, res, "users/views/editProfile", {
       csrfToken: req.csrfToken(),
       user,
       validationMessages: validationResult.validationMessages,
@@ -77,18 +91,25 @@ const postEditProfile = async (req, res) => {
   }
 
   const uid = req.params.uid;
-  const idKey = 'k2s-id';
+  const idKey = "k2s-id";
   //todo k2s-id set id
   if (req.body.orgId && req.body.serviceId) {
-    const identifierResult = await putSingleServiceIdentifierForUser(uid, req.body.serviceId, req.body.orgId, idKey, req.body.ktsId, req.id);
+    const identifierResult = await putSingleServiceIdentifierForUser(
+      uid,
+      req.body.serviceId,
+      req.body.orgId,
+      idKey,
+      req.body.ktsId,
+      req.id,
+    );
 
     if (!identifierResult) {
-      sendResult(req, res, 'users/views/editProfile', {
+      sendResult(req, res, "users/views/editProfile", {
         csrfToken: req.csrfToken(),
         user,
         isValid: false,
         validationMessages: {
-          ktsId: 'Key to Success ID is already in use',
+          ktsId: "Key to Success ID is already in use",
         },
       });
       return;
@@ -100,7 +121,7 @@ const postEditProfile = async (req, res) => {
 
   auditEdit(req, user);
 
-  return res.redirect('services');
+  return res.redirect("services");
 };
 
 module.exports = postEditProfile;

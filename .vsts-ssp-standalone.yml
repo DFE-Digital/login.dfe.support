@@ -15,16 +15,16 @@ resources:
 trigger:
   branches:
     exclude:
-    - master
-    - develop
-    - release/*
-    - feature/*
+      - master
+      - develop
+      - release/*
+      - feature/*
 
 variables:
-- group: platform-global
+  - group: platform-global
 
 stages:
-- template: /Application/node/stages/signin-master-standalone-stage.yml@devopsTemplates
-  parameters:
-    applicationName: support
-    resourceGroupSuffix: sup
+  - template: /Application/node/stages/signin-master-standalone-stage.yml@devopsTemplates
+    parameters:
+      applicationName: support
+      resourceGroupSuffix: sup

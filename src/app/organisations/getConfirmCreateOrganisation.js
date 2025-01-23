@@ -1,14 +1,14 @@
-const { sendResult } = require('../../infrastructure/utils');
+const { sendResult } = require("../../infrastructure/utils");
 
 const getConfirmCreateOrganisation = async (req, res) => {
   if (!req.session.createOrgData) {
-    return res.redirect('/organisations');
+    return res.redirect("/organisations");
   }
 
-  sendResult(req, res, 'organisations/views/confirmCreateOrganisation', {
+  sendResult(req, res, "organisations/views/confirmCreateOrganisation", {
     csrfToken: req.csrfToken(),
-    layout: 'sharedViews/layoutNew.ejs',
-    currentPage: 'organisations',
+    layout: "sharedViews/layoutNew.ejs",
+    currentPage: "organisations",
     backLink: true,
     validationMessages: {},
     name: req.session.createOrgData.name,

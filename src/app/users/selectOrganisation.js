@@ -1,15 +1,20 @@
-'use strict';
+"use strict";
 
-const { getUserOrganisationsV2, getInvitationOrganisations } = require('./../../infrastructure/organisations');
+const {
+  getUserOrganisationsV2,
+  getInvitationOrganisations,
+} = require("./../../infrastructure/organisations");
 
 const getSelectionPrompt = async (req) => {
-  return 'You are associated with more than one organisation. Select the organisation associated with the service you would like to access.';
+  return "You are associated with more than one organisation. Select the organisation associated with the service you would like to access.";
 };
 
 const getNaturalIdentifiers = async (req) => {
   const userId = req.params.uid;
-  const userOrganisations = userId.startsWith('inv-') ? await getInvitationOrganisations(userId.substr(4), req.id) : await getUserOrganisationsV2(req.params.uid, req.id);
-  for (let i= 0; i < userOrganisations.length; i++) {
+  const userOrganisations = userId.startsWith("inv-")
+    ? await getInvitationOrganisations(userId.substr(4), req.id)
+    : await getUserOrganisationsV2(req.params.uid, req.id);
+  for (let i = 0; i < userOrganisations.length; i++) {
     const org = userOrganisations[i];
     if (org.organisation) {
       org.naturalIdentifiers = [];
@@ -18,16 +23,16 @@ const getNaturalIdentifiers = async (req) => {
       const upin = org.organisation.upin;
       const ukprn = org.organisation.ukprn;
       if (urn) {
-        org.naturalIdentifiers.push(`URN: ${urn}`)
+        org.naturalIdentifiers.push(`URN: ${urn}`);
       }
       if (uid) {
-        org.naturalIdentifiers.push(`UID: ${uid}`)
+        org.naturalIdentifiers.push(`UID: ${uid}`);
       }
       if (upin) {
-        org.naturalIdentifiers.push(`UPIN: ${upin}`)
+        org.naturalIdentifiers.push(`UPIN: ${upin}`);
       }
       if (ukprn) {
-        org.naturalIdentifiers.push(`UKPRN: ${ukprn}`)
+        org.naturalIdentifiers.push(`UKPRN: ${ukprn}`);
       }
     }
   }
@@ -44,9 +49,11 @@ const get = async (req, res) => {
   clearServiceSessionData(req);
   const userOrganisations = await getNaturalIdentifiers(req);
   if (userOrganisations.length === 1) {
-    return res.redirect(`organisations/${userOrganisations[0].organisation.id}`);
+    return res.redirect(
+      `organisations/${userOrganisations[0].organisation.id}`,
+    );
   }
-  return res.render('users/views/selectOrganisation', {
+  return res.render("users/views/selectOrganisation", {
     selectionPrompt: getSelectionPrompt(),
     csrfToken: req.csrfToken(),
     organisations: userOrganisations,
@@ -64,8 +71,12 @@ const validate = async (req) => {
     organisations: userOrganisations,
   };
 
-  if (model.selectedOrganisation === undefined || model.selectedOrganisation === null) {
-    model.validationMessages.selectedOrganisation = 'Please select an organisation'
+  if (
+    model.selectedOrganisation === undefined ||
+    model.selectedOrganisation === null
+  ) {
+    model.validationMessages.selectedOrganisation =
+      "Please select an organisation";
   }
   return model;
 };
@@ -75,11 +86,12 @@ const post = async (req, res) => {
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    return res.render('users/views/selectOrganisation', model);
+    return res.render("users/views/selectOrganisation", model);
   }
-  return res.redirect(`/users/${req.params.uid}/organisations/${model.selectedOrganisation}`);
+  return res.redirect(
+    `/users/${req.params.uid}/organisations/${model.selectedOrganisation}`,
+  );
 };
-
 
 module.exports = {
   get,

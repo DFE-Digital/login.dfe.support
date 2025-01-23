@@ -1,10 +1,10 @@
-const config = require('./../config');
+const config = require("./../config");
 
 let adapter;
-if (config.access.type === 'static') {
-  adapter = require('./static');
-} else if(config.access.type === 'api') {
-  adapter = require('./api');
+if (config.access.type === "static") {
+  adapter = require("./static");
+} else if (config.access.type === "api") {
+  adapter = require("./api");
 } else {
   throw new Error(`Invalid organisations type ${config.access.type} in config`);
 }

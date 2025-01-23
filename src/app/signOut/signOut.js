@@ -1,15 +1,15 @@
-'use strict';
+"use strict";
 
 /* eslint-disable no-underscore-dangle */
 
-const url = require('url');
-const passport = require('passport');
-const config = require('../../infrastructure/config');
-const logger = require('../../infrastructure/logger');
+const url = require("url");
+const passport = require("passport");
+const config = require("../../infrastructure/config");
+const logger = require("../../infrastructure/logger");
 
 const logout = (req, res) => {
   req.logout(() => {
-    logger.debug('user logged out.', { correlationId: req.id });
+    logger.debug("user logged out.", { correlationId: req.id });
   });
   req.session = null; // Needed to clear session and completely logout
 };
@@ -20,21 +20,25 @@ const signUserOut = (req, res) => {
     const issuer = passport._strategies.oidc._issuer;
     let returnUrl = `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/signout/complete`;
 
-    if (req.query.timeout === '1') {
+    if (req.query.timeout === "1") {
       returnUrl = `${config.hostingEnvironment.protocol}://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}/signout/session-timeout`;
     }
 
     logout(req, res);
-    res.redirect(url.format(Object.assign(url.parse(issuer.end_session_endpoint), {
-      search: null,
-      query: {
-        id_token_hint: idToken,
-        post_logout_redirect_uri: returnUrl,
-      },
-    })));
+    res.redirect(
+      url.format(
+        Object.assign(url.parse(issuer.end_session_endpoint), {
+          search: null,
+          query: {
+            id_token_hint: idToken,
+            post_logout_redirect_uri: returnUrl,
+          },
+        }),
+      ),
+    );
   } else {
     logout(req, res);
-    res.redirect('/');
+    res.redirect("/");
   }
 };
 

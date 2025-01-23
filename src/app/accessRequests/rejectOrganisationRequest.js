@@ -1,37 +1,44 @@
-const { NotificationClient } = require('login.dfe.jobs-client');
-const { getAndMapOrgRequest } = require('./utils');
-const { updateRequestById } = require('../../infrastructure/organisations');
-const logger = require('../../infrastructure/logger');
-const config = require('../../infrastructure/config');
+const { NotificationClient } = require("login.dfe.jobs-client");
+const { getAndMapOrgRequest } = require("./utils");
+const { updateRequestById } = require("../../infrastructure/organisations");
+const logger = require("../../infrastructure/logger");
+const config = require("../../infrastructure/config");
 
 const notificationClient = new NotificationClient({
   connectionString: config.notifications.connectionString,
 });
 
 const get = async (req, res) => {
-  return res.render('accessRequests/views/rejectOrganisationRequest', {
+  return res.render("accessRequests/views/rejectOrganisationRequest", {
     csrfToken: req.csrfToken(),
-    title: 'Reason for rejection - DfE Sign-in',
+    title: "Reason for rejection - DfE Sign-in",
     backLink: true,
-    cancelLink: (req.params.from==='organisation')?`/access-requests/${req.params.rid}/${req.params.from}/review`:`/access-requests/${req.params.rid}/review`,
-    reason: '',
+    cancelLink:
+      req.params.from === "organisation"
+        ? `/access-requests/${req.params.rid}/${req.params.from}/review`
+        : `/access-requests/${req.params.rid}/review`,
+    reason: "",
     validationMessages: {},
-  })
+  });
 };
 
 const validate = async (req) => {
   const request = await getAndMapOrgRequest(req);
   const model = {
-    title: 'Reason for rejection - DfE Sign-in',
+    title: "Reason for rejection - DfE Sign-in",
     backLink: true,
     requestFrom: req.params.from,
-    cancelLink: (req.params.from === 'organisation') ? `/access-requests/${req.params.rid}/${req.params.from}/review` : `/access-requests/${req.params.rid}/review`,
+    cancelLink:
+      req.params.from === "organisation"
+        ? `/access-requests/${req.params.rid}/${req.params.from}/review`
+        : `/access-requests/${req.params.rid}/review`,
     reason: req.body.reason,
     request,
     validationMessages: {},
   };
   if (model.reason.length > 1000) {
-    model.validationMessages.reason = 'Reason cannot be longer than 1000 characters';
+    model.validationMessages.reason =
+      "Reason cannot be longer than 1000 characters";
   } else if (model.request.approverEmail) {
     model.validationMessages.reason = `Request already actioned by ${model.request.approverEmail}`;
   }
@@ -43,29 +50,47 @@ const post = async (req, res) => {
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    return res.render('accessRequests/views/rejectOrganisationRequest', model);
+    return res.render("accessRequests/views/rejectOrganisationRequest", model);
   }
   // patch request with rejection
   const actionedDate = Date.now();
-  await updateRequestById(model.request.id, -1, req.user.sub, model.reason, actionedDate, req.id);
+  await updateRequestById(
+    model.request.id,
+    -1,
+    req.user.sub,
+    model.reason,
+    actionedDate,
+    req.id,
+  );
 
   //send rejected email
-  await notificationClient.sendAccessRequest(model.request.usersEmail, model.request.usersName, model.request.org_name, false, model.reason);
+  await notificationClient.sendAccessRequest(
+    model.request.usersEmail,
+    model.request.usersName,
+    model.request.org_name,
+    false,
+    model.reason,
+  );
 
   //audit organisation rejected
-  logger.audit(`${req.user.email} (id: ${req.user.sub}) rejected organisation request for ${model.request.org_id})`, {
-    type: 'approver',
-    subType: 'rejected-org',
-    userId: req.user.sub,
-    editedUser: model.request.user_id,
-    reason: model.reason,
-  });
+  logger.audit(
+    `${req.user.email} (id: ${req.user.sub}) rejected organisation request for ${model.request.org_id})`,
+    {
+      type: "approver",
+      subType: "rejected-org",
+      userId: req.user.sub,
+      editedUser: model.request.user_id,
+      reason: model.reason,
+    },
+  );
 
-  res.flash('info', `Request rejected - an email has been sent to ${model.request.usersEmail}.`);
-  if (model.requestFrom && model.requestFrom === 'organisation')
+  res.flash(
+    "info",
+    `Request rejected - an email has been sent to ${model.request.usersEmail}.`,
+  );
+  if (model.requestFrom && model.requestFrom === "organisation")
     return res.redirect(`/users/${model.request.user_id}/organisations`);
-  else
-    return res.redirect('/access-requests');
+  else return res.redirect("/access-requests");
 };
 
 module.exports = {

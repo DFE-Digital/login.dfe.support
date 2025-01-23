@@ -1,14 +1,19 @@
-const { sendResult, mapUserStatus } = require('./../../infrastructure/utils');
-const { getUserDetailsById } = require('./utils');
-const { dateFormat } = require('../helpers/dateFormatterHelper');
-const { getPageOfUserAudits, cache } = require('./../../infrastructure/audit');
-const logger = require('./../../infrastructure/logger');
-const { getServiceIdForClientId } = require('./../../infrastructure/serviceMapping');
-const { getServiceById } = require('./../../infrastructure/applications');
-const { getOrganisationById, getUserOrganisations } = require('./../../infrastructure/organisations');
+const { sendResult, mapUserStatus } = require("./../../infrastructure/utils");
+const { getUserDetailsById } = require("./utils");
+const { dateFormat } = require("../helpers/dateFormatterHelper");
+const { getPageOfUserAudits, cache } = require("./../../infrastructure/audit");
+const logger = require("./../../infrastructure/logger");
+const {
+  getServiceIdForClientId,
+} = require("./../../infrastructure/serviceMapping");
+const { getServiceById } = require("./../../infrastructure/applications");
+const {
+  getOrganisationById,
+  getUserOrganisations,
+} = require("./../../infrastructure/organisations");
 
 let cachedServiceIds = {};
-let cachedServices  = {};
+let cachedServices = {};
 let cachedUsers = {};
 
 const getCachedUserById = async (userId, reqId) => {
@@ -21,80 +26,89 @@ const getCachedUserById = async (userId, reqId) => {
 };
 
 const describeAuditEvent = async (audit, req) => {
-  const isCurrentUser = audit.userId.toLowerCase() === req.params.uid.toLowerCase();
+  const isCurrentUser =
+    audit.userId.toLowerCase() === req.params.uid.toLowerCase();
 
-  if (audit.type === 'sign-in') {
-    let description = 'Sign-in';
+  if (audit.type === "sign-in") {
+    let description = "Sign-in";
     switch (audit.subType) {
-      case 'username-password':
-        description += ' using email address and password';
+      case "username-password":
+        description += " using email address and password";
         break;
-      case 'digipass':
-        description += ' using a digipass key fob';
+      case "digipass":
+        description += " using a digipass key fob";
         break;
     }
     return description;
   }
 
-  if (audit.type === 'Sign-out') {
+  if (audit.type === "Sign-out") {
     return audit.type;
   }
 
-  if (audit.type === 'support' && audit.subType === 'user-edit') {
-    const viewedUser = audit.editedUser ? await getCachedUserById(audit.editedUser, req.id) : '';
-    const editedStatusTo = audit.editedFields && audit.editedFields.find(x => x.name === 'status');
+  if (audit.type === "support" && audit.subType === "user-edit") {
+    const viewedUser = audit.editedUser
+      ? await getCachedUserById(audit.editedUser, req.id)
+      : "";
+    const editedStatusTo =
+      audit.editedFields && audit.editedFields.find((x) => x.name === "status");
     if (editedStatusTo && editedStatusTo.newValue === 0) {
       const newStatus = mapUserStatus(editedStatusTo.newValue);
-      const reason = audit.reason ? audit.reason : 'no reason given';
-      return isCurrentUser ? `${newStatus.description} user: ${viewedUser.firstName} ${viewedUser.lastName} (reason: ${reason})`
-        : ` Account ${newStatus.description} (reason: ${reason})`
+      const reason = audit.reason ? audit.reason : "no reason given";
+      return isCurrentUser
+        ? `${newStatus.description} user: ${viewedUser.firstName} ${viewedUser.lastName} (reason: ${reason})`
+        : ` Account ${newStatus.description} (reason: ${reason})`;
     }
     if (editedStatusTo && editedStatusTo.newValue === 1) {
-      return isCurrentUser ? `Reactivated user: ${viewedUser.firstName} ${viewedUser.lastName}` : `Account Reactivated`
+      return isCurrentUser
+        ? `Reactivated user: ${viewedUser.firstName} ${viewedUser.lastName}`
+        : `Account Reactivated`;
     }
     if (editedStatusTo) {
       const newStatus = mapUserStatus(editedStatusTo.newValue);
       return newStatus.description;
     }
-    return 'Edited user';
+    return "Edited user";
   }
 
-  if (audit.type === 'support' && audit.subType === 'user-view') {
-    const viewedUser = audit.viewedUser ?  await getCachedUserById(audit.viewedUser, req.id) : '';
+  if (audit.type === "support" && audit.subType === "user-view") {
+    const viewedUser = audit.viewedUser
+      ? await getCachedUserById(audit.viewedUser, req.id)
+      : "";
     return `Viewed user ${viewedUser.firstName} ${viewedUser.lastName}`;
   }
 
-  if (audit.type === 'support' && audit.subType === 'user-search') {
+  if (audit.type === "support" && audit.subType === "user-search") {
     return `Searched for users using criteria "${audit.criteria}"`;
   }
 
-  if (audit.type === 'change-email' && audit.success) {
-    return 'Changed email';
+  if (audit.type === "change-email" && audit.success) {
+    return "Changed email";
   }
 
-  if (audit.type === 'change-password') {
+  if (audit.type === "change-password") {
     switch (audit.subType) {
-      case 'incorrect-password':
-        return 'Incorrect current password';
-      case 'password-validation':
-        return 'Password validation failed';
+      case "incorrect-password":
+        return "Incorrect current password";
+      case "password-validation":
+        return "Password validation failed";
       default:
         break;
     }
 
-    return 'Password changed';
+    return "Password changed";
   }
 
-  if (audit.type === 'support' && audit.subType === 'user-invited') {
-    return 'User invite sent from support console.';
+  if (audit.type === "support" && audit.subType === "user-invited") {
+    return "User invite sent from support console.";
   }
 
-  if (audit.subType === 'invite-created') {
+  if (audit.subType === "invite-created") {
     switch (audit.type) {
-      case 'approver':
-        return 'Services/Invitation code created and sent.';
-      case 'support':
-        return 'Support/Invitation code created and sent.';
+      case "approver":
+        return "Services/Invitation code created and sent.";
+      case "support":
+        return "Support/Invitation code created and sent.";
       default:
         break;
     }
@@ -102,46 +116,65 @@ const describeAuditEvent = async (audit, req) => {
     return audit.type;
   }
 
-  if (audit.type === 'approver' && audit.subType === 'user-invited') {
-    return 'User invite sent from Manage users (Services console).';
+  if (audit.type === "approver" && audit.subType === "user-invited") {
+    return "User invite sent from Manage users (Services console).";
   }
 
-  if (audit.type === 'reset-password') {
-    return 'Reset password';
+  if (audit.type === "reset-password") {
+    return "Reset password";
   }
 
-  if (audit.type === 'change-name') {
-    return 'Changed name'
+  if (audit.type === "change-name") {
+    return "Changed name";
   }
 
-  if (audit.type === 'support' && audit.subType === 'user-org-deleted') {
-    const organisationId = audit.editedFields && audit.editedFields.find(x => x.name === 'new_organisation');
-    const organisation = await getOrganisationById(organisationId.oldValue, req.id);
+  if (audit.type === "support" && audit.subType === "user-org-deleted") {
+    const organisationId =
+      audit.editedFields &&
+      audit.editedFields.find((x) => x.name === "new_organisation");
+    const organisation = await getOrganisationById(
+      organisationId.oldValue,
+      req.id,
+    );
     const viewedUser = await getCachedUserById(audit.editedUser, req.id);
     return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
-      numericIdentifier: ${audit['numericIdentifier']}, textIdentifier: ${audit['textIdentifier']})`
+      numericIdentifier: ${audit["numericIdentifier"]}, textIdentifier: ${audit["textIdentifier"]})`;
   }
-  if (audit.type === 'support' && audit.subType === 'user-org') {
-    const organisationId = audit.editedFields && audit.editedFields.find(x => x.name === 'new_organisation');
+  if (audit.type === "support" && audit.subType === "user-org") {
+    const organisationId =
+      audit.editedFields &&
+      audit.editedFields.find((x) => x.name === "new_organisation");
     const organisation = await getOrganisationById(organisationId.newValue);
     const viewedUser = await getCachedUserById(audit.editedUser, req.id);
-    return `Added organisation: ${organisation.name} for user ${viewedUser.firstName} ${viewedUser.lastName}`
+    return `Added organisation: ${organisation.name} for user ${viewedUser.firstName} ${viewedUser.lastName}`;
   }
-  if (audit.type === 'support' && audit.subType === 'user-org-permission-edited') {
-    const editedFields = audit.editedFields && audit.editedFields.find(x => x.name === 'edited_permission');
+  if (
+    audit.type === "support" &&
+    audit.subType === "user-org-permission-edited"
+  ) {
+    const editedFields =
+      audit.editedFields &&
+      audit.editedFields.find((x) => x.name === "edited_permission");
     const viewedUser = await getCachedUserById(audit.editedUser, req.id);
-    return `Edited permission level to ${editedFields.newValue} for user ${viewedUser.firstName} ${viewedUser.lastName} in organisation ${editedFields.organisation}`
+    return `Edited permission level to ${editedFields.newValue} for user ${viewedUser.firstName} ${viewedUser.lastName} in organisation ${editedFields.organisation}`;
   }
-  if (audit.type === 'approver' && audit.subType === 'user-org-deleted') {
+  if (audit.type === "approver" && audit.subType === "user-org-deleted") {
     try {
       const metaData = audit?.meta ? JSON.parse(audit.meta) : audit;
-      const organisationId = metaData.editedFields && metaData.editedFields.find(x => x.name === 'new_organisation');
-      const organisation = await getOrganisationById(organisationId.oldValue, req.id);
+      const organisationId =
+        metaData.editedFields &&
+        metaData.editedFields.find((x) => x.name === "new_organisation");
+      const organisation = await getOrganisationById(
+        organisationId.oldValue,
+        req.id,
+      );
       // Escaping audit.editedUser double quotes bug
-      audit.editedUser = /["]/.test(audit.editedUser) ? audit.editedUser.replace(/[""]+/g, '') : audit.editedUser
+      audit.editedUser = /["]/.test(audit.editedUser)
+        ? audit.editedUser.replace(/[""]+/g, "")
+        : audit.editedUser;
       const viewedUser = await getCachedUserById(audit.editedUser, req.id);
       return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
-        numericIdentifier: ${audit['numericIdentifier']}, textIdentifier: ${audit['textIdentifier']})`
+        numericIdentifier: ${audit["numericIdentifier"]}, textIdentifier: ${audit["textIdentifier"]})`;
     } catch (e) {
       return audit.message;
     }
@@ -172,7 +205,9 @@ const getAudit = async (req, res) => {
   cachedUsers = {};
   const correlationId = req.id;
   const user = await getCachedUserById(req.params.uid, req.id);
-  user.formattedLastLogin = user.lastLogin ? dateFormat(user.lastLogin, 'longDateFormat') : '';
+  user.formattedLastLogin = user.lastLogin
+    ? dateFormat(user.lastLogin, "longDateFormat")
+    : "";
   const userOrganisations = await getUserOrganisations(req.params.uid, req.id);
   req.session.type = "audit";
   const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
@@ -197,13 +232,16 @@ const getAudit = async (req, res) => {
     }
     if (clientId) {
       // remove double quotes as new audit logger is adding them to string values
-      clientId = clientId.replace(/"/g, '');
+      clientId = clientId.replace(/"/g, "");
 
       const serviceId = await getCachedServiceIdForClientId(clientId);
       if (serviceId) {
         service = await getCachedServiceById(serviceId, req.id);
       } else {
-        logger.info(`User audit tab - No service mapping for client ${clientId} using client id`, { correlationId });
+        logger.info(
+          `User audit tab - No service mapping for client ${clientId} using client id`,
+          { correlationId },
+        );
         service = { name: clientId };
       }
     }
@@ -213,7 +251,9 @@ const getAudit = async (req, res) => {
 
     audits.push({
       timestamp: new Date(audit.timestamp),
-      formattedTimestamp: audit.timestamp ? dateFormat(audit.timestamp, "longDateFormat") : "",
+      formattedTimestamp: audit.timestamp
+        ? dateFormat(audit.timestamp, "longDateFormat")
+        : "",
       event: {
         type: audit.type,
         subType: audit.subType,
@@ -222,18 +262,21 @@ const getAudit = async (req, res) => {
       service,
       organisation,
       result: audit.success === undefined ? true : audit.success,
-      user: audit.userId.toLowerCase() === user.id.toLowerCase() ? user : await getCachedUserById(audit.userId.toUpperCase(), req.id),
+      user:
+        audit.userId.toLowerCase() === user.id.toLowerCase()
+          ? user
+          : await getCachedUserById(audit.userId.toUpperCase(), req.id),
     });
   }
 
-  sendResult(req, res, 'users/views/audit', {
+  sendResult(req, res, "users/views/audit", {
     csrfToken: req.csrfToken(),
     user,
     organisations: userOrganisations,
     audits,
     numberOfPages: pageOfAudits.numberOfPages,
     page: pageNumber,
-    totalNumberOfResults: pageOfAudits.numberOfRecords
+    totalNumberOfResults: pageOfAudits.numberOfRecords,
   });
 };
 

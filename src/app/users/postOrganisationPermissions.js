@@ -10,9 +10,11 @@ const validate = (req) => {
   };
 
   if (model.selectedLevel === undefined || model.selectedLevel === null) {
-    model.validationMessages.selectedLevel = 'Please select a permission level';
-  } else if (validPermissionLevels.find(x => x === model.selectedLevel) === undefined) {
-    model.validationMessages.selectedLevel = 'Please select a permission level';
+    model.validationMessages.selectedLevel = "Please select a permission level";
+  } else if (
+    validPermissionLevels.find((x) => x === model.selectedLevel) === undefined
+  ) {
+    model.validationMessages.selectedLevel = "Please select a permission level";
   }
 
   return model;
@@ -23,11 +25,13 @@ const postOrganisationPermissions = async (req, res) => {
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    return res.render('users/views/organisationPermissions', model);
+    return res.render("users/views/organisationPermissions", model);
   }
 
   req.session.user.permission = model.selectedLevel;
-  return res.redirect(req.params.uid ? 'confirm-associate-organisation' : 'confirm-new-user');
+  return res.redirect(
+    req.params.uid ? "confirm-associate-organisation" : "confirm-new-user",
+  );
 };
 
 module.exports = postOrganisationPermissions;

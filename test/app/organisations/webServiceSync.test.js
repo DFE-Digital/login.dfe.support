@@ -1,51 +1,62 @@
-jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
-jest.mock('./../../../src/infrastructure/utils');
-jest.mock('./../../../src/infrastructure/organisations');
-jest.mock('login.dfe.jobs-client');
-jest.mock('../../../src/app/organisations/wsSynchFunCall')
+jest.mock("./../../../src/infrastructure/config", () =>
+  require("./../../utils").configMockFactory(),
+);
+jest.mock("./../../../src/infrastructure/utils");
+jest.mock("./../../../src/infrastructure/organisations");
+jest.mock("login.dfe.jobs-client");
+jest.mock("../../../src/app/organisations/wsSynchFunCall");
 
-const { getRequestMock, getResponseMock } = require('./../../utils');
-const { sendResult } = require('./../../../src/infrastructure/utils');
-const { getOrganisationByIdV2 } = require('./../../../src/infrastructure/organisations');
-const { ServiceNotificationsClient } = require('login.dfe.jobs-client');
-const webServiceSync = require('./../../../src/app/organisations/webServiceSync');
+const { getRequestMock, getResponseMock } = require("./../../utils");
+const { sendResult } = require("./../../../src/infrastructure/utils");
+const {
+  getOrganisationByIdV2,
+} = require("./../../../src/infrastructure/organisations");
+const { ServiceNotificationsClient } = require("login.dfe.jobs-client");
+const webServiceSync = require("./../../../src/app/organisations/webServiceSync");
 
 const res = getResponseMock();
-const orgResult = { id: 'org-1', name: 'organisation one' };
+const orgResult = { id: "org-1", name: "organisation one" };
 const serviceNotificationsClient = {
   notifyOrganisationUpdated: jest.fn(),
 };
 
-describe('when syncing organisation for sync', function () {
+describe("when syncing organisation for sync", function () {
   let req;
 
   beforeEach(() => {
     getOrganisationByIdV2.mockReset().mockReturnValue(orgResult);
 
     serviceNotificationsClient.notifyOrganisationUpdated.mockReset();
-    ServiceNotificationsClient.mockReset().mockImplementation(() => serviceNotificationsClient);
+    ServiceNotificationsClient.mockReset().mockImplementation(
+      () => serviceNotificationsClient,
+    );
 
     req = getRequestMock({
       params: {
-        id: 'org-1',
+        id: "org-1",
       },
     });
     res.mockResetAll();
   });
 
-  it('then it should prompt for confirmation with organisation details', async () => {
+  it("then it should prompt for confirmation with organisation details", async () => {
     await webServiceSync.get(req, res);
 
     expect(sendResult).toHaveBeenCalledTimes(1);
-    expect(sendResult).toHaveBeenCalledWith(req, res, 'organisations/views/webServiceSync', {
-      csrfToken: req.csrfToken(),
-      organisation: orgResult,
-    });
+    expect(sendResult).toHaveBeenCalledWith(
+      req,
+      res,
+      "organisations/views/webServiceSync",
+      {
+        csrfToken: req.csrfToken(),
+        organisation: orgResult,
+      },
+    );
   });
 
   // Functionality removed as part of feature/PIM-2461 - PR #426
 
-/*  it('then it should queue organisation for sync on confirmation', async () => {
+  /*  it('then it should queue organisation for sync on confirmation', async () => {
     await webServiceSync.post(req, res);
 
     expect(serviceNotificationsClient.notifyOrganisationUpdated).toHaveBeenCalledTimes(1);
@@ -60,10 +71,10 @@ describe('when syncing organisation for sync', function () {
   });
   */
 
-  it('then it should redirect to organisation details page on confirmation', async () => {
+  it("then it should redirect to organisation details page on confirmation", async () => {
     await webServiceSync.post(req, res);
 
     expect(res.redirect).toHaveBeenCalledTimes(1);
-    expect(res.redirect).toHaveBeenCalledWith('/organisations/org-1/users');
+    expect(res.redirect).toHaveBeenCalledWith("/organisations/org-1/users");
   });
 });

@@ -1,8 +1,8 @@
-version: '3.4'
+version: "3.4"
 
 services:
   redis-server:
-    image: 'redis'
+    image: "redis"
     environment:
       NODE_ENV: development
     ports:
@@ -15,8 +15,8 @@ services:
     environment:
       NODE_ENV: development
       settings: ./config/login.dfe.support.local.json
-      localAddress: 'redis-server'
-      ENVIRONMENT_ID: 'd01'
+      localAddress: "redis-server"
+      ENVIRONMENT_ID: "d01"
     ports:
       - 41020:41020
       - 9229:9229

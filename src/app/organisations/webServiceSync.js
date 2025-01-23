@@ -1,11 +1,11 @@
-const { sendResult } = require('../../infrastructure/utils');
-const { getOrganisationByIdV2 } = require('../../infrastructure/organisations');
-const { wsSyncCall } = require('./wsSynchFunCall');
+const { sendResult } = require("../../infrastructure/utils");
+const { getOrganisationByIdV2 } = require("../../infrastructure/organisations");
+const { wsSyncCall } = require("./wsSynchFunCall");
 
 const get = async (req, res) => {
   const organisation = await getOrganisationByIdV2(req.params.id, req.id);
 
-  sendResult(req, res, 'organisations/views/webServiceSync', {
+  sendResult(req, res, "organisations/views/webServiceSync", {
     csrfToken: req.csrfToken(),
     organisation: organisation,
   });
