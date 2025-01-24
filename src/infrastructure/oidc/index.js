@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const passport = require("passport");
 const { Strategy, Issuer, custom } = require("openid-client");
 const asyncRetry = require("login.dfe.async-retry");

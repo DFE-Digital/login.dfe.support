@@ -1,4 +1,3 @@
-"use strict";
 const { sendResult } = require("./../../infrastructure/utils");
 const { getById, putUserInOrganisation } = require("./utils");
 

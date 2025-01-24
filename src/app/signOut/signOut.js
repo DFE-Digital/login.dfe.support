@@ -1,7 +1,3 @@
-"use strict";
-
-/* eslint-disable no-underscore-dangle */
-
 const url = require("url");
 const passport = require("passport");
 const config = require("../../infrastructure/config");

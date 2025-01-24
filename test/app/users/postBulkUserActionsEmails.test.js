@@ -218,12 +218,10 @@ describe("When processing a post for the bulk user actions emails request for in
     };
 
     searchForBulkUsersPage.mockReset().mockReturnValue(userSearchResult);
-    getUserDetailsById
-      .mockReset()
-      .mockReturnValue({
-        id: "inv-34080a9c-fd79-45a6-a092-4756264d5c85",
-        status: { id: -1 },
-      });
+    getUserDetailsById.mockReset().mockReturnValue({
+      id: "inv-34080a9c-fd79-45a6-a092-4756264d5c85",
+      status: { id: -1 },
+    });
   });
 
   it("redirects to the /users page on success when an invited user is ticked", async () => {

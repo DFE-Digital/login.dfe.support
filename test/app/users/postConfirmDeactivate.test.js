@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );

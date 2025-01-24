@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 const { emailPolicy } = require("login.dfe.validation");
 const { sendResult } = require("../../infrastructure/utils");
 const logger = require("../../infrastructure/logger");

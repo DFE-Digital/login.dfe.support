@@ -1,5 +1,3 @@
-"use strict";
-
 const {
   getUserOrganisationsV2,
   getInvitationOrganisations,

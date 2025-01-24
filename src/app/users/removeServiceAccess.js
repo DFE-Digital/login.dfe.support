@@ -1,5 +1,3 @@
-"use strict";
-
 const { NotificationClient } = require("login.dfe.jobs-client");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");

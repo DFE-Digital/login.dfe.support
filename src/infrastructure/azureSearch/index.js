@@ -1,5 +1,3 @@
-"use strict";
-
 const config = require("./../config");
 const { fetchApi } = require("login.dfe.async-retry");
 

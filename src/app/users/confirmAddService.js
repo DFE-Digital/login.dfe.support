@@ -1,5 +1,3 @@
-"use strict";
-
 const { NotificationClient } = require("login.dfe.jobs-client");
 const { get: getSafePath } = require("lodash");
 const {

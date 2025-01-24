@@ -1,5 +1,3 @@
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-restricted-syntax */
 const { sendResult } = require("../../infrastructure/utils");
 const {
   deactivate,
@@ -107,7 +105,6 @@ const postBulkUserActionsEmails = async (req, res) => {
   // Get all the inputs and figure out which users were ticked
   const tickedUsers = Object.keys(reqBody).filter((v) => v.startsWith("user-"));
 
-  // eslint-disable-next-line no-restricted-syntax
   for (const tickedUser of tickedUsers) {
     const userId = reqBody[tickedUser];
     if (isDeactivateTicked) {

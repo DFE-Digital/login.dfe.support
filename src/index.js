@@ -178,7 +178,7 @@ const init = async () => {
 
   const { doubleCsrfProtection: csrf } = doubleCsrf({
     getSecret: (req) => req.secret,
-    // eslint-disable-next-line no-underscore-dangle
+
     getTokenFromRequest: (req) => req.body._csrf,
     secret: config.hostingEnvironment.csrfSecret,
     cookieName: "__host-csrf",

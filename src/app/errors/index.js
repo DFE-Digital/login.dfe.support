@@ -1,5 +1,3 @@
-"use strict";
-
 const express = require("express");
 const { asyncWrapper } = require("login.dfe.express-error-handling");
 const logger = require("../../infrastructure/logger");

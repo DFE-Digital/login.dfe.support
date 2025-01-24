@@ -1,4 +1,3 @@
-"use strict";
 const _ = require("lodash");
 const config = require("./../../infrastructure/config");
 const { getServiceById } = require("./../../infrastructure/applications");

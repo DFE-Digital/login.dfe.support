@@ -55,11 +55,9 @@ describe("When processing a user search request", () => {
         },
       };
 
-      req.session = jest
-        .fn()
-        .mockReturnValue({
-          params: { ...req.query, redirectedFromOrganisations: true },
-        });
+      req.session = jest.fn().mockReturnValue({
+        params: { ...req.query, redirectedFromOrganisations: true },
+      });
     });
 
     test("then it should include the users from the adapter if criteria is supplied", async () => {
@@ -210,11 +208,9 @@ describe("When processing a user search request", () => {
           email: "user.one@unit.test",
         },
       };
-      req.session = jest
-        .fn()
-        .mockReturnValue({
-          params: { ...req.query, redirectedFromOrganisations: true },
-        });
+      req.session = jest.fn().mockReturnValue({
+        params: { ...req.query, redirectedFromOrganisations: true },
+      });
     });
 
     test("then it should include the users from the adapter using supplier criteria", async () => {

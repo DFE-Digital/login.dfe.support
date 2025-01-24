@@ -1,5 +1,3 @@
-"use strict";
-
 const express = require("express");
 const { isLoggedIn } = require("../../infrastructure/utils");
 const logger = require("../../infrastructure/logger");

@@ -1,5 +1,3 @@
-"use strict";
-
 const Redis = require("ioredis");
 const config = require("./../config");
 const { v4: uuid } = require("uuid");
