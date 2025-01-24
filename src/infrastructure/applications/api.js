@@ -1,9 +1,9 @@
-const config = require('./../config');
+const config = require("./../config");
 
-const { fetchApi } = require('login.dfe.async-retry');
-const jwtStrategy = require('login.dfe.jwt-strategies');
+const { fetchApi } = require("login.dfe.async-retry");
+const jwtStrategy = require("login.dfe.jwt-strategies");
 
-const supportTogglePath = '/constants/toggleflags/email/support';
+const supportTogglePath = "/constants/toggleflags/email/support";
 
 const getServiceById = async (id) => {
   if (!id) {
@@ -11,12 +11,15 @@ const getServiceById = async (id) => {
   }
   const token = await jwtStrategy(config.applications.service).getBearerToken();
   try {
-    const client = await fetchApi(`${config.applications.service.url}/services/${id}`, {
-      method: 'GET',
-      headers: {
-        authorization: `bearer ${token}`,
+    const client = await fetchApi(
+      `${config.applications.service.url}/services/${id}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: `bearer ${token}`,
+        },
       },
-    });
+    );
     return client;
   } catch (e) {
     if (e.statusCode === 404) {
@@ -30,12 +33,15 @@ const getPageOfService = async (pageNumber, pageSize) => {
   const token = await jwtStrategy(config.applications.service).getBearerToken();
 
   try {
-    const client = await fetchApi(`${config.applications.service.url}/services?page=${pageNumber}&pageSize=${pageSize}`, {
-      method: 'GET',
-      headers: {
-        authorization: `bearer ${token}`,
+    const client = await fetchApi(
+      `${config.applications.service.url}/services?page=${pageNumber}&pageSize=${pageSize}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: `bearer ${token}`,
+        },
       },
-    });
+    );
     return client;
   } catch (e) {
     if (e.statusCode === 404) {
@@ -66,7 +72,7 @@ const getEmailToggleFlag = async (params) => {
   const token = await jwtStrategy(config.applications.service).getBearerToken();
   try {
     return await fetchApi(`${config.applications.service.url}${params}`, {
-      method: 'GET',
+      method: "GET",
       headers: {
         authorization: `bearer ${token}`,
       },

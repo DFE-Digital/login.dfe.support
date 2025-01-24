@@ -1,7 +1,7 @@
 const getAssociateOrganisation = async (req, res) => {
-  res.render('users/views/associateOrganisation', {
+  res.render("users/views/associateOrganisation", {
     csrfToken: req.csrfToken(),
-    criteria: '',
+    criteria: "",
     results: undefined,
     page: 1,
     numberOfPages: 1,

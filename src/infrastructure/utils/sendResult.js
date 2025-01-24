@@ -1,11 +1,9 @@
 const mapMimeType = (mimeType) => {
   switch (mimeType.toLowerCase()) {
-    case 'application/json':
-      return 'json';
-      break;
-    case 'text/html':
-      return 'html';
-      break;
+    case "application/json":
+      return "json";
+    case "text/html":
+      return "html";
   }
   return undefined;
 };
@@ -23,11 +21,11 @@ const sendResult = (req, res, viewName, data) => {
   }
 
   if (!renderType) {
-    renderType = 'html';
+    renderType = "html";
   }
 
-  if (renderType === 'json') {
-    return res.contentType('json').send(JSON.stringify(data));
+  if (renderType === "json") {
+    return res.contentType("json").send(JSON.stringify(data));
   }
   return res.render(viewName, data);
 };

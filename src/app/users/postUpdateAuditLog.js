@@ -1,4 +1,4 @@
-const { api } = require('./../../infrastructure/audit');
+const { api } = require("./../../infrastructure/audit");
 
 const postUpdateAuditLog = async (req, res) => {
   await api.updateAuditLogs();

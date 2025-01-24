@@ -1,34 +1,37 @@
 const users = [
   {
-    id: 'fef763fe-0413-4ffc-a6e2-4dc0cc168991',
-    name: 'Wade Wilson',
-    email: 'deadpool@x-force.test',
+    id: "fef763fe-0413-4ffc-a6e2-4dc0cc168991",
+    name: "Wade Wilson",
+    email: "deadpool@x-force.test",
     organisation: {
-      name: 'X-Force'
+      name: "X-Force",
     },
     lastLogin: new Date(2018, 0, 11, 11, 30, 57),
     status: {
-      description: 'Active'
-    }
+      description: "Active",
+    },
   },
   {
-    id: '89de4e03-7114-4761-8de3-b38112932343',
-    name: 'Frank Castle',
-    email: 'punisher@forcerecon.test',
+    id: "89de4e03-7114-4761-8de3-b38112932343",
+    name: "Frank Castle",
+    email: "punisher@forcerecon.test",
     organisation: {
-      name: 'Force Recon'
+      name: "Force Recon",
     },
     lastLogin: new Date(2018, 0, 11, 12, 15, 0),
     status: {
-      description: 'Active'
-    }
+      description: "Active",
+    },
   },
 ];
 
-const search = async (criteria, pageNumber) => {
-  const results = users.filter(u => u.name.toLowerCase().indexOf(criteria.toLowerCase()) > -1
-    || u.email.toLowerCase().indexOf(criteria.toLowerCase()) > -1
-    || u.organisation.name.toLowerCase().indexOf(criteria.toLowerCase()) > -1);
+const search = async (criteria) => {
+  const results = users.filter(
+    (u) =>
+      u.name.toLowerCase().indexOf(criteria.toLowerCase()) > -1 ||
+      u.email.toLowerCase().indexOf(criteria.toLowerCase()) > -1 ||
+      u.organisation.name.toLowerCase().indexOf(criteria.toLowerCase()) > -1,
+  );
   return Promise.resolve({
     users: results.sort((x, y) => {
       if (x < y) {
@@ -44,22 +47,22 @@ const search = async (criteria, pageNumber) => {
 };
 
 const getById = async (userId) => {
-  return users.find(x => x.id === userId);
+  return users.find((x) => x.id === userId);
 };
 
 const getExistingIndex = async () => {
-  return Promise.resolve('existing');
+  return Promise.resolve("existing");
 };
 
 const createIndex = async () => {
-  return Promise.resolve('new');
+  return Promise.resolve("new");
 };
 
-const updateIndex = async (users, index) => {
+const updateIndex = async () => {
   return Promise.resolve(null);
 };
 
-const updateActiveIndex = async (index) => {
+const updateActiveIndex = async () => {
   return Promise.resolve(null);
 };
 
@@ -71,7 +74,7 @@ const getDateOfLastIndexUpdate = async () => {
   return Promise.resolve(undefined);
 };
 
-const setDateOfLastIndexUpdate = async (date) => {
+const setDateOfLastIndexUpdate = async () => {
   return Promise.resolve();
 };
 

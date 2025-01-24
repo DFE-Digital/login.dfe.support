@@ -1,8 +1,6 @@
-'use strict';
-
 const complete = (req, res) => {
-  res.render('signOut/views/complete', {
-    hideSignOut: true
+  res.render("signOut/views/complete", {
+    hideSignOut: true,
   });
 };
 

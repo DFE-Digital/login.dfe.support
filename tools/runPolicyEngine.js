@@ -1,10 +1,19 @@
-const config = require('./../src/infrastructure/config');
-const PolicyEngine = require('login.dfe.policy-engine');
+const config = require("./../src/infrastructure/config");
+const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = new PolicyEngine(config);
-const { getAllServices } = require('./../src/infrastructure/applications');
+const { getAllServices } = require("./../src/infrastructure/applications");
 
-const getPolicyApplicationResult = async (userId, organisationId, serviceId) => {
-  const policyEngineResult = await policyEngine.getPolicyApplicationResultsForUser(userId.startsWith('inv-') ? undefined : userId, organisationId, serviceId);
+const getPolicyApplicationResult = async (
+  userId,
+  organisationId,
+  serviceId,
+) => {
+  const policyEngineResult =
+    await policyEngine.getPolicyApplicationResultsForUser(
+      userId.startsWith("inv-") ? undefined : userId,
+      organisationId,
+      serviceId,
+    );
   return policyEngineResult.rolesAvailableToUser;
 };
 
@@ -15,10 +24,14 @@ const getPolicyApplicationForService = async () => {
   const serviceId = process.argv[4];
 
   if (!userId || !organisationId || !serviceId) {
-    console.info('missing params');
+    console.info("missing params");
     process.exit();
   }
-  const policyResult = await getPolicyApplicationResult(userId, organisationId, serviceId);
+  const policyResult = await getPolicyApplicationResult(
+    userId,
+    organisationId,
+    serviceId,
+  );
   console.info(policyResult);
 };
 
@@ -30,15 +43,20 @@ const getPolicyApplicationForServices = async () => {
   const allServices = await getAllServices();
   const servicesNotAvailableThroughPolicies = [];
   for (let i = 0; i < allServices.services.length; i++) {
-    const policyResult = await policyEngine.getPolicyApplicationResultsForUser((!userId || userId.startsWith('inv-')) ? undefined : userId , organisationId, allServices.services[i].id);
+    const policyResult = await policyEngine.getPolicyApplicationResultsForUser(
+      !userId || userId.startsWith("inv-") ? undefined : userId,
+      organisationId,
+      allServices.services[i].id,
+    );
     if (!policyResult.serviceAvailableToUser) {
       servicesNotAvailableThroughPolicies.push(allServices.services[i].id);
     }
   }
-  const availableServices = allServices.services.filter(x => !servicesNotAvailableThroughPolicies.find(y => x.id === y));
-  console.info(availableServices)
+  const availableServices = allServices.services.filter(
+    (x) => !servicesNotAvailableThroughPolicies.find((y) => x.id === y),
+  );
+  console.info(availableServices);
 };
-
 
 const run = async () => {
   const start = Date.now();
@@ -54,6 +72,5 @@ const run = async () => {
   console.log("Call took: " + time + " milliseconds");
   process.exit(1);
 };
-
 
 run();

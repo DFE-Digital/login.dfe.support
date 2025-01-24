@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize');
-const config = require('./../config');
+const Sequelize = require("sequelize");
+const config = require("./../config");
 const Op = Sequelize.Op;
 
 const getIntValueOrDefault = (value, defaultValue = 0) => {
@@ -21,7 +21,7 @@ const dbOpts = {
       /SequelizeConnectionTimedOutError/,
       /TimeoutError/,
     ],
-    name: 'query',
+    name: "query",
     backoffBase: 100,
     backoffExponent: 1.1,
     timeout: 60000,
@@ -31,7 +31,7 @@ const dbOpts = {
   dialect: config.audit.params.dialect,
   operatorsAliases: Op,
   dialectOptions: {
-      encrypt: config.audit.params.encrypt || true,
+    encrypt: config.audit.params.encrypt || true,
   },
   logging: false,
 };
@@ -43,45 +43,57 @@ if (config.audit.params.pool) {
     idle: getIntValueOrDefault(config.audit.params.pool.idle, 10000),
   };
 }
-const db = new Sequelize(config.audit.params.name, config.audit.params.username, config.audit.params.password, dbOpts);
+const db = new Sequelize(
+  config.audit.params.name,
+  config.audit.params.username,
+  config.audit.params.password,
+  dbOpts,
+);
 
-const logs = db.define('AuditLogs', {
-  id: {
-    type: Sequelize.UUID,
-    primaryKey: true,
-    allowNull: false,
+const logs = db.define(
+  "AuditLogs",
+  {
+    id: {
+      type: Sequelize.UUID,
+      primaryKey: true,
+      allowNull: false,
+    },
+    level: Sequelize.STRING,
+    message: Sequelize.STRING,
+    application: Sequelize.STRING,
+    environment: Sequelize.STRING,
+    type: Sequelize.STRING,
+    subType: Sequelize.STRING,
+    userId: Sequelize.UUID,
+    organisationId: Sequelize.UUID,
   },
-  level: Sequelize.STRING,
-  message: Sequelize.STRING,
-  application: Sequelize.STRING,
-  environment: Sequelize.STRING,
-  type: Sequelize.STRING,
-  subType: Sequelize.STRING,
-  userId: Sequelize.UUID,
-  organisationId: Sequelize.UUID,
-}, {
-  timestamps: true,
-  tableName: 'AuditLogs',
-  schema: 'dbo',
-});
-
-const meta = db.define('AuditLogMeta', {
-  id: {
-    type: Sequelize.UUID,
-    primaryKey: true,
-    allowNull: false,
+  {
+    timestamps: true,
+    tableName: "AuditLogs",
+    schema: "dbo",
   },
-  key: Sequelize.STRING,
-  value: Sequelize.STRING,
-}, {
-  timestamps: false,
-  tableName: 'AuditLogMeta',
-  schema: 'dbo',
-});
-meta.belongsTo(logs, { as: 'auditLog', foreignKey: 'auditId' });
+);
 
+const meta = db.define(
+  "AuditLogMeta",
+  {
+    id: {
+      type: Sequelize.UUID,
+      primaryKey: true,
+      allowNull: false,
+    },
+    key: Sequelize.STRING,
+    value: Sequelize.STRING,
+  },
+  {
+    timestamps: false,
+    tableName: "AuditLogMeta",
+    schema: "dbo",
+  },
+);
+meta.belongsTo(logs, { as: "auditLog", foreignKey: "auditId" });
 
-logs.hasMany(meta, { as: 'metaData', foreignKey: 'auditId' });
+logs.hasMany(meta, { as: "metaData", foreignKey: "auditId" });
 
 module.exports = {
   db,

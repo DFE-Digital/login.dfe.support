@@ -1,86 +1,102 @@
-jest.mock('ioredis', () => jest.fn().mockImplementation(() => {}));
-jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory({
-  cache: {
-    params: {
-      indexPointerConnectionString: 'redis://localhost',
-      serviceName: 'test-search',
-      apiKey: 'some-key',
+jest.mock("ioredis", () => jest.fn().mockImplementation(() => {}));
+jest.mock("./../../../src/infrastructure/config", () =>
+  require("./../../utils").configMockFactory({
+    cache: {
+      params: {
+        indexPointerConnectionString: "redis://localhost",
+        serviceName: "test-search",
+        apiKey: "some-key",
+      },
     },
-  },
-}));
+  }),
+);
 
-jest.mock('login.dfe.async-retry');
-jest.mock('uuid', () => ({v4: jest.fn().mockReturnValue('some-uuid')}));
+jest.mock("login.dfe.async-retry");
+jest.mock("uuid", () => ({ v4: jest.fn().mockReturnValue("some-uuid") }));
 
-const {fetchApi} = require('login.dfe.async-retry');
+const { fetchApi } = require("login.dfe.async-retry");
 
-describe('When deleting unused indexes from Azure Search', () => {
+describe("When deleting unused indexes from Azure Search", () => {
   let deleteUnusedIndexes;
 
   beforeEach(() => {
     // jest.resetModules();
-    jest.doMock('ioredis', () => jest.fn().mockImplementation(() => {
-      const RedisMock = require('ioredis-mock').default;
-      const redisMock = new RedisMock();
-      redisMock.set('CurrentIndex_AccessRequests', 'accessrequests-58457890-ba74-49ae-86eb-b4a144649805');
-      redisMock.set('UnusedIndexes_AccessRequests', '["accessrequests-4771d85e-f3ef-4e71-82ca-30f0663b10c9"]');
-      return redisMock;
-    }));
+    jest.doMock("ioredis", () =>
+      jest.fn().mockImplementation(() => {
+        const RedisMock = require("ioredis-mock").default;
+        const redisMock = new RedisMock();
+        redisMock.set(
+          "CurrentIndex_AccessRequests",
+          "accessrequests-58457890-ba74-49ae-86eb-b4a144649805",
+        );
+        redisMock.set(
+          "UnusedIndexes_AccessRequests",
+          '["accessrequests-4771d85e-f3ef-4e71-82ca-30f0663b10c9"]',
+        );
+        return redisMock;
+      }),
+    );
 
     fetchApi.mockReset();
     fetchApi.mockImplementation((_, opts) => {
-      if (opts.method === 'GET') {
+      if (opts.method === "GET") {
         return {
-          "@odata.context": "https://test-search.search.windows.net/$metadata#indexes",
-          "value": [
+          "@odata.context":
+            "https://test-search.search.windows.net/$metadata#indexes",
+          value: [
             {
-              "@odata.etag": "\"0x8D561869625D56C\"",
-              "name": "accessrequests-58457890-ba74-49ae-86eb-b4a144649805",
+              "@odata.etag": '"0x8D561869625D56C"',
+              name: "accessrequests-58457890-ba74-49ae-86eb-b4a144649805",
               /*other properties omitted*/
             },
             {
-              "@odata.etag": "\"0x8D561869625D56C\"",
-              "name": "accessrequests-4771d85e-f3ef-4e71-82ca-30f0663b10c9",
+              "@odata.etag": '"0x8D561869625D56C"',
+              name: "accessrequests-4771d85e-f3ef-4e71-82ca-30f0663b10c9",
               /*other properties omitted*/
             },
             {
-              "@odata.etag": "\"0x8D561869625D56C\"",
-              "name": "accessrequests-24b1f0da-7f82-48b0-9106-720135f9b051",
+              "@odata.etag": '"0x8D561869625D56C"',
+              name: "accessrequests-24b1f0da-7f82-48b0-9106-720135f9b051",
               /*other properties omitted*/
-            }
-          ]
-        }
+            },
+          ],
+        };
       }
     });
-    deleteUnusedIndexes = require('./../../../src/infrastructure/accessRequests/azureSearch').deleteUnusedIndexes;
+    deleteUnusedIndexes =
+      require("./../../../src/infrastructure/accessRequests/azureSearch").deleteUnusedIndexes;
   });
 
-  it('then it should delete access Requests in indexes marked as unused that are still not used', async () => {
+  it("then it should delete access Requests in indexes marked as unused that are still not used", async () => {
     await deleteUnusedIndexes();
 
-    expect(fetchApi.mock.calls[0][0]).toBe('https://test-search.search.windows.net/indexes/accessrequests-4771d85e-f3ef-4e71-82ca-30f0663b10c9?api-version=2016-09-01');
+    expect(fetchApi.mock.calls[0][0]).toBe(
+      "https://test-search.search.windows.net/indexes/accessrequests-4771d85e-f3ef-4e71-82ca-30f0663b10c9?api-version=2016-09-01",
+    );
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      method: 'DELETE'
+      method: "DELETE",
     });
   });
 
-  it('then it should not delete access Requests in indexes marked as unused that are now used', async () => {
+  it("then it should not delete access Requests in indexes marked as unused that are now used", async () => {
     await deleteUnusedIndexes();
 
     fetchApi.mock.calls.forEach((call) => {
-      expect(call[0]).not.toMatch(/indexes\/accessrequests-58457890-ba74-49ae-86eb-b4a144649805/);
+      expect(call[0]).not.toMatch(
+        /indexes\/accessrequests-58457890-ba74-49ae-86eb-b4a144649805/,
+      );
     });
   });
 
-  it('then it should mark any indexes that are not current as unused', async () => {
-    const ioRedis = require('ioredis');
+  it("then it should mark any indexes that are not current as unused", async () => {
+    const ioRedis = require("ioredis");
 
     await deleteUnusedIndexes();
 
     const mockRedis = ioRedis();
-    const actual = await mockRedis.get('UnusedIndexes_AccessRequests');
-    expect(actual).toBe(JSON.stringify([
-      'accessrequests-4771d85e-f3ef-4e71-82ca-30f0663b10c9',
-    ]));
+    const actual = await mockRedis.get("UnusedIndexes_AccessRequests");
+    expect(actual).toBe(
+      JSON.stringify(["accessrequests-4771d85e-f3ef-4e71-82ca-30f0663b10c9"]),
+    );
   });
 });

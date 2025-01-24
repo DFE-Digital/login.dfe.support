@@ -1,43 +1,63 @@
-const { sendResult } = require('../../infrastructure/utils');
-const { searchOrganisations, getOrganisationCategories, listOrganisationStatus } = require('../../infrastructure/organisations');
-const {organisation} = require('login.dfe.dao');
+const { sendResult } = require("../../infrastructure/utils");
+const {
+  searchOrganisations,
+  getOrganisationCategories,
+  listOrganisationStatus,
+} = require("../../infrastructure/organisations");
+const { organisation } = require("login.dfe.dao");
 
 const getFiltersModel = async (req) => {
   const fromRedirect = req.session.params ? req.session.params : null;
-  let paramsSource = req.method === 'POST' ? req.body : req.query;
+  let paramsSource = req.method === "POST" ? req.body : req.query;
   if (Object.keys(paramsSource).length === 0 && fromRedirect) {
     paramsSource = {
-      ...req.session.params
-    }
+      ...req.session.params,
+    };
   }
 
   let showFilters = false;
-  if (paramsSource.showFilters !== undefined && paramsSource.showFilters.toLowerCase() === 'true') {
+  if (
+    paramsSource.showFilters !== undefined &&
+    paramsSource.showFilters.toLowerCase() === "true"
+  ) {
     showFilters = true;
   }
 
   let organisationTypes = [];
   let organisationStatuses = [];
   if (showFilters) {
-    const selectedOrganisationTypes = unpackMultiSelect(paramsSource.organisationType);
-    const selectedOrganisationStatus = unpackMultiSelect(paramsSource.organisationStatus);
-    organisationTypes = (await getOrganisationCategories(req.id)).map((category) => {
-      return {
-        id: category.id,
-        name: category.name,
-        isSelected: selectedOrganisationTypes.find(x => x.toLowerCase() === category.id.toLowerCase()) !== undefined,
-      };
-    });
+    const selectedOrganisationTypes = unpackMultiSelect(
+      paramsSource.organisationType,
+    );
+    const selectedOrganisationStatus = unpackMultiSelect(
+      paramsSource.organisationStatus,
+    );
+    organisationTypes = (await getOrganisationCategories(req.id)).map(
+      (category) => {
+        return {
+          id: category.id,
+          name: category.name,
+          isSelected:
+            selectedOrganisationTypes.find(
+              (x) => x.toLowerCase() === category.id.toLowerCase(),
+            ) !== undefined,
+        };
+      },
+    );
 
-    organisationStatuses = (await listOrganisationStatus(req.id)).map((status) => {
-      return {
-        id: status.id,
-        name: status.name,
-        isSelected: selectedOrganisationStatus.find(x => Number(x)=== status.id) !== undefined,
-      };
-    });
+    organisationStatuses = (await listOrganisationStatus(req.id)).map(
+      (status) => {
+        return {
+          id: status.id,
+          name: status.name,
+          isSelected:
+            selectedOrganisationStatus.find((x) => Number(x) === status.id) !==
+            undefined,
+        };
+      },
+    );
   }
-   return {
+  return {
     showFilters,
     organisationTypes,
     organisationStatuses,
@@ -50,21 +70,21 @@ const unpackMultiSelect = (parameter) => {
   }
 
   if (!(parameter instanceof Array)) {
-    return parameter.split(',');
+    return parameter.split(",");
   }
   return parameter;
 };
 
 const search = async (req) => {
-  let inputSource = req.method.toUpperCase() === 'POST' ? req.body : req.query;
+  let inputSource = req.method.toUpperCase() === "POST" ? req.body : req.query;
 
   if (req.session.params && Object.keys(inputSource).length === 0) {
     inputSource = {
-      ...req.session.params
+      ...req.session.params,
     };
   }
 
-  let criteria = inputSource.criteria ? inputSource.criteria.trim() : '';
+  let criteria = inputSource.criteria ? inputSource.criteria.trim() : "";
 
   const organisationRegex = /^[a-zA-Z0-9\s-'&()#?!*+,.@\\/:]{1,256}$/;
   let filteredError;
@@ -72,32 +92,35 @@ const search = async (req) => {
    * Check minimum characters and special characters in search criteria if:
    * user is not using the filters toggle (to open or close) and filters are not visible
    */
-  if (inputSource.isFilterToggle !== 'true' && inputSource.showFilters !== 'true') {
+  if (
+    inputSource.isFilterToggle !== "true" &&
+    inputSource.showFilters !== "true"
+  ) {
     if (!criteria || criteria.length < 4) {
       return {
         validationMessages: {
-          criteria: 'Please enter at least 4 characters',
+          criteria: "Please enter at least 4 characters",
         },
       };
     }
     if (!organisationRegex.test(criteria)) {
       return {
         validationMessages: {
-          criteria: 'Special characters cannot be used',
+          criteria: "Special characters cannot be used",
         },
       };
     }
-  /**
-   * Check special characters in search criteria if:
-   * user is filtering filtering and had specified a criteria
-   */
+    /**
+     * Check special characters in search criteria if:
+     * user is filtering filtering and had specified a criteria
+     */
   } else if (!organisationRegex.test(criteria) && criteria.length > 0) {
-    criteria = '';
+    criteria = "";
     // here we normally just return the error but we
     // want to keep the last set of filtered results
     // and append the error to the result
     filteredError = {
-      criteria: 'Special characters cannot be used',
+      criteria: "Special characters cannot be used",
     };
   }
 
@@ -108,7 +131,13 @@ const search = async (req) => {
     pageNumber = 1;
   }
 
-  const pageOfOrganisations = await searchOrganisations(criteria, orgTypes , orgStatuses, pageNumber, req.id);
+  const pageOfOrganisations = await searchOrganisations(
+    criteria,
+    orgTypes,
+    orgStatuses,
+    pageNumber,
+    req.id,
+  );
   const result = {
     criteria,
     page: pageNumber,
@@ -130,7 +159,7 @@ const buildModel = async (req, result = {}) => {
     totalNumberOfResults: result.totalNumberOfResults,
     organisations: result.organisations,
     validationMessages: result.validationMessages || {},
-    activeSync : req.activeSync,
+    activeSync: req.activeSync,
   };
   const filtersModel = await getFiltersModel(req);
   return Object.assign(model, filtersModel);
@@ -144,8 +173,8 @@ const doSearchAndBuildModel = async (req) => {
 
 const get = async (req, res) => {
   if (
-    (!req.session.params?.redirectedFromSearchResult && req.session.params)
-    || req.session.params?.searchType === 'users'
+    (!req.session.params?.redirectedFromSearchResult && req.session.params) ||
+    req.session.params?.searchType === "users"
   ) {
     req.session.params = undefined;
   }
@@ -155,18 +184,20 @@ const get = async (req, res) => {
     await post(req, res);
   } else {
     const ppauditData = await organisation.getPpAudit();
-    const activeSync = ppauditData.filter(f=> (f.statusStep1===1 && f.endDate === null));
-    if(activeSync && activeSync.length > 0) {
-      req.activeSync = 'The Provider Profile Sync is in progress.';
+    const activeSync = ppauditData.filter(
+      (f) => f.statusStep1 === 1 && f.endDate === null,
+    );
+    if (activeSync && activeSync.length > 0) {
+      req.activeSync = "The Provider Profile Sync is in progress.";
     }
     const model = await buildModel(req);
-    sendResult(req, res, 'organisations/views/search', model);
+    sendResult(req, res, "organisations/views/search", model);
   }
 };
 
 const post = async (req, res) => {
   const model = await doSearchAndBuildModel(req);
-  sendResult(req, res, 'organisations/views/search', model);
+  sendResult(req, res, "organisations/views/search", model);
 };
 
 module.exports = {

@@ -1,19 +1,22 @@
-const config = require('./../config');
-const jwtStrategy = require('login.dfe.jwt-strategies');
+const config = require("./../config");
+const jwtStrategy = require("login.dfe.jwt-strategies");
 
-const { fetchApi } = require('login.dfe.async-retry');
+const { fetchApi } = require("login.dfe.async-retry");
 
 const getUser = async (uid, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
-    const user = await fetchApi(`${config.directories.service.url}/users/${uid}`,{
-      method: 'GET',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+    const user = await fetchApi(
+      `${config.directories.service.url}/users/${uid}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: `bearer ${token}`,
+          "x-correlation-id": correlationId,
+        },
       },
-    });
+    );
 
     return user;
   } catch (e) {
@@ -25,7 +28,12 @@ const getUser = async (uid, correlationId) => {
   }
 };
 
-const getPageOfInvitations = async (pageNumber, pageSize, changedAfter, correlationId) => {
+const getPageOfInvitations = async (
+  pageNumber,
+  pageSize,
+  changedAfter,
+  correlationId,
+) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
@@ -36,10 +44,10 @@ const getPageOfInvitations = async (pageNumber, pageSize, changedAfter, correlat
     }
 
     const pageOfInvitations = await fetchApi(uri, {
-      method: 'GET',
+      method: "GET",
       headers: {
         authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+        "x-correlation-id": correlationId,
       },
     });
 
@@ -57,13 +65,16 @@ const getInvitation = async (invitationId, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
-    const invitation = await fetchApi(`${config.directories.service.url}/invitations/${invitationId}`,{
-      method: 'GET',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+    const invitation = await fetchApi(
+      `${config.directories.service.url}/invitations/${invitationId}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: `bearer ${token}`,
+          "x-correlation-id": correlationId,
+        },
       },
-    });
+    );
 
     return invitation;
   } catch (e) {
@@ -88,10 +99,10 @@ const updateUser = async (uid, givenName, familyName, correlationId) => {
     }
 
     await fetchApi(`${config.directories.service.url}/users/${uid}`, {
-      method: 'PATCH',
+      method: "PATCH",
       headers: {
         authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+        "x-correlation-id": correlationId,
       },
       body,
     });
@@ -108,10 +119,10 @@ const deactivate = async (uid, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   await fetchApi(`${config.directories.service.url}/users/${uid}/deactivate`, {
-    method: 'POST',
+    method: "POST",
     headers: {
       authorization: `bearer ${token}`,
-      'x-correlation-id': correlationId,
+      "x-correlation-id": correlationId,
     },
   });
 };
@@ -120,29 +131,34 @@ const reactivate = async (uid, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   await fetchApi(`${config.directories.service.url}/users/${uid}/activate`, {
-    method: 'POST',
+    method: "POST",
     headers: {
       authorization: `bearer ${token}`,
-      'x-correlation-id': correlationId,
+      "x-correlation-id": correlationId,
     },
   });
 };
 
 const deactivateInvite = async (id, reason, correlationId) => {
   try {
-    const token = await jwtStrategy(config.directories.service).getBearerToken();
+    const token = await jwtStrategy(
+      config.directories.service,
+    ).getBearerToken();
 
-    await fetchApi(`${config.directories.service.url}/invitations/${id.replace('inv-', '')}`, {
-      method: 'PATCH',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+    await fetchApi(
+      `${config.directories.service.url}/invitations/${id.replace("inv-", "")}`,
+      {
+        method: "PATCH",
+        headers: {
+          authorization: `bearer ${token}`,
+          "x-correlation-id": correlationId,
+        },
+        body: {
+          reason: reason,
+          deactivated: true,
+        },
       },
-      body: {
-        reason: reason,
-        deactivated: true,
-      },
-    });
+    );
   } catch (e) {
     console.log(e);
   }
@@ -150,25 +166,40 @@ const deactivateInvite = async (id, reason, correlationId) => {
 
 const reactivateInvite = async (id, reason, correlationId) => {
   try {
-    const token = await jwtStrategy(config.directories.service).getBearerToken();
+    const token = await jwtStrategy(
+      config.directories.service,
+    ).getBearerToken();
 
-    await fetchApi(`${config.directories.service.url}/invitations/${id.replace('inv-', '')}`,{
-      method: 'PATCH',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+    await fetchApi(
+      `${config.directories.service.url}/invitations/${id.replace("inv-", "")}`,
+      {
+        method: "PATCH",
+        headers: {
+          authorization: `bearer ${token}`,
+          "x-correlation-id": correlationId,
+        },
+        body: {
+          reason: reason,
+          deactivated: false,
+        },
       },
-      body: {
-        reason: reason,
-        deactivated: false,
-      },
-    });
+    );
   } catch (e) {
     console.log(e);
   }
 };
 
-const createInvite = async (givenName, familyName, email, clientId, redirectUri, correlationId, overrides, permission, orgName) => {
+const createInvite = async (
+  givenName,
+  familyName,
+  email,
+  clientId,
+  redirectUri,
+  correlationId,
+  overrides,
+  permission,
+  orgName,
+) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   const body = {
@@ -181,31 +212,36 @@ const createInvite = async (givenName, familyName, email, clientId, redirectUri,
     },
     selfStarted: false,
     overrides,
-    isApprover: (permission && permission === 10000) ? true : false,
+    isApprover: permission && permission === 10000 ? true : false,
     orgName,
   };
 
-  const invitation = await fetchApi(`${config.directories.service.url}/invitations`, {
-    method: 'POST',
-    headers: {
-      authorization: `bearer ${token}`,
-      'x-correlation-id': correlationId,
+  const invitation = await fetchApi(
+    `${config.directories.service.url}/invitations`,
+    {
+      method: "POST",
+      headers: {
+        authorization: `bearer ${token}`,
+        "x-correlation-id": correlationId,
+      },
+      body,
     },
-    body,
-  });
+  );
 
   return invitation.id;
 };
 
 const updateInvite = async (id, email, correlationId) => {
   try {
-    const token = await jwtStrategy(config.directories.service).getBearerToken();
+    const token = await jwtStrategy(
+      config.directories.service,
+    ).getBearerToken();
 
     await fetchApi(`${config.directories.service.url}/invitations/${id}`, {
-      method: 'PATCH',
+      method: "PATCH",
       headers: {
         authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+        "x-correlation-id": correlationId,
       },
       body: {
         email,
@@ -218,15 +254,20 @@ const updateInvite = async (id, email, correlationId) => {
 
 const resendInvite = async (id, correlationId) => {
   try {
-    const token = await jwtStrategy(config.directories.service).getBearerToken();
+    const token = await jwtStrategy(
+      config.directories.service,
+    ).getBearerToken();
 
-    await fetchApi(`${config.directories.service.url}/invitations/${id}/resend`, {
-      method: 'POST',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+    await fetchApi(
+      `${config.directories.service.url}/invitations/${id}/resend`,
+      {
+        method: "POST",
+        headers: {
+          authorization: `bearer ${token}`,
+          "x-correlation-id": correlationId,
+        },
       },
-    });
+    );
     return true;
   } catch (e) {
     console.log(e);
@@ -234,23 +275,29 @@ const resendInvite = async (id, correlationId) => {
   }
 };
 
-const createChangeEmailCode = async (userId, newEmailAddress, clientId, redirectUri, correlationId) => {
+const createChangeEmailCode = async (
+  userId,
+  newEmailAddress,
+  clientId,
+  redirectUri,
+  correlationId,
+) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
-  return await fetchApi(`${config.directories.service.url}/usercodes/upsert`,{
-    method: 'PUT',
+  return await fetchApi(`${config.directories.service.url}/usercodes/upsert`, {
+    method: "PUT",
     headers: {
       authorization: `bearer ${token}`,
-      'x-correlation-id': correlationId,
+      "x-correlation-id": correlationId,
     },
     body: {
       uid: userId,
       clientId,
       redirectUri,
-      codeType: 'changeemail',
+      codeType: "changeemail",
       email: newEmailAddress,
       selfInvoked: false,
-    }
+    },
   });
 };
 
@@ -258,13 +305,16 @@ const getChangeEmailCode = async (userId, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
-    return await fetchApi(`${config.directories.service.url}/usercodes/${userId}/changeemail`,{
-      method: 'GET',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+    return await fetchApi(
+      `${config.directories.service.url}/usercodes/${userId}/changeemail`,
+      {
+        method: "GET",
+        headers: {
+          authorization: `bearer ${token}`,
+          "x-correlation-id": correlationId,
+        },
       },
-    });
+    );
   } catch (e) {
     if (e.statusCode === 404) {
       return null;
@@ -276,26 +326,32 @@ const getChangeEmailCode = async (userId, correlationId) => {
 const deleteChangeEmailCode = async (userId, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
-  return await fetchApi(`${config.directories.service.url}/usercodes/${userId}/changeemail`,{
-    method: 'DELETE',
-    headers: {
-      authorization: `bearer ${token}`,
-      'x-correlation-id': correlationId,
-    }
-  });
+  return await fetchApi(
+    `${config.directories.service.url}/usercodes/${userId}/changeemail`,
+    {
+      method: "DELETE",
+      headers: {
+        authorization: `bearer ${token}`,
+        "x-correlation-id": correlationId,
+      },
+    },
+  );
 };
 
 const getUsersById = async (ids, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
-    return await fetchApi(`${config.directories.service.url}/users/by-ids?id=${ids.toString()}`,{
-      method: 'GET',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+    return await fetchApi(
+      `${config.directories.service.url}/users/by-ids?id=${ids.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: `bearer ${token}`,
+          "x-correlation-id": correlationId,
+        },
       },
-    });
+    );
   } catch (e) {
     if (e.statusCode === 404) {
       return null;
@@ -309,10 +365,10 @@ const getUsersByIdV2 = async (ids, correlationId) => {
 
   try {
     return await fetchApi(`${config.directories.service.url}/users/by-ids`, {
-      method: 'POST',
+      method: "POST",
       headers: {
         authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+        "x-correlation-id": correlationId,
       },
       body: {
         ids: ids.toString(),
@@ -330,13 +386,16 @@ const getLegacyUsernames = async (userIds, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   try {
-    return await fetchApi(`${config.directories.service.url}/users/${userIds}/legacy-username`, {
-      method: 'GET',
-      headers: {
-        authorization: `bearer ${token}`,
-        'x-correlation-id': correlationId,
+    return await fetchApi(
+      `${config.directories.service.url}/users/${userIds}/legacy-username`,
+      {
+        method: "GET",
+        headers: {
+          authorization: `bearer ${token}`,
+          "x-correlation-id": correlationId,
+        },
       },
-    });
+    );
   } catch (e) {
     if (e.statusCode === 404) {
       return null;

@@ -1,3 +1,3 @@
 let adapter;
-adapter = require('./api');
+adapter = require("./api");
 module.exports = adapter;

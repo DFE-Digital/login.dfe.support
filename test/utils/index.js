@@ -8,57 +8,63 @@ const loggerMockFactory = () => {
 };
 
 const configMockFactory = (customConfig) => {
-  return Object.assign({
-    hostingEnvironment: {
-      env: 'test-run',
-    },
+  return Object.assign(
+    {
+      hostingEnvironment: {
+        env: "test-run",
+      },
 
-    cache: {
-      type: 'static',
+      cache: {
+        type: "static",
+      },
+      directories: {
+        type: "static",
+      },
+      organisations: {
+        type: "static",
+      },
+      serviceMapping: {
+        type: "static",
+      },
+      audit: {
+        type: "static",
+      },
+      applications: {
+        type: "static",
+      },
+      redis: {
+        url: "http://orgs.api.test",
+      },
+      notifications: {
+        connectionString: "",
+      },
+      access: {
+        type: "static",
+      },
+      loggerSettings: {},
+      toggles: {},
     },
-    directories: {
-      type: 'static',
-    },
-    organisations: {
-      type: 'static',
-    },
-    serviceMapping: {
-      type: 'static',
-    },
-    audit: {
-      type: 'static',
-    },
-    applications: {
-      type: 'static',
-    },
-    redis: {
-      url: 'http://orgs.api.test',
-    },
-    notifications: {
-      connectionString: '',
-    },
-    access: {
-      type: 'static',
-    },
-    loggerSettings: {},
-    toggles: {},
-  }, customConfig);
+    customConfig,
+  );
 };
 
 const getRequestMock = (customRequest = {}) => {
-  return Object.assign({
-    id: 'correlationId',
-    csrfToken: jest.fn().mockReturnValue('token'),
-    accepts: jest.fn().mockReturnValue(['text/html']),
-    params: {},
-    body: {},
-    query: {},
-    user: {
-      sub: 'suser1',
-      email: 'super.user@unit.test',
+  return Object.assign(
+    {
+      id: "correlationId",
+      csrfToken: jest.fn().mockReturnValue("token"),
+      accepts: jest.fn().mockReturnValue(["text/html"]),
+      params: {},
+      body: {},
+      query: {},
+      user: {
+        sub: "suser1",
+        email: "super.user@unit.test",
+      },
+      session: {},
     },
-    session: {},
-  }, customRequest);
+    customRequest,
+  );
 };
 
 const getResponseMock = () => {
@@ -74,7 +80,7 @@ const getResponseMock = () => {
       this.redirect.mockReturnValue(res);
       this.status.mockReturnValue(res);
       this.contentType.mockReturnValue(res);
-    }
+    },
   };
 
   res.mockResetAll();

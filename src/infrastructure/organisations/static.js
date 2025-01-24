@@ -1,76 +1,72 @@
-const getUserOrganisations = async (userId) => {
+const getUserOrganisations = async () => {
   return Promise.resolve([
     {
-      "id": "83f00ace-f1a0-4338-8784-fa14f5943e5a",
-      "name": "Some service",
-      "description": "Some service that does some stuff",
-      "status": 1,
-      "userId": "7a1b077a-d7d4-4b60-83e8-1a1b49849510",
-      "requestDate": "2018-01-18T10:46:59.385Z",
-      "approvers": [],
-      "organisation": {
-        "id": "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-        "name": "Big School"
+      id: "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+      name: "Some service",
+      description: "Some service that does some stuff",
+      status: 1,
+      userId: "7a1b077a-d7d4-4b60-83e8-1a1b49849510",
+      requestDate: "2018-01-18T10:46:59.385Z",
+      approvers: [],
+      organisation: {
+        id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+        name: "Big School",
       },
-      "role": {
-        "id": 0,
-        "name": "End user"
-      }
-    }
+      role: {
+        id: 0,
+        name: "End user",
+      },
+    },
   ]);
 };
 
-const getUserOrganisationsV2 = async (userId) => {
+const getUserOrganisationsV2 = async () => {
   return Promise.resolve([
     {
-      "id": "83f00ace-f1a0-4338-8784-fa14f5943e5a",
-      "name": "Some service",
-      "description": "Some service that does some stuff",
-      "status": 1,
-      "userId": "7a1b077a-d7d4-4b60-83e8-1a1b49849510",
-      "requestDate": "2018-01-18T10:46:59.385Z",
-      "approvers": [],
-      "organisation": {
-        "id": "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-        "name": "Big School"
+      id: "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+      name: "Some service",
+      description: "Some service that does some stuff",
+      status: 1,
+      userId: "7a1b077a-d7d4-4b60-83e8-1a1b49849510",
+      requestDate: "2018-01-18T10:46:59.385Z",
+      approvers: [],
+      organisation: {
+        id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+        name: "Big School",
       },
-      "role": {
-        "id": 0,
-        "name": "End user"
-      }
-    }
+      role: {
+        id: 0,
+        name: "End user",
+      },
+    },
   ]);
 };
 
-const getInvitationOrganisations = async (invitationId, correlationId) => {
+const getInvitationOrganisations = async (invitationId) => {
   return Promise.resolve([
     {
-      "invitationId": invitationId,
-      "role": {
-        "id": 0,
-        "name": "End user"
+      invitationId: invitationId,
+      role: {
+        id: 0,
+        name: "End user",
       },
-      "service": {
-        "id": "3bfde961-f061-4786-b618-618deaf96e44",
-        "name": "Key to success (KtS)"
+      service: {
+        id: "3bfde961-f061-4786-b618-618deaf96e44",
+        name: "Key to success (KtS)",
       },
-      "organisation": {
-        "id": "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-        "name": "Big School"
+      organisation: {
+        id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+        name: "Big School",
       },
-      "role": {
-        "id": 0,
-        "name": "End user"
-      }
-    }
-  ])
+    },
+  ]);
 };
 
-const getServiceById = async (serviceId, correlationId) => {
+const getServiceById = async () => {
   return Promise.resolve({
-    "id": "83f00ace-f1a0-4338-8784-fa14f5943e5a",
-    "name": "Some service",
-    "description": "Some service that does some stuff",
+    id: "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+    name: "Some service",
+    description: "Some service that does some stuff",
   });
 };
 
@@ -78,9 +74,9 @@ const getPageOfOrganisations = async (pageNumber) => {
   return Promise.resolve({
     organisations: [
       {
-        "id": "83f00ace-f1a0-4338-8784-fa14f5943e5a",
-        "name": "Some service",
-      }
+        id: "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+        name: "Some service",
+      },
     ],
     page: pageNumber,
     totalNumberOfPages: 1,
@@ -92,19 +88,25 @@ const getAllOrganisations = async () => {
 };
 
 const getAllServices = async () => {
-  return Promise.resolve([{
-    "id": "83f00ace-f1a0-4338-8784-fa14f5943e5a",
-    "name": "Some service",
-    "description": "Some service that does some stuff",
-  }]);
+  return Promise.resolve([
+    {
+      id: "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+      name: "Some service",
+      description: "Some service that does some stuff",
+    },
+  ]);
 };
 
 const getOrganisationById = async (id) => {
-  return (await getPageOfOrganisations(1)).organisations.find(x => x.id === id);
+  return (await getPageOfOrganisations(1)).organisations.find(
+    (x) => x.id === id,
+  );
 };
 
 const getOrganisationByIdV2 = async (id) => {
-  return (await getPageOfOrganisations(1)).organisations.find(x => x.id === id);
+  return (await getPageOfOrganisations(1)).organisations.find(
+    (x) => x.id === id,
+  );
 };
 
 const getServiceIdentifierDetails = async () => {
@@ -131,52 +133,52 @@ const searchOrganisations = async (criteria, pageNumber, correlationId) => {
   return getPageOfOrganisations(pageNumber, correlationId);
 };
 
-const setUserAccessToOrganisation = async (userId, organisationId, roleId, correlationId) => {
+const setUserAccessToOrganisation = async () => {
   return Promise.resolve(null);
 };
 
-const getOrganisationCategories = async (correlationId) => {
+const getOrganisationCategories = async () => {
   return Promise.resolve([]);
 };
 
-const getOrganisationUsersForApproval = async (pageNumber, correlationId) => {
+const getOrganisationUsersForApproval = async () => {
   return Promise.resolve([]);
 };
 
-const listUserServices = async (page, pageSize, correlationId) => {
+const listUserServices = async () => {
   return Promise.resolve([]);
 };
 
-const listInvitationServices = async (page, pageSize, correlationId) => {
+const listInvitationServices = async () => {
   return Promise.resolve([]);
 };
 
-const getAllRequestsForSupport = async (correlationId) => {
+const getAllRequestsForSupport = async () => {
   return Promise.resolve();
 };
 
-const getRequestById = async (requestId, correlationId) => {
+const getRequestById = async () => {
   return Promise.resolve();
 };
 
-const updateRequestById = async (requestId, status, actionedBy, actionedReason, actionedAt, correlationId) => {
+const updateRequestById = async () => {
   return Promise.resolve();
 };
 
-const putUserInOrganisation = async(userId, orgId, status, role, reason, correlationId) => {
+const putUserInOrganisation = async () => {
   return Promise.resolve();
 };
 
-const getPendingRequestsAssociatedWithUser = async (userId, correlationId) => {
+const getPendingRequestsAssociatedWithUser = async () => {
   return Promise.resolve();
 };
 
-const createOrganisation = async (body, correlationId) => {
+const createOrganisation = async () => {
   return Promise.resolve();
 };
 
-const getCategories = async (id) => {
-  return (await getCategories());
+const getCategories = async () => {
+  return await getCategories();
 };
 
 module.exports = {
@@ -206,5 +208,5 @@ module.exports = {
   updateRequestById,
   putUserInOrganisation,
   getPendingRequestsAssociatedWithUser,
-  getCategories
+  getCategories,
 };

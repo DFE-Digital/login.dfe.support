@@ -1,5 +1,5 @@
-const Redis = require('ioredis');
-const config = require('./../config');
+const Redis = require("ioredis");
+const config = require("./../config");
 
 const client = new Redis(config.claims.params.connectionString);
 

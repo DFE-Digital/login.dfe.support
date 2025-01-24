@@ -1,8 +1,10 @@
-const { sendResult } = require('./../../infrastructure/utils');
+const { sendResult } = require("./../../infrastructure/utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
-const { getOrganisationByIdV2 } = require('./../../infrastructure/organisations');
-const { searchForUsers } = require('./../../infrastructure/search');
-const { mapRole } = require('./../users/utils');
+const {
+  getOrganisationByIdV2,
+} = require("./../../infrastructure/organisations");
+const { searchForUsers } = require("./../../infrastructure/search");
+const { mapRole } = require("./../users/utils");
 
 const render = async (req, res, dataSource) => {
   const organisation = await getOrganisationByIdV2(req.params.id, req.id);
@@ -11,19 +13,26 @@ const render = async (req, res, dataSource) => {
     pageNumber = 1;
   }
 
-  const results = await searchForUsers('*', pageNumber, undefined, undefined, {
+  const results = await searchForUsers("*", pageNumber, undefined, undefined, {
     organisations: [organisation.id],
   });
 
   const users = results.users.map((user) => {
     const viewUser = Object.assign({}, user);
-    viewUser.organisation = Object.assign({}, user.organisations.find(o => o.id.toUpperCase() === organisation.id.toUpperCase()));
+    viewUser.organisation = Object.assign(
+      {},
+      user.organisations.find(
+        (o) => o.id.toUpperCase() === organisation.id.toUpperCase(),
+      ),
+    );
     viewUser.organisation.role = mapRole(viewUser.organisation.roleId);
-    viewUser.formattedLastLogin = viewUser.lastLogin ? dateFormat(viewUser.lastLogin, 'shortDateFormat') : '';
+    viewUser.formattedLastLogin = viewUser.lastLogin
+      ? dateFormat(viewUser.lastLogin, "shortDateFormat")
+      : "";
     return viewUser;
   });
 
-  sendResult(req, res, 'organisations/views/users', {
+  sendResult(req, res, "organisations/views/users", {
     csrfToken: req.csrfToken(),
     organisation: organisation,
     users,
@@ -41,8 +50,9 @@ const get = async (req, res) => {
 
   // Check if it's possible to re-populate search with the current params.
   if (
-    req.session.params.showFilters === 'true'
-    || (typeof req.session.params.criteria !== "undefined" && req.session.params.criteria !== '')
+    req.session.params.showFilters === "true" ||
+    (typeof req.session.params.criteria !== "undefined" &&
+      req.session.params.criteria !== "")
   ) {
     req.session.params.redirectedFromSearchResult = true;
   } else {
@@ -51,8 +61,8 @@ const get = async (req, res) => {
 
   // If searchType isn't set or equal to users, set it to organisations.
   // This allows us to avoid populating org search after going from user's profile straight to an org user list.
-  if (req.session.params.searchType !== 'users') {
-    req.session.params.searchType = 'organisations';
+  if (req.session.params.searchType !== "users") {
+    req.session.params.searchType = "organisations";
   }
 
   return render(req, res, req.query);

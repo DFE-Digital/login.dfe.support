@@ -1,71 +1,77 @@
-jest.mock('./../../../src/infrastructure/logger', () => require('./../../utils').loggerMockFactory());
-jest.mock('./../../../src/infrastructure/config', () => require('./../../utils').configMockFactory());
-jest.mock('./../../../src/app/accessRequests/utils');
+jest.mock("./../../../src/infrastructure/logger", () =>
+  require("./../../utils").loggerMockFactory(),
+);
+jest.mock("./../../../src/infrastructure/config", () =>
+  require("./../../utils").configMockFactory(),
+);
+jest.mock("./../../../src/app/accessRequests/utils");
 
-const { getRequestMock, getResponseMock } = require('./../../utils');
-const orgUtils = require('./../../../src/app/accessRequests/utils');
-const { get } = require('./../../../src/app/accessRequests/selectPermissionLevel');
+const { getRequestMock, getResponseMock } = require("./../../utils");
+const orgUtils = require("./../../../src/app/accessRequests/utils");
+const {
+  get,
+} = require("./../../../src/app/accessRequests/selectPermissionLevel");
 
 const res = getResponseMock();
 
-describe('when selecting a permission level', () => {
+describe("when selecting a permission level", () => {
   let req;
 
   beforeEach(() => {
     req = getRequestMock({
       user: {
-        sub: 'user1',
+        sub: "user1",
       },
       params: {
-        orgId: 'org1',
+        orgId: "org1",
       },
     });
 
-    orgUtils.getAndMapOrgRequest
-      .mockReset()
-      .mockReturnValue({
-        usersName: 'John Doe',
-        usersEmail: 'john.doe@email.com',
-        id: 'requestId',
-        org_id: 'org1',
-        org_name: 'Org 1',
-        user_id: 'userId',
-        created_date: '2019-05-01',
-        actioned_date: null,
-        actioned_by: null,
-        actioned_reason: null,
-        reason: '',
-        status: {
-          id: 0,
-          name: 'Pending',
-        },
-      });
+    orgUtils.getAndMapOrgRequest.mockReset().mockReturnValue({
+      usersName: "John Doe",
+      usersEmail: "john.doe@email.com",
+      id: "requestId",
+      org_id: "org1",
+      org_name: "Org 1",
+      user_id: "userId",
+      created_date: "2019-05-01",
+      actioned_date: null,
+      actioned_by: null,
+      actioned_reason: null,
+      reason: "",
+      status: {
+        id: 0,
+        name: "Pending",
+      },
+    });
     res.mockResetAll();
   });
 
-  it('then it should display the select permission level view', async () => {
+  it("then it should display the select permission level view", async () => {
     await get(req, res);
 
     expect(res.render.mock.calls).toHaveLength(1);
-    expect(res.render.mock.calls[0][0]).toBe('accessRequests/views/selectPermissionLevel');
+    expect(res.render.mock.calls[0][0]).toBe(
+      "accessRequests/views/selectPermissionLevel",
+    );
   });
 
-  it('then it should get the mapped request', async () => {
+  it("then it should get the mapped request", async () => {
     await get(req, res);
 
     expect(orgUtils.getAndMapOrgRequest.mock.calls).toHaveLength(1);
     expect(orgUtils.getAndMapOrgRequest.mock.calls[0][0]).toBe(req);
   });
 
-  it('then it should include csrf token', async () => {
+  it("then it should include csrf token", async () => {
     await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
-      csrfToken: 'token',
+      csrfToken: "token",
     });
   });
 
-  it('then it should include a back link', async () => {
+  it("then it should include a back link", async () => {
     await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
@@ -73,25 +79,25 @@ describe('when selecting a permission level', () => {
     });
   });
 
-  it('then it should include the request details', async () => {
+  it("then it should include the request details", async () => {
     await get(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       request: {
-        usersName: 'John Doe',
-        usersEmail: 'john.doe@email.com',
-        id: 'requestId',
-        org_id: 'org1',
-        org_name: 'Org 1',
-        user_id: 'userId',
-        created_date: '2019-05-01',
+        usersName: "John Doe",
+        usersEmail: "john.doe@email.com",
+        id: "requestId",
+        org_id: "org1",
+        org_name: "Org 1",
+        user_id: "userId",
+        created_date: "2019-05-01",
         actioned_date: null,
         actioned_by: null,
         actioned_reason: null,
-        reason: '',
+        reason: "",
         status: {
           id: 0,
-          name: 'Pending',
+          name: "Pending",
         },
       },
     });

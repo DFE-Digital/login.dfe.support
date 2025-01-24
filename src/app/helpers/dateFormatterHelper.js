@@ -1,8 +1,8 @@
-const moment = require('moment');
+const moment = require("moment");
 
 const datetimeFormats = {
-  shortDateFormat: 'DD MMM YYYY',
-  longDateFormat: 'DD MMM YYYY hh:mma',
+  shortDateFormat: "DD MMM YYYY",
+  longDateFormat: "DD MMM YYYY hh:mma",
 };
 
 /**
@@ -17,7 +17,7 @@ function getFormattedDate(value, format) {
 
   // Ensure the value is a valid date
   if (Number.isNaN(dateValue.getTime())) {
-    throw new TypeError('Invalid date or timestamp');
+    throw new TypeError("Invalid date or timestamp");
   }
 
   return moment(dateValue).format(format);

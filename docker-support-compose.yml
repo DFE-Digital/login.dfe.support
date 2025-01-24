@@ -1,8 +1,8 @@
-version: '3.4'
+version: "3.4"
 
 services:
   redis-server:
-    image: 'redis'
+    image: "redis"
     environment:
       NODE_ENV: production
     ports:

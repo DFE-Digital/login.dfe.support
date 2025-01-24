@@ -1,9 +1,14 @@
-const Account = require('./../../infrastructure/directories');
-const flatten = require('lodash/flatten');
-const uniq = require('lodash/uniq');
-const { sendResult } = require('./../../infrastructure/utils');
-const { dateFormat } = require('../helpers/dateFormatterHelper');
-const { mapStatusForSupport, userStatusMap, unpackMultiSelect, search } = require('./utils');
+const Account = require("./../../infrastructure/directories");
+const flatten = require("lodash/flatten");
+const uniq = require("lodash/uniq");
+const { sendResult } = require("./../../infrastructure/utils");
+const { dateFormat } = require("../helpers/dateFormatterHelper");
+const {
+  mapStatusForSupport,
+  userStatusMap,
+  unpackMultiSelect,
+  search,
+} = require("./utils");
 
 const getUserDetails = async (usersForApproval) => {
   const allUserId = flatten(usersForApproval.map((user) => user.user_id));
@@ -15,9 +20,12 @@ const getUserDetails = async (usersForApproval) => {
 };
 
 const getFiltersModel = async (req) => {
-  const paramsSource = req.method === 'POST' ? req.body : req.query;
+  const paramsSource = req.method === "POST" ? req.body : req.query;
   let showFilters = false;
-  if (paramsSource.showFilters !== undefined && paramsSource.showFilters.toLowerCase() === 'true') {
+  if (
+    paramsSource.showFilters !== undefined &&
+    paramsSource.showFilters.toLowerCase() === "true"
+  ) {
     showFilters = true;
   }
 
@@ -29,7 +37,9 @@ const getFiltersModel = async (req) => {
       return {
         id: status.id,
         name: status.name,
-        isSelected: selectedRequestStatuses.find(x => x === status.id.toString()) !== undefined,
+        isSelected:
+          selectedRequestStatuses.find((x) => x === status.id.toString()) !==
+          undefined,
       };
     });
   }
@@ -44,18 +54,30 @@ const buildModel = async (req) => {
   const result = await search(req);
   const userList = await getUserDetails(result.accessRequests);
   const requests = result.accessRequests.map((user) => {
-    const userFound = userList.find(c => c.sub.toLowerCase() === user.user_id.toLowerCase());
-    const usersEmail = userFound ? userFound.email : '';
-    const usersName = userFound ? `${userFound.given_name} ${userFound.family_name}` : 'No Name Supplied';
+    const userFound = userList.find(
+      (c) => c.sub.toLowerCase() === user.user_id.toLowerCase(),
+    );
+    const usersEmail = userFound ? userFound.email : "";
+    const usersName = userFound
+      ? `${userFound.given_name} ${userFound.family_name}`
+      : "No Name Supplied";
     const statusText = mapStatusForSupport(user.status);
-    const formattedCreatedDate = user.created_date ? dateFormat(user.created_date, 'shortDateFormat') : '';
-    return Object.assign({usersEmail}, {usersName}, {statusText}, {formattedCreatedDate}, user);
+    const formattedCreatedDate = user.created_date
+      ? dateFormat(user.created_date, "shortDateFormat")
+      : "";
+    return Object.assign(
+      { usersEmail },
+      { usersName },
+      { statusText },
+      { formattedCreatedDate },
+      user,
+    );
   });
 
   const model = {
     csrfToken: req.csrfToken(),
-    title: 'Requests - DfE Sign-in',
-    backLink: '/users',
+    title: "Requests - DfE Sign-in",
+    backLink: "/users",
     requests,
     page: result.page,
     numberOfPages: result.numberOfPages,
@@ -69,15 +91,13 @@ const buildModel = async (req) => {
 
 const get = async (req, res) => {
   const model = await buildModel(req);
-  sendResult(req, res, 'accessRequests/views/organisationRequests', model);
+  sendResult(req, res, "accessRequests/views/organisationRequests", model);
 };
 
 const post = async (req, res) => {
   const model = await buildModel(req);
-  sendResult(req, res, 'accessRequests/views/organisationRequests', model);
+  sendResult(req, res, "accessRequests/views/organisationRequests", model);
 };
-
-
 
 module.exports = {
   get,

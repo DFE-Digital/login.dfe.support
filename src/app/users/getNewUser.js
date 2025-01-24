@@ -1,9 +1,9 @@
 const getNewUser = (req, res) => {
   const model = {
     csrfToken: req.csrfToken(),
-    firstName: '',
-    lastName: '',
-    email: '',
+    firstName: "",
+    lastName: "",
+    email: "",
     validationMessages: {},
   };
 
@@ -13,7 +13,7 @@ const getNewUser = (req, res) => {
     model.email = req.session.user.email;
   }
 
-  res.render('users/views/newUser', model);
+  res.render("users/views/newUser", model);
 };
 
 module.exports = getNewUser;
