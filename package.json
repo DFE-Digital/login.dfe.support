@@ -1,7 +1,16 @@
 {
   "name": "login.dfe.support",
   "version": "16.0.0",
+  "engines": {
+    "node": "18.17.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DFE-Digital/login.dfe.support.git"
+  },
   "description": "",
+  "author": "",
+  "license": "MIT",
   "scripts": {
     "dev": "settings='./config/login.dfe.support.dev.json' node src/index.js",
     "web": "settings='./config/support.dev.json' node src/index.js",
@@ -18,19 +27,6 @@
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
   },
-  "engines": {
-    "node": "18.17.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/DFE-Digital/login.dfe.support.git"
-  },
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/DFE-Digital/login.dfe.support/issues"
-  },
-  "homepage": "https://github.com/DFE-Digital/login.dfe.support#readme",
   "dependencies": {
     "@azure/service-bus": "^7.9.4",
     "agentkeepalive": "^4.5.0",
