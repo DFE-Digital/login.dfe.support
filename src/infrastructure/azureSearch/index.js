@@ -10,56 +10,44 @@ const getAzureSearchUri = (indexName, indexResource = "") => {
 };
 
 const createIndex = async (indexName, fields) => {
-  try {
-    await fetchApi(getAzureSearchUri(indexName), {
-      method: "PUT",
-      headers: {
-        "content-type": "application/json",
-        "api-key": config.cache.params.apiKey,
-      },
-      body: {
-        name: indexName,
-        fields,
-      },
-    });
-    return indexName;
-  } catch (e) {
-    throw e;
-  }
+  await fetchApi(getAzureSearchUri(indexName), {
+    method: "PUT",
+    headers: {
+      "content-type": "application/json",
+      "api-key": config.cache.params.apiKey,
+    },
+    body: {
+      name: indexName,
+      fields,
+    },
+  });
+  return indexName;
 };
 
 const updateIndex = async (users, index) => {
-  try {
-    await fetchApi(getAzureSearchUri(index, "/docs/index"), {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "api-key": config.cache.params.apiKey,
-      },
-      body: {
-        value: users,
-      },
-    });
-  } catch (e) {
-    throw e;
-  }
+  await fetchApi(getAzureSearchUri(index, "/docs/index"), {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "api-key": config.cache.params.apiKey,
+    },
+    body: {
+      value: users,
+    },
+  });
 };
 
 const deleteIndexItem = async (item, index) => {
-  try {
-    await fetchApi(getAzureSearchUri(index, "/docs/index"), {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "api-key": config.cache.params.apiKey,
-      },
-      body: {
-        value: item,
-      },
-    });
-  } catch (e) {
-    throw e;
-  }
+  await fetchApi(getAzureSearchUri(index, "/docs/index"), {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "api-key": config.cache.params.apiKey,
+    },
+    body: {
+      value: item,
+    },
+  });
 };
 
 const deleteUnusedIndexes = async (unusedIndexes, currentIndexName) => {

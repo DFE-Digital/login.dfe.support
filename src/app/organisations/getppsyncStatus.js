@@ -1,4 +1,4 @@
-const { sendResult, mapUserStatus } = require("./../../infrastructure/utils");
+const { sendResult } = require("./../../infrastructure/utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 
 const { organisation } = require("login.dfe.dao");

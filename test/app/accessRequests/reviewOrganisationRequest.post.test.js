@@ -23,7 +23,6 @@ const {
 } = require("./../../../src/infrastructure/organisations");
 const {
   getSearchDetailsForUserById,
-  updateIndex,
 } = require("./../../../src/infrastructure/search");
 const {
   getAndMapOrgRequest,

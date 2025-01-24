@@ -45,6 +45,7 @@ describe("when removing access to a service", () => {
   let req;
   let postRemoveService;
   let organisationName = ["Great Big School", "Little Tiny School"];
+  let sendUserServiceRemovedStub;
 
   const expectedEmailAddress = "test@test.com";
   const expectedFirstName = "test";

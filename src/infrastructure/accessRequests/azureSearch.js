@@ -164,71 +164,63 @@ const search = async (
 ) => {
   const currentIndexName = await client.get("CurrentIndex_AccessRequests");
 
-  try {
-    const skip = (pageNumber - 1) * pageSize;
-    let orderBy;
-    switch (sortBy) {
-      case "organisation":
-        orderBy = sortAsc ? "organisationName" : "organisationName desc";
-        break;
-      case "email":
-        orderBy = sortAsc ? "email" : "email desc";
-        break;
-      case "name":
-        orderBy = sortAsc ? "name" : "name desc";
-        break;
-      case "createdDate":
-        orderBy = sortAsc ? "createdDate desc" : "createdDate";
-        break;
-      default:
-        orderBy = sortAsc ? "name" : "name desc";
-        break;
-    }
-    criteria = criteria.replace(/\s/g, "").replace("@", "").toLowerCase();
-    const formattedCriteria = criteria.replace(/-/g, "");
-    const serialNumber = parseInt(formattedCriteria);
-    if (!isNaN(serialNumber)) {
-      criteria = formattedCriteria;
-    }
-
-    const response = await azureSearch.search(
-      currentIndexName,
-      criteria,
-      skip,
-      pageSize,
-      orderBy,
-    );
-
-    let numberOfPages = 1;
-    const totalNumberOfResults = parseInt(response["@odata.count"]);
-    if (!isNaN(totalNumberOfResults)) {
-      numberOfPages = Math.ceil(totalNumberOfResults / pageSize);
-    }
-
-    return {
-      accessRequests: response.value.map((user) => {
-        return mapAccessRequest(user);
-      }),
-      numberOfPages,
-      totalNumberOfResults,
-    };
-  } catch (e) {
-    throw e;
+  const skip = (pageNumber - 1) * pageSize;
+  let orderBy;
+  switch (sortBy) {
+    case "organisation":
+      orderBy = sortAsc ? "organisationName" : "organisationName desc";
+      break;
+    case "email":
+      orderBy = sortAsc ? "email" : "email desc";
+      break;
+    case "name":
+      orderBy = sortAsc ? "name" : "name desc";
+      break;
+    case "createdDate":
+      orderBy = sortAsc ? "createdDate desc" : "createdDate";
+      break;
+    default:
+      orderBy = sortAsc ? "name" : "name desc";
+      break;
   }
+  criteria = criteria.replace(/\s/g, "").replace("@", "").toLowerCase();
+  const formattedCriteria = criteria.replace(/-/g, "");
+  const serialNumber = parseInt(formattedCriteria);
+  if (!isNaN(serialNumber)) {
+    criteria = formattedCriteria;
+  }
+
+  const response = await azureSearch.search(
+    currentIndexName,
+    criteria,
+    skip,
+    pageSize,
+    orderBy,
+  );
+
+  let numberOfPages = 1;
+  const totalNumberOfResults = parseInt(response["@odata.count"]);
+  if (!isNaN(totalNumberOfResults)) {
+    numberOfPages = Math.ceil(totalNumberOfResults / pageSize);
+  }
+
+  return {
+    accessRequests: response.value.map((user) => {
+      return mapAccessRequest(user);
+    }),
+    numberOfPages,
+    totalNumberOfResults,
+  };
 };
 
 const getById = async (id, filterParam = "userOrgId") => {
-  try {
-    const currentIndexName = await client.get("CurrentIndex_AccessRequests");
-    const user = await azureSearch.getIndexById(
-      currentIndexName,
-      id,
-      filterParam,
-    );
-    return mapAccessRequest(user);
-  } catch (e) {
-    throw e;
-  }
+  const currentIndexName = await client.get("CurrentIndex_AccessRequests");
+  const user = await azureSearch.getIndexById(
+    currentIndexName,
+    id,
+    filterParam,
+  );
+  return mapAccessRequest(user);
 };
 
 module.exports = {

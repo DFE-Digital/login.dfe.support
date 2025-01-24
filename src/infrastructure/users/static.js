@@ -25,7 +25,7 @@ const users = [
   },
 ];
 
-const search = async (criteria, pageNumber) => {
+const search = async (criteria) => {
   const results = users.filter(
     (u) =>
       u.name.toLowerCase().indexOf(criteria.toLowerCase()) > -1 ||
@@ -58,11 +58,11 @@ const createIndex = async () => {
   return Promise.resolve("new");
 };
 
-const updateIndex = async (users, index) => {
+const updateIndex = async () => {
   return Promise.resolve(null);
 };
 
-const updateActiveIndex = async (index) => {
+const updateActiveIndex = async () => {
   return Promise.resolve(null);
 };
 
@@ -74,7 +74,7 @@ const getDateOfLastIndexUpdate = async () => {
   return Promise.resolve(undefined);
 };
 
-const setDateOfLastIndexUpdate = async (date) => {
+const setDateOfLastIndexUpdate = async () => {
   return Promise.resolve();
 };
 

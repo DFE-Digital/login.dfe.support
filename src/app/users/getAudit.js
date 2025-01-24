@@ -1,7 +1,7 @@
 const { sendResult, mapUserStatus } = require("./../../infrastructure/utils");
 const { getUserDetailsById } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
-const { getPageOfUserAudits, cache } = require("./../../infrastructure/audit");
+const { getPageOfUserAudits } = require("./../../infrastructure/audit");
 const logger = require("./../../infrastructure/logger");
 const {
   getServiceIdForClientId,
@@ -175,7 +175,7 @@ const describeAuditEvent = async (audit, req) => {
       const viewedUser = await getCachedUserById(audit.editedUser, req.id);
       return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
         numericIdentifier: ${audit["numericIdentifier"]}, textIdentifier: ${audit["textIdentifier"]})`;
-    } catch (e) {
+    } catch {
       return audit.message;
     }
   }

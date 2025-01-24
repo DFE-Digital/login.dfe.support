@@ -1,6 +1,5 @@
 const Sequelize = require("sequelize");
 const { logs, db } = require("./sequelize-schema");
-const { getUser } = require("./../../infrastructure/directories");
 
 const { Op } = Sequelize;
 const { QueryTypes } = Sequelize;
@@ -125,12 +124,6 @@ const getPageOfUserAudits = async (userId, pageNumber) => {
     numberOfPages: Math.ceil(count / pageSize),
     numberOfRecords: count,
   };
-};
-
-const getUserName = async (userId) => {
-  const user = await getUser(userId);
-
-  return `${user.given_name} ${user.family_name}`;
 };
 
 const getAllAuditsSince = async (sinceDate) => {
@@ -258,23 +251,6 @@ const getUserChangeHistory = async (userId, pageNumber) => {
     },
     pageNumber,
   );
-};
-
-const getAuditEvent = (type, subType, unlockType) => {
-  let event = `Digipass event ${type} - ${subType}`;
-
-  if (type === "sign-in" && subType === "digipass") {
-    event = "Login";
-  } else if (subType === "digipass-resync") {
-    event = `${type} - Resync`;
-  } else if (type === "support" && subType === "digipass-unlock") {
-    event = `Unlock - UnlockType: "${unlockType}"`;
-  } else if (type === "support" && subType === "digipass-deactivate") {
-    event = "Deactivate";
-  } else if (type === "support" && subType === "digipass-assign") {
-    event = "Assigned";
-  }
-  return event;
 };
 
 module.exports = {

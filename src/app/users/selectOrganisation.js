@@ -3,7 +3,7 @@ const {
   getInvitationOrganisations,
 } = require("./../../infrastructure/organisations");
 
-const getSelectionPrompt = async (req) => {
+const getSelectionPrompt = async () => {
   return "You are associated with more than one organisation. Select the organisation associated with the service you would like to access.";
 };
 

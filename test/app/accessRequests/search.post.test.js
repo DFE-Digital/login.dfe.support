@@ -20,7 +20,7 @@ describe("When processing a post to search for access requests", () => {
   let req;
   let res;
   let usersSearchResult;
-
+  let usersForApproval;
   beforeEach(() => {
     req = {
       method: "POST",

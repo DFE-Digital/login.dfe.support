@@ -83,63 +83,61 @@ describe("when getting users organisation details", () => {
     });
 
     getUserLoginAuditsForService.mockReset();
-    getUserLoginAuditsForService.mockImplementation(
-      (userId, clientId, pageNumber) => {
-        switch (clientId) {
-          case "client1":
-            return {
-              audits: [
-                {
-                  type: "sign-in",
-                  subType: "username-password",
-                  success: true,
-                  userId: "7a1b077a-d7d4-4b60-83e8-1a1b49849510",
-                  userEmail: "some.user@test.tester",
-                  level: "audit",
-                  message:
-                    "Successful login attempt for some.user@test.tester (id: 7a1b077a-d7d4-4b60-83e8-1a1b49849510)",
-                  timestamp: "2018-02-01T09:00:00.000Z",
-                },
-              ],
-              numberOfPages: 1,
-            };
-          case "client2":
-            return {
-              audits: [
-                {
-                  type: "sign-in",
-                  subType: "username-password",
-                  success: true,
-                  userId: "7a1b077a-d7d4-4b60-83e8-1a1b49849510",
-                  userEmail: "some.user@test.tester",
-                  level: "audit",
-                  message:
-                    "Successful login attempt for some.user@test.tester (id: 7a1b077a-d7d4-4b60-83e8-1a1b49849510)",
-                  timestamp: "2018-02-01T10:00:00.000Z",
-                },
-              ],
-              numberOfPages: 1,
-            };
-          case "client3":
-            return {
-              audits: [
-                {
-                  type: "sign-in",
-                  subType: "username-password",
-                  success: true,
-                  userId: "7a1b077a-d7d4-4b60-83e8-1a1b49849510",
-                  userEmail: "some.user@test.tester",
-                  level: "audit",
-                  message:
-                    "Successful login attempt for some.user@test.tester (id: 7a1b077a-d7d4-4b60-83e8-1a1b49849510)",
-                  timestamp: "2018-02-01T11:00:00.000Z",
-                },
-              ],
-              numberOfPages: 1,
-            };
-        }
-      },
-    );
+    getUserLoginAuditsForService.mockImplementation((userId, clientId) => {
+      switch (clientId) {
+        case "client1":
+          return {
+            audits: [
+              {
+                type: "sign-in",
+                subType: "username-password",
+                success: true,
+                userId: "7a1b077a-d7d4-4b60-83e8-1a1b49849510",
+                userEmail: "some.user@test.tester",
+                level: "audit",
+                message:
+                  "Successful login attempt for some.user@test.tester (id: 7a1b077a-d7d4-4b60-83e8-1a1b49849510)",
+                timestamp: "2018-02-01T09:00:00.000Z",
+              },
+            ],
+            numberOfPages: 1,
+          };
+        case "client2":
+          return {
+            audits: [
+              {
+                type: "sign-in",
+                subType: "username-password",
+                success: true,
+                userId: "7a1b077a-d7d4-4b60-83e8-1a1b49849510",
+                userEmail: "some.user@test.tester",
+                level: "audit",
+                message:
+                  "Successful login attempt for some.user@test.tester (id: 7a1b077a-d7d4-4b60-83e8-1a1b49849510)",
+                timestamp: "2018-02-01T10:00:00.000Z",
+              },
+            ],
+            numberOfPages: 1,
+          };
+        case "client3":
+          return {
+            audits: [
+              {
+                type: "sign-in",
+                subType: "username-password",
+                success: true,
+                userId: "7a1b077a-d7d4-4b60-83e8-1a1b49849510",
+                userEmail: "some.user@test.tester",
+                level: "audit",
+                message:
+                  "Successful login attempt for some.user@test.tester (id: 7a1b077a-d7d4-4b60-83e8-1a1b49849510)",
+                timestamp: "2018-02-01T11:00:00.000Z",
+              },
+            ],
+            numberOfPages: 1,
+          };
+      }
+    });
 
     getUsersByIdV2.mockReset();
     getUsersByIdV2.mockReturnValue([

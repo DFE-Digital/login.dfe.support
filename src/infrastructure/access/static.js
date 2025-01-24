@@ -42,11 +42,11 @@ const updateInvitationService = async () => {
   return Promise.resolve(null);
 };
 
-const removeServiceFromUser = async (uid, sid, oid, correlationId) => {
+const removeServiceFromUser = async () => {
   return Promise.resolve();
 };
 
-const removeServiceFromInvitation = async (iid, sid, oid, correlationId) => {
+const removeServiceFromInvitation = async () => {
   return Promise.resolve();
 };
 

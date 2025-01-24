@@ -210,7 +210,7 @@ const executeQuery = async () => {
           "select us.user_id, us.service_id, us.organisation_id, count(usr.role_id) from user_services us " +
             "left join user_service_roles usr on us.user_id = usr.user_id and us.service_id = usr.service_id and us.organisation_id = usr.organisation_id " +
             "group by us.user_id, us.service_id, us.organisation_id " +
-            `having us.service_id = \'${service.id}\' and (count(usr.role_id) < ${service.requiredRolesForService} or count(usr.role_id) > ${service.requiredRolesForService})`,
+            `having us.service_id = '${service.id}' and (count(usr.role_id) < ${service.requiredRolesForService} or count(usr.role_id) > ${service.requiredRolesForService})`,
           (err, rowCount) => {
             if (err) {
               console.log(err);

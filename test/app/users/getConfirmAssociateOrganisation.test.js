@@ -25,6 +25,7 @@ const res = getResponseMock();
 
 describe("when confirming new organisation association", () => {
   let req;
+  let sendUserAddedToOrganisationStub;
   const expectedEmailAddress = "test@test.com";
   const expectedFirstName = "test";
   const expectedLastName = "name";

@@ -1,6 +1,6 @@
 const { v4: uuid } = require("uuid");
 
-const getUser = async (uid, correlationId) => {
+const getUser = async () => {
   return {
     sub: "7a1b077a-d7d4-4b60-83e8-1a1b49849510",
     given_name: "Test",
@@ -12,12 +12,7 @@ const getUser = async (uid, correlationId) => {
   };
 };
 
-const getPageOfInvitations = async (
-  pageNumber,
-  pageSize,
-  changedAfter,
-  correlationId,
-) => {
+const getPageOfInvitations = async (pageNumber) => {
   return {
     invitations: [],
     numberOfPages: 1,
@@ -25,7 +20,7 @@ const getPageOfInvitations = async (
   };
 };
 
-const getInvitation = async (invitationId, correlationId) => {
+const getInvitation = async (invitationId) => {
   return {
     firstName: "Some",
     lastName: "User",
@@ -36,68 +31,55 @@ const getInvitation = async (invitationId, correlationId) => {
   };
 };
 
-const updateUser = async (uid, givenName, familyName, correlationId) => {
+const updateUser = async () => {
   return Promise.resolve();
 };
 
-const deactivate = async (uid, correlationId) => {
+const deactivate = async () => {
   return Promise.resolve();
 };
 
-const reactivate = async (uid, correlationId) => {
+const reactivate = async () => {
   return Promise.resolve();
 };
 
-const createInvite = async (
-  givenName,
-  familyName,
-  email,
-  clientId,
-  redirectUri,
-  correlationId,
-) => {
+const createInvite = async () => {
   return Promise.resolve(uuid());
 };
 
-const updateInvite = async (id, email, correlationId) => {
+const updateInvite = async () => {
   return Promise.resolve(null);
 };
 
-const deactivateInvite = async (inviteId, reason, correlationId) => {
+const deactivateInvite = async () => {
   return Promise.resolve(uuid());
 };
 
-const reactivateInvite = async (inviteId, reason, correlationId) => {
+const reactivateInvite = async () => {
   return Promise.resolve(uuid());
 };
 
-const createChangeEmailCode = async (
-  userId,
-  newEmailAddress,
-  clientId,
-  redirectUri,
-  correlationId,
-) => {
+const createChangeEmailCode = async () => {
   return Promise.resolve({});
 };
 
-const getChangeEmailCode = async (userId, correlationId) => {
+const getChangeEmailCode = async () => {
   return Promise.resolve(null);
 };
 
-const deleteChangeEmailCode = async (userId, correlationId) => {
+const deleteChangeEmailCode = async () => {
   return Promise.resolve();
 };
 
-const getUsersById = async (userIds, correlationId) => {
+const getUsersById = async () => {
   return Promise.resolve([]);
 };
 
-const getUsersByIdV2 = async (userIds, correlationId) => {
+const getUsersByIdV2 = async () => {
   return Promise.resolve([]);
 };
 
-const getLegacyUsernames = async (userIds, correlationId) => {
+const getLegacyUsernames = async () => {
   return Promise.resolve([]);
 };
 

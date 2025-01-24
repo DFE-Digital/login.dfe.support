@@ -47,6 +47,8 @@ const res = getResponseMock();
 describe("when adding new services to a user", () => {
   let req;
   let postConfirmAddService;
+  let sendServiceAddedStub;
+  let sendServiceRequestApprovedStub;
 
   const expectedEmailAddress = "test@test.com";
   const expectedFirstName = "test";

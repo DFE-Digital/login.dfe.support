@@ -48,105 +48,97 @@ const search = async (
 ) => {
   const currentIndexName = await client.get("CurrentIndex_Users");
 
-  try {
-    const skip = (pageNumber - 1) * pageSize;
-    let orderBy;
-    switch (sortBy) {
-      case "email":
-        orderBy = sortAsc ? "email" : "email desc";
-        break;
-      case "organisation":
-        orderBy = sortAsc ? "organisationName" : "organisationName desc";
-        break;
-      case "lastlogin":
-        orderBy = sortAsc ? "lastLogin desc" : "lastLogin";
-        break;
-      case "status":
-        orderBy = sortAsc ? "statusDescription desc" : "statusDescription";
-        break;
-      default:
-        orderBy = sortAsc ? "name" : "name desc";
-        break;
-    }
-
-    let filterParam = "";
-    if (filters) {
-      if (filters.organisationType && filters.organisationType.length > 0) {
-        if (filterParam.length > 0) {
-          filterParam += " and ";
-        }
-        filterParam += `organisationCategories/any(x: search.in(x, '${filters.organisationType.join(", ")}'))`;
-      }
-
-      if (filters.accountStatus && filters.accountStatus.length > 0) {
-        if (filterParam.length > 0) {
-          filterParam += " and ";
-        }
-        filterParam += `(statusId eq ${filters.accountStatus.join(" or statusId eq ")})`;
-      }
-
-      if (filters.service && filters.service.length > 0) {
-        if (filterParam.length > 0) {
-          filterParam += " and ";
-        }
-        filterParam += `services/any(x: search.in(x, '${filters.service.join(", ")}'))`;
-      }
-    }
-
-    criteria = criteria.replace(/\s/g, "").replace("@", "").toLowerCase();
-
-    let uri = `${getAzureSearchUri(currentIndexName, "/docs")}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`;
-    if (filterParam.length > 0) {
-      uri += `&$filter=${filterParam}`;
-    }
-
-    const response = await fetchApi(uri, {
-      method: "GET",
-      headers: {
-        "content-type": "application/json",
-        "api-key": config.cache.params.apiKey,
-      },
-    });
-
-    let numberOfPages = 1;
-    const totalNumberOfResults = parseInt(response["@odata.count"]);
-    if (!isNaN(totalNumberOfResults)) {
-      numberOfPages = Math.ceil(totalNumberOfResults / pageSize);
-    }
-
-    return {
-      users: response.value.map(mapSearchIndexUser),
-      numberOfPages,
-      totalNumberOfResults,
-    };
-  } catch (e) {
-    throw e;
+  const skip = (pageNumber - 1) * pageSize;
+  let orderBy;
+  switch (sortBy) {
+    case "email":
+      orderBy = sortAsc ? "email" : "email desc";
+      break;
+    case "organisation":
+      orderBy = sortAsc ? "organisationName" : "organisationName desc";
+      break;
+    case "lastlogin":
+      orderBy = sortAsc ? "lastLogin desc" : "lastLogin";
+      break;
+    case "status":
+      orderBy = sortAsc ? "statusDescription desc" : "statusDescription";
+      break;
+    default:
+      orderBy = sortAsc ? "name" : "name desc";
+      break;
   }
+
+  let filterParam = "";
+  if (filters) {
+    if (filters.organisationType && filters.organisationType.length > 0) {
+      if (filterParam.length > 0) {
+        filterParam += " and ";
+      }
+      filterParam += `organisationCategories/any(x: search.in(x, '${filters.organisationType.join(", ")}'))`;
+    }
+
+    if (filters.accountStatus && filters.accountStatus.length > 0) {
+      if (filterParam.length > 0) {
+        filterParam += " and ";
+      }
+      filterParam += `(statusId eq ${filters.accountStatus.join(" or statusId eq ")})`;
+    }
+
+    if (filters.service && filters.service.length > 0) {
+      if (filterParam.length > 0) {
+        filterParam += " and ";
+      }
+      filterParam += `services/any(x: search.in(x, '${filters.service.join(", ")}'))`;
+    }
+  }
+
+  criteria = criteria.replace(/\s/g, "").replace("@", "").toLowerCase();
+
+  let uri = `${getAzureSearchUri(currentIndexName, "/docs")}&search=${criteria}&$count=true&$skip=${skip}&$top=${pageSize}&$orderby=${orderBy}`;
+  if (filterParam.length > 0) {
+    uri += `&$filter=${filterParam}`;
+  }
+
+  const response = await fetchApi(uri, {
+    method: "GET",
+    headers: {
+      "content-type": "application/json",
+      "api-key": config.cache.params.apiKey,
+    },
+  });
+
+  let numberOfPages = 1;
+  const totalNumberOfResults = parseInt(response["@odata.count"]);
+  if (!isNaN(totalNumberOfResults)) {
+    numberOfPages = Math.ceil(totalNumberOfResults / pageSize);
+  }
+
+  return {
+    users: response.value.map(mapSearchIndexUser),
+    numberOfPages,
+    totalNumberOfResults,
+  };
 };
 
 const getById = async (userId) => {
   const currentIndexName = await client.get("CurrentIndex_Users");
 
-  try {
-    const response = await fetchApi(
-      `${getAzureSearchUri(currentIndexName, "/docs")}&$filter=id+eq+'${userId}'`,
-      {
-        method: "GET",
-        headers: {
-          "content-type": "application/json",
-          "api-key": config.cache.params.apiKey,
-        },
+  const response = await fetchApi(
+    `${getAzureSearchUri(currentIndexName, "/docs")}&$filter=id+eq+'${userId}'`,
+    {
+      method: "GET",
+      headers: {
+        "content-type": "application/json",
+        "api-key": config.cache.params.apiKey,
       },
-    );
+    },
+  );
 
-    if (response.value.length === 0) {
-      return null;
-    }
-
-    return mapSearchIndexUser(response.value[0]);
-  } catch (e) {
-    throw e;
+  if (response.value.length === 0) {
+    return null;
   }
+
+  return mapSearchIndexUser(response.value[0]);
 };
 
 const getExistingIndex = async () => {
@@ -154,93 +146,89 @@ const getExistingIndex = async () => {
 };
 
 const createIndex = async () => {
-  try {
-    const indexName = `users-${uuid()}`;
+  const indexName = `users-${uuid()}`;
 
-    await fetchApi(getAzureSearchUri(indexName), {
-      method: "PUT",
-      headers: {
-        "content-type": "application/json",
-        "api-key": config.cache.params.apiKey,
-      },
-      body: {
-        name: indexName,
-        fields: [
-          {
-            name: "id",
-            type: "Edm.String",
-            key: true,
-            searchable: false,
-            filterable: true,
-          },
-          {
-            name: "name",
-            type: "Edm.String",
-            sortable: true,
-            filterable: true,
-          },
-          { name: "nameSearch", type: "Edm.String", searchable: true },
-          { name: "firstName", type: "Edm.String" },
-          { name: "lastName", type: "Edm.String" },
-          {
-            name: "email",
-            type: "Edm.String",
-            sortable: true,
-            filterable: true,
-          },
-          { name: "emailSearch", type: "Edm.String", searchable: true },
-          {
-            name: "organisationName",
-            type: "Edm.String",
-            sortable: true,
-            filterable: true,
-          },
-          {
-            name: "organisationNameSearch",
-            type: "Edm.String",
-            searchable: true,
-          },
-          {
-            name: "organisationCategories",
-            type: "Collection(Edm.String)",
-            searchable: false,
-            filterable: true,
-          },
-          {
-            name: "services",
-            type: "Collection(Edm.String)",
-            searchable: false,
-            filterable: true,
-          },
-          {
-            name: "lastLogin",
-            type: "Edm.Int64",
-            sortable: true,
-            filterable: true,
-          },
-          { name: "successfulLoginsInPast12Months", type: "Edm.Int64" },
-          { name: "statusLastChangedOn", type: "Edm.Int64" },
-          {
-            name: "statusDescription",
-            type: "Edm.String",
-            sortable: true,
-            filterable: true,
-          },
-          { name: "statusId", type: "Edm.Int64" },
-          { name: "pendingEmail", type: "Edm.String" },
-          {
-            name: "legacyUsernames",
-            type: "Collection(Edm.String)",
-            searchable: true,
-            filterable: true,
-          },
-        ],
-      },
-    });
-    return indexName;
-  } catch (e) {
-    throw e;
-  }
+  await fetchApi(getAzureSearchUri(indexName), {
+    method: "PUT",
+    headers: {
+      "content-type": "application/json",
+      "api-key": config.cache.params.apiKey,
+    },
+    body: {
+      name: indexName,
+      fields: [
+        {
+          name: "id",
+          type: "Edm.String",
+          key: true,
+          searchable: false,
+          filterable: true,
+        },
+        {
+          name: "name",
+          type: "Edm.String",
+          sortable: true,
+          filterable: true,
+        },
+        { name: "nameSearch", type: "Edm.String", searchable: true },
+        { name: "firstName", type: "Edm.String" },
+        { name: "lastName", type: "Edm.String" },
+        {
+          name: "email",
+          type: "Edm.String",
+          sortable: true,
+          filterable: true,
+        },
+        { name: "emailSearch", type: "Edm.String", searchable: true },
+        {
+          name: "organisationName",
+          type: "Edm.String",
+          sortable: true,
+          filterable: true,
+        },
+        {
+          name: "organisationNameSearch",
+          type: "Edm.String",
+          searchable: true,
+        },
+        {
+          name: "organisationCategories",
+          type: "Collection(Edm.String)",
+          searchable: false,
+          filterable: true,
+        },
+        {
+          name: "services",
+          type: "Collection(Edm.String)",
+          searchable: false,
+          filterable: true,
+        },
+        {
+          name: "lastLogin",
+          type: "Edm.Int64",
+          sortable: true,
+          filterable: true,
+        },
+        { name: "successfulLoginsInPast12Months", type: "Edm.Int64" },
+        { name: "statusLastChangedOn", type: "Edm.Int64" },
+        {
+          name: "statusDescription",
+          type: "Edm.String",
+          sortable: true,
+          filterable: true,
+        },
+        { name: "statusId", type: "Edm.Int64" },
+        { name: "pendingEmail", type: "Edm.String" },
+        {
+          name: "legacyUsernames",
+          type: "Collection(Edm.String)",
+          searchable: true,
+          filterable: true,
+        },
+      ],
+    },
+  });
+  return indexName;
 };
 
 const updateIndex = async (users, index) => {
@@ -250,51 +238,47 @@ const updateIndex = async (users, index) => {
   if (!index) {
     index = await client.get("CurrentIndex_Users");
   }
-  try {
-    const usersForIndex = users.map((user) => {
-      let lastLogin = user.lastLogin;
-      if (lastLogin && lastLogin instanceof Date) {
-        lastLogin = lastLogin.getTime();
-      }
-      return {
-        "@search.action": "upload",
-        id: user.id,
-        name: user.name,
-        nameSearch: user.name.replace(/\s/g, "").toLowerCase(),
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        emailSearch: user.email.replace("@", "").toLowerCase(),
-        organisationName: user.organisation ? user.organisation.name : "",
-        organisationNameSearch: user.organisation
-          ? user.organisation.name.replace(/\s/g, "").toLowerCase()
-          : "",
-        organisationCategories: user.organisationCategories || [],
-        services: user.services || [],
-        lastLogin: lastLogin || 0,
-        successfulLoginsInPast12Months:
-          user.successfulLoginsInPast12Months || 0,
-        statusLastChangedOn: user.status.changedOn ? user.status.changedOn : 0,
-        statusDescription: user.status.description,
-        statusId: user.status.id,
-        pendingEmail: user.pendingEmail || "",
-        legacyUsernames: user.legacyUsernames || [],
-      };
-    });
 
-    await fetchApi(getAzureSearchUri(index, "/docs/index"), {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "api-key": config.cache.params.apiKey,
-      },
-      body: {
-        value: usersForIndex,
-      },
-    });
-  } catch (e) {
-    throw e;
-  }
+  const usersForIndex = users.map((user) => {
+    let lastLogin = user.lastLogin;
+    if (lastLogin && lastLogin instanceof Date) {
+      lastLogin = lastLogin.getTime();
+    }
+    return {
+      "@search.action": "upload",
+      id: user.id,
+      name: user.name,
+      nameSearch: user.name.replace(/\s/g, "").toLowerCase(),
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      emailSearch: user.email.replace("@", "").toLowerCase(),
+      organisationName: user.organisation ? user.organisation.name : "",
+      organisationNameSearch: user.organisation
+        ? user.organisation.name.replace(/\s/g, "").toLowerCase()
+        : "",
+      organisationCategories: user.organisationCategories || [],
+      services: user.services || [],
+      lastLogin: lastLogin || 0,
+      successfulLoginsInPast12Months: user.successfulLoginsInPast12Months || 0,
+      statusLastChangedOn: user.status.changedOn ? user.status.changedOn : 0,
+      statusDescription: user.status.description,
+      statusId: user.status.id,
+      pendingEmail: user.pendingEmail || "",
+      legacyUsernames: user.legacyUsernames || [],
+    };
+  });
+
+  await fetchApi(getAzureSearchUri(index, "/docs/index"), {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "api-key": config.cache.params.apiKey,
+    },
+    body: {
+      value: usersForIndex,
+    },
+  });
 };
 
 const updateActiveIndex = async (index) => {

@@ -21,7 +21,7 @@ const accessRequests = [
   },
 ];
 
-const search = async (criteria, pageNumber) => {
+const search = async (criteria) => {
   const results = accessRequests.filter(
     (u) =>
       u.name.toLowerCase().indexOf(criteria.toLowerCase()) > -1 ||
@@ -46,11 +46,11 @@ const createIndex = async () => {
   return Promise.resolve("new");
 };
 
-const updateIndex = async (users, index) => {
+const updateIndex = async () => {
   return Promise.resolve(null);
 };
 
-const updateActiveIndex = async (index) => {
+const updateActiveIndex = async () => {
   return Promise.resolve(null);
 };
 
@@ -62,7 +62,7 @@ const deleteAccessRequest = async () => {
   return Promise.resolve(null);
 };
 
-const getById = async (userId, filterParam = "id") => {
+const getById = async () => {
   return Promise.resolve(null);
 };
 
