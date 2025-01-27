@@ -40,13 +40,13 @@
                                             <dt><abbr title="Unique Reference Number">URN: </abbr></dt>
                                                 <% if (org.status.id === 4) { %>
                                                     <dd><%=org.urn%></dd>
-                                                <%} else {%>
+                                                <%}else {%>
                                                     <dd><a href="https://get-information-schools.service.gov.uk/Establishments/Establishment/Details/<%=org.urn%>" target="_blank"><%=org.urn%></a></dd>
                                                     <%}%>
-                                            <%} else if(org.uid) {%>
-                                            <dt><abbr title="Unique Identifier">UID: </abbr></dt>
-                                            <dd><a href="https://get-information-schools.service.gov.uk/Groups/Group/Details/<%=org.uid%>?searchQueryString=tok%3D8UpHNr2D" target="_blank"><%=org.uid%></a></dd>
-                                            <%}%>
+                                        <%} else if(org.uid) {%>
+                                        <dt><abbr title="Unique Identifier">UID: </abbr></dt>
+                                        <dd><a href="https://get-information-schools.service.gov.uk/Groups/Group/Details/<%=org.uid%>?searchQueryString=tok%3D8UpHNr2D" target="_blank"><%=org.uid%></a></dd>
+                                        <%}%>
                                         
                                         <% if (org.ukprn) { %>
                                         <dt><abbr title="UK Provider Reference Number">UKPRN: </abbr></dt>
