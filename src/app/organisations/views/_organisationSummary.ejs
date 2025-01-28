@@ -41,7 +41,11 @@
 
             <% if (organisation.uid) { %>
                 <dt class="label">UID:</dt>
-                <dd><a href="https://get-information-schools.service.gov.uk/Groups/Group/Details/<%=organisation.uid%>" target="_blank"><%=organisation.uid%></a></dd>
+                <% if (organisation.status.id === 2) { %>
+                    <dd><%=organisation.uid%></dd>
+                <%}else {%>
+                    <dd><a href="https://get-information-schools.service.gov.uk/Groups/Group/Details/<%=organisation.uid%>" target="_blank"><%=organisation.uid%></a></dd>
+                <% } %>
             <% } %>
 
             <% if (organisation.ukprn) { %>

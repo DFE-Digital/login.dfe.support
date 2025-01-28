@@ -31,7 +31,8 @@ const render = async (req, res, dataSource) => {
       : "";
     return viewUser;
   });
-
+  //todo - REMOVE
+  console.log('organisationUsers.js - organisation: ', organisation);
   sendResult(req, res, "organisations/views/users", {
     csrfToken: req.csrfToken(),
     organisation: organisation,
