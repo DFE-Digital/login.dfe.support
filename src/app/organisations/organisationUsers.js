@@ -31,7 +31,6 @@ const render = async (req, res, dataSource) => {
       : "";
     return viewUser;
   });
-  
   sendResult(req, res, "organisations/views/users", {
     csrfToken: req.csrfToken(),
     organisation: organisation,
