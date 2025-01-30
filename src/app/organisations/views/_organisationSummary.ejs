@@ -32,12 +32,20 @@
 
             <% if (organisation.urn) { %>
                 <dt class="label">URN:</dt>
-                <dd><%= organisation.urn %></dd>
+                <% if (organisation.status.id === 4) { %>
+                    <dd><%=organisation.urn%></dd>
+                <%}else {%>
+                    <dd><a href="https://get-information-schools.service.gov.uk/Establishments/Establishment/Details/<%=organisation.urn%>" target="_blank"><%=organisation.urn%></a></dd>
+                <% } %>
             <% } %>
 
             <% if (organisation.uid) { %>
                 <dt class="label">UID:</dt>
-                <dd><%= organisation.uid %></dd>
+                <% if (organisation.status.id === 2) { %>
+                    <dd><%=organisation.uid%></dd>
+                <%}else {%>
+                    <dd><a href="https://get-information-schools.service.gov.uk/Groups/Group/Details/<%=organisation.uid%>" target="_blank"><%=organisation.uid%></a></dd>
+                <% } %>
             <% } %>
 
             <% if (organisation.ukprn) { %>
