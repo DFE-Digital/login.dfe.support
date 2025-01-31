@@ -116,13 +116,13 @@ const postEditProfile = async (req, res) => {
     }
   }
 
-  const newName = {
-    firstName: req.body.firstName,
-    lastName: req.body.lastName
-  }
-
   if (uid.startsWith("inv-")) {
-    const invitationId = uid.substr(4);    
+    const invitationId = uid.substr(4);  
+    const newName = {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName
+    };
+
     await updateInvite(invitationId, newName);
     await updateUserIndex(user.id, req.body.firstName, req.body.lastName, req.id);
   } else {

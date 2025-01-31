@@ -231,9 +231,7 @@ const createInvite = async (
   return invitation.id;
 };
 
-const updateInvite = async (id, update, correlationId) => {
-
-  if (update.firstName && update.lastName) {
+const updateInvite = async (id, body, correlationId) => {
     try {
       const token = await jwtStrategy(
         config.directories.service,
@@ -245,34 +243,11 @@ const updateInvite = async (id, update, correlationId) => {
           authorization: `bearer ${token}`,
           "x-correlation-id": correlationId,
         },
-        body: {
-          firstName: update.firstName,
-          lastName: update.lastName,
-        },
+        body,
       });
     } catch (e) {
       console.log(e);
     }
-  } else {
-    try {
-      const token = await jwtStrategy(
-        config.directories.service,
-      ).getBearerToken();
-  
-      await fetchApi(`${config.directories.service.url}/invitations/${id}`, {
-        method: "PATCH",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-        body: {
-          email: update,
-        },
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  }
 };
 
 const resendInvite = async (id, correlationId) => {
