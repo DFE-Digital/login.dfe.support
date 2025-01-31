@@ -96,7 +96,7 @@ stages:
           AppDeploy: ${{ not(parameters.InfrDeploy) }}
 
       - ${{ if not(eq(parameters.InfrDeploy, 'true')) }}:
-          - template: pipeline/buildAzureAppServices.yml@devopsTemplates
+          - template: pipeline/build.yml@devopsTemplates
             parameters:
               applicationName: ${{variables.applicationFullName}}
               custRegAuth: $(custRegAuth)
@@ -144,7 +144,7 @@ stages:
                   - name: ShaCodeName
                     value: ${{ format('{0}{1}', env, 'ShaCode') }}
                 jobs:
-                  - template: pipeline/deployAzureAppServices.yml@devopsTemplates
+                  - template: pipeline/deployment.yml@devopsTemplates
                     parameters:
                       serviceConnection: $(${{variables.ServConName}})
                       # shaPool: $[variables['${{env}}ShaPool']]
