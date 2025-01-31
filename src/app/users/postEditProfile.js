@@ -6,7 +6,7 @@ const {
   updateUserDetails,
   waitForIndexToUpdate,
 } = require("./utils");
-const { updateUser } = require("../../infrastructure/directories");
+const { updateUser, updateInvite } = require("../../infrastructure/directories");
 const {
   putSingleServiceIdentifierForUser,
 } = require("../../infrastructure/access");
@@ -116,8 +116,19 @@ const postEditProfile = async (req, res) => {
     }
   }
 
-  await updateUser(uid, req.body.firstName, req.body.lastName, req.id);
-  await updateUserIndex(uid, req.body.firstName, req.body.lastName, req.id);
+  const newName = {
+    firstName: req.body.firstName,
+    lastName: req.body.lastName
+  }
+
+  if (uid.startsWith("inv-")) {
+    const invitationId = uid.substr(4);    
+    await updateInvite(invitationId, newName);
+    await updateUserIndex(user.id, req.body.firstName, req.body.lastName, req.id);
+  } else {
+    await updateUser(uid, req.body.firstName, req.body.lastName, req.id);
+    await updateUserIndex(uid, req.body.firstName, req.body.lastName, req.id);
+  }
 
   auditEdit(req, user);
 

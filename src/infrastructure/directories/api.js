@@ -88,7 +88,7 @@ const getInvitation = async (invitationId, correlationId) => {
 
 const updateUser = async (uid, givenName, familyName, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
-
+  
   try {
     const body = {};
     if (givenName) {
@@ -231,24 +231,47 @@ const createInvite = async (
   return invitation.id;
 };
 
-const updateInvite = async (id, email, correlationId) => {
-  try {
-    const token = await jwtStrategy(
-      config.directories.service,
-    ).getBearerToken();
+const updateInvite = async (id, update, correlationId) => {
 
-    await fetchApi(`${config.directories.service.url}/invitations/${id}`, {
-      method: "PATCH",
-      headers: {
-        authorization: `bearer ${token}`,
-        "x-correlation-id": correlationId,
-      },
-      body: {
-        email,
-      },
-    });
-  } catch (e) {
-    console.log(e);
+  if (update.firstName && update.lastName) {
+    try {
+      const token = await jwtStrategy(
+        config.directories.service,
+      ).getBearerToken();
+  
+      await fetchApi(`${config.directories.service.url}/invitations/${id}`, {
+        method: "PATCH",
+        headers: {
+          authorization: `bearer ${token}`,
+          "x-correlation-id": correlationId,
+        },
+        body: {
+          firstName: update.firstName,
+          lastName: update.lastName,
+        },
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  } else {
+    try {
+      const token = await jwtStrategy(
+        config.directories.service,
+      ).getBearerToken();
+  
+      await fetchApi(`${config.directories.service.url}/invitations/${id}`, {
+        method: "PATCH",
+        headers: {
+          authorization: `bearer ${token}`,
+          "x-correlation-id": correlationId,
+        },
+        body: {
+          email: update,
+        },
+      });
+    } catch (e) {
+      console.log(e);
+    }
   }
 };
 

@@ -14,7 +14,7 @@ const {
   getUserDetailsById,
   updateUserDetails,
 } = require("./../../../src/app/users/utils");
-const { updateUser } = require("./../../../src/infrastructure/directories");
+const { updateUser, updateInvite } = require("./../../../src/infrastructure/directories");
 const postEditProfile = require("./../../../src/app/users/postEditProfile");
 
 describe("when updating users profile details", () => {
@@ -83,6 +83,7 @@ describe("when updating users profile details", () => {
     updateUserDetails.mockReset();
 
     updateUser.mockReset();
+    updateInvite.mockReset();
   });
 
   it("then it should render view if firstName missing", async () => {
@@ -171,4 +172,19 @@ describe("when updating users profile details", () => {
       ],
     });
   });
+
+  it("should call updateInvite if updating an invited user", async () => {
+    req.params.uid = "inv-915a7382-576b-4699-ad07-a9fd329d3867";
+
+    await postEditProfile(req, res);
+
+    expect(updateUser).not.toHaveBeenCalled();
+    expect(updateInvite).toHaveBeenCalled();
+    expect(updateInvite.mock.calls).toHaveLength(1);
+    expect(updateInvite.mock.calls[0][0]).toBe(
+      "915a7382-576b-4699-ad07-a9fd329d3867",
+    );
+    expect(updateInvite.mock.calls[0][1].firstName).toBe("Rupert");
+    expect(updateInvite.mock.calls[0][1].lastName).toBe("Grint");
+  })
 });
