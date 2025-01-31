@@ -3,6 +3,7 @@ const { fetchApi } = require("login.dfe.async-retry");
 
 //Poc work
 const { DefaultAzureCredential } = require("@azure/identity");
+const { SearchClient, SearchIndexClient } = require("@azure/search-documents");
 
 const credential = new DefaultAzureCredential(config.cache.params.serviceName);
 const client = new SearchIndexClient(`https://${config.cache.params.serviceName}.search.windows.net`, credential);
