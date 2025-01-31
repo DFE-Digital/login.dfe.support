@@ -1,6 +1,28 @@
 const config = require("./../config");
 const { fetchApi } = require("login.dfe.async-retry");
 
+//Poc work
+const { DefaultAzureCredential } = require("@azure/identity");
+
+const credential = new DefaultAzureCredential(config.cache.params.serviceName);
+const client = new SearchIndexClient(`https://${config.cache.params.serviceName}.search.windows.net`, credential);
+
+const getIndexes = async () => {
+  const searchResults = await client.indexes.search("*")
+  // Output documents
+  for await (const result of searchResults.results) {
+    console.log(result.document);
+  }
+  return searchResults
+  
+  // fetchApi(getAzureSearchUri(), {
+  //   method: "GET",
+  //   headers: {
+  //     "api-key": config.cache.params.apiKey,
+  //   },
+  // });
+};
+
 const getAzureSearchUri = (indexName, indexResource = "") => {
   let indexUriSegments = "";
   if (indexName) {
@@ -8,6 +30,9 @@ const getAzureSearchUri = (indexName, indexResource = "") => {
   }
   return `https://${config.cache.params.serviceName}.search.windows.net/indexes${indexUriSegments}?api-version=2016-09-01`;
 };
+
+
+
 
 const createIndex = async (indexName, fields) => {
   await fetchApi(getAzureSearchUri(indexName), {
@@ -67,15 +92,6 @@ const deleteUnusedIndexes = async (unusedIndexes, currentIndexName) => {
       }
     }
   }
-};
-
-const getIndexes = async () => {
-  return await fetchApi(getAzureSearchUri(), {
-    method: "GET",
-    headers: {
-      "api-key": config.cache.params.apiKey,
-    },
-  });
 };
 
 const getIndexById = async (currentIndexName, userId, filterParam = "id") => {

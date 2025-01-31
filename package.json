@@ -29,6 +29,8 @@
   },
   "dependencies": {
     "@azure/service-bus": "^7.9.4",
+    "@azure/identity": "4.6.0",
+    "@azure/search-documents": "12.1.0",
     "agentkeepalive": "^4.5.0",
     "applicationinsights": "^2.0.0",
     "async": "^2.6.3",
