@@ -6,8 +6,15 @@ const logger = require("../../infrastructure/logger");
 const search = require("./search");
 const organisationUsers = require("./organisationUsers");
 const webServiceSync = require("./webServiceSync");
+
+const getEditOrganisation = require("./getEditOrganisation");
+const postEditOrganisation = require("./postEditOrganisation");
+const getConfirmEditOrganisation = require("./getConfirmEditOrganisation");
+const postConfirmEditOrganisation = require("./postConfirmEditOrganisation");
+
 const getppsyncStatus = require("./getppsyncStatus");
 const postppsyncStatus = require("./postPpsyncStatus");
+
 const getCreateOrganisation = require("./getCreateOrganisation");
 const postCreateOrganisation = require("./postCreateOrganisation");
 const getConfirmCreateOrganisation = require("./getConfirmCreateOrganisation");
@@ -48,6 +55,12 @@ const users = (csrf) => {
   router.post("/:id/users", csrf, asyncWrapper(organisationUsers.post));
   router.get("/:id/web-service-sync", csrf, asyncWrapper(webServiceSync.get));
   router.post("/:id/web-service-sync", csrf, asyncWrapper(webServiceSync.post));
+  
+  // redirected here after 'Edit org' button is clicked on org summary page
+  router.get("/:id/edit-organisation", csrf, asyncWrapper(getEditOrganisation));
+  router.post("/:id/edit-organisation", csrf, asyncWrapper(postEditOrganisation));
+  router.get("/:id/confirm-edit-organisation", csrf, asyncWrapper(getConfirmEditOrganisation));
+  router.post("/:id/confirm-edit-organisation", csrf, asyncWrapper(postConfirmEditOrganisation));
 
   return router;
 };

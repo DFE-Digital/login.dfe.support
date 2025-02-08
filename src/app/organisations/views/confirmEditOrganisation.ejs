@@ -1,0 +1,31 @@
+<a href="edit-organisation" class="link-back">Back</a>
+        
+<div class="grid-row">
+    <div class="col-8">
+        <form method="post" id="confirm">
+            <h1 class="heading-xlarge">
+                Review organisation changes
+            </h1>
+
+            <h2 class="heading-medium">Review details 
+            </h2>
+            <dl class="rows">
+                <dt>Name</dt>
+                <dd><%= legalName %></dd>
+
+                <dt>Address</dt>
+                <dd><%= address %></dd>
+
+            </dl>
+
+            <div class="form-submit submit-buttons">
+    
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+
+                <button type="submit" class="button">Confirm changes</button>
+                <a href="/organisations" class="button">
+                    Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
