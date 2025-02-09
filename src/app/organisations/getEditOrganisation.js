@@ -9,7 +9,6 @@ const getEditOrganisation = async (req, res) => {
 
   sendResult(req, res, "organisations/views/editOrganisation", {
       csrfToken: req.csrfToken(),
-      // layout: "sharedViews/layoutNew.ejs",
       organisation
     });
 }

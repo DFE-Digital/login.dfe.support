@@ -5,12 +5,10 @@ const {
   
   const getConfirmEditOrganisation = async (req, res) => {
     const organisation = await getOrganisationByIdV2(req.params.id, req.id);
-    // console.log('organisation: ', organisation);
-    
     const { legalName, address } = req.session.formData;
+
     sendResult(req, res, "organisations/views/confirmEditOrganisation", {
         csrfToken: req.csrfToken(),
-        // layout: "sharedViews/layoutNew.ejs",
         organisation,
         legalName,
         address
