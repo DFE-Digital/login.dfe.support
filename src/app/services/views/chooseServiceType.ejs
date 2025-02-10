@@ -1,0 +1,92 @@
+<div class="govuk-width-container">
+  <div class="col-8">
+    <h1 class="govuk-heading-xl">
+        Create new service
+    </h1>
+      <form method="post">
+        <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset" aria-describedby="signIn-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+              <h1 class="govuk-fieldset__heading">
+                Service type
+              </h1>
+            </legend>
+            <div id="signIn-hint" class="govuk-hint">
+              Select the type of service you want to create.
+            </div>
+            <div class="govuk-radios" data-module="govuk-radios">
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="signIn" name="signIn" type="radio" value="government-gateway" aria-describedby="signIn-item-hint">
+                <label class="govuk-label govuk-radios__label" for="signIn">
+                  Standard service
+                </label>
+                <div id="signIn-item-hint" class="govuk-hint govuk-radios__hint">
+                  Services that allow you to have different levels of access, including roles, sub-services and policies
+                </div>
+              </div>
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="signIn-2" name="signIn" type="radio" value="govuk-one-login" aria-describedby="signIn-2-item-hint">
+                <label class="govuk-label govuk-radios__label" for="signIn-2">
+                  ID-only service
+                </label>
+                <div id="signIn-2-item-hint" class="govuk-hint govuk-radios__hint">
+                  Servicess that only use DfE Sign-In for authentication, meaning you cannot add roles, sub-services or policies
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <details class="govuk-details">
+          <summary class="govuk-details__summary">
+            <span class="govuk-details__summary-text">
+              Advanced options
+            </span>
+          </summary>
+
+
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset" aria-describedby="nationality-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+              <h1 class="govuk-fieldset__heading">
+                Service parameters
+              </h1>
+            </legend>
+            <div id="nationality-hint" class="govuk-hint">
+              To hide the service from certain user groups, select all that apply
+            </div>
+            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+              <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input" id="nationality" name="nationality" type="checkbox" value="british" aria-describedby="nationality-item-hint">
+                <label class="govuk-label govuk-checkboxes__label" for="nationality">
+                  Hide from user's services page
+                </label>
+                <div id="nationality-item-hint" class="govuk-hint govuk-checkboxes__hint">
+                  Stop users from seeing the ID-only service listed their <a href="">services page</a>.
+                  Users will only be able to access the service through a direct link.
+                </div>
+              </div>
+              <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input" id="nationality-2" name="nationality" type="checkbox" value="irish">
+                <label class="govuk-label govuk-checkboxes__label" for="nationality-2">
+                  Hide from contact us page
+                </label>
+                <div id="nationality-item-hint" class="govuk-hint govuk-checkboxes__hint">
+                  Stop users from seeing the ID-only service listed on the <a href="">contact us</a> page
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </details>
+        <div class="govuk-button-group">
+          <button type="submit" class="govuk-button" data-module="govuk-button">
+            Submit
+          </button>
+        </div>
+    </form>
+</div>
+
+
+
