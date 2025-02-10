@@ -1,33 +1,29 @@
-// const { sendResult } = require("../../infrastructure/utils");
+const { editOrganisation } = require("../../infrastructure/organisations");
+
 const {
   getOrganisationByIdV2,
 } = require("./../../infrastructure/organisations");
 
-const validateInput = async (name, address) => {
-  let validationMessages = "";
-
-  if (!name) {
-    const nameRegEx = /^[^±!@£$%^*_+§¡€#¢§¶•ªº«\\/<>:;|=.~"]+$/i;
-    validationMessages = "Please enter a name";
-  } else if (!nameRegEx.test(name)) {
-    validationMessages = "Special characters cannot be used";
-  } else if (name.length > 256) {
-    validationMessages = "Name cannot be longer than 256 characters";
-  }
-
-  if (address) {
-    const addressRegex = /^[^±!@£$%^*_+§¡€#¢§¶•ªº«\\/<>:;|=.~"]+$/i;
-    if (!addressRegex.test(address)) {
-      validationMessages.address = "Special characters cannot be used";
-    }
-  }
-};
-
 const postConfirmEditOrganisation = async (req, res) => {
+  console.log("postConfirmEditOrganisation called");
+  const correlationId = req.id;
   const organisation = await getOrganisationByIdV2(req.params.id, req.id);
-  const { legalName, address } = req.session.formData;
-  console.log("legalName: ", legalName);
+  const { name, address } = req.session.formData;
+  console.log("name: ", name);
   console.log("address: ", address);
+
+  //todo compare existing org details to new details, if different add to
+  //todo body, or just keep original?
+
+  console.log(organisation.name);
+  console.log(organisation.address);
+
+  const body = {
+    name: name,
+    address: address,
+  };
+
+  await editOrganisation(organisation.id, body, correlationId);
 
   return res.redirect(`/organisations/${organisation.id}/users`);
 };

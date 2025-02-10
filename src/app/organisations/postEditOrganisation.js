@@ -8,10 +8,10 @@ const postEditOrganisation = async (req, res) => {
   const organisation = await getOrganisationByIdV2(req.params.id, req.id);
   // console.log('organisation: ', organisation);
   console.log("BODY: ", req.body);
-  const { legalName, address } = req.body;
-  console.log(legalName, address);
+  const { name, address } = req.body;
+  console.log(name, address);
 
-  req.session.formData = { legalName, address };
+  req.session.formData = { name, address };
   return res.redirect(
     `/organisations/${organisation.id}/confirm-edit-organisation`,
   );

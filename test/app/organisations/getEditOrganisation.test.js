@@ -34,7 +34,6 @@ describe("when calling getEditOrganisations", () => {
       {
         csrfToken: req.csrfToken(),
         organisation: orgResult,
-        backLink: true,
         validationMessages: {},
       },
     );

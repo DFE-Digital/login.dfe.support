@@ -22,7 +22,7 @@ describe("when calling getConfirmEditOrganisation", () => {
     req = getRequestMock({
       session: {
         formData: {
-          legalName: "Test name",
+          name: "Test name",
           address: "123 address street",
         },
       },
@@ -41,9 +41,8 @@ describe("when calling getConfirmEditOrganisation", () => {
       {
         csrfToken: req.csrfToken(),
         organisation: orgResult,
-        legalName: "Test name",
+        name: "Test name",
         address: "123 address street",
-        backLink: true,
         validationMessages: {},
       },
     );

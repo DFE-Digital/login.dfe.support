@@ -4,15 +4,16 @@ const {
 } = require("./../../infrastructure/organisations");
 
 const getConfirmEditOrganisation = async (req, res) => {
+  console.log("getConfirmEditOrganisation called");
   const organisation = await getOrganisationByIdV2(req.params.id, req.id);
-  const { legalName, address } = req.session.formData;
+  const { name, address } = req.session.formData;
 
   sendResult(req, res, "organisations/views/confirmEditOrganisation", {
     csrfToken: req.csrfToken(),
     organisation,
-    legalName,
+    name,
     address,
-    backLink: true,
+    // backLink: true,
     validationMessages: {},
   });
 
