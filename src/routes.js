@@ -1,5 +1,6 @@
 const users = require("./app/users");
 const organisations = require("./app/organisations");
+const services = require("./app/services");
 const errors = require("./app/errors");
 const signOut = require("./app/signOut");
 const accessRequests = require("./app/accessRequests");
@@ -13,6 +14,7 @@ const routes = (app, csrf) => {
 
   app.use("/users", users(csrf));
   app.use("/organisations", organisations(csrf));
+  app.use("/services", services(csrf));
   app.use("/signout", signOut(csrf));
   app.use("/access-requests", accessRequests(csrf));
   app.use("/", errors(csrf));

@@ -4,6 +4,7 @@ const {
   isLoggedIn,
   setCurrentArea,
   isRequestApprover,
+  isServiceCreator,
 } = require("../../infrastructure/utils");
 const logger = require("../../infrastructure/logger");
 const {
@@ -30,6 +31,7 @@ const users = (csrf) => {
 
   router.use(isLoggedIn);
   router.use(isRequestApprover);
+  router.use(isServiceCreator);
   router.use(setCurrentArea("users"));
 
   router.get("/", csrf, asyncWrapper(getOrganisationRequests));

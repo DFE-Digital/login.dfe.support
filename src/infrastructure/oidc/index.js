@@ -136,7 +136,9 @@ const init = async (app) => {
         const supportClaims = {
           isRequestApprover: roles.some((i) => i.code === "request_approver"),
           isSupportUser: roles.some((i) => i.code === "support_user"),
+          isServiceCreator: roles.some((i) => i.code === "service_creator"),
         };
+
         if (!supportClaims || !supportClaims.isSupportUser) {
           checkSessionAndRedirect();
         } else {

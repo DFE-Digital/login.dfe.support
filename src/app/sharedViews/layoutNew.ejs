@@ -82,7 +82,14 @@
                                 <a class="govuk-header__link" href="/organisations">
                                     Organisations
                                 </a>
-                            </li>  
+                            </li>
+                            <% if (locals.isServiceCreator) { %>
+                            <li class="govuk-header__navigation-item <%= locals.currentPage === 'services' ? 'govuk-header__navigation-item--active' : '' %>">
+                                <a class="govuk-header__link" href="/services/choose-type">
+                                    Create New Service
+                                </a>
+                            </li>
+                            <% } %>
                             <li class="govuk-header__navigation-item">
                                 <a class="govuk-header__link" href="/signout">
                                     Sign out

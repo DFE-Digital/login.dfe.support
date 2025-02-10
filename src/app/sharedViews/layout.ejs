@@ -56,6 +56,9 @@
                        target="_blank">My Profile</a></li>
                 <li><a href="/users" class="<%= locals.area === 'users' ? 'current' : '' %> ">Users</a></li>
                 <li><a href="/organisations" class="<%= locals.area === 'organisations' ? 'current' : '' %> ">Organisations</a></li>
+                <% if (locals.isServiceCreator) { %>
+                <li><a href="/services/choose-type" class="<%= locals.area === 'services' ? 'current' : '' %> ">Create New Service</a></li>
+                <% } %>
                 <% if (locals.hideSignOut === undefined) { %>
                 <li class="pull-right"><a href="/signout">Sign out</a></li>
                 <% } %>
