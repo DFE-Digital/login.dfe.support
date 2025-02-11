@@ -1,6 +1,6 @@
 const { sendResult } = require("../../infrastructure/utils");
 
-const getCreateOrganisation = async (req, res) => {
+const getChooseServiceType = async (req, res) => {
   sendResult(req, res, "services/views/chooseServiceType", {
     csrfToken: req.csrfToken(),
     layout: "sharedViews/layoutNew.ejs",
@@ -10,4 +10,4 @@ const getCreateOrganisation = async (req, res) => {
   });
 };
 
-module.exports = getCreateOrganisation;
+module.exports = getChooseServiceType;

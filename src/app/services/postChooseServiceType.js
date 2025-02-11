@@ -14,7 +14,7 @@ const validateInput = (req) => {
   }
 
   if (model.serviceType === "standardServiceType") {
-    model.validationMessages.standardServiceType =
+    model.validationMessages.serviceType =
       "The standard service type is not available yet. Only ID-only services can be created";
   }
 
@@ -38,7 +38,7 @@ const postChooseServiceType = async (req, res) => {
       // Any error saving to session should hopefully be temporary. Assuming this, we log the error
       // and just display an error message saying to try again.
       logger.error("An error occurred when saving to the session", error);
-      model.validationMessages.standardServiceType =
+      model.validationMessages.serviceType =
         "Something went wrong submitting data, please try again";
       model.csrfToken = req.csrfToken();
       model.currentPage = "services";
