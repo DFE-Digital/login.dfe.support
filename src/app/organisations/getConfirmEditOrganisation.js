@@ -4,20 +4,36 @@ const {
 } = require("./../../infrastructure/organisations");
 
 const getConfirmEditOrganisation = async (req, res) => {
-  console.log("getConfirmEditOrganisation called");
+  if (!req.session.formData) {
+    return res.redirect("/organisations");
+  }
   const organisation = await getOrganisationByIdV2(req.params.id, req.id);
   const { name, address } = req.session.formData;
 
-  sendResult(req, res, "organisations/views/confirmEditOrganisation", {
-    csrfToken: req.csrfToken(),
-    organisation,
-    name,
-    address,
-    // backLink: true,
-    validationMessages: {},
-  });
+  // const validationMessage = "";
+  const regex = /[±!@£$%^*_+§¡€#¢§¶•ªº«\\/<>:;|=.~"]/;
 
-  //   return res.redirect(`/organisations/${organisation.id}/confirm-edit-organisation`);
+  if (name && !regex.test(name)) {
+    console.log("name: ", name);
+  }
+
+  if (name.trim() === "" && address.trim() === "") {
+    sendResult(req, res, "organisations/views/editOrganisation", {
+      csrfToken: req.csrfToken(),
+      organisation,
+      validationMessages: {
+        name: "Please update at least one of Name or Address.",
+      },
+    });
+  } else {
+    sendResult(req, res, "organisations/views/confirmEditOrganisation", {
+      csrfToken: req.csrfToken(),
+      organisation,
+      name,
+      address,
+      validationMessages: {},
+    });
+  }
 };
 
 module.exports = getConfirmEditOrganisation;

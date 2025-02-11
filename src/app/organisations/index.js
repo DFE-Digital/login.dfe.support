@@ -48,7 +48,6 @@ const users = (csrf) => {
     res.redirect("users");
   });
 
-  //todo redirected here after 'Edit org' button is clicked on org summary page
   router.get("/:id/edit-organisation", csrf, asyncWrapper(getEditOrganisation));
   router.post(
     "/:id/edit-organisation",
@@ -56,7 +55,6 @@ const users = (csrf) => {
     asyncWrapper(postEditOrganisation),
   );
 
-  //todo redirected to confirm-edit-organisation endpoint when postEditOrganisation called
   router.get(
     "/:id/confirm-edit-organisation",
     csrf,

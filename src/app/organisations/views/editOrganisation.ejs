@@ -9,6 +9,10 @@
                 <dt class="label">Legal name:</dt>
                 <dd><%= organisation.LegalName %></dd>
             <% } %>
+            <% if (organisation.name) { %>
+                <dt class="label">Name:</dt>
+                <dd><%= organisation.name %></dd>
+            <% } %>
             
             <% if (organisation.type || organisation.providerTypeName) { %>
                 <dt class="govuk-label">Type:</dt>

@@ -6,16 +6,22 @@
             <h1 class="heading-xlarge">
                 Review organisation changes
             </h1>
-
+            <p>Review these details before confirming.</p>
             <h2 class="heading-medium">Review details 
             </h2>
-            <dl class="rows">
-                <dt>Name</dt>
-                <dd><%= name %></dd>
-
-                <dt>Address</dt>
-                <dd><%= address %></dd>
-
+            <dl class="app-check-your-answers app-check-your-answers--short">
+                <% if (name) { %>
+                    <div class="app-check-your-answers__contents">
+                        <dt class="app-check-your-answers__title">Name</dt>
+                        <dd class="app-check-your-answers__answer"><%= name %></dd>
+                    </div>
+                <% } %>
+                <% if (address) { %>
+                <div class="app-check-your-answers__contents">
+                    <dt class="app-check-your-answers__title">Address</dt>
+                    <dd class="app-check-your-answers__answer"><%= address %></dd>
+                </div>
+                <% } %>
             </dl>
 
             <div class="form-submit submit-buttons">
