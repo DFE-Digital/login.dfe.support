@@ -6,7 +6,7 @@
       <form method="post">
         <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
         <div class="govuk-form-group">
-          <fieldset class="govuk-fieldset" aria-describedby="signIn-hint">
+          <fieldset class="govuk-fieldset" aria-describedby="serviceType-hint">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
               <h1 class="govuk-fieldset__heading">
                 Service type
@@ -17,12 +17,13 @@
                 <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.standardServiceType %>
               </p>
               <% } %>
-            <div id="standardServiceType-hint" class="govuk-hint">
+            <div id="service-hint" class="govuk-hint">
               Select the type of service you want to create.
             </div>
             <div class="govuk-radios" data-module="govuk-radios">
               <div class="govuk-radios__item">
-                <input class="govuk-radios__input" id="standardServiceType" name="standardServiceType" type="radio" value="standardServiceType" aria-describedby="standardServiceType-item-hint">
+                <input class="govuk-radios__input" id="standardServiceType" name="serviceType" type="radio" aria-describedby="standardServiceType-item-hint"
+                value="standardServiceType" <%= (locals.serviceType === 'standardServiceType') ? 'checked' : '' %>>
                 <label class="govuk-label govuk-radios__label" for="standardServiceType">
                   Standard service
                 </label>
@@ -31,7 +32,8 @@
                 </div>
               </div>
               <div class="govuk-radios__item">
-                <input class="govuk-radios__input" id="idOnlyServiceType" name="idOnlyServiceType" type="radio" value="idOnlyServiceType" aria-describedby="idOnlyServiceType-item-hint">
+                <input class="govuk-radios__input" id="idOnlyServiceType" name="serviceType" type="radio" aria-describedby="idOnlyServiceType-item-hint"
+                value="idOnlyServiceType" <%= (locals.serviceType === 'idOnlyServiceType') ? 'checked' : '' %>>
                 <label class="govuk-label govuk-radios__label" for="idOnlyServiceType">
                   ID-only service
                 </label>
@@ -43,7 +45,7 @@
           </fieldset>
         </div>
 
-        <details class="govuk-details">
+        <details class="govuk-details" <%= (locals.hideFromUserServices || locals.hideFromContactUs) ? 'open' : '' %>>
           <summary class="govuk-details__summary">
             <span class="govuk-details__summary-text">
               Advanced options
@@ -62,8 +64,9 @@
               To hide the service from certain user groups, select all that apply
             </div>
             <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-              <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" id="hideFromUserServices" name="hideFromUserServices" type="checkbox" value="hideFromUserServices" aria-describedby="hideFromUserServices-item-hint">
+              <div class="govuk-checkboxes__item">  
+                <input class="govuk-checkboxes__input" id="hideFromUserServices" name="hideFromUserServices" type="checkbox" 
+                value="hideFromUserServices" <%= (locals.hideFromUserServices) ? 'checked' : '' %> aria-describedby="hideFromUserServices-item-hint">
                 <label class="govuk-label govuk-checkboxes__label" for="hideFromUserServices">
                   Hide from user's services page
                 </label>
@@ -73,7 +76,7 @@
                 </div>
               </div>
               <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" id="hideFromContactUs" name="hideFromContactUs" type="checkbox" value="hideFromContactUs">
+                <input class="govuk-checkboxes__input" id="hideFromContactUs" name="hideFromContactUs" type="checkbox" value="hideFromContactUs" <%= (locals.hideFromContactUs) ? 'checked' : '' %>>
                 <label class="govuk-label govuk-checkboxes__label" for="hideFromContactUs">
                   Hide from contact us page
                 </label>

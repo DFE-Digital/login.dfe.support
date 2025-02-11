@@ -1,26 +1,20 @@
 const { sendResult } = require("../../infrastructure/utils");
 const logger = require("../../infrastructure/logger");
 
-const validateInput = async (req) => {
+const validateInput = (req) => {
   const model = {
-    standardServiceType: req.body.standardServiceType || "",
-    idOnlyServiceType: req.body.idOnlyServiceType || "",
-    hideFromUserServices: req.body.hideFromUserServices || "",
-    hideFromContactUs: req.body.hideFromContactUs || "",
+    serviceType: req.body.serviceType,
+    hideFromUserServices: req.body.hideFromUserServices,
+    hideFromContactUs: req.body.hideFromContactUs,
     validationMessages: {},
   };
 
-  if (model.standardServiceType) {
-    model.validationMessages.standardServiceType =
-      "The standard service type is not available yet. Only ID-only services can be created";
+  if (!model.serviceType) {
+    model.validationMessages.serviceType = "A service type must be selected";
   }
 
-  if (model.standardServiceType && model.hideFromUserServices) {
-    model.validationMessages.hideFromUserServices =
-      "The standard service type is not available yet. Only ID-only services can be created";
-  }
-  if (model.standardServiceType && model.hideFromContactUs) {
-    model.validationMessages.hideFromUserServices =
+  if (model.serviceType === "standardServiceType") {
+    model.validationMessages.standardServiceType =
       "The standard service type is not available yet. Only ID-only services can be created";
   }
 
@@ -38,7 +32,7 @@ const postChooseServiceType = async (req, res) => {
     return sendResult(req, res, "services/views/chooseServiceType", model);
   }
 
-  req.session.createOrgData = model;
+  req.session.createServiceData = model;
   req.session.save((error) => {
     if (error) {
       // Any error saving to session should hopefully be temporary. Assuming this, we log the error
