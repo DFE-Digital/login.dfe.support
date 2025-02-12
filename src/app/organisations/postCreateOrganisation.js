@@ -1,11 +1,12 @@
 const { sendResult } = require("../../infrastructure/utils");
 const { searchOrganisations } = require("../../infrastructure/organisations");
 const logger = require("../../infrastructure/logger");
+const { unescape } = require("lodash");
 
 const validateInput = async (req) => {
   const model = {
-    name: req.body.name || "",
-    address: req.body.address || "",
+    name: unescape(req.body.name) || "",
+    address: unescape(req.body.address) || "",
     ukprn: req.body.ukprn || "",
     category: req.body.category || "",
     upin: req.body.upin || "",
