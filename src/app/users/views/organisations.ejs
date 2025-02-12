@@ -38,14 +38,14 @@
 
                                         <% if (org.urn) { %>
                                             <dt><abbr title="Unique Reference Number">URN: </abbr></dt>
-                                            <% if (org.status.id === 4) { %>
+                                            <% if (org.status && org.status.id === 4) { %>
                                                 <dd><%=org.urn%></dd>
                                             <%}else {%>
                                                 <dd><a href="https://get-information-schools.service.gov.uk/Establishments/Establishment/Details/<%=org.urn%>" target="_blank"><%=org.urn%></a></dd>
                                                 <%}%>
                                         <%}else if(org.uid) {%>
                                             <dt><abbr title="Unique Identifier">UID: </abbr></dt>
-                                            <% if (org.status.id === 2) { %>
+                                            <% if (org.status && org.status.id === 2) { %>
                                                 <dd><%=org.uid%></dd>
                                             <%}else {%>
                                                 <dd><a href="https://get-information-schools.service.gov.uk/Groups/Group/Details/<%=org.uid%>" target="_blank"><%=org.uid%></a></dd>

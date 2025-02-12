@@ -131,6 +131,17 @@ describe("when displaying the get create organisations", () => {
     expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
+  it("should redirect to the confirm screen if a valid special character is used", async () => {
+    // Note: ' is converted into &#39; so we're testing that the unescape works correctly here as well
+    req.body.name = "Test&#39;org";
+
+    await postCreateOrganisation(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("confirm-create-org");
+    expect(sendResult).toHaveBeenCalledTimes(0);
+  });
+
   it("should render an the page with an error in validationMessages if validation fails on name with over 256 characters", async () => {
     req.body.name = "Test123456".repeat(26); // 260 character length string
     exampleErrorResponse.name = "Test123456".repeat(26);

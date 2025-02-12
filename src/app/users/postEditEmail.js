@@ -93,9 +93,11 @@ const updateInvitationIndex = async (uid, newEmail, correlationId) => {
 };
 const updateInvitationEmail = async (req, model, user) => {
   const invitationId = req.params.uid.substr(4);
+  const newEmail = {
+    email: model.email
+  }
 
-  await updateInvite(invitationId, model.email);
-
+  await updateInvite(invitationId, newEmail);
   await updateInvitationIndex(user.id, model.email, req.id);
 
   logger.audit(
