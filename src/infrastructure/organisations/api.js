@@ -3,7 +3,6 @@ const config = require("./../config");
 const { fetchApi } = require("login.dfe.async-retry");
 
 const callOrganisationsApi = async (endpoint, method, body, correlationId) => {
-  console.log("callOrganisationsApi called");
   const token = await jwtStrategy(
     config.organisations.service,
   ).getBearerToken();
