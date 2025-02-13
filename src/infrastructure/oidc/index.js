@@ -4,6 +4,7 @@ const asyncRetry = require("login.dfe.async-retry");
 const logger = require("../logger");
 const config = require("../config");
 const { getSingleUserService } = require("../access");
+const { isServiceCreator } = require("../utils");
 
 custom.setHttpOptionsDefaults({
   timeout: 10000,
@@ -136,7 +137,9 @@ const init = async (app) => {
         const supportClaims = {
           isRequestApprover: roles.some((i) => i.code === "request_approver"),
           isSupportUser: roles.some((i) => i.code === "support_user"),
+          isServiceCreator: roles.some((i) => i.code === "service_creator"),
         };
+
         if (!supportClaims || !supportClaims.isSupportUser) {
           checkSessionAndRedirect();
         } else {
