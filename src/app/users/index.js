@@ -1,6 +1,10 @@
 const express = require("express");
 const { asyncWrapper } = require("login.dfe.express-error-handling");
-const { isLoggedIn, setCurrentArea } = require("../../infrastructure/utils");
+const {
+  isLoggedIn,
+  setCurrentArea,
+  isServiceCreator,
+} = require("../../infrastructure/utils");
 const logger = require("../../infrastructure/logger");
 
 const search = require("./search");
@@ -74,6 +78,7 @@ const users = (csrf) => {
   logger.debug("Mounting user routes");
 
   router.use(isLoggedIn);
+  router.use(isServiceCreator);
   router.use(setCurrentArea("users"));
 
   router.get("/", csrf, asyncWrapper(search.get));
