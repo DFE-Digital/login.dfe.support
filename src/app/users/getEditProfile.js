@@ -7,7 +7,6 @@ const getEditProfile = async (req, res) => {
   sendResult(req, res, "users/views/editProfile", {
     csrfToken: req.csrfToken(),
     user,
-    backLink: "services",
     validationMessages: {},
   });
 };
