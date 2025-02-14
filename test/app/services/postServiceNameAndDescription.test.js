@@ -2,9 +2,14 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/utils");
+jest.mock("./../../../src/infrastructure/applications/api");
 
 const { getRequestMock, getResponseMock } = require("../../utils");
 const { sendResult } = require("../../../src/infrastructure/utils");
+
+const {
+  getAllServices,
+} = require("../../../src/infrastructure/applications/api");
 const postServiceNameAndDescription = require("../../../src/app/services/postServiceNameAndDescription");
 
 const res = getResponseMock();
@@ -29,6 +34,20 @@ describe("when displaying the post choose service type screen", () => {
     res.mockResetAll();
 
     sendResult.mockReset();
+
+    // More fields exist in a real response, reducing it here to keep things succinct
+    const getAllServicesResponse = {
+      services: [
+        {
+          id: "4A40415F-1A13-48F4-B54F-0AB0FC0A9AAC",
+          name: "Existing service name",
+          description: "Existing service description",
+          isExternalService: true,
+          isIdOnlyService: false,
+        },
+      ],
+    };
+    getAllServices.mockReset().mockReturnValue(getAllServicesResponse);
 
     // Example data that each error test can modify so it doens't need to be copied
     // again and again
@@ -120,6 +139,18 @@ describe("when displaying the post choose service type screen", () => {
     exampleErrorResponse.description = "Test123456".repeat(21); // 210 character length string
     exampleErrorResponse.validationMessages.description =
       "Description must be 200 characters or less";
+
+    await postServiceNameAndDescription(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages if name matches existing name", async () => {
+    req.body.name = "Existing service name";
+    exampleErrorResponse.name = "Existing service name";
+    exampleErrorResponse.validationMessages.name =
+      "Name cannot be a duplicate of an existing service name";
 
     await postServiceNameAndDescription(req, res);
 

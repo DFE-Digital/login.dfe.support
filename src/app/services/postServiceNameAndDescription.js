@@ -1,7 +1,8 @@
 const { sendResult } = require("../../infrastructure/utils");
 const logger = require("../../infrastructure/logger");
+const { getAllServices } = require("../../infrastructure/applications/api");
 
-const validateInput = (req) => {
+const validateInput = async (req) => {
   const model = {
     name: req.body.name || "",
     description: req.body.description || "",
@@ -10,31 +11,31 @@ const validateInput = (req) => {
 
   if (!model.name) {
     model.validationMessages.name = "Enter a name";
+  } else if (model.name.length > 200) {
+    model.validationMessages.name = "Name must be 200 characters or less";
+  } else {
+    const allServices = await getAllServices();
+    const isMatchingName = allServices.services.find(
+      (service) => service.name === model.name,
+    );
+    if (isMatchingName) {
+      model.validationMessages.name =
+        "Name cannot be a duplicate of an existing service name";
+    }
   }
 
   if (!model.description) {
     model.validationMessages.description = "Enter a description";
-  }
-
-  if (model.name.length > 200) {
-    model.validationMessages.name = "Name must be 200 characters or less";
-  }
-
-  if (model.description.length > 200) {
+  } else if (model.description.length > 200) {
     model.validationMessages.description =
       "Description must be 200 characters or less";
   }
-
-  // const existingService = searchForServiceByName(model.name)
-  // if (existingService) {
-  //   model.validationMessages.name = "Service name must be unique and not already exist in DfE";
-  // }
 
   return model;
 };
 
 const postServiceNameAndDescription = async (req, res) => {
-  const model = validateInput(req);
+  const model = await validateInput(req);
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
