@@ -42,12 +42,13 @@ describe("when displaying the post choose service type screen", () => {
     };
   });
 
-  // This is only temporary until more of the journey has been built
-  it("should redirect to the users page on success", async () => {
+  it("should redirect to the name and description page on success", async () => {
     await postChooseServiceType(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe("/users");
+    expect(res.redirect.mock.calls[0][0]).toBe(
+      "/services/service-name-and-description",
+    );
     expect(sendResult).toHaveBeenCalledTimes(0);
   });
 
