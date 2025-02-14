@@ -46,7 +46,7 @@ const postChooseServiceType = async (req, res) => {
       model.backLink = true;
       return sendResult(req, res, "services/views/chooseServiceType", model);
     }
-    return res.redirect("/users");
+    return res.redirect("/services/service-name-and-description");
   });
 };
 
