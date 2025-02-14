@@ -150,7 +150,7 @@ describe("when displaying the post choose service type screen", () => {
     req.body.name = "Existing service name";
     exampleErrorResponse.name = "Existing service name";
     exampleErrorResponse.validationMessages.name =
-      "Name cannot be a duplicate of an existing service name";
+      "Service name must be unique and cannot already exist in DfE Sign-in";
 
     await postServiceNameAndDescription(req, res);
 

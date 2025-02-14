@@ -20,7 +20,7 @@ const validateInput = async (req) => {
     );
     if (isMatchingName) {
       model.validationMessages.name =
-        "Name cannot be a duplicate of an existing service name";
+        "Service name must be unique and cannot already exist in DfE Sign-in";
     }
   }
 
