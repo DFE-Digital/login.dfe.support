@@ -1,0 +1,101 @@
+<div class="govuk-width-container">
+  <div class="col-8">
+    <h1 class="govuk-heading-xl">
+        Enter service details
+    </h1>
+      <form method="post">
+        <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+        <div class="govuk-form-group <%= (locals.validationMessages.homeUrl !== undefined) ? 'govuk-form-group--error' : '' %>">
+          <label class="govuk-label govuk-label--l" for="name">
+            Home URL
+          </label>
+          <% if (locals.validationMessages.homeUrl !== undefined) { %>
+          <p id="name-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.homeUrl %>
+          </p>
+          <% } %>
+          <p class="govuk-body">Enter the name of the service.  The service name should be:</p>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>unique</li>
+            <li>clear</li>
+            <li>descriptive</li>
+          </ul>
+          <input class="govuk-input <%= (locals.validationMessages.homeUrl !== undefined) ? 'govuk-input--error' : '' %>" id="homeUrl" name="homeUrl" type="text" spellcheck="false" value="<%= locals.homeUrl %>">
+        </div>
+
+        <div class="govuk-form-group <%= (locals.validationMessages.postPasswordResetUrl !== undefined) ? 'govuk-form-group--error' : '' %>">
+          <label class="govuk-label govuk-label--l" for="name">
+            Post password-reset URL
+          </label>
+          <% if (locals.validationMessages.postPasswordResetUrl !== undefined) { %>
+          <p id="name-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.postPasswordResetUrl %>
+          </p>
+          <% } %>
+          <p class="govuk-body">Enter the name of the service.  The service name should be:</p>
+          <input class="govuk-input <%= (locals.validationMessages.postPasswordResetUrl !== undefined) ? 'govuk-input--error' : '' %>" id="postPasswordResetUrl" name="postPasswordResetUrl" type="text" spellcheck="false" value="<%= locals.postPasswordResetUrl %>">
+        </div>
+
+        <div class="govuk-form-group <%= (locals.validationMessages.clientId !== undefined) ? 'govuk-form-group--error' : '' %>">
+          <label class="govuk-label govuk-label--l" for="clientId">
+            Client ID
+          </label>
+          <% if (locals.validationMessages.clientId !== undefined) { %>
+          <p id="name-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.clientId %>
+          </p>
+          <% } %>
+          <p class="govuk-body">Enter the name of the service.  The service name should be:</p>
+          <input class="govuk-input <%= (locals.validationMessages.clientId !== undefined) ? 'govuk-input--error' : '' %>" id="clientId" name="clientId" type="text" spellcheck="false" value="<%= locals.clientId %>">
+        </div>
+
+        <div class="govuk-form-group <%= (locals.validationMessages.redirectUrl !== undefined) ? 'govuk-form-group--error' : '' %>">
+          <label class="govuk-label govuk-label--l" for="redirectUrl">
+            Redirect URL
+          </label>
+          <% if (locals.validationMessages.redirectUrl !== undefined) { %>
+          <p id="name-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.redirectUrl %>
+          </p>
+          <% } %>
+          <p class="govuk-body">Enter the name of the service.  The service name should be:</p>
+          <input class="govuk-input <%= (locals.validationMessages.redirectUrl !== undefined) ? 'govuk-input--error' : '' %>" id="redirectUrl" name="redirectUrl" type="text" spellcheck="false" value="<%= locals.redirectUrl %>">
+        </div>
+
+
+        <div class="govuk-form-group <%= (locals.validationMessages.clientSecret !== undefined) ? 'govuk-form-group--error' : '' %>">
+          <label class="govuk-label govuk-label--l" for="clientSecret">
+            Client Secret
+          </label>
+          <% if (locals.validationMessages.clientSecret !== undefined) { %>
+          <p id="name-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.clientSecret %>
+          </p>
+          <% } %>
+          <p class="govuk-body">Enter the name of the service.  The service name should be:</p>
+          <input class="govuk-input <%= (locals.validationMessages.clientSecret !== undefined) ? 'govuk-input--error' : '' %>" id="clientSecret" name="clientSecret" type="text" spellcheck="false" value="<%= locals.clientSecret %>">
+        </div>
+
+        <div class="govuk-form-group <%= (locals.validationMessages.apiSecret !== undefined) ? 'govuk-form-group--error' : '' %>">
+          <label class="govuk-label govuk-label--l" for="apiSecret">
+            API Secret
+          </label>
+          <% if (locals.validationMessages.apiSecret !== undefined) { %>
+          <p id="name-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.apiSecret %>
+          </p>
+          <% } %>
+          <p class="govuk-body">Enter the name of the service.  The service name should be:</p>
+          <input class="govuk-input <%= (locals.validationMessages.apiSecret !== undefined) ? 'govuk-input--error' : '' %>" id="apiSecret" name="apiSecret" type="text" spellcheck="false" value="<%= locals.apiSecret %>">
+        </div>
+
+        <div class="govuk-button-group">
+          <button type="submit" class="govuk-button" data-module="govuk-button">
+            Submit
+          </button>
+        </div>
+    </form>
+</div>
+
+
+
