@@ -3,17 +3,20 @@ const {
   getOrganisationByIdV2,
 } = require("./../../infrastructure/organisations");
 
-const postEditOrganisation = async (req, res) => {
+const validateInput = async (req) => {
   const organisation = await getOrganisationByIdV2(req.params.id, req.id);
   const { name, address } = req.body;
-
-  const view = "organisations/views/editOrganisation";
   const regex = /[±!@£$%^*_+§¡€#¢§¶•ªº«\\/<>:;|=.~"]/;
   const model = {
     csrfToken: req.csrfToken(),
+    backlink: "users",
     organisation,
     validationMessages: {},
   };
+
+  if (organisation.category.id && organisation.category.id !== "008") {
+    model.validationMessages.name = `You cannot edit ${organisation.category.name} organisations`;
+  }
 
   if (!name.trim() && !address.trim()) {
     model.validationMessages.name =
@@ -25,14 +28,21 @@ const postEditOrganisation = async (req, res) => {
     model.validationMessages.name = "Special characters cannot be used";
   }
 
-  if (model.validationMessages.name) {
-    sendResult(req, res, view, model);
+  return model;
+};
+
+const postEditOrganisation = async (req, res) => {
+  const model = await validateInput(req);
+
+  if (model.validationMessages.name !== undefined) {
+    sendResult(req, res, "organisations/views/editOrganisation", model);
     return;
   } else {
+    const { name, address } = req.body;
     req.session.formData = { name, address };
 
     return res.redirect(
-      `/organisations/${organisation.id}/confirm-edit-organisation`,
+      `/organisations/${req.params.id}/confirm-edit-organisation`,
     );
   }
 };
