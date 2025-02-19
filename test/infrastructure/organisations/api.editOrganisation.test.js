@@ -46,7 +46,7 @@ describe("when calling editOrganisation", () => {
 
     expect(fetchApi.mock.calls).toHaveLength(1);
     expect(fetchApi.mock.calls[0][0]).toBe(
-      "http://organisations.test/organisations/org-1/edit",
+      "http://organisations.test/organisations/org-1",
     );
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       method: "PATCH",

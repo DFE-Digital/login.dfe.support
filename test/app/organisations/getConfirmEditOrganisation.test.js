@@ -48,4 +48,13 @@ describe("when calling getConfirmEditOrganisation", () => {
       },
     );
   });
+
+  it("should redirect to the organisation users page if there is no editOrgFormData session data", async () => {
+    req = getRequestMock();
+    await getConfirmEditOrganisation(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/organisations/org-1/users");
+    expect(sendResult).toHaveBeenCalledTimes(0);
+  });
 });
