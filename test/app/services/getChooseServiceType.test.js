@@ -28,6 +28,7 @@ describe("when displaying the get choose service type", () => {
       {
         csrfToken: req.csrfToken(),
         backLink: true,
+        cancelLink: "/users",
         currentPage: "services",
         layout: "sharedViews/layoutNew.ejs",
         validationMessages: {},

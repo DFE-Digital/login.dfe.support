@@ -29,6 +29,7 @@ const postChooseServiceType = async (req, res) => {
     model.currentPage = "services";
     model.layout = "sharedViews/layoutNew.ejs";
     model.backLink = true;
+    model.cancelLink = "/users";
     return sendResult(req, res, "services/views/chooseServiceType", model);
   }
 
@@ -44,6 +45,7 @@ const postChooseServiceType = async (req, res) => {
       model.currentPage = "services";
       model.layout = "sharedViews/layoutNew.ejs";
       model.backLink = true;
+      model.cancelLink = "/users";
       return sendResult(req, res, "services/views/chooseServiceType", model);
     }
     return res.redirect("/users");
