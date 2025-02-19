@@ -21,7 +21,7 @@ describe("when calling getConfirmEditOrganisation", () => {
     getOrganisationByIdV2.mockReset().mockReturnValue(orgResult);
     req = getRequestMock({
       session: {
-        formData: {
+        editOrgFormData: {
           name: "Test name",
           address: "123 address street",
         },
@@ -41,6 +41,7 @@ describe("when calling getConfirmEditOrganisation", () => {
       {
         csrfToken: req.csrfToken(),
         organisation: orgResult,
+        backlink: "edit-organisation",
         name: "Test name",
         address: "123 address street",
         validationMessages: {},

@@ -6,12 +6,12 @@ const {
 } = require("./../../infrastructure/organisations");
 
 const postConfirmEditOrganisation = async (req, res) => {
-  if (!req.session.formData) {
+  if (!req.session.editOrgFormData) {
     return res.redirect(`/organisations/${req.params.id}/users`);
   }
   const correlationId = req.id;
   const organisation = await getOrganisationByIdV2(req.params.id, req.id);
-  const { name, address } = req.session.formData;
+  const { name, address } = req.session.editOrgFormData;
 
   const body = {
     name,
@@ -19,7 +19,7 @@ const postConfirmEditOrganisation = async (req, res) => {
   };
 
   logger.info(
-    `About to update organisation ${organisation.name}: ${req.params.id}`,
+    `User: ${req.user.sub} - About to update organisation ${organisation.name}: Org id: ${req.params.id}`,
     {
       correlationId,
     },
@@ -35,7 +35,7 @@ const postConfirmEditOrganisation = async (req, res) => {
   );
 
   res.flash("info", "Organisation details updated");
-  req.session.formData = undefined;
+  req.session.editOrgFormData = undefined;
 
   return res.redirect(`/organisations/${organisation.id}/users`);
 };

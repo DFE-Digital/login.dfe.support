@@ -12,7 +12,7 @@ const {
 } = require("./../../../src/infrastructure/organisations");
 
 const res = getResponseMock();
-const orgResult = { id: "org-1", name: "organisation one" };
+const orgResult = { id: "org-1", name: "organisation one", category: "008" };
 
 describe("when postEditOrganisation is called", () => {
   let req;
@@ -27,6 +27,9 @@ describe("when postEditOrganisation is called", () => {
       session: {
         save: jest.fn((cb) => cb()),
       },
+      params: {
+        id: "org-1",
+      },
     });
 
     res.mockResetAll();
@@ -36,6 +39,7 @@ describe("when postEditOrganisation is called", () => {
     exampleErrorResponse = {
       organisation: orgResult,
       validationMessages: {},
+      backlink: "users",
       csrfToken: "token",
     };
   });

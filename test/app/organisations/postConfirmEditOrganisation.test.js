@@ -23,10 +23,13 @@ describe("when postConfirmEditOrganisation is called", () => {
   beforeEach(() => {
     req = getRequestMock({
       session: {
-        formData: {
+        editOrgFormData: {
           name: "Test name",
           address: "Test address",
         },
+      },
+      params: {
+        id: "org-1",
       },
     });
 

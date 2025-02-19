@@ -1,4 +1,5 @@
 const { sendResult } = require("../../infrastructure/utils");
+const logger = require("../../infrastructure/logger");
 const {
   getOrganisationByIdV2,
 } = require("./../../infrastructure/organisations");
@@ -39,11 +40,27 @@ const postEditOrganisation = async (req, res) => {
     return;
   } else {
     const { name, address } = req.body;
-    req.session.formData = { name, address };
+    req.session.editOrgFormData = { name, address };
 
-    return res.redirect(
-      `/organisations/${req.params.id}/confirm-edit-organisation`,
-    );
+    // Save the session explicitly
+    req.session.save((err) => {
+      if (err) {
+        // Any error saving to session should hopefully be temporary. Assuming this, we log the error
+        // and just display an error message saying to try again.
+        logger.error("An error occurred when saving to the session", err);
+        model.validationMessages.name =
+          "Something went wrong submitting data, please try again";
+
+        return sendResult(
+          req,
+          res,
+          "organisations/views/editOrganisation",
+          model,
+        );
+      }
+      // Redirect after successfully saving the session
+      res.redirect(`/organisations/${req.params.id}/confirm-edit-organisation`);
+    });
   }
 };
 

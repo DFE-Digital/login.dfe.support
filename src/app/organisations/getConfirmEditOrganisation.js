@@ -6,11 +6,11 @@ const {
 const getConfirmEditOrganisation = async (req, res) => {
   const organisation = await getOrganisationByIdV2(req.params.id, req.id);
 
-  if (!req.session.formData) {
+  if (!req.session.editOrgFormData) {
     return res.redirect(`/organisations/${organisation.id}/users`);
   }
 
-  const { name, address } = req.session.formData;
+  const { name, address } = req.session.editOrgFormData;
 
   sendResult(req, res, "organisations/views/confirmEditOrganisation", {
     csrfToken: req.csrfToken(),
