@@ -87,6 +87,7 @@ const postEditProfile = async (req, res) => {
   if (!validationResult.isValid) {
     sendResult(req, res, "users/views/editProfile", {
       csrfToken: req.csrfToken(),
+      backLink: "services",
       user,
       validationMessages: validationResult.validationMessages,
     });
@@ -110,6 +111,7 @@ const postEditProfile = async (req, res) => {
       sendResult(req, res, "users/views/editProfile", {
         csrfToken: req.csrfToken(),
         user,
+        backLink: "services",
         isValid: false,
         validationMessages: {
           ktsId: "Key to Success ID is already in use",
