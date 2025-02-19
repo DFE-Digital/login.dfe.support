@@ -4,6 +4,7 @@ const sendResult = require("./sendResult");
 const { mapUserStatus, userStatusMap } = require("./mapUserStatus");
 const patchChangeHistory = require("./patchChangeHistory");
 const isRequestApprover = require("./isRequestApprover");
+const isServiceCreator = require("./isServiceCreator");
 
 module.exports = {
   isLoggedIn,
@@ -13,4 +14,5 @@ module.exports = {
   userStatusMap,
   patchChangeHistory,
   isRequestApprover,
+  isServiceCreator,
 };

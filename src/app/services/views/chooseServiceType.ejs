@@ -1,0 +1,101 @@
+<div class="govuk-width-container">
+  <div class="col-8">
+    <h1 class="govuk-heading-xl">
+        Create new service
+    </h1>
+      <form method="post">
+        <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset" aria-describedby="serviceType-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+              <h1 class="govuk-fieldset__heading">
+                Service type
+              </h1>
+            </legend>
+            <% if (locals.validationMessages.standardServiceType !== undefined) { %>
+              <p id="standardServiceType-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.standardServiceType %>
+              </p>
+              <% } %>
+            <div id="service-hint" class="govuk-hint">
+              Select the type of service you want to create.
+            </div>
+            <div class="govuk-radios" data-module="govuk-radios">
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="standardServiceType" name="serviceType" type="radio" aria-describedby="standardServiceType-item-hint"
+                value="standardServiceType" <%= (locals.serviceType === 'standardServiceType') ? 'checked' : '' %>>
+                <label class="govuk-label govuk-radios__label" for="standardServiceType">
+                  Standard service
+                </label>
+                <div id="standardServiceType-item-hint" class="govuk-hint govuk-radios__hint">
+                  Services that allow you to have different levels of access, including roles, sub-services and policies
+                </div>
+              </div>
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="idOnlyServiceType" name="serviceType" type="radio" aria-describedby="idOnlyServiceType-item-hint"
+                value="idOnlyServiceType" <%= (locals.serviceType === 'idOnlyServiceType') ? 'checked' : '' %>>
+                <label class="govuk-label govuk-radios__label" for="idOnlyServiceType">
+                  ID-only service
+                </label>
+                <div id="idOnlyServiceType-item-hint" class="govuk-hint govuk-radios__hint">
+                  Servicess that only use DfE Sign-In for authentication, meaning you cannot add roles, sub-services or policies
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <details class="govuk-details" <%= (locals.hideFromUserServices || locals.hideFromContactUs) ? 'open' : '' %>>
+          <summary class="govuk-details__summary">
+            <span class="govuk-details__summary-text">
+              Advanced options
+            </span>
+          </summary>
+
+
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset" aria-describedby="hideFromUserServices-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+              <h1 class="govuk-fieldset__heading">
+                Service parameters
+              </h1>
+            </legend>
+            <div id="hideFromUserServices-hint" class="govuk-hint">
+              To hide the service from certain user groups, select all that apply
+            </div>
+            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+              <div class="govuk-checkboxes__item">  
+                <input class="govuk-checkboxes__input" id="hideFromUserServices" name="hideFromUserServices" type="checkbox" 
+                value="hideFromUserServices" <%= (locals.hideFromUserServices) ? 'checked' : '' %> aria-describedby="hideFromUserServices-item-hint">
+                <label class="govuk-label govuk-checkboxes__label" for="hideFromUserServices">
+                  Hide from user's services page
+                </label>
+                <div id="hideFromUserServices-item-hint" class="govuk-hint govuk-checkboxes__hint">
+                  Stop users from seeing the ID-only service listed their <a href="">services page</a>.
+                  Users will only be able to access the service through a direct link.
+                </div>
+              </div>
+              <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input" id="hideFromContactUs" name="hideFromContactUs" type="checkbox" value="hideFromContactUs" <%= (locals.hideFromContactUs) ? 'checked' : '' %>>
+                <label class="govuk-label govuk-checkboxes__label" for="hideFromContactUs">
+                  Hide from contact us page
+                </label>
+                <div id="hideFromContactUs-item-hint" class="govuk-hint govuk-checkboxes__hint">
+                  Stop users from seeing the ID-only service listed on the <a href="">contact us</a> page
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </details>
+        <div class="govuk-button-group">
+          <button type="submit" class="govuk-button" data-module="govuk-button">
+            Submit
+          </button>
+          <a class="govuk-link" href="<%= locals.cancelLink %>">Cancel</a>
+        </div>
+    </form>
+</div>
+
+
+

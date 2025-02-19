@@ -14,7 +14,10 @@ const {
   getUserDetailsById,
   updateUserDetails,
 } = require("./../../../src/app/users/utils");
-const { updateUser, updateInvite } = require("./../../../src/infrastructure/directories");
+const {
+  updateUser,
+  updateInvite,
+} = require("./../../../src/infrastructure/directories");
 const postEditProfile = require("./../../../src/app/users/postEditProfile");
 
 describe("when updating users profile details", () => {
@@ -186,5 +189,5 @@ describe("when updating users profile details", () => {
     );
     expect(updateInvite.mock.calls[0][1].firstName).toBe("Rupert");
     expect(updateInvite.mock.calls[0][1].lastName).toBe("Grint");
-  })
+  });
 });
