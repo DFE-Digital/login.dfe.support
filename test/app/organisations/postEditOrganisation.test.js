@@ -9,10 +9,28 @@ const { sendResult } = require("../../../src/infrastructure/utils");
 const postEditOrganisation = require("../../../src/app/organisations/postEditOrganisation");
 const {
   getOrganisationByIdV2,
+  searchOrganisations,
 } = require("./../../../src/infrastructure/organisations");
 
 const res = getResponseMock();
 const orgResult = { id: "org-1", name: "organisation one", category: "008" };
+
+const orgsResultWithNoResults = {
+  organisations: [],
+  page: 1,
+  totalNumberOfPages: 1,
+  totalNumberOfRecords: 0,
+};
+
+const orgsResultWithResults = {
+  organisations: [
+    { id: "org-1", name: "organisation one" },
+    { id: "org-2", name: "organisation two" },
+  ],
+  page: 1,
+  totalNumberOfPages: 1,
+  totalNumberOfRecords: 2,
+};
 
 describe("when postEditOrganisation is called", () => {
   let req;
@@ -34,6 +52,8 @@ describe("when postEditOrganisation is called", () => {
 
     res.mockResetAll();
 
+    searchOrganisations.mockReset().mockReturnValue(orgsResultWithNoResults);
+    // sendResult.mockReset();
     getOrganisationByIdV2.mockReset().mockReturnValue(orgResult);
 
     exampleErrorResponse = {
@@ -76,6 +96,17 @@ describe("when postEditOrganisation is called", () => {
 
     expect(sendResult).toHaveBeenCalledTimes(1);
     expect(sendResult.mock.calls[0][3]).toEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages if an organisation with a matching name exists", async () => {
+    searchOrganisations.mockReset().mockReturnValue(orgsResultWithResults);
+    exampleErrorResponse.validationMessages.name =
+      "An organisation with this name already exists";
+
+    await postEditOrganisation(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
   it("should redirect to the confirm page on success", async () => {

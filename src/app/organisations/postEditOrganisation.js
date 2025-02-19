@@ -2,6 +2,7 @@ const { sendResult } = require("../../infrastructure/utils");
 const logger = require("../../infrastructure/logger");
 const {
   getOrganisationByIdV2,
+  searchOrganisations,
 } = require("./../../infrastructure/organisations");
 
 const validateInput = async (req) => {
@@ -27,6 +28,21 @@ const validateInput = async (req) => {
     (address.trim() && regex.test(address))
   ) {
     model.validationMessages.name = "Special characters cannot be used";
+  }
+
+  if (name) {
+    const nameResult = await searchOrganisations(
+      name,
+      undefined,
+      undefined,
+      1,
+      req.id,
+    );
+
+    if (nameResult.totalNumberOfRecords > 0) {
+      model.validationMessages.name =
+        "An organisation with this name already exists";
+    }
   }
 
   return model;
