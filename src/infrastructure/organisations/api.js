@@ -310,7 +310,7 @@ const createOrganisation = async (body, correlationId) => {
 
 const editOrganisation = async (orgId, body, correlationId) => {
   return callOrganisationsApi(
-    `organisations/${orgId}/edit`,
+    `organisations/${orgId}`,
     "PATCH",
     body,
     correlationId,
