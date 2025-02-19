@@ -25,6 +25,7 @@ const oidc = require("./infrastructure/oidc");
 const config = require("./infrastructure/config");
 const logger = require("./infrastructure/logger");
 const configSchema = require("./infrastructure/config/schema");
+const { isServiceCreator } = require("./infrastructure/utils");
 
 const redisClient = new Redis(config.claims.params.connectionString);
 
@@ -241,6 +242,7 @@ const init = async () => {
   await oidc.init(app);
 
   app.use("/assets", express.static(path.join(__dirname, "app/assets")));
+  app.use(isServiceCreator);
 
   registerRoutes(app, csrf);
 

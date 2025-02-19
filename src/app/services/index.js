@@ -1,10 +1,6 @@
 const express = require("express");
 const { asyncWrapper } = require("login.dfe.express-error-handling");
-const {
-  isLoggedIn,
-  setCurrentArea,
-  isServiceCreator,
-} = require("../../infrastructure/utils");
+const { isLoggedIn, setCurrentArea } = require("../../infrastructure/utils");
 const logger = require("../../infrastructure/logger");
 
 const getChooseServiceType = require("./getChooseServiceType");
@@ -13,6 +9,13 @@ const getServiceNameAndDescription = require("./getServiceNameAndDescription");
 const postServiceNameAndDescription = require("./postServiceNameAndDescription");
 
 const router = express.Router({ mergeParams: true });
+
+const isServiceCreator = (req, res, next) => {
+  if (req.user.isServiceCreator) {
+    return next();
+  }
+  return res.status(401).render("errors/views/notAuthorised");
+};
 
 const users = (csrf) => {
   logger.debug("Mounting services routes");
