@@ -1,5 +1,6 @@
 const { sendResult } = require("../../infrastructure/utils");
 const logger = require("../../infrastructure/logger");
+const { getAllServices } = require("../../infrastructure/applications/api");
 
 const validateInput = async (req) => {
   const model = {
@@ -18,32 +19,56 @@ const validateInput = async (req) => {
   } else if (model.postPasswordResetUrl.length > 1024) {
     model.validationMessages.postPasswordResetUrl =
       "Post password reset url must be 1024 characters or less";
+  } else {
+    try {
+      new URL(model.postPasswordResetUrl);
+    } catch {
+      model.validationMessages.postPasswordResetUrl =
+        "Post password reset url must be a valid url";
+    }
   }
-  // TODO valdate if valid url
 
   if (!model.homeUrl) {
     model.validationMessages.homeUrl = "Enter a home url";
   } else if (model.homeUrl.length > 1024) {
     model.validationMessages.homeUrl =
       "Home url must be 1024 characters or less";
+  } else {
+    try {
+      new URL(model.homeUrl);
+    } catch {
+      model.validationMessages.homeUrl = "Home url must be a valid url";
+    }
   }
-  // TODO validate if valid url
 
   if (!model.clientId) {
     model.validationMessages.clientId = "Enter a client id";
   } else if (model.clientId.length > 50) {
     model.validationMessages.clientId =
       "Client id must be 50 characters or less";
+  } else {
+    const allServices = await getAllServices();
+    const isMatchingClientId = allServices.services.find(
+      (service) => service.clientId === model.clientId,
+    );
+    if (isMatchingClientId) {
+      model.validationMessages.clientId =
+        "Client Id must be unique and cannot already exist in DfE Sign-in";
+    }
   }
-  // TODO, ensure client id is unique
 
   if (!model.redirectUrl) {
     model.validationMessages.redirectUrl = "Enter a redirect url";
   } else if (model.redirectUrl.length > 1024) {
     model.validationMessages.redirectUrl =
       "Redirect url must be 1024 characters or less";
+  } else {
+    try {
+      new URL(model.redirectUrl);
+    } catch {
+      model.validationMessages.redirectUrl = "Redirect url must be a valid url";
+    }
   }
-  // TODO validate if valid url
 
   if (!model.clientSecret) {
     model.validationMessages.clientSecret = "Enter a client secret";

@@ -48,6 +48,7 @@ describe("when displaying the post choose service type screen", () => {
           id: "4A40415F-1A13-48F4-B54F-0AB0FC0A9AAC",
           name: "Existing service name",
           description: "Existing service description",
+          clientId: "existing-client-id",
           isExternalService: true,
           isIdOnlyService: false,
         },
@@ -141,6 +142,18 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
+  it("should render an the page with an error in validationMessages if an invalid postPasswordResetUrl is entered", async () => {
+    req.body.postPasswordResetUrl = "anInvalidUrl@slbsh!!!$$%";
+    exampleErrorResponse.postPasswordResetUrl = "anInvalidUrl@slbsh!!!$$%";
+    exampleErrorResponse.validationMessages.postPasswordResetUrl =
+      "Post password reset url must be a valid url";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
   it("should render an the page with an error in validationMessages if no home url is entered", async () => {
     req.body.homeUrl = "";
     exampleErrorResponse.homeUrl = "";
@@ -157,6 +170,18 @@ describe("when displaying the post choose service type screen", () => {
     exampleErrorResponse.homeUrl = "Test123456".repeat(125); // 1250 character length string
     exampleErrorResponse.validationMessages.homeUrl =
       "Home url must be 1024 characters or less";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages if an invalid homeUrl is entered", async () => {
+    req.body.homeUrl = "anInvalidUrl@slbsh!$$%";
+    exampleErrorResponse.homeUrl = "anInvalidUrl@slbsh!$$%";
+    exampleErrorResponse.validationMessages.homeUrl =
+      "Home url must be a valid url";
 
     await postServiceUrlsAndResponseType(req, res);
 
@@ -187,6 +212,18 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
+  it("should render an the page with an error in validationMessages if clientId is one that already exists", async () => {
+    req.body.clientId = "existing-client-id";
+    exampleErrorResponse.clientId = "existing-client-id";
+    exampleErrorResponse.validationMessages.clientId =
+      "Client Id must be unique and cannot already exist in DfE Sign-in";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
   it("should render an the page with an error in validationMessages if no redirectUrl is entered", async () => {
     req.body.redirectUrl = "";
     exampleErrorResponse.redirectUrl = "";
@@ -204,6 +241,18 @@ describe("when displaying the post choose service type screen", () => {
     exampleErrorResponse.redirectUrl = "Test123456".repeat(125); // 1250 character length string
     exampleErrorResponse.validationMessages.redirectUrl =
       "Redirect url must be 1024 characters or less";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages if an invalid redirectUrl is entered", async () => {
+    req.body.redirectUrl = "anInvalidUrl@slbsh!$$%";
+    exampleErrorResponse.redirectUrl = "anInvalidUrl@slbsh!$$%";
+    exampleErrorResponse.validationMessages.redirectUrl =
+      "Redirect url must be a valid url";
 
     await postServiceUrlsAndResponseType(req, res);
 
