@@ -39,10 +39,12 @@ describe("when displaying the post choose service type screen", () => {
       currentPage: "services",
       layout: "sharedViews/layoutNew.ejs",
       backLink: true,
+      cancelLink: "/users",
     };
   });
 
-  it("should redirect to the name and description page on success", async () => {
+  // This is only temporary until more of the journey has been built
+  it("should redirect to the users page on success", async () => {
     await postChooseServiceType(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
@@ -67,6 +69,7 @@ describe("when displaying the post choose service type screen", () => {
       {
         csrfToken: req.csrfToken(),
         backLink: true,
+        cancelLink: "/users",
         currentPage: "services",
         layout: "sharedViews/layoutNew.ejs",
         serviceType: "idOnlyServiceType",
