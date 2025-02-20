@@ -13,42 +13,50 @@ const validateInput = async (req) => {
   };
 
   if (!model.postPasswordResetUrl) {
-    model.validationMessages.postPasswordResetUrl = "Enter a description";
-  } else if (model.postPasswordResetUrl.length > 200) {
     model.validationMessages.postPasswordResetUrl =
-      "Description must be 200 characters or less";
+      "Enter a post password reset url";
+  } else if (model.postPasswordResetUrl.length > 1024) {
+    model.validationMessages.postPasswordResetUrl =
+      "Post password reset url must be 1024 characters or less";
   }
+  // TODO valdate if valid url
 
   if (!model.homeUrl) {
-    model.validationMessages.homeUrl = "Enter a name";
-  } else if (model.homeUrl.length > 200) {
-    model.validationMessages.homeUrl = "Name must be 200 characters or less";
+    model.validationMessages.homeUrl = "Enter a home url";
+  } else if (model.homeUrl.length > 1024) {
+    model.validationMessages.homeUrl =
+      "Home url must be 1024 characters or less";
   }
+  // TODO validate if valid url
 
   if (!model.clientId) {
-    model.validationMessages.clientId = "Enter a name";
-  } else if (model.clientId.length > 200) {
-    model.validationMessages.clientId = "Name must be 200 characters or less";
+    model.validationMessages.clientId = "Enter a client id";
+  } else if (model.clientId.length > 50) {
+    model.validationMessages.clientId =
+      "Client id must be 50 characters or less";
   }
+  // TODO, ensure client id is unique
 
   if (!model.redirectUrl) {
-    model.validationMessages.redirectUrl = "Enter a name";
-  } else if (model.redirectUrl.length > 200) {
+    model.validationMessages.redirectUrl = "Enter a redirect url";
+  } else if (model.redirectUrl.length > 1024) {
     model.validationMessages.redirectUrl =
-      "Name must be 200 characters or less";
+      "Redirect url must be 1024 characters or less";
   }
+  // TODO validate if valid url
 
   if (!model.clientSecret) {
-    model.validationMessages.clientSecret = "Enter a name";
-  } else if (model.clientSecret.length > 200) {
+    model.validationMessages.clientSecret = "Enter a client secret";
+  } else if (model.clientSecret.length > 255) {
     model.validationMessages.clientSecret =
-      "Name must be 200 characters or less";
+      "Client secret must be 255 characters or less";
   }
 
   if (!model.apiSecret) {
-    model.validationMessages.apiSecret = "Enter a name";
-  } else if (model.apiSecret.length > 200) {
-    model.validationMessages.apiSecret = "Name must be 200 characters or less";
+    model.validationMessages.apiSecret = "Enter an api secret";
+  } else if (model.apiSecret.length > 255) {
+    model.validationMessages.apiSecret =
+      "Api secret must be 255 characters or less";
   }
 
   return model;
@@ -62,6 +70,7 @@ const postServiceUrlsAndResponseType = async (req, res) => {
     model.currentPage = "services";
     model.layout = "sharedViews/layoutNew.ejs";
     model.backLink = true;
+    model.cancelLink = "/users";
     return sendResult(
       req,
       res,
@@ -84,6 +93,7 @@ const postServiceUrlsAndResponseType = async (req, res) => {
       model.currentPage = "services";
       model.layout = "sharedViews/layoutNew.ejs";
       model.backLink = true;
+      model.cancelLink = "/users";
       return sendResult(
         req,
         res,
