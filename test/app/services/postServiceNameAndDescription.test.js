@@ -67,7 +67,7 @@ describe("when displaying the post choose service type screen", () => {
 
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe(
-      "/service-urls-and-response-type",
+      "service-urls-and-response-type",
     );
     expect(sendResult).toHaveBeenCalledTimes(0);
   });

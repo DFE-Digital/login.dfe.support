@@ -3,83 +3,190 @@
     <h1 class="govuk-heading-xl">
         Enter service details
     </h1>
-      <form method="post">
+    <p class="govuk-body">Read the <a href="">service configuration help page</a> to find out more about service details</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>home URL</li>
+      <li>post password-reset URL</li>
+    </ul>
+
+    <form method="post">
         <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
         <div class="govuk-form-group <%= (locals.validationMessages.homeUrl !== undefined) ? 'govuk-form-group--error' : '' %>">
-          <label class="govuk-label govuk-label--l" for="name">
+          <label class="govuk-label" for="name">
             Home URL
           </label>
+          <div id="homeUrl-hint" class="govuk-hint">
+            The home page of the service you want to create.
+          </div>
           <% if (locals.validationMessages.homeUrl !== undefined) { %>
           <p id="name-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.homeUrl %>
           </p>
           <% } %>
-          <p class="govuk-body">Enter the name of the service.  The service name should be:</p>
-          <ul class="govuk-list govuk-list--bullet">
-            <li>unique</li>
-            <li>clear</li>
-            <li>descriptive</li>
-          </ul>
           <input class="govuk-input <%= (locals.validationMessages.homeUrl !== undefined) ? 'govuk-input--error' : '' %>" id="homeUrl" name="homeUrl" type="text" spellcheck="false" value="<%= locals.homeUrl %>">
         </div>
 
         <div class="govuk-form-group <%= (locals.validationMessages.postPasswordResetUrl !== undefined) ? 'govuk-form-group--error' : '' %>">
-          <label class="govuk-label govuk-label--l" for="name">
+          <label class="govuk-label" for="name">
             Post password-reset URL
           </label>
+          <div id="postPasswordResetUrl-hint" class="govuk-hint">
+            Where you want to redirect users after they have reset their password
+          </div>
           <% if (locals.validationMessages.postPasswordResetUrl !== undefined) { %>
           <p id="name-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.postPasswordResetUrl %>
           </p>
           <% } %>
-          <p class="govuk-body">Enter the name of the service.  The service name should be:</p>
           <input class="govuk-input <%= (locals.validationMessages.postPasswordResetUrl !== undefined) ? 'govuk-input--error' : '' %>" id="postPasswordResetUrl" name="postPasswordResetUrl" type="text" spellcheck="false" value="<%= locals.postPasswordResetUrl %>">
         </div>
 
         <div class="govuk-form-group <%= (locals.validationMessages.clientId !== undefined) ? 'govuk-form-group--error' : '' %>">
-          <label class="govuk-label govuk-label--l" for="clientId">
+          <label class="govuk-label" for="clientId">
             Client ID
           </label>
+          <div id="clientId-hint" class="govuk-hint">
+            A unique identifier of the service that is created manually by the DfE Sign-in team.  You cannot change this value.
+          </div>
           <% if (locals.validationMessages.clientId !== undefined) { %>
           <p id="name-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.clientId %>
           </p>
           <% } %>
-          <p class="govuk-body">Enter the name of the service.  The service name should be:</p>
           <input class="govuk-input <%= (locals.validationMessages.clientId !== undefined) ? 'govuk-input--error' : '' %>" id="clientId" name="clientId" type="text" spellcheck="false" value="<%= locals.clientId %>">
         </div>
 
         <div class="govuk-form-group <%= (locals.validationMessages.redirectUrl !== undefined) ? 'govuk-form-group--error' : '' %>">
-          <label class="govuk-label govuk-label--l" for="redirectUrl">
+          <label class="govuk-label" for="redirectUrl">
             Redirect URL
           </label>
+          <div id="redirectUrl-hint" class="govuk-hint">
+            Where you want to redirect users after they have authenticated.  Add at least 1 URL.
+          </div>
           <% if (locals.validationMessages.redirectUrl !== undefined) { %>
           <p id="name-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.redirectUrl %>
           </p>
           <% } %>
-          <p class="govuk-body">Enter the name of the service.  The service name should be:</p>
           <input class="govuk-input <%= (locals.validationMessages.redirectUrl !== undefined) ? 'govuk-input--error' : '' %>" id="redirectUrl" name="redirectUrl" type="text" spellcheck="false" value="<%= locals.redirectUrl %>">
         </div>
 
+        <div class="govuk-form-group <%= (locals.validationMessages.logOutRedirectUrl !== undefined) ? 'govuk-form-group--error' : '' %>">
+          <label class="govuk-label" for="logOutRedirectUrl">
+            Logout redirect URL
+          </label>
+          <div id="logOutRedirectUrl-hint" class="govuk-hint">
+            Where you want to redirect users after they log out of the service. Add at least 1 URL.
+          </div>
+          <% if (locals.validationMessages.logOutRedirectUrl !== undefined) { %>
+          <p id="name-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.logOutRedirectUrl %>
+          </p>
+          <% } %>
+          <input class="govuk-input <%= (locals.validationMessages.logOutRedirectUrl !== undefined) ? 'govuk-input--error' : '' %>" id="logOutRedirectUrl" name="logOutRedirectUrl" type="text" spellcheck="false" value="<%= locals.logOutRedirectUrl %>">
+        </div>
+
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset" aria-describedby="responseTypesCode-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+              <h1 class="govuk-fieldset__heading">
+                Response types
+              </h1>
+            </legend>
+            <div id="responseTypesCode-hint" class="govuk-hint">
+              A value that determines the authentication flow. Select all that apply
+            </div>
+            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+              <div class="govuk-checkboxes__item">  
+                <input class="govuk-checkboxes__input" id="responseTypesCode" name="responseTypesCode" type="checkbox" 
+                value="responseTypesCode" <%= (locals.responseTypesCode) ? 'checked' : '' %> aria-describedby="responseTypesCode-item-hint">
+                <label class="govuk-label govuk-checkboxes__label" for="responseTypesCode">
+                  code
+                </label>
+              </div>
+              <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input" id="responseTypesIdToken" name="responseTypesIdToken" type="checkbox" value="responseTypesIdToken" <%= (locals.responseTypesIdToken) ? 'checked' : '' %>>
+                <label class="govuk-label govuk-checkboxes__label" for="responseTypesIdToken">
+                  id_token
+                </label>
+              </div>
+              <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input" id="responseTypesToken" name="responseTypesToken" type="checkbox" value="responseTypesToken" <%= (locals.responseTypesToken) ? 'checked' : '' %>>
+                <label class="govuk-label govuk-checkboxes__label" for="responseTypesToken">
+                  token
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset" aria-describedby="refreshToken-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+              <h1 class="govuk-fieldset__heading">
+                Refresh token
+              </h1>
+            </legend>
+            <div id="refreshToken-hint" class="govuk-hint">
+              Select this field if you want to get new access tokens when they have expired without interaction from the user.
+            </div>
+            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+              <div class="govuk-checkboxes__item">  
+                <input class="govuk-checkboxes__input" id="refreshToken" name="refreshToken" type="checkbox" 
+                value="refreshToken" <%= (locals.refreshToken) ? 'checked' : '' %> aria-describedby="refreshToken-item-hint">
+                <label class="govuk-label govuk-checkboxes__label" for="refreshToken">
+                  code
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
 
         <div class="govuk-form-group <%= (locals.validationMessages.clientSecret !== undefined) ? 'govuk-form-group--error' : '' %>">
-          <label class="govuk-label govuk-label--l" for="clientSecret">
+          <label class="govuk-label" for="clientSecret">
             Client Secret
           </label>
+          <div id="clientSecret-hint" class="govuk-hint">
+            A value that is created automatically by the system and acts as a password for the service.  You can regenerate this value.
+          </div>
           <% if (locals.validationMessages.clientSecret !== undefined) { %>
           <p id="name-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.clientSecret %>
           </p>
           <% } %>
-          <p class="govuk-body">Enter the name of the service.  The service name should be:</p>
           <input class="govuk-input <%= (locals.validationMessages.clientSecret !== undefined) ? 'govuk-input--error' : '' %>" id="clientSecret" name="clientSecret" type="text" spellcheck="false" value="<%= locals.clientSecret %>">
         </div>
 
+        <div class="govuk-form-group <%= (locals.validationMessages.tokenEndpointAuthenticationMethod !== undefined) ? 'govuk-form-group--error' : '' %>">
+          <label class="govuk-label" for="category">
+            Token endpoint authentication method
+          </label>
+          <div id="tokenEndpointAuthenticationMethod-hint" class="govuk-hint">
+            The way your service authenticates to the DfE Sign-in token endpoint.  Select the method that applies.
+          </div>
+          <% if (locals.validationMessages.tokenEndpointAuthenticationMethod !== undefined) { %>
+          <p id="tokenEndpointAuthenticationMethod-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> <%= locals.validationMessages.tokenEndpointAuthenticationMethod %>
+          </p>
+          <% } %>
+          <select class="govuk-select <%= (locals.validationMessages.tokenEndpointAuthenticationMethod !== undefined) ? 'govuk-select--error' : '' %>" id="tokenEndpointAuthenticationMethod" name="tokenEndpointAuthenticationMethod" aria-describedby="tokenEndpointAuthenticationMethod-error">
+            <option value="" <%= (locals.tokenEndpointAuthenticationMethod === undefined) ? 'selected' : '' %>>Choose token endpoint authentication method</option>
+            <option value="client_secret_post" <%= (locals.tokenEndpointAuthenticationMethod === "client_secret_post") ? 'selected' : '' %>>Client secret post</option>
+          </select>
+        </div>
+
+        <h1 class="govuk-heading-l">
+          API
+        </h1>
+        <p class="govuk-body">Read the <a href="">service configuration help page</a> to find out more about the API.</p>
+
         <div class="govuk-form-group <%= (locals.validationMessages.apiSecret !== undefined) ? 'govuk-form-group--error' : '' %>">
-          <label class="govuk-label govuk-label--l" for="apiSecret">
+          <label class="govuk-label" for="apiSecret">
             API Secret
           </label>
+          <div id="apiSecret-hint" class="govuk-hint">
+            A value that is created automatically by the sytem and acts as a password for the DfE Sign-in public API.  You can regenreate this value.
+          </div>
           <% if (locals.validationMessages.apiSecret !== undefined) { %>
           <p id="name-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.apiSecret %>

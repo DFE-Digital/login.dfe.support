@@ -8,7 +8,14 @@ const validateInput = async (req) => {
     postPasswordResetUrl: req.body.postPasswordResetUrl || "",
     clientId: req.body.clientId || "",
     redirectUrl: req.body.redirectUrl || "",
+    logOutRedirectUrl: req.body.logOutRedirectUrl || "",
+    responseTypesCode: req.body.responseTypesCode || "",
+    responseTypesIdToken: req.body.responseTypesIdToken || "",
+    responseTypesToken: req.body.responseTypesToken || "",
+    refreshToken: req.body.refreshToken || "",
     clientSecret: req.body.clientSecret || "",
+    tokenEndpointAuthenticationMethod:
+      req.body.tokenEndpointAuthenticationMethod,
     apiSecret: req.body.apiSecret || "",
     validationMessages: {},
   };
@@ -67,6 +74,20 @@ const validateInput = async (req) => {
       new URL(model.redirectUrl);
     } catch {
       model.validationMessages.redirectUrl = "Redirect url must be a valid url";
+    }
+  }
+
+  if (!model.logOutRedirectUrl) {
+    model.validationMessages.logOutRedirectUrl = "Enter a log out redirect url";
+  } else if (model.logOutRedirectUrl.length > 1024) {
+    model.validationMessages.logOutRedirectUrl =
+      "Log out redirect url must be 1024 characters or less";
+  } else {
+    try {
+      new URL(model.logOutRedirectUrl);
+    } catch {
+      model.validationMessages.logOutRedirectUrl =
+        "Log out redirect url must be a valid url";
     }
   }
 

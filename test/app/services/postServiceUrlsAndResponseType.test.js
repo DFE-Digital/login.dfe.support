@@ -25,6 +25,11 @@ describe("when displaying the post choose service type screen", () => {
         postPasswordResetUrl: "https://test-url.com/post-password-reset",
         clientId: "test-client-id",
         redirectUrl: "https://test-url.com/redirect",
+        logOutRedirectUrl: "https://test-url.com/log-out-redirect",
+        responseTypesCode: "",
+        responseTypesIdToken: "",
+        responseTypesToken: "",
+        refreshToken: "",
         clientSecret: "client-secret",
         apiSecret: "api-secret",
       },
@@ -63,7 +68,13 @@ describe("when displaying the post choose service type screen", () => {
       postPasswordResetUrl: "https://test-url.com/post-password-reset",
       clientId: "test-client-id",
       redirectUrl: "https://test-url.com/redirect",
+      logOutRedirectUrl: "https://test-url.com/log-out-redirect",
+      responseTypesCode: "",
+      responseTypesIdToken: "",
+      responseTypesToken: "",
+      refreshToken: "",
       clientSecret: "client-secret",
+      tokenEndpointAuthenticationMethod: undefined,
       apiSecret: "api-secret",
       validationMessages: {},
       csrfToken: "token",
@@ -104,7 +115,13 @@ describe("when displaying the post choose service type screen", () => {
         postPasswordResetUrl: "https://test-url.com/post-password-reset",
         clientId: "test-client-id",
         redirectUrl: "https://test-url.com/redirect",
+        logOutRedirectUrl: "https://test-url.com/log-out-redirect",
+        responseTypesCode: "",
+        responseTypesIdToken: "",
+        responseTypesToken: "",
+        refreshToken: "",
         clientSecret: "client-secret",
+        tokenEndpointAuthenticationMethod: undefined,
         apiSecret: "api-secret",
         csrfToken: req.csrfToken(),
         backLink: true,
@@ -253,6 +270,42 @@ describe("when displaying the post choose service type screen", () => {
     exampleErrorResponse.redirectUrl = "anInvalidUrl@slbsh!$$%";
     exampleErrorResponse.validationMessages.redirectUrl =
       "Redirect url must be a valid url";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages if no logOutRedirectUrl is entered", async () => {
+    req.body.logOutRedirectUrl = "";
+    exampleErrorResponse.logOutRedirectUrl = "";
+    exampleErrorResponse.validationMessages.logOutRedirectUrl =
+      "Enter a log out redirect url";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages if logOutRedirectUrl over 1024 characters", async () => {
+    req.body.logOutRedirectUrl = "Test123456".repeat(125); // 1250 character length string
+    exampleErrorResponse.logOutRedirectUrl = "Test123456".repeat(125); // 1250 character length string
+    exampleErrorResponse.validationMessages.logOutRedirectUrl =
+      "Log out redirect url must be 1024 characters or less";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages if an invalid logOutRedirectUrl is entered", async () => {
+    req.body.logOutRedirectUrl = "anInvalidUrl@slbsh!$$%";
+    exampleErrorResponse.logOutRedirectUrl = "anInvalidUrl@slbsh!$$%";
+    exampleErrorResponse.validationMessages.logOutRedirectUrl =
+      "Log out redirect url must be a valid url";
 
     await postServiceUrlsAndResponseType(req, res);
 
