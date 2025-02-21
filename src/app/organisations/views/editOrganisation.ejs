@@ -1,22 +1,17 @@
-<% if (locals.flash.info) { %>
-    <div class="row">
-        <div class="col-12">
-            <div class="notification notification-success">
-                <%= locals.flash.info %>
-            </div>
-        </div>
-    </div>
-<% } %>
+<a href="/organisations/<%= organisation.id %>/users" class="link-back">Back</a>
 <div class="row">
     <div class="col-8">
-        <h1 class="heading-xlarge heading-breakable">
-            <span class="heading-secondary"><%= organisation.category.name %></span>
-            <%= organisation.name %>
+        <h1 class="heading-xlarge">
+            Edit Organisation
         </h1>
         <dl class="inline condensed">
             <% if (organisation.LegalName) { %>
                 <dt class="label">Legal name:</dt>
                 <dd><%= organisation.LegalName %></dd>
+            <% } %>
+            <% if (organisation.name) { %>
+                <dt class="label">Name:</dt>
+                <dd><%= organisation.name %></dd>
             <% } %>
             
             <% if (organisation.type || organisation.providerTypeName) { %>
@@ -84,28 +79,28 @@
                 <dd><%= organisation.companyRegistrationNumber %></dd>
             <% } %>
         </dl>
-    </div>
-    <div class="col-4">
-        <aside>
-            <h2 class="heading-medium">Actions</h2>
-            <ul class="list">
-                <li><a href="web-service-sync">Send WS Sync</a></li>
-                <% if (organisation.category.id === '008') { %>
-                <li><a href="edit-organisation">Edit Organisation</a></li>
-                <% } %>
-            </ul>
-        </aside>
-    </div>
+    </div> 
 </div>
+<div class="row">
+  <div class="col-12">
+      <form method="post" id="form-edit-org">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+          <fieldset>
+              <div class="form-group">
+                  <label class="form-label" for="name">Name</span> </label>
+                  <input class="form-control" id="name" name="name" type="text">
+              </div>
+              <div class="form-group">
+                  <label class="form-label" for="address">Address</span> </label>
+                  <input class="form-control" id="address" name="address" type="text">
+              </div>
+              
+          </fieldset>
 
-<nav>
-    <ul class="tabs" role="tablist">
+          <div class="form-submit submit-buttons">
+              <button type="submit" class="button">Continue</button>
+          </div>
 
-        <% if(locals.area === 'users') { %>
-            <li class="active">Users</li>
-        <% } else { %>
-            <li><a href="users" role="tab">Users</a></li>
-        <% } %>
-
-    </ul>
-</nav>
+      </form>
+  </div>
+</div>
