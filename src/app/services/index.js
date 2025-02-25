@@ -5,6 +5,8 @@ const logger = require("../../infrastructure/logger");
 
 const getChooseServiceType = require("./getChooseServiceType");
 const postChooseServiceType = require("./postChooseServiceType");
+const getServiceNameAndDescription = require("./getServiceNameAndDescription");
+const postServiceNameAndDescription = require("./postServiceNameAndDescription");
 
 const router = express.Router({ mergeParams: true });
 
@@ -24,6 +26,17 @@ const users = (csrf) => {
 
   router.get("/choose-type", csrf, asyncWrapper(getChooseServiceType));
   router.post("/choose-type", csrf, asyncWrapper(postChooseServiceType));
+
+  router.get(
+    "/service-name-and-description",
+    csrf,
+    asyncWrapper(getServiceNameAndDescription),
+  );
+  router.post(
+    "/service-name-and-description",
+    csrf,
+    asyncWrapper(postServiceNameAndDescription),
+  );
 
   return router;
 };

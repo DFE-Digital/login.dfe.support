@@ -48,7 +48,9 @@ describe("when displaying the post choose service type screen", () => {
     await postChooseServiceType(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe("/users");
+    expect(res.redirect.mock.calls[0][0]).toBe(
+      "/services/service-name-and-description",
+    );
     expect(sendResult).toHaveBeenCalledTimes(0);
   });
 
