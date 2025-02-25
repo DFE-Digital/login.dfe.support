@@ -28,6 +28,7 @@ describe("when displaying the get service name and description page", () => {
       {
         csrfToken: req.csrfToken(),
         backLink: true,
+        cancelLink: "/users",
         currentPage: "services",
         layout: "sharedViews/layoutNew.ejs",
         validationMessages: {},

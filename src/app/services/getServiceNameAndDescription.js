@@ -6,6 +6,7 @@ const getServiceNameAndDescription = async (req, res) => {
     layout: "sharedViews/layoutNew.ejs",
     currentPage: "services",
     backLink: true,
+    cancelLink: "/users",
     validationMessages: {},
   });
 };

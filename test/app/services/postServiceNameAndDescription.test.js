@@ -59,6 +59,7 @@ describe("when displaying the post choose service type screen", () => {
       currentPage: "services",
       layout: "sharedViews/layoutNew.ejs",
       backLink: true,
+      cancelLink: "/users",
     };
   });
 
@@ -89,6 +90,7 @@ describe("when displaying the post choose service type screen", () => {
       {
         csrfToken: req.csrfToken(),
         backLink: true,
+        cancelLink: "/users",
         currentPage: "services",
         layout: "sharedViews/layoutNew.ejs",
         name: "Test name",
