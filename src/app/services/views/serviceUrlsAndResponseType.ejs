@@ -87,7 +87,7 @@
         </div>
 
         <div class="govuk-form-group">
-          <fieldset class="govuk-fieldset" aria-describedby="responseTypesCode-hint">
+          <fieldset class="govuk-fieldset" id="response_types-fieldset" aria-describedby="responseTypesCode-hint">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
               <h1 class="govuk-fieldset__heading">
                 Response types
@@ -97,22 +97,22 @@
               A value that determines the authentication flow. Select all that apply
             </div>
             <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-              <div class="govuk-checkboxes__item">  
-                <input class="govuk-checkboxes__input" id="responseTypesCode" name="responseTypesCode" type="checkbox" 
-                value="responseTypesCode" <%= (locals.responseTypesCode) ? 'checked' : '' %> aria-describedby="responseTypesCode-item-hint">
-                <label class="govuk-label govuk-checkboxes__label" for="responseTypesCode">
+              <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input" id="response_types-code" name="response_types-code" type="checkbox"
+                value="responseTypesCode" <%= (locals.responseTypesCode) ? 'checked' : '' %> aria-describedby="responseTypesCode-hint">
+                <label class="govuk-label govuk-checkboxes__label" for="response_types-code">
                   code
                 </label>
               </div>
               <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" id="responseTypesIdToken" name="responseTypesIdToken" type="checkbox" value="responseTypesIdToken" <%= (locals.responseTypesIdToken) ? 'checked' : '' %>>
-                <label class="govuk-label govuk-checkboxes__label" for="responseTypesIdToken">
+                <input class="govuk-checkboxes__input" id="response_types-id_token" name="response_types-id_token" type="checkbox" value="response_types-id_token" <%= (locals.responseTypesIdToken) ? 'checked' : '' %>>
+                <label class="govuk-label govuk-checkboxes__label" for="response_types-id_token">
                   id_token
                 </label>
               </div>
               <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" id="responseTypesToken" name="responseTypesToken" type="checkbox" value="responseTypesToken" <%= (locals.responseTypesToken) ? 'checked' : '' %>>
-                <label class="govuk-label govuk-checkboxes__label" for="responseTypesToken">
+                <input class="govuk-checkboxes__input" id="response_types-token" name="response_types-token" type="checkbox" value="response_types-token" <%= (locals.responseTypesToken) ? 'checked' : '' %>>
+                <label class="govuk-label govuk-checkboxes__label" for="response_types-token">
                   token
                 </label>
               </div>

@@ -9,9 +9,9 @@ const validateInput = async (req) => {
     clientId: req.body.clientId || "",
     redirectUrl: req.body.redirectUrl || "",
     logOutRedirectUrl: req.body.logOutRedirectUrl || "",
-    responseTypesCode: req.body.responseTypesCode || "",
-    responseTypesIdToken: req.body.responseTypesIdToken || "",
-    responseTypesToken: req.body.responseTypesToken || "",
+    responseTypesCode: req.body["response_types-code"] || "",
+    responseTypesIdToken: req.body["response_types-id_token"] || "",
+    responseTypesToken: req.body["response_types-token"] || "",
     refreshToken: req.body.refreshToken || "",
     clientSecret: req.body.clientSecret || "",
     tokenEndpointAuthenticationMethod:
