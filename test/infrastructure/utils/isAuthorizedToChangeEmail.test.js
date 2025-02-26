@@ -31,7 +31,7 @@ describe("isAuthorizedToChangeEmail middleware function", () => {
     });
   });
 
-  it("should call next if user is authorized to change their email address or password", async () => {
+  it("should call next if the user's email address is authorized to be changed", async () => {
     await isAuthorizedToChangeEmail(req, res, next);
 
     expect(Account.getUser).toHaveBeenCalledWith("user-id");
