@@ -154,7 +154,9 @@
             <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.clientSecret %>
           </p>
           <% } %>
-          <input class="govuk-input <%= (locals.validationMessages.clientSecret !== undefined) ? 'govuk-input--error' : '' %>" id="clientSecret" name="clientSecret" type="text" spellcheck="false" value="<%= locals.clientSecret %>">
+          <input class="govuk-input govuk-!-width-three-quarters <%= (locals.validationMessages.clientSecret !== undefined) ? 'govuk-input--error' : '' %>" id="clientSecret" name="clientSecret" type="text" spellcheck="false" value="<%= locals.clientSecret %>">
+          <a href="" class="govuk-link govuk-link--no-visited-state dfe-flex-regenerate-link" id="generate-clientSecret">Regenerate</a>
+
         </div>
 
         <div class="govuk-form-group <%= (locals.validationMessages.tokenEndpointAuthenticationMethod !== undefined) ? 'govuk-form-group--error' : '' %>">
@@ -193,7 +195,8 @@
           </p>
           <% } %>
           <p class="govuk-body">Enter the name of the service.  The service name should be:</p>
-          <input class="govuk-input <%= (locals.validationMessages.apiSecret !== undefined) ? 'govuk-input--error' : '' %>" id="apiSecret" name="apiSecret" type="text" spellcheck="false" value="<%= locals.apiSecret %>">
+          <input class="govuk-input govuk-!-width-three-quarters <%= (locals.validationMessages.apiSecret !== undefined) ? 'govuk-input--error' : '' %>" id="apiSecret" name="apiSecret" type="text" spellcheck="false" value="<%= locals.apiSecret %>">
+          <a href="" class="govuk-link govuk-link--no-visited-state dfe-flex-regenerate-link" id="generate-apiSecret">Regenerate</a>
         </div>
 
         <div class="govuk-button-group">
@@ -203,6 +206,7 @@
           <a class="govuk-link" href="<%= locals.cancelLink %>">Cancel</a>
         </div>
     </form>
+    <script src="/assets/javascript/niceware.js"></script>
 </div>
 
 
