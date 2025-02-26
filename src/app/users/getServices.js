@@ -1,4 +1,7 @@
-const { sendResult } = require("../../infrastructure/utils");
+const {
+  sendResult,
+  isInternalEntraUser,
+} = require("../../infrastructure/utils");
 const { getUserDetails } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const {
@@ -54,6 +57,7 @@ const getOrganisations = async (userId, correlationId) => {
 
 const action = async (req, res) => {
   const user = await getUserDetails(req);
+  const showChangeEmail = !isInternalEntraUser(user);
   user.formattedLastLogin = user.lastLogin
     ? dateFormat(user.lastLogin, "longDateFormat")
     : "";
@@ -126,6 +130,7 @@ const action = async (req, res) => {
   sendResult(req, res, "users/views/services", {
     csrfToken: req.csrfToken(),
     user,
+    showChangeEmail,
     organisations: allOrganisationsForUser,
     isInvitation: req.params.uid.startsWith("inv-"),
   });

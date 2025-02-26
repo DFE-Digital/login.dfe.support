@@ -235,6 +235,9 @@ const mapUserToSupportModel = (user, userFromSearch) => {
     firstName: user.given_name,
     lastName: user.family_name,
     email: user.email,
+    isEntra: user.isEntra,
+    isInternalUser: user.isInternalUser,
+    entraOid: user.entraOid,
     organisation: userFromSearch.primaryOrganisation
       ? {
           name: userFromSearch.primaryOrganisation,
@@ -305,6 +308,9 @@ const getUserDetailsById = async (uid, correlationId) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      isEntra: user.isEntra,
+      isInternalUser: user.isInternalUser,
+      entraOid: user.entraOid,
       lastLogin: user.lastLogin,
       status: user.status,
       loginsInPast12Months: {

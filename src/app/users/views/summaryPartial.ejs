@@ -70,7 +70,7 @@
                         <% if (locals.organisations.length > 0 && locals.user.status.id !== 0) { %>
                             <li><a href="select-organisation">Add services</a></li>
                         <% } %>
-                        <% if(locals.user.status.id !== 0) { %>
+                        <% if(locals.user.status.id !== 0 && showChangeEmail) { %>
                             <li><a href="edit-email">Change user's email address</a></li>
                         <% } %>
                         <% if(locals.user.status.id === 0) { %>

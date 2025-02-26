@@ -1,7 +1,10 @@
 const flatten = require("lodash/flatten");
 const uniq = require("lodash/uniq");
 const sortBy = require("lodash/sortBy");
-const { sendResult } = require("../../infrastructure/utils");
+const {
+  sendResult,
+  isInternalEntraUser,
+} = require("../../infrastructure/utils");
 const { getUserDetails } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const {
@@ -81,6 +84,7 @@ const getPendingRequests = async (userId, correlationId) => {
 
 const action = async (req, res) => {
   const user = await getUserDetails(req);
+  const showChangeEmail = !isInternalEntraUser(user);
   user.formattedLastLogin = user.lastLogin
     ? dateFormat(user.lastLogin, "longDateFormat")
     : "";
@@ -140,6 +144,7 @@ const action = async (req, res) => {
   sendResult(req, res, "users/views/organisations", {
     csrfToken: req.csrfToken(),
     user,
+    showChangeEmail,
     organisations: sortedOrgs,
     isInvitation: req.params.uid.startsWith("inv-"),
   });
