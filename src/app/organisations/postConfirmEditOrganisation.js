@@ -18,19 +18,25 @@ const postConfirmEditOrganisation = async (req, res) => {
     address,
   };
 
-  logger.info(
-    `User: ${req.user.sub} - About to update organisation ${organisation.name}: Org id: ${req.params.id}`,
+  logger.audit(
+    `User: ${req.user.email} (id: ${req.user.sub}) - About to update organisation ${organisation.name}: Org id: ${req.params.id}`,
     {
-      correlationId,
+      type: "support",
+      subType: "org-edit",
+      userId: req.user.sub,
+      organisationId: req.params.id,
     },
   );
 
   await editOrganisation(organisation.id, body, correlationId);
 
-  logger.info(
-    `Organisation ${organisation.name} successfully updated: ${req.params.id}`,
+  logger.audit(
+    `Organisation ${organisation.name} (id: ${req.params.id}) successfully updated`,
     {
-      correlationId,
+      type: "support",
+      subType: "org-edit",
+      userId: req.user.sub,
+      organisationId: req.params.id,
     },
   );
 
