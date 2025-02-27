@@ -7,6 +7,10 @@ const getServiceUrlsAndResponseType = async (req, res) => {
     currentPage: "services",
     backLink: true,
     cancelLink: "/users",
+    service: {
+      redirectUris: [],
+      postLogoutRedirectUris: [],
+    },
     validationMessages: {},
   });
 };

@@ -56,35 +56,88 @@
           <input class="govuk-input <%= (locals.validationMessages.clientId !== undefined) ? 'govuk-input--error' : '' %>" id="clientId" name="clientId" type="text" spellcheck="false" value="<%= locals.clientId %>">
         </div>
 
-        <div class="govuk-form-group <%= (locals.validationMessages.redirectUrl !== undefined) ? 'govuk-form-group--error' : '' %>">
-          <label class="govuk-label" for="redirectUrl">
-            Redirect URL
-          </label>
-          <div id="redirectUrl-hint" class="govuk-hint">
-            Where you want to redirect users after they have authenticated.  Add at least 1 URL.
+        <% function generateRedirectUrlsSection({ sectionId, headingText, hintText, dataValues, validationMessages }) { %>
+          <div id="<%= sectionId %>-form-group" data-<%= sectionId %>-counter="<%= (dataValues.length > 0) ? (dataValues.length + 1) : 2 %>" class="govuk-form-group <%= (validationMessages !== undefined) ? 'govuk-form-group--error' : '' %>">
+              <div id="<%= sectionId %>">
+                  <h1 class="govuk-heading-m govuk-!-margin-bottom-2" id="<%= sectionId %>-heading"> <%- headingText %> </h1>
+                  <div id="<%= sectionId %>-hint" class="govuk-hint">
+                      <%- hintText %>
+                  </div>
+                  <% if (dataValues.length > 0) { %>
+                      <% if (validationMessages !== undefined) { %>
+                      <p id="<%= sectionId %>-validation" class="govuk-error-message">
+                          <span class="govuk-visually-hidden">Error:</span>
+                          <%- validationMessages %>
+                      </p>
+                      <% } %>
+                      <% for (let i = 0; i < dataValues.length; i++) { 
+                          const url = dataValues[i];
+                      %>
+                          <div class="govuk-body dfe-flex-container" id="<%= sectionId %>-input-group-<%= i+1 %>">
+                              <label for="<%= sectionId %>-input-<%= i+1 %>" class="govuk-label govuk-label--s govuk-visually-hidden">
+                              <%- headingText %>
+                              </label>
+                              <input
+                                  class="form-control dfe-flex-input-grow govuk-input"
+                                  id="<%= sectionId %>-input-<%= i+1 %>"
+                                  name="<%= sectionId %>"
+                                  value="<%- url %>" /> 
+                              <a href="#" class="govuk-link govuk-link--no-visited-state remove-redirect" id="<%= sectionId %>-remove-<%= i+1 %>" data-group-id="<%= i+1 %>">Remove</a>
+                          </div>
+                      <% } %>
+                  <% } else { %>
+                      <% if (validationMessages !== undefined) { %>
+                      <p id="<%= sectionId %>-validation" class="govuk-error-message">
+                          <span class="govuk-visually-hidden">Error:</span>
+                          <%- validationMessages %>
+                      </p>
+                      <% } %>
+                      <div class="govuk-body dfe-flex-container" id="<%= sectionId %>-input-group-1">
+                          <label for="<%= sectionId %>-1" class="govuk-label govuk-label--s govuk-visually-hidden">
+                          <%- headingText %>
+                          </label>
+                          <input
+                              class="form-control dfe-flex-input-grow govuk-input"
+                              id="<%= sectionId %>-1"
+                              name="<%= sectionId %>"
+                          />
+                          <a href="#" class="govuk-link govuk-link--no-visited-state remove-redirect" id="<%= sectionId %>-remove-1" data-group-id="1">Remove</a>
+                      </div>
+                  <% } %>
+              </div>
           </div>
-          <% if (locals.validationMessages.redirectUrl !== undefined) { %>
-          <p id="name-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.redirectUrl %>
-          </p>
-          <% } %>
-          <input class="govuk-input <%= (locals.validationMessages.redirectUrl !== undefined) ? 'govuk-input--error' : '' %>" id="redirectUrl" name="redirectUrl" type="text" spellcheck="false" value="<%= locals.redirectUrl %>">
-        </div>
+          <a href="" class="govuk-button" id="<%= sectionId %>-add">Add URL</a>
+      <% } %>
 
-        <div class="govuk-form-group <%= (locals.validationMessages.logOutRedirectUrl !== undefined) ? 'govuk-form-group--error' : '' %>">
-          <label class="govuk-label" for="logOutRedirectUrl">
-            Logout redirect URL
-          </label>
-          <div id="logOutRedirectUrl-hint" class="govuk-hint">
-            Where you want to redirect users after they log out of the service. Add at least 1 URL.
-          </div>
-          <% if (locals.validationMessages.logOutRedirectUrl !== undefined) { %>
-          <p id="name-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.logOutRedirectUrl %>
-          </p>
-          <% } %>
-          <input class="govuk-input <%= (locals.validationMessages.logOutRedirectUrl !== undefined) ? 'govuk-input--error' : '' %>" id="logOutRedirectUrl" name="logOutRedirectUrl" type="text" spellcheck="false" value="<%= locals.logOutRedirectUrl %>">
-        </div>
+      <%# Redirect and Post logout URLS sections  %> 
+      <%
+          const sectionsData = [
+              {
+                  sectionId: 'redirect_uris',
+                  headingText: 'Redirect URL',
+                  hintText: 'Where you want to redirect users after they have authenticated. Add at least 1 URL.',
+                  dataValues: locals.service.redirectUris,
+                  validationMessages: locals.validationMessages.redirect_uris
+              },
+              {
+                  sectionId: 'post_logout_redirect_uris',
+                  headingText: 'Logout redirect URL',
+                  hintText: 'Where you want to redirect users after they log out of a service. Add at least 1 URL.',
+                  dataValues: locals.service.postLogoutRedirectUris,
+                  validationMessages: locals.validationMessages.post_logout_redirect_uris
+              }
+          ];
+      
+          sectionsData.forEach(s => { 
+              generateRedirectUrlsSection({ 
+                  sectionId: s.sectionId, 
+                  headingText: s.headingText, 
+                  hintText: s.hintText, 
+                  dataValues: s.dataValues, 
+                  validationMessages: s.validationMessages 
+              }); 
+          });
+      %>
 
         <div class="govuk-form-group">
           <fieldset class="govuk-fieldset" id="response_types-fieldset" aria-describedby="responseTypesCode-hint">
