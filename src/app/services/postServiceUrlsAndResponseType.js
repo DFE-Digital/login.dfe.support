@@ -175,7 +175,7 @@ const validateInput = async (req) => {
       )
     ) {
       model.validationMessages.post_logout_redirect_uris =
-        "Redirect urls must all be unique";
+        "Log out redirect urls must all be unique";
     }
   }
 

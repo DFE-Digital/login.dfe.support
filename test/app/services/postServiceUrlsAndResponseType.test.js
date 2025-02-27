@@ -271,11 +271,59 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
+  it("should render an the page with multiple errors in validationMessages if redirectUrl over 1024 characters", async () => {
+    req.body.redirect_uris = [
+      "invalidurl123",
+      "https://" + "Test123456".repeat(125) + ".com",
+    ]; // 1250 character length string
+    exampleErrorResponse.service.redirectUris = [
+      "invalidurl123",
+      "https://" + "Test123456".repeat(125) + ".com",
+    ]; // 1250 character length string
+    exampleErrorResponse.validationMessages.redirect_uris =
+      "Redirect url must be a valid url<br/>Redirect url must be 1024 characters or less";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
   it("should render an the page with an error in validationMessages if an invalid redirectUrl is entered", async () => {
     req.body.redirect_uris = "anInvalidUrl@slbsh!$$%";
     exampleErrorResponse.service.redirectUris = ["anInvalidUrl@slbsh!$$%"];
     exampleErrorResponse.validationMessages.redirect_uris =
       "Redirect url must be a valid url";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages if a multiple invalid redirectUrl are entered", async () => {
+    req.body.redirect_uris = ["anInvalidUrl@slbsh!$$%", "another23480349"];
+    exampleErrorResponse.service.redirectUris = [
+      "anInvalidUrl@slbsh!$$%",
+      "another23480349",
+    ];
+    exampleErrorResponse.validationMessages.redirect_uris =
+      "Redirect url must be a valid url<br/>Redirect url must be a valid url";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages if a multiple identical redirectUrl are entered", async () => {
+    req.body.redirect_uris = ["https://validurl.com", "https://validurl.com"];
+    exampleErrorResponse.service.redirectUris = [
+      "https://validurl.com",
+      "https://validurl.com",
+    ];
+    exampleErrorResponse.validationMessages.redirect_uris =
+      "Redirect urls must all be unique";
 
     await postServiceUrlsAndResponseType(req, res);
 
@@ -310,13 +358,69 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
+  it("should render an the page with an error in validationMessages if multiple errors, including logOutRedirectUrl over 1024 characters", async () => {
+    req.body.post_logout_redirect_uris = [
+      "invalidurl123",
+      "https://" + "Test123456".repeat(125) + ".com",
+    ]; // 1250 character length string
+    exampleErrorResponse.service.postLogoutRedirectUris = [
+      "invalidurl123",
+      "https://" + "Test123456".repeat(125) + ".com",
+    ]; // 1250 character length string
+    exampleErrorResponse.validationMessages.post_logout_redirect_uris =
+      "Log out redirect url must be a valid url<br/>Log out redirect url must be 1024 characters or less";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
   it("should render an the page with an error in validationMessages if an invalid logOutRedirectUrl is entered", async () => {
+    req.body.post_logout_redirect_uris = [
+      "anInvalidUrl@slbsh!$$%",
+      "secondBadOne123",
+    ];
+    exampleErrorResponse.service.postLogoutRedirectUris = [
+      "anInvalidUrl@slbsh!$$%",
+      "secondBadOne123",
+    ];
+    exampleErrorResponse.validationMessages.post_logout_redirect_uris =
+      "Log out redirect url must be a valid url<br/>Log out redirect url must be a valid url";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages if a multiple invalid logOutRedirectUris are entered", async () => {
     req.body.post_logout_redirect_uris = "anInvalidUrl@slbsh!$$%";
     exampleErrorResponse.service.postLogoutRedirectUris = [
       "anInvalidUrl@slbsh!$$%",
     ];
     exampleErrorResponse.validationMessages.post_logout_redirect_uris =
       "Log out redirect url must be a valid url";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages all logOutRedirectUrl are not unique", async () => {
+    req.body.post_logout_redirect_uris = [
+      "https://validurl.com",
+      "https://validurl.com",
+      "https://anothervalidurl1234.com",
+    ];
+    exampleErrorResponse.service.postLogoutRedirectUris = [
+      "https://validurl.com",
+      "https://validurl.com",
+      "https://anothervalidurl1234.com",
+    ];
+    exampleErrorResponse.validationMessages.post_logout_redirect_uris =
+      "Log out redirect urls must all be unique";
 
     await postServiceUrlsAndResponseType(req, res);
 
