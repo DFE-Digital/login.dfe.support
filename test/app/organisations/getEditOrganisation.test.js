@@ -2,35 +2,39 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/utils");
+jest.mock("./../../../src/infrastructure/organisations");
 
 const { getRequestMock, getResponseMock } = require("../../utils");
 const { sendResult } = require("../../../src/infrastructure/utils");
-const getServiceNameAndDescription = require("../../../src/app/services/getServiceNameAndDescription");
+const getEditOrganisation = require("../../../src/app/organisations/getEditOrganisation");
+const {
+  getOrganisationByIdV2,
+} = require("./../../../src/infrastructure/organisations");
 
 const res = getResponseMock();
+const orgResult = { id: "org-1", name: "organisation one" };
 
-describe("when displaying the get service name and description page", () => {
+describe("when calling getEditOrganisations", () => {
   let req;
 
   beforeEach(() => {
+    getOrganisationByIdV2.mockReset().mockReturnValue(orgResult);
     req = getRequestMock();
     res.mockResetAll();
   });
 
-  it("then it should return the serviceNameAndDescription view", async () => {
-    await getServiceNameAndDescription(req, res);
+  it("should return the edit organisation view", async () => {
+    await getEditOrganisation(req, res);
 
     expect(sendResult).toHaveBeenCalledTimes(1);
     expect(sendResult).toHaveBeenCalledWith(
       req,
       res,
-      "services/views/serviceNameAndDescription",
+      "organisations/views/editOrganisation",
       {
         csrfToken: req.csrfToken(),
-        backLink: true,
-        cancelLink: "/users",
-        currentPage: "services",
-        layout: "sharedViews/layoutNew.ejs",
+        organisation: orgResult,
+        backlink: "users",
         validationMessages: {},
       },
     );

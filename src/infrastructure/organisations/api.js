@@ -308,6 +308,15 @@ const createOrganisation = async (body, correlationId) => {
   return callOrganisationsApi(`organisations/`, "POST", body, correlationId);
 };
 
+const editOrganisation = async (orgId, body, correlationId) => {
+  return callOrganisationsApi(
+    `organisations/${orgId}`,
+    "PATCH",
+    body,
+    correlationId,
+  );
+};
+
 const listRequests = async (page, filterStates, correlationId) => {
   let uri = `organisations/requests?page=${page}`;
   if (filterStates && filterStates.length > 0) {
@@ -394,6 +403,7 @@ const getCategories = async () => {
 
 module.exports = {
   createOrganisation,
+  editOrganisation,
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,

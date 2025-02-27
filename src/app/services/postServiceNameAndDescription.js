@@ -42,6 +42,7 @@ const postServiceNameAndDescription = async (req, res) => {
     model.currentPage = "services";
     model.layout = "sharedViews/layoutNew.ejs";
     model.backLink = true;
+    model.cancelLink = "/users";
     return sendResult(
       req,
       res,
@@ -64,6 +65,7 @@ const postServiceNameAndDescription = async (req, res) => {
       model.currentPage = "services";
       model.layout = "sharedViews/layoutNew.ejs";
       model.backLink = true;
+      model.cancelLink = "/users";
       return sendResult(
         req,
         res,

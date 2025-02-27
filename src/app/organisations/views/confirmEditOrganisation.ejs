@@ -1,0 +1,36 @@
+<a href="edit-organisation" class="link-back">Back</a>
+<div class="grid-row">
+    <div class="col-8">
+        <form method="post" id="confirm">
+            <h1 class="heading-xlarge">
+                Review organisation changes
+            </h1>
+            <p>Review these details before confirming.</p>
+            <h2 class="heading-medium">Review details 
+            </h2>
+            <dl class="app-check-your-answers app-check-your-answers--short">
+                <% if (name) { %>
+                    <div class="app-check-your-answers__contents">
+                        <dt class="app-check-your-answers__title">Name</dt>
+                        <dd class="app-check-your-answers__answer"><%= name %></dd>
+                    </div>
+                <% } %>
+                <% if (address) { %>
+                <div class="app-check-your-answers__contents">
+                    <dt class="app-check-your-answers__title">Address</dt>
+                    <dd class="app-check-your-answers__answer"><%= address %></dd>
+                </div>
+                <% } %>
+            </dl>
+
+            <div class="form-submit submit-buttons">
+    
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+
+                <button type="submit" class="button">Confirm changes</button>
+                <a href="/organisations/<%= organisation.id %>/users" class="button">
+                    Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
