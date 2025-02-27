@@ -31,6 +31,10 @@ describe("when displaying the get choose service type", () => {
         cancelLink: "/users",
         currentPage: "services",
         layout: "sharedViews/layoutNew.ejs",
+        service: {
+          postLogoutRedirectUris: [],
+          redirectUris: [],
+        },
         validationMessages: {},
       },
     );

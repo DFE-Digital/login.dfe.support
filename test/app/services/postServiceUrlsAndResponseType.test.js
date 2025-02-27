@@ -24,8 +24,8 @@ describe("when displaying the post choose service type screen", () => {
         homeUrl: "https://test-url.com/home",
         postPasswordResetUrl: "https://test-url.com/post-password-reset",
         clientId: "test-client-id",
-        redirectUrl: "https://test-url.com/redirect",
-        logOutRedirectUrl: "https://test-url.com/log-out-redirect",
+        redirect_uris: "https://test-url.com/redirect",
+        post_logout_redirect_uris: "https://test-url.com/log-out-redirect",
         "response_types-code": "",
         "response_types-id_token": "",
         "response_types-token": "",
@@ -67,8 +67,10 @@ describe("when displaying the post choose service type screen", () => {
       homeUrl: "https://test-url.com/home",
       postPasswordResetUrl: "https://test-url.com/post-password-reset",
       clientId: "test-client-id",
-      redirectUrl: "https://test-url.com/redirect",
-      logOutRedirectUrl: "https://test-url.com/log-out-redirect",
+      service: {
+        postLogoutRedirectUris: ["https://test-url.com/log-out-redirect"],
+        redirectUris: ["https://test-url.com/redirect"],
+      },
       responseTypesCode: "",
       responseTypesIdToken: "",
       responseTypesToken: "",
@@ -114,11 +116,13 @@ describe("when displaying the post choose service type screen", () => {
         homeUrl: "https://test-url.com/home",
         postPasswordResetUrl: "https://test-url.com/post-password-reset",
         clientId: "test-client-id",
-        redirectUrl: "https://test-url.com/redirect",
-        logOutRedirectUrl: "https://test-url.com/log-out-redirect",
         responseTypesCode: "",
         responseTypesIdToken: "",
         responseTypesToken: "",
+        service: {
+          postLogoutRedirectUris: ["https://test-url.com/log-out-redirect"],
+          redirectUris: ["https://test-url.com/redirect"],
+        },
         refreshToken: "",
         clientSecret: "client-secret",
         tokenEndpointAuthenticationMethod: undefined,
@@ -242,9 +246,9 @@ describe("when displaying the post choose service type screen", () => {
   });
 
   it("should render an the page with an error in validationMessages if no redirectUrl is entered", async () => {
-    req.body.redirectUrl = "";
-    exampleErrorResponse.redirectUrl = "";
-    exampleErrorResponse.validationMessages.redirectUrl =
+    req.body.redirect_uris = "";
+    exampleErrorResponse.service.redirectUris = [];
+    exampleErrorResponse.validationMessages.redirect_uris =
       "Enter a redirect url";
 
     await postServiceUrlsAndResponseType(req, res);
@@ -254,9 +258,11 @@ describe("when displaying the post choose service type screen", () => {
   });
 
   it("should render an the page with an error in validationMessages if redirectUrl over 1024 characters", async () => {
-    req.body.redirectUrl = "Test123456".repeat(125); // 1250 character length string
-    exampleErrorResponse.redirectUrl = "Test123456".repeat(125); // 1250 character length string
-    exampleErrorResponse.validationMessages.redirectUrl =
+    req.body.redirect_uris = "https://" + "Test123456".repeat(125) + ".com"; // 1250 character length string
+    exampleErrorResponse.service.redirectUris = [
+      "https://" + "Test123456".repeat(125) + ".com",
+    ]; // 1250 character length string
+    exampleErrorResponse.validationMessages.redirect_uris =
       "Redirect url must be 1024 characters or less";
 
     await postServiceUrlsAndResponseType(req, res);
@@ -266,9 +272,9 @@ describe("when displaying the post choose service type screen", () => {
   });
 
   it("should render an the page with an error in validationMessages if an invalid redirectUrl is entered", async () => {
-    req.body.redirectUrl = "anInvalidUrl@slbsh!$$%";
-    exampleErrorResponse.redirectUrl = "anInvalidUrl@slbsh!$$%";
-    exampleErrorResponse.validationMessages.redirectUrl =
+    req.body.redirect_uris = "anInvalidUrl@slbsh!$$%";
+    exampleErrorResponse.service.redirectUris = ["anInvalidUrl@slbsh!$$%"];
+    exampleErrorResponse.validationMessages.redirect_uris =
       "Redirect url must be a valid url";
 
     await postServiceUrlsAndResponseType(req, res);
@@ -278,9 +284,9 @@ describe("when displaying the post choose service type screen", () => {
   });
 
   it("should render an the page with an error in validationMessages if no logOutRedirectUrl is entered", async () => {
-    req.body.logOutRedirectUrl = "";
-    exampleErrorResponse.logOutRedirectUrl = "";
-    exampleErrorResponse.validationMessages.logOutRedirectUrl =
+    req.body.post_logout_redirect_uris = "";
+    exampleErrorResponse.service.postLogoutRedirectUris = [];
+    exampleErrorResponse.validationMessages.post_logout_redirect_uris =
       "Enter a log out redirect url";
 
     await postServiceUrlsAndResponseType(req, res);
@@ -290,9 +296,12 @@ describe("when displaying the post choose service type screen", () => {
   });
 
   it("should render an the page with an error in validationMessages if logOutRedirectUrl over 1024 characters", async () => {
-    req.body.logOutRedirectUrl = "Test123456".repeat(125); // 1250 character length string
-    exampleErrorResponse.logOutRedirectUrl = "Test123456".repeat(125); // 1250 character length string
-    exampleErrorResponse.validationMessages.logOutRedirectUrl =
+    req.body.post_logout_redirect_uris =
+      "https://" + "Test123456".repeat(125) + ".com"; // 1250 character length string
+    exampleErrorResponse.service.postLogoutRedirectUris = [
+      "https://" + "Test123456".repeat(125) + ".com",
+    ]; // 1250 character length string
+    exampleErrorResponse.validationMessages.post_logout_redirect_uris =
       "Log out redirect url must be 1024 characters or less";
 
     await postServiceUrlsAndResponseType(req, res);
@@ -302,9 +311,11 @@ describe("when displaying the post choose service type screen", () => {
   });
 
   it("should render an the page with an error in validationMessages if an invalid logOutRedirectUrl is entered", async () => {
-    req.body.logOutRedirectUrl = "anInvalidUrl@slbsh!$$%";
-    exampleErrorResponse.logOutRedirectUrl = "anInvalidUrl@slbsh!$$%";
-    exampleErrorResponse.validationMessages.logOutRedirectUrl =
+    req.body.post_logout_redirect_uris = "anInvalidUrl@slbsh!$$%";
+    exampleErrorResponse.service.postLogoutRedirectUris = [
+      "anInvalidUrl@slbsh!$$%",
+    ];
+    exampleErrorResponse.validationMessages.post_logout_redirect_uris =
       "Log out redirect url must be a valid url";
 
     await postServiceUrlsAndResponseType(req, res);
