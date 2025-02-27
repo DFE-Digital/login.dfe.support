@@ -3,7 +3,7 @@
     <h1 class="govuk-heading-xl">
         Enter service details
     </h1>
-    <p class="govuk-body">Read the <a href="<%= locals.urls.help %>/manageConsole/500DF403-4643-4CDE-9F30-3C6D8AD27AD7/how-to-edit-service-config">service configuration help page</a> to find out more about service details</p>
+    <p class="govuk-body">Read the <a href="<%= locals.urls.help %>/manageConsole/500DF403-4643-4CDE-9F30-3C6D8AD27AD7/how-to-edit-service-config">service configuration help page</a> to find out more about service details:</p>
     <ul class="govuk-list govuk-list--bullet">
       <li>home URL</li>
       <li>post password-reset URL</li>
@@ -41,6 +41,23 @@
           <input class="govuk-input <%= (locals.validationMessages.postPasswordResetUrl !== undefined) ? 'govuk-input--error' : '' %>" id="postPasswordResetUrl" name="postPasswordResetUrl" type="text" spellcheck="false" value="<%= locals.postPasswordResetUrl %>">
         </div>
 
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+        <h1 class="govuk-heading-l">
+          OpenID Connect details
+        </h1>
+
+        <p class="govuk-body">Read the <a href="<%= locals.urls.help %>/manageConsole/500DF403-4643-4CDE-9F30-3C6D8AD27AD7/how-to-edit-service-config">service configuration help page</a> to find out more about OpenID Connect:</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>client ID</li>
+          <li>redirect URL</li>
+          <li>logout redirect URL</li>
+          <li>response types</li>
+          <li>refresh token</li>
+          <li>client secret</li>
+          <li>token endpoint authentication method</li>
+        </ul>
+
         <div class="govuk-form-group <%= (locals.validationMessages.clientId !== undefined) ? 'govuk-form-group--error' : '' %>">
           <label class="govuk-label" for="clientId">
             Client ID
@@ -53,13 +70,15 @@
             <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.clientId %>
           </p>
           <% } %>
-          <input class="govuk-input <%= (locals.validationMessages.clientId !== undefined) ? 'govuk-input--error' : '' %>" id="clientId" name="clientId" type="text" spellcheck="false" value="<%= locals.clientId %>">
+          <input class="govuk-input govuk-!-width-one-half <%= (locals.validationMessages.clientId !== undefined) ? 'govuk-input--error' : '' %>" id="clientId" name="clientId" type="text" spellcheck="false" value="<%= locals.clientId %>">
         </div>
 
         <% function generateRedirectUrlsSection({ sectionId, headingText, hintText, dataValues, validationMessages }) { %>
           <div id="<%= sectionId %>-form-group" data-<%= sectionId %>-counter="<%= (dataValues.length > 0) ? (dataValues.length + 1) : 2 %>" class="govuk-form-group <%= (validationMessages !== undefined) ? 'govuk-form-group--error' : '' %>">
               <div id="<%= sectionId %>">
-                  <h1 class="govuk-heading-m govuk-!-margin-bottom-2" id="<%= sectionId %>-heading"> <%- headingText %> </h1>
+                <label class="govuk-label" for="<%= sectionId %>">
+                  <%- headingText %> 
+                </label>
                   <div id="<%= sectionId %>-hint" class="govuk-hint">
                       <%- hintText %>
                   </div>
@@ -140,12 +159,10 @@
       %>
 
         <div class="govuk-form-group">
+          <label class="govuk-label" for="response_types-code">
+            Response Types
+          </label>
           <fieldset class="govuk-fieldset" id="response_types-fieldset" aria-describedby="responseTypesCode-hint">
-            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-              <h1 class="govuk-fieldset__heading">
-                Response types
-              </h1>
-            </legend>
             <div id="responseTypesCode-hint" class="govuk-hint">
               A value that determines the authentication flow. Select all that apply
             </div>
@@ -174,12 +191,10 @@
         </div>
 
         <div class="govuk-form-group">
+          <label class="govuk-label" for="refreshToken">
+            Refresh token
+          </label>
           <fieldset class="govuk-fieldset" aria-describedby="refreshToken-hint">
-            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-              <h1 class="govuk-fieldset__heading">
-                Refresh token
-              </h1>
-            </legend>
             <div id="refreshToken-hint" class="govuk-hint">
               Select this field if you want to get new access tokens when they have expired without interaction from the user.
             </div>
@@ -188,7 +203,7 @@
                 <input class="govuk-checkboxes__input" id="refreshToken" name="refreshToken" type="checkbox" 
                 value="refreshToken" <%= (locals.refreshToken) ? 'checked' : '' %> aria-describedby="refreshToken-item-hint">
                 <label class="govuk-label govuk-checkboxes__label" for="refreshToken">
-                  code
+                  refresh_token
                 </label>
               </div>
             </div>
@@ -207,7 +222,14 @@
             <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.clientSecret %>
           </p>
           <% } %>
-          <input class="govuk-input govuk-!-width-three-quarters <%= (locals.validationMessages.clientSecret !== undefined) ? 'govuk-input--error' : '' %>" id="clientSecret" name="clientSecret" type="text" spellcheck="false" value="<%= locals.clientSecret %>">
+          <div class="dfe-flex-show-password-grow">
+            <input class="form-control read-only-input govuk-input password-input dfe-flex-input-grow dfe-secret-input govuk-!-width-two-thirds <%= (locals.validationMessages.clientSecret !== undefined) ? 'govuk-input--error' : '' %>"
+              id="clientSecret"
+              name="clientSecret"
+              type="password"
+              readonly="readonly"
+              value="<%= locals.clientSecret %>" />
+          </div>
           <a href="" class="govuk-link govuk-link--no-visited-state dfe-flex-regenerate-link" id="generate-clientSecret">Regenerate</a>
 
         </div>
@@ -226,9 +248,12 @@
           <% } %>
           <select class="govuk-select <%= (locals.validationMessages.tokenEndpointAuthenticationMethod !== undefined) ? 'govuk-select--error' : '' %>" id="tokenEndpointAuthenticationMethod" name="tokenEndpointAuthenticationMethod" aria-describedby="tokenEndpointAuthenticationMethod-error">
             <option value="" <%= (locals.tokenEndpointAuthenticationMethod === undefined) ? 'selected' : '' %>>Choose token endpoint authentication method</option>
-            <option value="client_secret_post" <%= (locals.tokenEndpointAuthenticationMethod === "client_secret_post") ? 'selected' : '' %>>Client secret post</option>
+            <option value="client_secret_basic" <%= (locals.tokenEndpointAuthenticationMethod === "client_secret_basic") ? 'selected' : '' %>>client_secret_basic</option>
+            <option value="client_secret_post" <%= (locals.tokenEndpointAuthenticationMethod === "client_secret_post") ? 'selected' : '' %>>client_secret_post</option>
           </select>
         </div>
+
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
         <h1 class="govuk-heading-l">
           API
@@ -247,8 +272,14 @@
             <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.apiSecret %>
           </p>
           <% } %>
-          <p class="govuk-body">Enter the name of the service.  The service name should be:</p>
-          <input class="govuk-input govuk-!-width-three-quarters <%= (locals.validationMessages.apiSecret !== undefined) ? 'govuk-input--error' : '' %>" id="apiSecret" name="apiSecret" type="text" spellcheck="false" value="<%= locals.apiSecret %>">
+          <div class="dfe-flex-show-password-grow">
+            <input class="form-control read-only-input govuk-input password-input dfe-flex-input-grow dfe-secret-input govuk-!-width-two-thirds <%= (locals.validationMessages.apiSecret !== undefined) ? 'govuk-input--error' : '' %>"
+              id="apiSecret"
+              name="apiSecret"
+              type="password"
+              readonly="readonly"
+              value="<%= locals.apiSecret %>" />
+          </div>
           <a href="" class="govuk-link govuk-link--no-visited-state dfe-flex-regenerate-link" id="generate-apiSecret">Regenerate</a>
         </div>
 

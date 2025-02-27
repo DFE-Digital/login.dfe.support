@@ -22,7 +22,8 @@ const validateInput = async (req) => {
     validationMessages: {},
   };
 
-  // redirect_uris and post_logout_redirect_uris values are sometimes an array, sometimes a string and sometimes undefined.
+  // redirect_uris and post_logout_redirect_uris values are an array if multiple values entered,
+  // a string if one value entered and undefined when nothing entered.
   // Making sure that these values are always in an array saves us having to constantly check that later down the line.
   if (req.body.redirect_uris) {
     model.service.redirectUris = Array.isArray(req.body.redirect_uris)
@@ -83,20 +84,19 @@ const validateInput = async (req) => {
   }
 
   // Redirect url validation
-  if (
-    !model.service.redirectUris ||
-    model.service.redirectUris.length === 0 ||
-    (model.service.redirectUris.length === 1 && !model.service.redirectUris[0])
-  ) {
+  const redirectUris = model.service.redirectUris;
+  const areRedirectUrisNotPopulated =
+    !redirectUris ||
+    redirectUris.length === 0 ||
+    (redirectUris.length === 1 && !redirectUris[0]);
+
+  if (areRedirectUrisNotPopulated) {
     model.validationMessages.redirect_uris = "Enter a redirect url";
   } else {
     await Promise.all(
-      model.service.redirectUris.map(async (url) => {
+      redirectUris.map(async (url) => {
         if (url.length > 1024) {
-          if (
-            model.validationMessages.redirect_uris !== "" &&
-            model.validationMessages.redirect_uris !== undefined
-          ) {
+          if (model.validationMessages.redirect_uris !== undefined) {
             model.validationMessages.redirect_uris +=
               "<br/>Redirect url must be 1024 characters or less";
           } else {
@@ -107,10 +107,7 @@ const validateInput = async (req) => {
         try {
           new URL(url);
         } catch {
-          if (
-            model.validationMessages.redirect_uris !== "" &&
-            model.validationMessages.redirect_uris !== undefined
-          ) {
+          if (model.validationMessages.redirect_uris !== undefined) {
             model.validationMessages.redirect_uris +=
               "<br/>Redirect url must be a valid url";
           } else {
@@ -121,29 +118,25 @@ const validateInput = async (req) => {
       }),
     );
   }
-  if (
-    model.service.redirectUris.some(
-      (value, i) => model.service.redirectUris.indexOf(value) !== i,
-    )
-  ) {
+  if (redirectUris.some((value, i) => redirectUris.indexOf(value) !== i)) {
     model.validationMessages.redirect_uris = "Redirect urls must all be unique";
   }
 
-  // Logout urls validation
-  if (
-    !model.service.postLogoutRedirectUris ||
-    model.service.postLogoutRedirectUris.length === 0 ||
-    (model.service.postLogoutRedirectUris.length === 1 &&
-      !model.service.postLogoutRedirectUris[0])
-  ) {
+  // Logout redirect urls validation
+  const logoutRedirectUris = model.service.postLogoutRedirectUris;
+  const areLogoutUrisNotPopulated =
+    !logoutRedirectUris ||
+    logoutRedirectUris.length === 0 ||
+    (logoutRedirectUris.length === 1 && !logoutRedirectUris[0]);
+
+  if (areLogoutUrisNotPopulated) {
     model.validationMessages.post_logout_redirect_uris =
       "Enter a log out redirect url";
   } else {
     await Promise.all(
-      model.service.postLogoutRedirectUris.map(async (url) => {
+      logoutRedirectUris.map(async (url) => {
         if (url.length > 1024) {
           if (
-            model.validationMessages.post_logout_redirect_uris !== "" &&
             model.validationMessages.post_logout_redirect_uris !== undefined
           ) {
             model.validationMessages.post_logout_redirect_uris +=
@@ -157,7 +150,6 @@ const validateInput = async (req) => {
           new URL(url);
         } catch {
           if (
-            model.validationMessages.post_logout_redirect_uris !== "" &&
             model.validationMessages.post_logout_redirect_uris !== undefined
           ) {
             model.validationMessages.post_logout_redirect_uris +=
@@ -170,8 +162,8 @@ const validateInput = async (req) => {
       }),
     );
     if (
-      model.service.postLogoutRedirectUris.some(
-        (value, i) => model.service.postLogoutRedirectUris.indexOf(value) !== i,
+      logoutRedirectUris.some(
+        (value, i) => logoutRedirectUris.indexOf(value) !== i,
       )
     ) {
       model.validationMessages.post_logout_redirect_uris =
