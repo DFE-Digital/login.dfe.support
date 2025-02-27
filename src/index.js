@@ -219,6 +219,7 @@ const init = async () => {
   app.set("views", path.resolve(__dirname, "app"));
   app.use(expressLayouts);
   app.set("layout", "sharedViews/layout");
+  app.use("/assets", express.static(path.join(__dirname, "app/assets")));
 
   /*
     Addressing issue with latest version of passport dependency packge
