@@ -1,54 +1,65 @@
 <% if (locals.flash.info) { %>
-    <div class="row">
-        <div class="col-12">
-            <div class="notification notification-success">
-                <%=locals.flash.info%>
-            </div>
-        </div>
-    </div>
+<div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+  <div class="govuk-notification-banner__header">
+    <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">Success</h2>
+  </div>
+  <div class="govuk-notification-banner__content">
+    <p class="govuk-body"><%=locals.flash.info%></p>
+  </div>
+</div>
 <% } %>
 
-<div class="row">
-    <div class="col-8">
-        <h1 class="heading-xlarge">
-            Edit a profile
+<div class="govuk-width-container">
+  <div class="col-8">
+    <h1 class="govuk-heading-xl">
+        Edit a profile
+    </h1>
+    <form method="post">
+      <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+      <legend hidden>Edit <%=user.name%>&apos;s profile</legend>
+      <div class="govuk-form-group <%= (locals.validationMessages.firstName !== undefined) ? 'govuk-form-group--error' : '' %>">
+        <label class="govuk-label govuk-label--l" for="firstName">
+            First name
+        </label>
+        <% if (locals.validationMessages.firstName !== undefined) { %>
+        <p id="firstName" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.firstName %>
+        </p>
+        <% } %>
+        <input class="govuk-input <%= (locals.validationMessages.firstName !== undefined) ? 'govuk-input--error' : '' %>" id="firstName" name="firstName" type="text" spellcheck="false" value="<%= locals.user.firstName %>">
+      </div>
+
+      <div class="govuk-form-group govuk-character-count <%= (locals.validationMessages.lastName !== undefined) ? 'govuk-form-group--error' : '' %>" data-module="govuk-character-count" data-maxlength="200">
+        <h1 class="govuk-label-wrapper">
+          <label class="govuk-label govuk-label--l" for="lastName">
+            Last name
+          </label>
         </h1>
-    </div>
-</div>
-<div class="row">
-    <div class="col-12">
-        <form method="post" id="form-edit-user">
-            <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-            <fieldset>
-                <legend class="vh">Edit <%=user.name%>&apos;s profile</legend>
-                <div class="form-group <%= (locals.validationMessages.firstName !== undefined) ? 'form-group-error' : '' %>">
-                    <label class="form-label" for="firstName">First name</span> </label>
-                    <% if (locals.validationMessages.firstName !== undefined) { %>
-                    <p class="error-message" id="validation-firstName"><%=locals.validationMessages.firstName %></p>
-                    <% } %>
-                    <input class="form-control" id="firstName" name="firstName" type="text" <% if (locals.validationMessages.firstName !== undefined) { %> aria-invalid="true" aria-describedby="validation-firstName" <% } %> value="<%=locals.user.firstName%>">
-                </div>
-                <div class="form-group <%= (locals.validationMessages.lastName !== undefined) ? 'form-group-error' : '' %>">
-                    <label class="form-label" for="lastName">Last name</span> </label>
-                    <% if (locals.validationMessages.lastName !== undefined) { %>
-                    <p class="error-message" id="validation-lastName"><%=locals.validationMessages.lastName %></p>
-                    <% } %>
-                    <input class="form-control" id="lastName" name="lastName" type="text" <% if (locals.validationMessages.lastName !== undefined) { %> aria-invalid="true" aria-describedby="validation-lastName" <% } %> value="<%=locals.user.lastName%>">
-                </div>
-                <% if (locals.user.orgId && locals.user.serviceId) { %>
-                <div class="form-group ">
-                    <label class="form-label" for="ktsId">Key to Success ID</label>
-                    <input class="form-control" id="ktsId" name="ktsId" type="text"  value="<%=locals.user.ktsId%>">
-                </div>
-                <% } %>
-                <input type="hidden" value="<%=locals.user.orgId%>" name="orgId" id="orgId" />
-                <input type="hidden" value="<%=locals.user.serviceId%>" name="serviceId" id="serviceId" />
-            </fieldset>
-            <div class="form-submit submit-buttons">
-                <button type="submit" class="button">Save</button>
-            </div>
-        </form>
-    </div>
-</div>
+        <% if (locals.validationMessages.lastName !== undefined) { %>
+        <p id="lastName-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> <%= locals.validationMessages.lastName %>
+        </p>
+        <% } %>
+        <input class="govuk-input <%= (locals.validationMessages.lastName !== undefined) ? 'govuk-input--error' : '' %>" id="lastName" name="lastName" type="text" spellcheck="false" value="<%= locals.user.lastName %>">
+      </div>
 
 
+      <% if (locals.user.orgId && locals.user.serviceId) { %>
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--l" for="ktsId">
+            Key to Success ID
+        </label>
+        <input class="govuk-input" id="ktsId" name="ktsId" type="text" value="<%= locals.user.ktsId %>">
+      </div>
+      <% } %>
+
+      <input type="hidden" value="<%=locals.user.orgId%>" name="orgId" id="orgId" />
+      <input type="hidden" value="<%=locals.user.serviceId%>" name="serviceId" id="serviceId" />
+      <div class="govuk-button-group">
+        <button type="submit" class="govuk-button" data-module="govuk-button">
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
