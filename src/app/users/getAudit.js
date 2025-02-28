@@ -1,4 +1,8 @@
-const { sendResult, mapUserStatus } = require("./../../infrastructure/utils");
+const {
+  sendResult,
+  mapUserStatus,
+  isInternalEntraUser,
+} = require("./../../infrastructure/utils");
 const { getUserDetailsById } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { getPageOfUserAudits } = require("./../../infrastructure/audit");
@@ -205,6 +209,7 @@ const getAudit = async (req, res) => {
   cachedUsers = {};
   const correlationId = req.id;
   const user = await getCachedUserById(req.params.uid, req.id);
+  const showChangeEmail = !isInternalEntraUser(user);
   user.formattedLastLogin = user.lastLogin
     ? dateFormat(user.lastLogin, "longDateFormat")
     : "";
@@ -272,6 +277,7 @@ const getAudit = async (req, res) => {
   sendResult(req, res, "users/views/audit", {
     csrfToken: req.csrfToken(),
     user,
+    showChangeEmail,
     organisations: userOrganisations,
     audits,
     numberOfPages: pageOfAudits.numberOfPages,

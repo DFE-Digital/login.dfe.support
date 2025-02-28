@@ -1,6 +1,7 @@
 const express = require("express");
 const { asyncWrapper } = require("login.dfe.express-error-handling");
 const { isLoggedIn, setCurrentArea } = require("../../infrastructure/utils");
+const isAuthorizedToChangeEmail = require("../../infrastructure/utils/isAuthorizedToChangeEmail");
 const logger = require("../../infrastructure/logger");
 
 const search = require("./search");
@@ -167,9 +168,6 @@ const users = (csrf) => {
     asyncWrapper(postManageConsoleRoles),
   );
 
-  router.get("/:uid/edit-email", csrf, asyncWrapper(getEditEmail));
-  router.post("/:uid/edit-email", csrf, asyncWrapper(postEditEmail));
-
   router.get(
     "/:uid/confirm-deactivation",
     csrf,
@@ -179,6 +177,19 @@ const users = (csrf) => {
     "/:uid/confirm-deactivation",
     csrf,
     asyncWrapper(postConfirmDeactivate),
+  );
+
+  router.get(
+    "/:uid/edit-email",
+    csrf,
+    isAuthorizedToChangeEmail,
+    asyncWrapper(getEditEmail),
+  );
+  router.post(
+    "/:uid/edit-email",
+    csrf,
+    isAuthorizedToChangeEmail,
+    asyncWrapper(postEditEmail),
   );
 
   router.get(
