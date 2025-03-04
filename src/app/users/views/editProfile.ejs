@@ -26,7 +26,7 @@
           <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.firstName %>
         </p>
         <% } %>
-        <input class="govuk-input <%= (locals.validationMessages.firstName !== undefined) ? 'govuk-input--error' : '' %>" id="firstName" name="firstName" type="text" spellcheck="false" value="<%= locals.user.firstName %>">
+        <input class="govuk-input govuk-!-width-two-thirds <%= (locals.validationMessages.firstName !== undefined) ? 'govuk-input--error' : '' %>" id="firstName" name="firstName" type="text" spellcheck="false" value="<%= locals.user.firstName %>">
       </div>
 
       <div class="govuk-form-group govuk-character-count <%= (locals.validationMessages.lastName !== undefined) ? 'govuk-form-group--error' : '' %>" data-module="govuk-character-count" data-maxlength="200">
@@ -40,7 +40,7 @@
           <span class="govuk-visually-hidden">Error:</span> <%= locals.validationMessages.lastName %>
         </p>
         <% } %>
-        <input class="govuk-input <%= (locals.validationMessages.lastName !== undefined) ? 'govuk-input--error' : '' %>" id="lastName" name="lastName" type="text" spellcheck="false" value="<%= locals.user.lastName %>">
+        <input class="govuk-input govuk-!-width-two-thirds <%= (locals.validationMessages.lastName !== undefined) ? 'govuk-input--error' : '' %>" id="lastName" name="lastName" type="text" spellcheck="false" value="<%= locals.user.lastName %>">
       </div>
 
 
@@ -49,7 +49,7 @@
         <label class="govuk-label govuk-label--l" for="ktsId">
             Key to Success ID
         </label>
-        <input class="govuk-input" id="ktsId" name="ktsId" type="text" value="<%= locals.user.ktsId %>">
+        <input class="govuk-input govuk-!-width-two-thirds" id="ktsId" name="ktsId" type="text" value="<%= locals.user.ktsId %>">
       </div>
       <% } %>
 
