@@ -1,0 +1,193 @@
+<div class="govuk-width-container">
+  <main class="govuk-main-wrapper " id="main-content" role="main">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds-from-desktop">
+        <h1 class="govuk-heading-l">Review new service</h1>
+        <p class="govuk-body">Review these details before creating the new service</p>
+        <h2 class="govuk-heading-m">Review new service details</h2>
+        <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Service type
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= model.serviceType %>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="choose-type">Change<span class="govuk-visually-hidden"> name</span></a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Service name
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= model.name %>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="service-name-and-description">Change<span class="govuk-visually-hidden"> name</span></a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Service description
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= model.description %>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="service-name-and-description">Change<span class="govuk-visually-hidden"> description</span></a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Home URL
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= model.homeUrl %>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> home url</span></a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Post password reset URL
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= model.postPasswordResetUrl %>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> post password reset url</span></a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Client ID
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= model.clientId %>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> client id</span></a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Redirect URL
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%model.service.redirectUris.forEach((item) => {%>
+                <%=item%>
+              <%})%>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> post password reset url</span></a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Logout redirect url
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%model.service.postLogoutRedirectUris.forEach((item) => {%>
+                <%=item%>
+              <%})%>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> post password reset url</span></a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Response types
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= model.responseTypesCode %> <%= model.responseTypesIdToken %> <%= model.responseTypesToken %>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> response types</span></a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Refresh token
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= model.postPasswordResetUrl %>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> refresh token</span></a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Client secret
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= model.clientSecret %>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> client secret</span></a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Token endpoint authentication method
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= model.tokenEndpointAuthenticationMethod %>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> token endpoint authentication method</span></a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              API secret
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= model.apiSecret %>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> api secret</span></a>
+            </dd>
+          </div>
+        </dl>
+        <h2 class="govuk-heading-m">Service parameters</h2>
+        <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Hide from user services
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= (model.hideFromUserServices !== undefined) ? 'true' : 'false' %>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="choose-type">Change<span class="govuk-visually-hidden"> hide from user services</span></a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Hide from Contact us
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= (model.hideFromContactUs !== undefined) ? 'true' : 'false' %>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="choose-type">Change<span class="govuk-visually-hidden"> hide from contact us</span></a>
+            </dd>
+          </div>
+        </dl>
+        <h2 class="govuk-heading-m">Now send your application</h2>
+        <p class="govuk-body">By submitting this application you are confirming that, to the best of your knowledge, the details you are providing are correct.</p>
+        <form action="/form-handler" method="post" novalidate>
+          <input type="hidden" name="answers-checked" value="true">
+          <button type="submit" class="govuk-button" data-module="govuk-button">
+            Accept and send
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>

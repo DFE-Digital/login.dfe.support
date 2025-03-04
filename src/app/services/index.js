@@ -7,6 +7,8 @@ const getChooseServiceType = require("./getChooseServiceType");
 const postChooseServiceType = require("./postChooseServiceType");
 const getServiceNameAndDescription = require("./getServiceNameAndDescription");
 const postServiceNameAndDescription = require("./postServiceNameAndDescription");
+const getConfirmNewService = require("./getConfirmNewService");
+const postConfirmNewService = require("./postConfirmNewService");
 
 const router = express.Router({ mergeParams: true });
 
@@ -36,6 +38,13 @@ const users = (csrf) => {
     "/service-name-and-description",
     csrf,
     asyncWrapper(postServiceNameAndDescription),
+  );
+
+  router.get("/confirm-new-service", csrf, asyncWrapper(getConfirmNewService));
+  router.post(
+    "/confirm-new-service",
+    csrf,
+    asyncWrapper(postConfirmNewService),
   );
 
   return router;
