@@ -25,7 +25,7 @@ const getServiceNameAndDescription = async (req, res) => {
     responseTypesToken: "responseTypesToken",
     refreshToken: "",
     clientSecret: "this.is.a.client.secret",
-    tokenEndpointAuthenticationMethod: "client_post",
+    tokenEndpointAuthenticationMethod: "client_secret_post",
     apiSecret: "this.is.an.api.secret",
   };
 

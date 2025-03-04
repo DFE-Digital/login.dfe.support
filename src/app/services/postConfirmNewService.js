@@ -26,7 +26,7 @@ const postConfirmNewService = async (req, res) => {
     responseTypesToken: "responseTypesToken",
     refreshToken: "",
     clientSecret: "this.is.a.client.secret",
-    tokenEndpointAuthenticationMethod: "client_post",
+    tokenEndpointAuthenticationMethod: "client_secret_post",
     apiSecret: "this.is.an.api.secret",
   };
 
@@ -44,48 +44,41 @@ const postConfirmNewService = async (req, res) => {
   }
 
   // Hardcode hideApprover, hideSupport and helpHidden to reflect id only service
-  // TODO do hideFromUserServices and hideFromContactUs affect these values??
-  // Are there any others that need to be set?  The database has a bunch of em
+  // This will need to be updated once we offer standard services
   const params = {
     hideApprover: true,
     hideSupport: true,
     helpHidden: true,
   };
 
-  // TODO, what the heck are the grant types?! How many can we hard code and how many
-  // can we use the existing forms to figure out.
-  // Existing ones in the db are authorization_code, client_credentials, implicit and
-  // refresh token.
   const grantTypes = [];
+  grantTypes.push("authorization_code");
   if (model.refreshToken) {
-    grantTypes.push(model.refreshToken);
+    grantTypes.push("refresh_token");
   }
 
   const body = {
-    service: {
-      name: model.name,
-      description: model.description,
-      isExternalService: false,
-      isChildService: false,
-      parentId: undefined,
-      relyingParty: {
-        client_id: model.clientId,
-        client_secret: model.clientSecret,
-        api_secret: model.apiSecret,
-        token_endpoint_auth_method: model.tokenEndpointAuthenticationMethod,
-        service_home: model.homeUrl,
-        postResetUrl: model.postPasswordResetUrl,
-        redirect_uris: model.service.redirectUris,
-        post_logout_redirect_uris: model.service.postLogoutRedirectUris,
-        grant_types: grantTypes,
-        response_types: responseTypes,
-        params: params,
-      },
+    name: model.name,
+    description: model.description,
+    isExternalService: false,
+    isChildService: false,
+    parentId: undefined,
+    relyingParty: {
+      client_id: model.clientId,
+      client_secret: model.clientSecret,
+      api_secret: model.apiSecret,
+      token_endpoint_auth_method: model.tokenEndpointAuthenticationMethod,
+      service_home: model.homeUrl,
+      postResetUrl: model.postPasswordResetUrl,
+      redirect_uris: model.service.redirectUris,
+      post_logout_redirect_uris: model.service.postLogoutRedirectUris,
+      grant_types: grantTypes,
+      response_types: responseTypes,
+      params: params,
     },
   };
-  console.log(body);
 
-  //await createService(body, req.id);
+  await createService(body, req.id);
 
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) created ${model.name} service`,
@@ -99,10 +92,7 @@ const postConfirmNewService = async (req, res) => {
   );
 
   res.flash("info", `${model.name} service successfully created`);
-  req.session.editOrgFormData = undefined;
-
-  // Flash success message
-  // Clear variable in session
+  req.session.createServiceData = undefined;
 
   return res.redirect("/users");
 };
