@@ -1,6 +1,6 @@
 {
   "name": "login.dfe.support",
-  "version": "21.0.0",
+  "version": "22.0.0",
   "engines": {
     "node": "18.17.0"
   },
