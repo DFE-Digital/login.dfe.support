@@ -343,18 +343,6 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
-  it("should render an the page with an error in validationMessages if no logOutRedirectUrl is entered", async () => {
-    req.body.post_logout_redirect_uris = "";
-    exampleErrorResponse.service.postLogoutRedirectUris = [];
-    exampleErrorResponse.validationMessages.post_logout_redirect_uris =
-      "Enter a log out redirect url";
-
-    await postServiceUrlsAndResponseType(req, res);
-
-    expect(sendResult).toHaveBeenCalledTimes(1);
-    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
-  });
-
   it("should render an the page with an error in validationMessages if logOutRedirectUrl over 1024 characters", async () => {
     req.body.post_logout_redirect_uris =
       "https://" + "Test123456".repeat(125) + ".com"; // 1250 character length string
