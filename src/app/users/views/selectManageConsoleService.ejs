@@ -27,20 +27,20 @@ const paginationModel = {
         </h1>
         <dl class="govuk-summary-list govuk-summary-list--no-border">
             <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key govuk-!-static-padding-1">Email:</dt>
-                <dd class="govuk-summary-list__value govuk-!-static-padding-1"><%= user.email %></dd>
+                <dt class="govuk-summary-list__key govuk-!-static-padding-0">Email:</dt>
+                <dd class="govuk-summary-list__value govuk-!-static-padding-0"><%= user.email %></dd>
             </div>
             <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key govuk-!-static-padding-1">Last login:</dt>
-                <dd class="govuk-summary-list__value govuk-!-static-padding-1"><%= user.formattedLastLogin ? user.formattedLastLogin : 'Never' %></dd>
+                <dt class="govuk-summary-list__key govuk-!-static-padding-0">Last login:</dt>
+                <dd class="govuk-summary-list__value govuk-!-static-padding-0"><%= user.formattedLastLogin ? user.formattedLastLogin : 'Never' %></dd>
             </div>
             <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key govuk-!-static-padding-1">Account status:</dt>
-                <dd class="govuk-summary-list__value govuk-!-static-padding-1"><%= user.status.description %></dd>
+                <dt class="govuk-summary-list__key govuk-!-static-padding-0">Account status:</dt>
+                <dd class="govuk-summary-list__value govuk-!-static-padding-0"><%= user.status.description %></dd>
             </div>
             <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key govuk-!-static-padding-1">Number of logins in last 12 months:</dt>
-                <dd class="govuk-summary-list__value govuk-!-static-padding-1"><%= user.loginsInPast12Months.successful %></dd>
+                <dt class="govuk-summary-list__key govuk-!-static-padding-0">Number of logins in last 12 months:</dt>
+                <dd class="govuk-summary-list__value govuk-!-static-padding-0"><%= user.loginsInPast12Months.successful %></dd>
             </div>         
         </dl>
     </div>
