@@ -41,7 +41,7 @@ describe("when displaying the get service name and description page", () => {
     res.mockResetAll();
   });
 
-  it.skip("should redirect to the users page if there is no createServiceData session data", async () => {
+  it("should redirect to the users page if there is no createServiceData session data", async () => {
     req = getRequestMock();
     await getConfirmNewService(req, res);
 

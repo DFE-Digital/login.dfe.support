@@ -29,7 +29,7 @@ describe("when displaying the post choose service type screen", () => {
         "response_types-code": "",
         "response_types-id_token": "",
         "response_types-token": "",
-        refreshToken: "",
+        refreshToken: "refresh_token",
         clientSecret: "client-secret",
         apiSecret: "api-secret",
       },
@@ -74,7 +74,7 @@ describe("when displaying the post choose service type screen", () => {
       responseTypesCode: "",
       responseTypesIdToken: "",
       responseTypesToken: "",
-      refreshToken: "",
+      refreshToken: "refresh_token",
       clientSecret: "client-secret",
       tokenEndpointAuthenticationMethod: undefined,
       apiSecret: "api-secret",
@@ -91,7 +91,7 @@ describe("when displaying the post choose service type screen", () => {
     await postServiceUrlsAndResponseType(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe("/users");
+    expect(res.redirect.mock.calls[0][0]).toBe("confirm-new-service");
     expect(sendResult).toHaveBeenCalledTimes(0);
   });
 
@@ -123,7 +123,7 @@ describe("when displaying the post choose service type screen", () => {
           postLogoutRedirectUris: ["https://test-url.com/log-out-redirect"],
           redirectUris: ["https://test-url.com/redirect"],
         },
-        refreshToken: "",
+        refreshToken: "refresh_token",
         clientSecret: "client-secret",
         tokenEndpointAuthenticationMethod: undefined,
         apiSecret: "api-secret",
@@ -137,6 +137,18 @@ describe("when displaying the post choose service type screen", () => {
         },
       },
     );
+  });
+
+  it("should render an the page with an error in validationMessages if no postPasswordResetUrl is entered", async () => {
+    req.body.postPasswordResetUrl = "";
+    exampleErrorResponse.postPasswordResetUrl = "";
+    exampleErrorResponse.validationMessages.postPasswordResetUrl =
+      "Enter a post password reset url";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
   it("should render an the page with an error in validationMessages if no postPasswordResetUrl is entered", async () => {

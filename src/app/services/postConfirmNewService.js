@@ -2,44 +2,20 @@ const logger = require("../../infrastructure/logger");
 const { createService } = require("./../../infrastructure/applications");
 
 const postConfirmNewService = async (req, res) => {
-  // if (!req.session.createServiceData) {
-  //   return res.redirect("/users");
-  // }
+  if (!req.session.createServiceData) {
+    return res.redirect("/users");
+  }
 
-  //const model = req.session.createServiceData;
-  // Temporarily set up the expected session data
-  const model = {
-    serviceType: "idOnly",
-    hideFromUserServices: undefined,
-    hideFromContactUs: undefined,
-    name: "newServiceName",
-    description: "newServiceDescription blah",
-    homeUrl: "https://homeUrl.com",
-    postPasswordResetUrl: "https://postPasswordReseturl.com",
-    clientId: "TestClientId",
-    service: {
-      redirectUris: ["https://redirect-uri.com"],
-      postLogoutRedirectUris: ["https://logout-uri.com"],
-    },
-    responseTypesCode: "responseTypesCode",
-    responseTypesIdToken: "responseTypesIdToken",
-    responseTypesToken: "responseTypesToken",
-    refreshToken: "",
-    clientSecret: "this.is.a.client.secret",
-    tokenEndpointAuthenticationMethod: "client_secret_post",
-    apiSecret: "this.is.an.api.secret",
-  };
+  const model = req.session.createServiceData;
 
-  // TODO, modify previous page to write response types to session as an
-  // array to save us having to do it here
   const responseTypes = [];
-  if (model.responseTypesCode !== undefined) {
+  if (model.responseTypesCode !== "") {
     responseTypes.push(model.responseTypesCode);
   }
-  if (model.responseTypesIdToken !== undefined) {
+  if (model.responseTypesIdToken !== "") {
     responseTypes.push(model.responseTypesIdToken);
   }
-  if (model.responseTypesToken !== undefined) {
+  if (model.responseTypesToken !== "") {
     responseTypes.push(model.responseTypesToken);
   }
 
@@ -57,6 +33,14 @@ const postConfirmNewService = async (req, res) => {
     grantTypes.push("refresh_token");
   }
 
+  // In the database the only 2 values for this are NULL and client_secret_post.  This
+  // line keeps that true.
+  let tokenEndpointAuthenticationMethod =
+    model.tokenEndpointAuthenticationMethod;
+  if (model.tokenEndpointAuthenticationMethod !== "client_secret_post") {
+    tokenEndpointAuthenticationMethod = undefined;
+  }
+
   const body = {
     name: model.name,
     description: model.description,
@@ -67,7 +51,7 @@ const postConfirmNewService = async (req, res) => {
       client_id: model.clientId,
       client_secret: model.clientSecret,
       api_secret: model.apiSecret,
-      token_endpoint_auth_method: model.tokenEndpointAuthenticationMethod,
+      token_endpoint_auth_method: tokenEndpointAuthenticationMethod,
       service_home: model.homeUrl,
       postResetUrl: model.postPasswordResetUrl,
       redirect_uris: model.service.redirectUris,

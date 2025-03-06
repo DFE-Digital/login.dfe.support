@@ -14,7 +14,7 @@ const validateInput = async (req) => {
     responseTypesCode: req.body["response_types-code"] || "",
     responseTypesIdToken: req.body["response_types-id_token"] || "",
     responseTypesToken: req.body["response_types-token"] || "",
-    refreshToken: req.body.refreshToken || "",
+    refreshToken: req.body.refreshToken,
     clientSecret: req.body.clientSecret || "",
     tokenEndpointAuthenticationMethod:
       req.body.tokenEndpointAuthenticationMethod,
@@ -227,7 +227,7 @@ const postServiceUrlsAndResponseType = async (req, res) => {
         model,
       );
     }
-    return res.redirect("/users");
+    return res.redirect("confirm-new-service");
   });
 };
 
