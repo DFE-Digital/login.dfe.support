@@ -11,7 +11,7 @@ const validateInput = async (req) => {
   const regex = /[±!@£$%^*_+§¡€#¢§¶•ªº«\\/<>:;|=.~"]/;
   const model = {
     csrfToken: req.csrfToken(),
-    backlink: "users",
+    backLink: "users",
     organisation,
     validationMessages: {},
   };

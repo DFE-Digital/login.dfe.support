@@ -13,7 +13,23 @@ const {
 } = require("./../../../src/infrastructure/organisations");
 
 const res = getResponseMock();
-const orgResult = { id: "org-1", name: "organisation one", category: "008" };
+const orgResult = {
+  id: "org-1",
+  name: "organisation one",
+  category: {
+    id: "008",
+    name: "Other Stakeholders",
+  },
+};
+
+const orgResultInvalidCategory = {
+  id: "org-1",
+  name: "organisation one",
+  category: {
+    id: "011",
+    name: "Government",
+  },
+};
 
 const orgsResultWithNoResults = {
   organisations: [],
@@ -53,13 +69,12 @@ describe("when postEditOrganisation is called", () => {
     res.mockResetAll();
 
     searchOrganisations.mockReset().mockReturnValue(orgsResultWithNoResults);
-    // sendResult.mockReset();
     getOrganisationByIdV2.mockReset().mockReturnValue(orgResult);
 
     exampleErrorResponse = {
       organisation: orgResult,
       validationMessages: {},
-      backlink: "users",
+      backLink: "users",
       csrfToken: "token",
     };
   });
@@ -109,6 +124,23 @@ describe("when postEditOrganisation is called", () => {
     expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
+  it("should render an the page with an error in validationMessages if an organisation with an invalid category is modified", async () => {
+    const invalidCategoryResponse = {
+      organisation: orgResultInvalidCategory,
+      validationMessages: {
+        name: "You cannot edit Government organisations",
+      },
+      backLink: "users",
+      csrfToken: "token",
+    };
+    getOrganisationByIdV2.mockReset().mockReturnValue(orgResultInvalidCategory);
+
+    await postEditOrganisation(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(invalidCategoryResponse);
+  });
+
   it("should redirect to the confirm page on success", async () => {
     await postEditOrganisation(req, res);
 
@@ -117,5 +149,35 @@ describe("when postEditOrganisation is called", () => {
       `/organisations/org-1/confirm-edit-organisation`,
     );
     expect(sendResult).toHaveBeenCalledTimes(0);
+  });
+
+  it("should render the page if there is an error saving to the session", async () => {
+    req.session = {
+      save: jest.fn((cb) => cb("Something went wrong")),
+    };
+
+    await postEditOrganisation(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult).toHaveBeenCalledWith(
+      req,
+      res,
+      "organisations/views/editOrganisation",
+      {
+        csrfToken: req.csrfToken(),
+        backLink: "users",
+        organisation: {
+          category: {
+            id: "008",
+            name: "Other Stakeholders",
+          },
+          id: "org-1",
+          name: "organisation one",
+        },
+        validationMessages: {
+          name: "Something went wrong submitting data, please try again",
+        },
+      },
+    );
   });
 });
