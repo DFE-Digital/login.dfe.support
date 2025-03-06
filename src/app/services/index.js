@@ -7,6 +7,8 @@ const getChooseServiceType = require("./getChooseServiceType");
 const postChooseServiceType = require("./postChooseServiceType");
 const getServiceNameAndDescription = require("./getServiceNameAndDescription");
 const postServiceNameAndDescription = require("./postServiceNameAndDescription");
+const getServiceUrlsAndResponseType = require("./getServiceUrlsAndResponseType");
+const postServiceUrlsAndResponseType = require("./postServiceUrlsAndResponseType");
 const getConfirmNewService = require("./getConfirmNewService");
 const postConfirmNewService = require("./postConfirmNewService");
 
@@ -38,6 +40,17 @@ const users = (csrf) => {
     "/service-name-and-description",
     csrf,
     asyncWrapper(postServiceNameAndDescription),
+  );
+
+  router.get(
+    "/service-urls-and-response-type",
+    csrf,
+    asyncWrapper(getServiceUrlsAndResponseType),
+  );
+  router.post(
+    "/service-urls-and-response-type",
+    csrf,
+    asyncWrapper(postServiceUrlsAndResponseType),
   );
 
   router.get("/confirm-new-service", csrf, asyncWrapper(getConfirmNewService));

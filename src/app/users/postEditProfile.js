@@ -88,12 +88,15 @@ const postEditProfile = async (req, res) => {
     sendResult(req, res, "users/views/editProfile", {
       csrfToken: req.csrfToken(),
       backLink: "services",
+      layout: "sharedViews/layoutNew.ejs",
+      currentPage: "users",
       user,
       validationMessages: validationResult.validationMessages,
     });
     return;
   }
 
+  // k2s isn't used anymore so this section should be removed in the future
   const uid = req.params.uid;
   const idKey = "k2s-id";
   //todo k2s-id set id
@@ -112,6 +115,8 @@ const postEditProfile = async (req, res) => {
         csrfToken: req.csrfToken(),
         user,
         backLink: "services",
+        layout: "sharedViews/layoutNew.ejs",
+        currentPage: "users",
         isValid: false,
         validationMessages: {
           ktsId: "Key to Success ID is already in use",
