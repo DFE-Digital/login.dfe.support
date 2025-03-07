@@ -35,24 +35,25 @@ if (services && services.length > 0) {
 %>
 
 <% if (locals.flash.info) { %>
-    <div class="row">
-        <div class="col-12">
-            <div class="notification notification-success">
-                <%= locals.flash.info %>
-            </div>
-        </div>
-    </div>
+<div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+  <div class="govuk-notification-banner__header">
+    <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">Success</h2>
+  </div>
+  <div class="govuk-notification-banner__content">
+    <p class="govuk-body"><%=locals.flash.info%></p>
+  </div>
+</div>
 <% } %>
 
-<div class="row row-spacer">
-    <div class="col-6">
-        <h1 class="heading-xlarge">Users</h1>
-
-            <form method="post">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                <input type="hidden" name="showFilters" value="<%= showFilters %>"/>
-                <input type="hidden" name="sort" value="<%= sortBy %>"/>
-                <input type="hidden" name="sortDir" value="<%= sortOrder %>"/>
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Users</h1>
+            <form class="govuk-form-group" method="post">
+                <input class="govuk-input govuk-!-static-margin-0" type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <input class="govuk-input" type="hidden" name="showFilters" value="<%= showFilters %>"/>
+                <input class="govuk-input" type="hidden" name="sort" value="<%= sortBy %>"/>
+                <input class="govuk-input" type="hidden" name="sortDir" value="<%= sortOrder %>"/>
 
                 <% for (let i = 0; i < organisationTypes.length; i += 1) { %>
                 <% if (organisationTypes[i].isSelected) { %>
@@ -73,17 +74,15 @@ if (services && services.length > 0) {
                 <% } %>
 
 
-                <div class="search-field form-group <%= (locals.validationMessages.criteria !== undefined) ? 'form-group-error' : '' %>">
+                <div class="govuk-form-group <%= (locals.validationMessages.criteria !== undefined) ? 'form-group-error' : '' %>">
                     <% if (locals.validationMessages.criteria !== undefined) { %>
                         <p class="error-message" id="validation-service"><%=locals.validationMessages.criteria %></p>
                     <% } %>
-                    <fieldset class="search-input">
+                    <fieldset class="govuk-fieldset">
                         <label for="criteria" class="vh">Search by name, email or organisation</label>
-                        <input type="text" id="criteria" name="criteria" value="<%= criteria %>" class="form-control"
+                        <input type="text" id="criteria" name="criteria" value="<%= criteria %>" class="govuk-input govuk-!-width-two-thirds"
                                placeholder="Search by name, email or organisation">
-                    </fieldset>
-                    <fieldset class="search-submit">
-                        <button type="submit" class="button">Search</button>
+                        <button type="submit" class="govuk-button">Search</button>
                     </fieldset>
                 </div>
             </form>
@@ -97,103 +96,102 @@ if (services && services.length > 0) {
                 <input type="hidden" name="isFilterToggle" value="true"/>
                 <button type="submit" class="button-link filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
             </form>
-
+        </div>
+        <div class="govuk-grid-column-one-third">
+            <aside>
+                <h2 class="govuk-heading-m">Actions</h2>
+                <ul class="govuk-list">
+                    <li><a class="govuk-link" href="/users/new-user">Invite user</a></li>
+                    <li><a class="govuk-link" href="/users/bulk-user-actions">Bulk user actions</a></li>
+                    <% if (locals.canViewRequests) { %>
+                        <li><a class="govuk-link" href="/access-requests">View user requests</a></li>
+                    <% } %>
+                </ul>
+            </aside>
+        </div>
     </div>
-
-    <div class="col-4 pull-right">
-        <aside>
-            <h2 class="heading-medium">Actions</h2>
-            <ul class="list">
-                <li><a href="/users/new-user">Invite user</a></li>
-                <li><a href="/users/bulk-user-actions">Bulk user actions</a></li>
-                <% if (locals.canViewRequests) { %>
-                    <li><a href="/access-requests">View user requests</a></li>
-                <% } %>
-            </ul>
-        </aside>
-    </div>
-</div>
-
-<div class="row">
+    
+    
+    <div class="govuk-grid-row">
     <% if (showFilters) { %>
-    <div class="col-4">
-        <form method="post">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <input type="hidden" name="criteria" value="<%= criteria %>"/>
-            <input type="hidden" name="page" value="<%= page %>"/>
-            <input type="hidden" name="sort" value="<%= sortBy %>"/>
-            <input type="hidden" name="sortDir" value="<%= sortOrder %>"/>
-            <input type="hidden" name="showFilters" value="true"/>
+        <div class="govuk-grid-column-one-third">
+            <form method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <input type="hidden" name="criteria" value="<%= criteria %>"/>
+                <input type="hidden" name="page" value="<%= page %>"/>
+                <input type="hidden" name="sort" value="<%= sortBy %>"/>
+                <input type="hidden" name="sortDir" value="<%= sortOrder %>"/>
+                <input type="hidden" name="showFilters" value="true"/>
 
-            <div class="filter-box">
-                <div class="container-head js-container-head">
-                    <div class="option-select-label">
-                        Organisation type
+                <div class="filter-box">
+                    <div class="container-head js-container-head">
+                        <div class="option-select-label">
+                            Organisation type
+                        </div>
+                    </div>
+                    <div role="group" aria-labelledby="option-select-title-organisationtype" class="options-container"
+                        id="organisationtypes">
+                        <div class="js-auto-height-inner">
+                            <% for (let i = 0; i < organisationTypes.length; i += 1) { %>
+                            <label class="govuk-label">
+                                <input name="organisationType" value="<%= organisationTypes[i].id %>"
+                                    type="checkbox" <%= (organisationTypes[i].isSelected ? 'checked="checked"' : '') %>>
+                                <%= organisationTypes[i].name %>
+                            </label>
+                            <% } %>
+                        </div>
                     </div>
                 </div>
-                <div role="group" aria-labelledby="option-select-title-organisationtype" class="options-container"
-                     id="organisationtypes">
-                    <div class="js-auto-height-inner">
-                        <% for (let i = 0; i < organisationTypes.length; i += 1) { %>
-                        <label>
-                            <input name="organisationType" value="<%= organisationTypes[i].id %>"
-                                   type="checkbox" <%= (organisationTypes[i].isSelected ? 'checked="checked"' : '') %>>
-                            <%= organisationTypes[i].name %>
-                        </label>
-                        <% } %>
-                    </div>
-                </div>
-            </div>
 
-            <div class="filter-box">
-                <div class="container-head js-container-head">
-                    <div class="option-select-label">
-                        Account status
+                <div class="filter-box">
+                    <div class="container-head js-container-head">
+                        <div class="option-select-label">
+                            Account status
+                        </div>
+                    </div>
+                    <div role="group" aria-labelledby="option-select-title-account-status" class="options-container"
+                        id="account-status">
+                        <div class="js-auto-height-inner">
+                            <% for (let i = 0; i < accountStatuses.length; i += 1) { %>
+                            <label class="govuk-label">
+                                <input name="accountStatus" value="<%= accountStatuses[i].id %>"
+                                    type="checkbox" <%= (accountStatuses[i].isSelected ? 'checked="checked"' : '') %>>
+                                <%= accountStatuses[i].name %>
+                            </label>
+                            <% } %>
+                        </div>
                     </div>
                 </div>
-                <div role="group" aria-labelledby="option-select-title-account-status" class="options-container"
-                     id="account-status">
-                    <div class="js-auto-height-inner">
-                        <% for (let i = 0; i < accountStatuses.length; i += 1) { %>
-                        <label>
-                            <input name="accountStatus" value="<%= accountStatuses[i].id %>"
-                                   type="checkbox" <%= (accountStatuses[i].isSelected ? 'checked="checked"' : '') %>>
-                            <%= accountStatuses[i].name %>
-                        </label>
-                        <% } %>
-                    </div>
-                </div>
-            </div>
 
-            <div class="filter-box">
-                <div class="container-head js-container-head">
-                    <div class="option-select-label">
-                        Service
+                <div class="filter-box">
+                    <div class="container-head js-container-head">
+                        <div class="option-select-label">
+                            Service
+                        </div>
+                    </div>
+                    <div role="group" aria-labelledby="option-select-title-service" class="options-container" id="services">
+                        <div class="js-auto-height-inner">
+                            <% for (let i = 0; i < services.length; i += 1) { %>
+                            <label class="govuk-label">
+                                <input name="service" value="<%= services[i].id %>"
+                                    type="checkbox" <%= (services[i].isSelected ? 'checked="checked"' : '') %>>
+                                <%= services[i].name %>
+                            </label>
+                            <% } %>
+                        </div>
                     </div>
                 </div>
-                <div role="group" aria-labelledby="option-select-title-service" class="options-container" id="services">
-                    <div class="js-auto-height-inner">
-                        <% for (let i = 0; i < services.length; i += 1) { %>
-                        <label>
-                            <input name="service" value="<%= services[i].id %>"
-                                   type="checkbox" <%= (services[i].isSelected ? 'checked="checked"' : '') %>>
-                            <%= services[i].name %>
-                        </label>
-                        <% } %>
-                    </div>
-                </div>
-            </div>
 
-            <button class="button-secondary">Apply filter</button>
+                <button class="govuk-button govuk-button--secondary">Apply filter</button>
 
-        </form>
-    </div>
+            </form>
+        </div>
     <% } %>
     <% if (locals.users) { %>
-    <div class="col-<%= (showFilters ? 8 : 12) %>">
+    <div class="govuk-grid-column-two-thirds">
         <%- include('../../sharedViews/pagination', paginationModel); %>
-        <table class="data">
-            <thead>
+        <table class="govuk-table">
+            <thead class="govuk-table__head">
             <%
             let baseSortUri = `?criteria=${criteria}&page=${page}&showFilters=${showFilters}`;
 
@@ -216,54 +214,54 @@ if (services && services.length > 0) {
                 });
             }
             %>
-            <tr class="sortable">
-                <th scope="col" class="cwp-15">
+            <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">
                     <a href="<%=baseSortUri%>&sort=name&sortDir=<%= sort.name.nextDirection %>&search=true"
-                       class="<% if (sort.name.applied) { %>sorted dir-<%= (sort.name.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
+                       class="govuk-link govuk-link--no-underline <% if (sort.name.applied) { %>sorted dir-<%= (sort.name.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
                     >Name</a></th>
-                <th scope="col" class="cwp-35">
+                <th scope="col" class="govuk-table__header">
                     <a href="<%=baseSortUri%>&sort=email&sortDir=<%= sort.email.nextDirection %>&search=true"
-                       class="<% if (sort.email.applied) { %>sorted dir-<%= (sort.email.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
+                       class="govuk-link govuk-link--no-underline <% if (sort.email.applied) { %>sorted dir-<%= (sort.email.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
                     >Email</a></th>
-                <th scope="col" class="cwp-25">
+                <th scope="col" class="govuk-table__header">
                     <a href="<%=baseSortUri%>&sort=organisation&sortDir=<%= sort.organisation.nextDirection %>&search=true"
-                       class="<% if (sort.organisation.applied) { %>sorted dir-<%= (sort.organisation.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
+                       class="govuk-link govuk-link--no-underline <% if (sort.organisation.applied) { %>sorted dir-<%= (sort.organisation.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
                     >Organisation</a></th>
-                <th scope="col" class="cwp-15">
+                <th scope="col" class="govuk-table__header">
                     <a href="<%=baseSortUri%>&sort=lastlogin&sortDir=<%= sort.lastLogin.nextDirection %>&search=true"
-                       class="<% if (sort.lastLogin.applied) { %>sorted dir-<%= (sort.lastLogin.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
+                       class="govuk-link govuk-link--no-underline <% if (sort.lastLogin.applied) { %>sorted dir-<%= (sort.lastLogin.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
                     >Last Login</a></th>
-                <th scope="col" class="cwp-10">
+                <th scope="col" class="govuk-table__header">
                     <a href="<%=baseSortUri%>&sort=status&sortDir=<%= sort.status.nextDirection %>&search=true"
-                       class="<% if (sort.status.applied) { %>sorted dir-<%= (sort.status.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
+                       class="govuk-link govuk-link--no-underline <% if (sort.status.applied) { %>sorted dir-<%= (sort.status.nextDirection === 'desc') ? 'd' : 'a' %> <% } %>"
                     >Status</a></th>
             </tr>
             </thead>
-            <tbody>
+            <tbody class="govuk-table__body">
             <% if(locals.users.length === 0 && locals.criteria) { %>
-            <tr>
+            <tr class="govuk-table__row">
                 <td colspan="5"><span class="empty-state">No users found</span></td>
             </tr>
             <% } %>
             <% for (let i = 0; i < locals.users.length; i++) { %>
-            <tr>
-                <td><a class="breakable" href="/users/<%= users[i].id %>/organisations<%= baseSortUri %>"><%= users[i].name %></a></td>
-                <td><span class="breakable"><%= users[i].email %></span></td>
-                <td>
+            <tr class="govuk-table__row govuk-body">
+                <td class="govuk-table__cell govuk-body-s"><a class="breakable" href="/users/<%= users[i].id %>/organisations<%= baseSortUri %>"><%= users[i].name %></a></td>
+                <td class="govuk-table__cell govuk-body-s"><span class="breakable"><%= users[i].email %></span></td>
+                <td class="govuk-table__cell govuk-body-s">
                     <% if(users[i].organisation) { %>
                     <%= users[i].organisation.name %>
                     <% }else { %>
                     Unknown
                     <% } %>
                 </td>
-                <td>
+                <td class="govuk-table__cell govuk-body-s">
                     <% if(locals.users[i].lastLogin) { %>
                     <%= locals.users[i].formattedLastLogin %>
                     <% } else { %>
                     Never
                     <% } %>
                 </td>
-                <td><%= users[i].status.description %></td>
+                <td class="govuk-table__cell govuk-body-s"><%= users[i].status.description %></td>
             </tr>
             <% } %>
             </tbody>
@@ -272,3 +270,6 @@ if (services && services.length > 0) {
     </div>
     <% } %>
 </div>
+</div>
+
+
