@@ -189,7 +189,7 @@ if (services && services.length > 0) {
     <% } %>
     <% if (locals.users) { %>
     <div class="<%= (showFilters) ? 'govuk-grid-column-two-thirds' : 'govuk-grid-column-full' %>">
-        <%- include('../../sharedViews/pagination', paginationModel); %>
+        <%- include('../../sharedViews/paginationNew', paginationModel); %>
         <table class="govuk-table">
             <thead class="govuk-table__head">
             <%
@@ -266,7 +266,7 @@ if (services && services.length > 0) {
             <% } %>
             </tbody>
         </table>
-        <%- include('../../sharedViews/pagination', paginationModel); %>
+        <%- include('../../sharedViews/paginationNew', paginationModel); %>
     </div>
     <% } %>
 </div>
