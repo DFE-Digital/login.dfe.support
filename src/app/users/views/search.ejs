@@ -188,7 +188,7 @@ if (services && services.length > 0) {
         </div>
     <% } %>
     <% if (locals.users) { %>
-    <div class="govuk-grid-column-two-thirds">
+    <div class="<%= (showFilters) ? 'govuk-grid-column-two-thirds' : 'govuk-grid-column-full' %>">
         <%- include('../../sharedViews/pagination', paginationModel); %>
         <table class="govuk-table">
             <thead class="govuk-table__head">
