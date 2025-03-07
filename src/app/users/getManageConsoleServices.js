@@ -35,6 +35,7 @@ const buildModel = async (req) => {
 
   const model = {
     csrfToken: req.csrfToken(),
+    currentPage: "users",
     backLink: `/users/${user.id}/organisations`,
     layout: "sharedViews/layoutNew.ejs",
     user,

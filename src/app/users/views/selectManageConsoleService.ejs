@@ -47,7 +47,7 @@ const paginationModel = {
 </div>
 <div class="govuk-width-container">
 <% if (pageOfServices.services.length > 0) { %>
-    <%- include('../../sharedViews/pagination', paginationModel); %>
+    <%- include('../../sharedViews/paginationNew', paginationModel); %>
     <table class="govuk-table">
         <thead class="govuk-table__head">
             <tr class="govuk-table__row">
@@ -66,7 +66,7 @@ const paginationModel = {
             <%}%>
         </tbody>
     </table>
-    <%- include('../../sharedViews/pagination', paginationModel); %>
+    <%- include('../../sharedViews/paginationNew', paginationModel); %>
 <% } else { %>
     <p>This user does not have any services mapped to their account.</p>
 <% }; %>
