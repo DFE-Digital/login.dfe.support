@@ -44,30 +44,28 @@ const paginationModel = {
             </div>         
         </dl>
     </div>
-</div>
-<div class="govuk-width-container">
-<% if (pageOfServices.services.length > 0) { %>
-    <%- include('../../sharedViews/paginationNew', paginationModel); %>
-    <table class="govuk-table">
-        <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header">Service</th>
-                <th scope="col" class="govuk-table__header">Service type</th>
-                <th scope="col" class="govuk-table__header">Visibility</th>
-            </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-            <% for(let i=0; i< pageOfServices.services.length; i++ ) {%>
+    <% if (pageOfServices.services.length > 0) { %>
+        <%- include('../../sharedViews/paginationNew', paginationModel); %>
+        <table class="govuk-table">
+            <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
-                    <td class="govuk-table__cell"><a href="add-manage-console-roles/<%= pageOfServices.services[i].id %>"><%= pageOfServices.services[i].name %></a></td>
-                    <td class="govuk-table__cell"><%= pageOfServices.services[i].isIdOnlyService ? 'ID only' : 'Role'%></td>
-                    <td class="govuk-table__cell"><%= pageOfServices.services[i].isHiddenService ? 'Hidden' : 'Visible'%></td>
+                    <th scope="col" class="govuk-table__header">Service</th>
+                    <th scope="col" class="govuk-table__header">Service type</th>
+                    <th scope="col" class="govuk-table__header">Visibility</th>
                 </tr>
-            <%}%>
-        </tbody>
-    </table>
-    <%- include('../../sharedViews/paginationNew', paginationModel); %>
-<% } else { %>
-    <p>This user does not have any services mapped to their account.</p>
-<% }; %>
+            </thead>
+            <tbody class="govuk-table__body">
+                <% for(let i=0; i< pageOfServices.services.length; i++ ) {%>
+                    <tr class="govuk-table__row">
+                        <td class="govuk-table__cell"><a href="add-manage-console-roles/<%= pageOfServices.services[i].id %>"><%= pageOfServices.services[i].name %></a></td>
+                        <td class="govuk-table__cell"><%= pageOfServices.services[i].isIdOnlyService ? 'ID only' : 'Role'%></td>
+                        <td class="govuk-table__cell"><%= pageOfServices.services[i].isHiddenService ? 'Hidden' : 'Visible'%></td>
+                    </tr>
+                <%}%>
+            </tbody>
+        </table>
+        <%- include('../../sharedViews/paginationNew', paginationModel); %>
+    <% } else { %>
+        <p>This user does not have any services mapped to their account.</p>
+    <% }; %>
 </div>
