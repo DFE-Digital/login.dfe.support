@@ -24,7 +24,7 @@ const postConfirmNewService = async (req, res) => {
   const params = {
     hideApprover: true,
     hideSupport: true,
-    helpHidden: true,
+    helpHidden: model.hideFromContactUs === undefined ? false : true,
   };
 
   const grantTypes = [];
@@ -48,6 +48,7 @@ const postConfirmNewService = async (req, res) => {
     description: model.description,
     isExternalService: false,
     isIdOnlyService: true,
+    isHiddenService: model.hideFromUserServices === undefined ? false : true,
     isChildService: false,
     parentId: undefined,
     relyingParty: {

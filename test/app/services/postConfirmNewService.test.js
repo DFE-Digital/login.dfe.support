@@ -51,6 +51,7 @@ describe("when displaying the post create new service", () => {
       description: "newServiceDescription blah",
       isChildService: false,
       isIdOnlyService: true,
+      isHiddenService: false,
       isExternalService: false,
       name: "newServiceName",
       parentId: undefined,
@@ -60,7 +61,7 @@ describe("when displaying the post create new service", () => {
         client_secret: "this.is.a.client.secret",
         grant_types: ["authorization_code", "refresh_token"],
         params: {
-          helpHidden: true,
+          helpHidden: false,
           hideApprover: true,
           hideSupport: true,
         },
@@ -86,6 +87,28 @@ describe("when displaying the post create new service", () => {
     expect(
       createService.mock.calls[0][0].relyingParty.grant_types,
     ).toStrictEqual(["authorization_code"]);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/users");
+  });
+
+  it("should have helpHidden param be true if hideFromContactUs is defined", async () => {
+    req.session.createServiceData.hideFromContactUs = "hideFromContactUs";
+    await postConfirmNewService(req, res);
+
+    expect(createService.mock.calls).toHaveLength(1);
+    expect(createService.mock.calls[0][0].relyingParty.params.helpHidden).toBe(
+      true,
+    );
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/users");
+  });
+
+  it("should have isHiddenService be true if hideFromUserServices is defined", async () => {
+    req.session.createServiceData.hideFromUserServices = "hideFromUserServices";
+    await postConfirmNewService(req, res);
+
+    expect(createService.mock.calls).toHaveLength(1);
+    expect(createService.mock.calls[0][0].isHiddenService).toBe(true);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/users");
   });
