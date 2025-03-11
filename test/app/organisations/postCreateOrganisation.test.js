@@ -133,7 +133,24 @@ describe("when displaying the get create organisations", () => {
 
   it("should redirect to the confirm screen if a valid special character is used", async () => {
     // Note: ' is converted into &#39; so we're testing that the unescape works correctly here as well
-    req.body.name = "Test&#39;org";
+    req.body.name = "Test&#39;org/";
+
+    await postCreateOrganisation(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("confirm-create-org");
+    expect(sendResult).toHaveBeenCalledTimes(0);
+  });
+
+  it("should redirect to the confirm screen all non-mandatory fields are empty", async () => {
+    req.body = {
+      name: "Test name",
+      address: "",
+      ukprn: "",
+      category: "008",
+      upin: "",
+      urn: "",
+    };
 
     await postCreateOrganisation(req, res);
 

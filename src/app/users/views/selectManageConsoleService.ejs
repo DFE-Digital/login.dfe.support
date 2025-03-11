@@ -1,14 +1,13 @@
-<div class="row">
-    <% if (locals.flash.info) { %>
-        <div class="col-12">
-            <div class="notification notification-success">
-                <div>
-                    <p><%= locals.flash.info[1] %></p>
-                </div>
-            </div>
+<% if (locals.flash.info) { %>
+    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+        <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">Success</h2>
         </div>
-    <% } %>
-</div>
+        <div class="govuk-notification-banner__content">
+            <p class="govuk-body"><%=locals.flash.info[1]%></p>
+        </div>
+    </div>
+<% } %>
 
 <%
 const paginationModel = {
@@ -20,47 +19,53 @@ const paginationModel = {
 }
 %>
 
-<div class="row">
+<div class="govuk-width-container">
     <div class="col-8">
-        <h1 class="heading-xlarge heading-breakable">
-            <span class="heading-secondary"><%= user.name %></span>
+        <h1 class="govuk-heading-xl">
+            <span class="govuk-caption-l"><%= user.name %></span>
             Manage console roles
         </h1>
-        <dl class="inline rows">
-            <dt class="label">Email:</dt>
-            <dd><%= user.email %></dd>
-            <dt class="label">Last login:</dt>
-            <dd><%= user.formattedLastLogin ? user.formattedLastLogin : 'Never' %></dd>
-            <dt class="label">Account status:</dt>
-            <dd><%= user.status.description %></dd>
-            <dt class="label">Number of logins in last 12 months:</dt>
-            <dd><%= user.loginsInPast12Months.successful %></dd>
+        <dl class="govuk-summary-list govuk-summary-list--no-border">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-static-padding-0">Email:</dt>
+                <dd class="govuk-summary-list__value govuk-!-static-padding-0"><%= user.email %></dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-static-padding-0">Last login:</dt>
+                <dd class="govuk-summary-list__value govuk-!-static-padding-0"><%= user.formattedLastLogin ? user.formattedLastLogin : 'Never' %></dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-static-padding-0">Account status:</dt>
+                <dd class="govuk-summary-list__value govuk-!-static-padding-0"><%= user.status.description %></dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-static-padding-0">Number of logins in last 12 months:</dt>
+                <dd class="govuk-summary-list__value govuk-!-static-padding-0"><%= user.loginsInPast12Months.successful %></dd>
+            </div>         
         </dl>
     </div>
-</div>
-<div>
-<% if (pageOfServices.services.length > 0) { %>
-    <%- include('../../sharedViews/pagination', paginationModel); %>
-    <table class="data no-borders">
-        <thead>
-            <tr>
-                <th scope="col" class="cwp-40">Service</th>
-                <th scope="col" class="cwp-20">Service type</th>
-                <th scope="col" class="cwp-30">Visibility</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for(let i=0; i< pageOfServices.services.length; i++ ) {%>
-                <tr>
-                    <td><a href="add-manage-console-roles/<%= pageOfServices.services[i].id %>"><%= pageOfServices.services[i].name %></a></td>
-                    <td><%= pageOfServices.services[i].isIdOnlyService ? 'ID only' : 'Role'%></td>
-                    <td><%= pageOfServices.services[i].isHiddenService ? 'Hidden' : 'Visible'%></td>
+    <% if (pageOfServices.services.length > 0) { %>
+        <%- include('../../sharedViews/paginationNew', paginationModel); %>
+        <table class="govuk-table">
+            <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                    <th scope="col" class="govuk-table__header">Service</th>
+                    <th scope="col" class="govuk-table__header">Service type</th>
+                    <th scope="col" class="govuk-table__header">Visibility</th>
                 </tr>
-            <%}%>
-        </tbody>
-    </table>
-    <%- include('../../sharedViews/pagination', paginationModel); %>
-<% } else { %>
-    <p>This user does not have any services mapped to their account.</p>
-<% }; %>
+            </thead>
+            <tbody class="govuk-table__body">
+                <% for(let i=0; i< pageOfServices.services.length; i++ ) {%>
+                    <tr class="govuk-table__row">
+                        <td class="govuk-table__cell"><a href="add-manage-console-roles/<%= pageOfServices.services[i].id %>"><%= pageOfServices.services[i].name %></a></td>
+                        <td class="govuk-table__cell"><%= pageOfServices.services[i].isIdOnlyService ? 'ID only' : 'Role'%></td>
+                        <td class="govuk-table__cell"><%= pageOfServices.services[i].isHiddenService ? 'Hidden' : 'Visible'%></td>
+                    </tr>
+                <%}%>
+            </tbody>
+        </table>
+        <%- include('../../sharedViews/paginationNew', paginationModel); %>
+    <% } else { %>
+        <p>This user does not have any services mapped to their account.</p>
+    <% }; %>
 </div>

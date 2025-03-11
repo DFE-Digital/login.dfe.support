@@ -21,7 +21,7 @@ const validateInput = async (req) => {
   model.upin = model.upin.trim();
   model.urn = model.urn.trim();
 
-  const nameRegEx = /^[^±!@£$%^*_+§¡€#¢§¶•ªº«\\/<>:;|=.~"]+$/i;
+  const nameRegEx = /^[^±!@£$%^*_+§¡€#¢§¶•ªº«\\<>:;|=.~"]+$/i;
   if (!model.name) {
     model.validationMessages.name = "Please enter a name";
   } else if (!nameRegEx.test(model.name)) {
