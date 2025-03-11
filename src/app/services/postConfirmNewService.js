@@ -41,10 +41,13 @@ const postConfirmNewService = async (req, res) => {
     tokenEndpointAuthenticationMethod = undefined;
   }
 
+  // Hardcoding isIdOnlyService for now until we offer the ability to make a
+  // standard service via the UI
   const body = {
     name: model.name,
     description: model.description,
     isExternalService: false,
+    isIdOnlyService: true,
     isChildService: false,
     parentId: undefined,
     relyingParty: {

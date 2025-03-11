@@ -50,6 +50,7 @@ describe("when displaying the post create new service", () => {
     expect(createService.mock.calls[0][0]).toStrictEqual({
       description: "newServiceDescription blah",
       isChildService: false,
+      isIdOnlyService: true,
       isExternalService: false,
       name: "newServiceName",
       parentId: undefined,
