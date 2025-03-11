@@ -1,4 +1,5 @@
 <%
+const disableNextAndPrevious = locals.disableNextAndPrevious || false;
 const pages = locals.numberOfPages;
 const page = locals.page;
 const numberOfResultsOnPagePage = locals.numberOfResultsOnPage;
@@ -36,7 +37,7 @@ if (upperWindowBound < pages) {
     <p class="govuk-body">Showing <%= lowerEndRecords %> - <%= upperEndRecords %> of <b><%= locals.totalNumberOfResults %></b> rows</p>
     <nav class="govuk-pagination" aria-label="Pagination">
         <% if (locals.numberOfPages >= 1) { %>
-        <% if (locals.currentPage != 1) { %>
+        <% if (locals.disableNextAndPrevious != true && locals.currentPage != 1) { %>
         <div class="govuk-pagination__prev">
             <a class="govuk-link govuk-pagination__link" href="?page=<%=page - 1%>" rel="prev">
                 <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
@@ -93,7 +94,7 @@ if (upperWindowBound < pages) {
             </li>
             <% } %>
         </ul>
-        <% if (locals.currentPage != locals.numberOfPages) { %>
+        <% if (locals.disableNextAndPrevious != true && locals.currentPage != locals.numberOfPages) { %>
         <div class="govuk-pagination__next">
             <a class="govuk-link govuk-pagination__link" href="?page=<%=page + 1%>" rel="next">
                 <span class="govuk-pagination__link-title">
