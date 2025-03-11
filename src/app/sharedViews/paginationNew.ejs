@@ -1,4 +1,5 @@
 <%
+const disableNextAndPrevious = locals.disableNextAndPrevious || false;
 const pages = locals.numberOfPages;
 const page = locals.page;
 const numberOfResultsOnPagePage = locals.numberOfResultsOnPage;
@@ -33,78 +34,79 @@ if (upperWindowBound < pages) {
 %>
 
 <div class="govuk-width-container">
-    <p class="govuk-body">Showing <%= lowerEndRecords %> - <%= upperEndRecords %> of <b><%= locals.totalNumberOfResults %></b> rows</p>
-    <nav class="govuk-pagination" aria-label="Pagination">
-        <% if (locals.numberOfPages >= 1) { %>
-        <% if (locals.currentPage != 1) { %>
-        <div class="govuk-pagination__prev">
-            <a class="govuk-link govuk-pagination__link" href="?page=<%=page - 1%>" rel="prev">
-                <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
-                <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
-                </svg>
-                <span class="govuk-pagination__link-title">
-                Previous<span class="govuk-visually-hidden"> page</span>
-                </span>
-            </a>
-        </div>
-        <% } %>
-        <ul class="govuk-pagination__list">
-            <% for (let i = 0; i < pageBracketLeft.length; i++) { %>
-            <li class="govuk-pagination__item">
-                <% if (locals.currentPage === pageBracketLeft[i]) { %>
-                <span class="govuk-pagination__item--current"><%= pageBracketLeft[i] %></span>
-                <% } else if (locals.method === 'post') { %>
-                <%- include('pageForm', {page: pageBracketLeft[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
-                <% } else { %>
-                <%- include('pageLink', {page: pageBracketLeft[i], data: locals.data || []}); %>
+    <div class="govuk-grid-row">
+        <p class="govuk-body govuk-!-margin-0">Showing <%= lowerEndRecords %> - <%= upperEndRecords %> of <b><%= locals.totalNumberOfResults %></b> rows</p>
+        <nav class="govuk-pagination" aria-label="Pagination">
+            <% if (locals.numberOfPages >= 1) { %>
+            <% if (locals.disableNextAndPrevious != true && locals.currentPage != 1) { %>
+                <div class="govuk-pagination__prev">
+                    <a class="govuk-link govuk-pagination__link" href="?page=<%=page - 1%>" rel="prev">
+                        <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+                        <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
+                        </svg>
+                        <span class="govuk-pagination__link-title">
+                        Previous<span class="govuk-visually-hidden"> page</span>
+                        </span>
+                    </a>
+                </div>
+            <% } %>
+            <ul class="govuk-pagination__list">
+                <% for (let i = 0; i < pageBracketLeft.length; i++) { %>
+                <li class="govuk-pagination__item">
+                    <% if (locals.currentPage === pageBracketLeft[i]) { %>
+                    <span class="govuk-pagination__item--current"><%= pageBracketLeft[i] %></span>
+                    <% } else if (locals.method === 'post') { %>
+                    <%- include('pageForm', {page: pageBracketLeft[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
+                    <% } else { %>
+                    <%- include('pageLink', {page: pageBracketLeft[i], data: locals.data || []}); %>
+                    <% } %>
+                </li>
                 <% } %>
-            </li>
-            <% } %>
-
-            <% if (pageBracketLeft.length > 0) { %>
-            <li class="govuk-pagination__item govuk-pagination__item--ellipses"><span>&ctdot;</span></li>
-            <% } %>
-
-            <% for (let i = 0; i < pageBracketMiddle.length; i++) { %>
-            <li class="govuk-pagination__item">
-                <% if (locals.currentPage === pageBracketMiddle[i]) { %>
-                <span class="govuk-pagination__item--current"><%= pageBracketMiddle[i] %></span>
-                <% } else if (locals.method === 'post') { %>
-                <%- include('pageForm', {page: pageBracketMiddle[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
-                <% } else { %>
-                <%- include('pageLink', {page: pageBracketMiddle[i], data: locals.data || []}); %>
+                <% if (pageBracketLeft.length > 0) { %>
+                <li class="govuk-pagination__item govuk-pagination__item--ellipses"><span>&ctdot;</span></li>
                 <% } %>
-            </li>
-            <% } %>
 
-            <% if (pageBracketRight.length > 0) { %>
-            <li class="govuk-pagination__item govuk-pagination__item--ellipses"><span>&ctdot;</span></li>
-            <% } %>
-
-            <% for (let i = 0; i < pageBracketRight.length; i++) { %>
-            <li class="govuk-pagination__item">
-                <% if (locals.currentPage === pageBracketRight[i]) { %>
-                <span class="govuk-pagination__item--current"><%= pageBracketRight[i] %></span>
-                <% } else if (locals.method === 'post') { %>
-                <%- include('pageForm', {page: pageBracketRight[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
-                <% } else { %>
-                <%- include('pageLink', {page: pageBracketRight[i], data: locals.data || []}); %>
+                <% for (let i = 0; i < pageBracketMiddle.length; i++) { %>
+                <li class="govuk-pagination__item">
+                    <% if (locals.currentPage === pageBracketMiddle[i]) { %>
+                    <span class="govuk-pagination__item--current"><%= pageBracketMiddle[i] %></span>
+                    <% } else if (locals.method === 'post') { %>
+                    <%- include('pageForm', {page: pageBracketMiddle[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
+                    <% } else { %>
+                    <%- include('pageLink', {page: pageBracketMiddle[i], data: locals.data || []}); %>
+                    <% } %>
+                </li>
                 <% } %>
-            </li>
+
+                <% if (pageBracketRight.length > 0) { %>
+                <li class="govuk-pagination__item govuk-pagination__item--ellipses"><span>&ctdot;</span></li>
+                <% } %>
+
+                <% for (let i = 0; i < pageBracketRight.length; i++) { %>
+                <li class="govuk-pagination__item">
+                    <% if (locals.currentPage === pageBracketRight[i]) { %>
+                    <span class="govuk-pagination__item--current"><%= pageBracketRight[i] %></span>
+                    <% } else if (locals.method === 'post') { %>
+                    <%- include('pageForm', {page: pageBracketRight[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
+                    <% } else { %>
+                    <%- include('pageLink', {page: pageBracketRight[i], data: locals.data || []}); %>
+                    <% } %>
+                </li>
+                <% } %>
+            </ul>
+            <% if (locals.disableNextAndPrevious != true && locals.currentPage != locals.numberOfPages) { %>
+                <div class="govuk-pagination__next">
+                    <a class="govuk-link govuk-pagination__link" href="?page=<%=page + 1%>" rel="next">
+                        <span class="govuk-pagination__link-title">
+                        Next<span class="govuk-visually-hidden"> page</span>
+                        </span>
+                        <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+                        <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
+                        </svg>
+                    </a>
+                </div>
             <% } %>
-        </ul>
-        <% if (locals.currentPage != locals.numberOfPages) { %>
-        <div class="govuk-pagination__next">
-            <a class="govuk-link govuk-pagination__link" href="?page=<%=page + 1%>" rel="next">
-                <span class="govuk-pagination__link-title">
-                Next<span class="govuk-visually-hidden"> page</span>
-                </span>
-                <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
-                <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
-                </svg>
-            </a>
-        </div>
-        <% } %>
-        <% } %>
-    </nav>
+            <% } %>
+        </nav>
+    </div>
 </div>
