@@ -73,7 +73,7 @@ const postServiceNameAndDescription = async (req, res) => {
         model,
       );
     }
-    return res.redirect("/users");
+    return res.redirect("service-urls-and-response-type");
   });
 };
 

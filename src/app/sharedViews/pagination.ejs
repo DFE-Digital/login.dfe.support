@@ -47,7 +47,7 @@ if (upperWindowBound < pages) {
                     <% } else if (locals.method === 'post') { %>
                     <%- include('pageForm', {page: pageBracketLeft[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
                     <% } else { %>
-                    <%- include('pageLink', {page: pageBracketLeft[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
+                    <%- include('pageLink', {page: pageBracketLeft[i], data: locals.data || []}); %>
                     <% } %>
                 </li>
                 <% } %>
@@ -63,7 +63,7 @@ if (upperWindowBound < pages) {
                     <% } else if (locals.method === 'post') { %>
                     <%- include('pageForm', {page: pageBracketMiddle[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
                     <% } else { %>
-                    <%- include('pageLink', {page: pageBracketMiddle[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
+                    <%- include('pageLink', {page: pageBracketMiddle[i], data: locals.data || []}); %>
                     <% } %>
                 </li>
                 <% } %>
@@ -79,7 +79,7 @@ if (upperWindowBound < pages) {
                     <% } else if (locals.method === 'post') { %>
                     <%- include('pageForm', {page: pageBracketRight[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
                     <% } else { %>
-                    <%- include('pageLink', {page: pageBracketRight[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
+                    <%- include('pageLink', {page: pageBracketRight[i], data: locals.data || []}); %>
                     <% } %>
                 </li>
                 <% } %>
