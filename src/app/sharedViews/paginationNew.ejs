@@ -35,8 +35,11 @@ if (upperWindowBound < pages) {
 
 <div class="govuk-width-container">
     <div class="govuk-grid-row">
-        <p class="govuk-body govuk-!-margin-0">Showing <%= lowerEndRecords %> - <%= upperEndRecords %> of <b><%= locals.totalNumberOfResults %></b> rows</p>
-        <nav class="govuk-pagination" aria-label="Pagination">
+        <div class="govuk-grid-column-full">
+            <p class="govuk-body govuk-!-margin-0">Showing <%= lowerEndRecords %> - <%= upperEndRecords %> of <b><%= locals.totalNumberOfResults %></b> rows</p>
+        </div>
+        <div class="govuk-grid-column-full">
+            <nav class="govuk-pagination" aria-label="Pagination">
             <% if (locals.numberOfPages >= 1) { %>
             <% if (locals.disableNextAndPrevious != true && locals.currentPage != 1) { %>
                 <div class="govuk-pagination__prev">
@@ -107,6 +110,7 @@ if (upperWindowBound < pages) {
                 </div>
             <% } %>
             <% } %>
-        </nav>
+            </nav>
+        </div>
     </div>
 </div>

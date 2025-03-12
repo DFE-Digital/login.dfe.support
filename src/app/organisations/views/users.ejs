@@ -12,10 +12,8 @@ const paginationModel = {
 
 <div class="govuk-width-container">
     <%- include('_organisationSummary', {area: 'users', organisation: locals.organisation}); %>
-    <div class="govuk-grid-column-full">
-        <%- include('../../sharedViews/paginationNew', paginationModel); %>
-    </div>
-    <table class="govuk-table govuk-!-margin-0">
+    <%- include('../../sharedViews/paginationNew', paginationModel); %>
+    <table class="govuk-table">
         <thead class="govuk-table__head">
             <tr class="govuk-table__row">
                 <th scope="col" class="govuk-table__header">Name</th>
@@ -43,7 +41,7 @@ const paginationModel = {
         <%})%>
         </tbody>
     </table>
-    <div class="govuk-grid-column-full">
+    <div>
         <%- include('../../sharedViews/paginationNew', paginationModel); %>
     </div>
 </div>
