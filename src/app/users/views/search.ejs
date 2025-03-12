@@ -51,10 +51,10 @@ if (services && services.length > 0) {
         <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">Users</h1>
             <form class="govuk-form-group" method="post">
-                <input class="govuk-input govuk-!-static-margin-0" type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                <input class="govuk-input" type="hidden" name="showFilters" value="<%= showFilters %>"/>
-                <input class="govuk-input" type="hidden" name="sort" value="<%= sortBy %>"/>
-                <input class="govuk-input" type="hidden" name="sortDir" value="<%= sortOrder %>"/>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <input type="hidden" name="showFilters" value="<%= showFilters %>"/>
+                <input type="hidden" name="sort" value="<%= sortBy %>"/>
+                <input type="hidden" name="sortDir" value="<%= sortOrder %>"/>
 
                 <% for (let i = 0; i < organisationTypes.length; i += 1) { %>
                 <% if (organisationTypes[i].isSelected) { %>
