@@ -14,7 +14,7 @@ const validateInput = async (req) => {
     responseTypesCode: req.body["response_types-code"] || "",
     responseTypesIdToken: req.body["response_types-id_token"] || "",
     responseTypesToken: req.body["response_types-token"] || "",
-    refreshToken: req.body.refreshToken || "",
+    refreshToken: req.body.refreshToken,
     clientSecret: req.body.clientSecret || "",
     tokenEndpointAuthenticationMethod:
       req.body.tokenEndpointAuthenticationMethod,
@@ -124,51 +124,37 @@ const validateInput = async (req) => {
 
   // Logout redirect urls validation
   const logoutRedirectUris = model.service.postLogoutRedirectUris;
-  const areLogoutUrisNotPopulated =
-    !logoutRedirectUris ||
-    logoutRedirectUris.length === 0 ||
-    (logoutRedirectUris.length === 1 && !logoutRedirectUris[0]);
-
-  if (areLogoutUrisNotPopulated) {
+  await Promise.all(
+    logoutRedirectUris.map(async (url) => {
+      if (url.length > 1024) {
+        if (model.validationMessages.post_logout_redirect_uris !== undefined) {
+          model.validationMessages.post_logout_redirect_uris +=
+            "<br/>Log out redirect url must be 1024 characters or less";
+        } else {
+          model.validationMessages.post_logout_redirect_uris =
+            "Log out redirect url must be 1024 characters or less";
+        }
+      }
+      try {
+        new URL(url);
+      } catch {
+        if (model.validationMessages.post_logout_redirect_uris !== undefined) {
+          model.validationMessages.post_logout_redirect_uris +=
+            "<br/>Log out redirect url must be a valid url";
+        } else {
+          model.validationMessages.post_logout_redirect_uris =
+            "Log out redirect url must be a valid url";
+        }
+      }
+    }),
+  );
+  if (
+    logoutRedirectUris.some(
+      (value, i) => logoutRedirectUris.indexOf(value) !== i,
+    )
+  ) {
     model.validationMessages.post_logout_redirect_uris =
-      "Enter a log out redirect url";
-  } else {
-    await Promise.all(
-      logoutRedirectUris.map(async (url) => {
-        if (url.length > 1024) {
-          if (
-            model.validationMessages.post_logout_redirect_uris !== undefined
-          ) {
-            model.validationMessages.post_logout_redirect_uris +=
-              "<br/>Log out redirect url must be 1024 characters or less";
-          } else {
-            model.validationMessages.post_logout_redirect_uris =
-              "Log out redirect url must be 1024 characters or less";
-          }
-        }
-        try {
-          new URL(url);
-        } catch {
-          if (
-            model.validationMessages.post_logout_redirect_uris !== undefined
-          ) {
-            model.validationMessages.post_logout_redirect_uris +=
-              "<br/>Log out redirect url must be a valid url";
-          } else {
-            model.validationMessages.post_logout_redirect_uris =
-              "Log out redirect url must be a valid url";
-          }
-        }
-      }),
-    );
-    if (
-      logoutRedirectUris.some(
-        (value, i) => logoutRedirectUris.indexOf(value) !== i,
-      )
-    ) {
-      model.validationMessages.post_logout_redirect_uris =
-        "Log out redirect urls must all be unique";
-    }
+      "Log out redirect urls must all be unique";
   }
 
   if (!model.clientSecret) {
@@ -227,7 +213,7 @@ const postServiceUrlsAndResponseType = async (req, res) => {
         model,
       );
     }
-    return res.redirect("/users");
+    return res.redirect("confirm-new-service");
   });
 };
 

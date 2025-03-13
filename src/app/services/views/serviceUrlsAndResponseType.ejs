@@ -169,19 +169,19 @@
             <div class="govuk-checkboxes" data-module="govuk-checkboxes">
               <div class="govuk-checkboxes__item">
                 <input class="govuk-checkboxes__input" id="response_types-code" name="response_types-code" type="checkbox"
-                value="responseTypesCode" <%= (locals.responseTypesCode) ? 'checked' : '' %> aria-describedby="responseTypesCode-hint">
+                value="code" <%= (locals.responseTypesCode) ? 'checked' : '' %> aria-describedby="responseTypesCode-hint">
                 <label class="govuk-label govuk-checkboxes__label" for="response_types-code">
                   code
                 </label>
               </div>
               <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" id="response_types-id_token" name="response_types-id_token" type="checkbox" value="response_types-id_token" <%= (locals.responseTypesIdToken) ? 'checked' : '' %>>
+                <input class="govuk-checkboxes__input" id="response_types-id_token" name="response_types-id_token" type="checkbox" value="id_token" <%= (locals.responseTypesIdToken) ? 'checked' : '' %>>
                 <label class="govuk-label govuk-checkboxes__label" for="response_types-id_token">
                   id_token
                 </label>
               </div>
               <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" id="response_types-token" name="response_types-token" type="checkbox" value="response_types-token" <%= (locals.responseTypesToken) ? 'checked' : '' %>>
+                <input class="govuk-checkboxes__input" id="response_types-token" name="response_types-token" type="checkbox" value="token" <%= (locals.responseTypesToken) ? 'checked' : '' %>>
                 <label class="govuk-label govuk-checkboxes__label" for="response_types-token">
                   token
                 </label>
