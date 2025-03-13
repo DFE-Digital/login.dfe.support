@@ -47,7 +47,7 @@ const paginationModel = {
 <%if(results && results.length > 0) {%>
 
 <%if (numberOfPages > 1) {%>
-    <%- include('../../sharedViews/pagination', paginationModel); %>
+    <%- include('../../sharedViews/paginationNew', paginationModel); %>
 <%}%>
 
 <div class="grid-row">
@@ -118,7 +118,7 @@ const paginationModel = {
 </div>
 
 <%if (numberOfPages > 1) {%>
-    <%- include('../../sharedViews/pagination', paginationModel); %>
+    <%- include('../../sharedViews/paginationNew', paginationModel); %>
 <%}%>
 
 <%} else if (results && results.length === 0) {%>
