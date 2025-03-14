@@ -1,15 +1,18 @@
 <% if (locals.flash.info || locals.activeSync) { %>
-    <div class="row">
-        <div class="col-12">
-            <div class="notification notification-success">
-                <%= locals.flash.info || locals.activeSync %>
-            </div>
+    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+        <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">Success</h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+            <p class="govuk-body"><%= locals.flash.info || locals.activeSync %></p>
         </div>
     </div>
 <% } %>
 
+
 <%
 const paginationModel = {
+    disableNextAndPrevious: true,
     method: 'post',
     csrfToken,
     currentPage: locals.page,
@@ -43,160 +46,147 @@ const organisationStatusesQuery = locals.organisationStatuses.filter(x => x.isSe
                                 .join('&') || 'organisationStatus=';
 %>
 
-<div class="row row-spacer">
-    <div class="col-6">
-        <div class="row">
-            <div class="col-6">
-                <h1 class="heading-xlarge">Organisations</h1>
-            </div>
-        </div>
-        <form method="post">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <input type="hidden" name="showFilters" value="<%= showFilters %>"/>
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">Organisations</h1>
+            <form class="govuk-form-group" method="post">
+                <input class="govuk-input" type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <input class="govuk-input" type="hidden" name="showFilters" value="<%= showFilters %>"/>
 
-            <% for (let i = 0; i < organisationTypes.length; i += 1) { %>
-            <% if (organisationTypes[i].isSelected) { %>
-            <input name="organisationType" value="<%= organisationTypes[i].id %>" type="hidden">
-            <% } %>
-            <% } %>
-
-            <% for (let i = 0; i < organisationStatuses.length; i += 1) { %>
-            <% if (organisationStatuses[i].isSelected) { %>
-            <input name="organisationStatus" value="<%= organisationStatuses[i].id %>" type="hidden">
-            <% } %>
-            <% } %>
-
-            <div class="search-field form-group <%= (locals.validationMessages.criteria !== undefined) ? 'form-group-error' : '' %>">
-                <% if (locals.validationMessages.criteria !== undefined) { %>
-                    <p class="error-message" id="validation-service"><%=locals.validationMessages.criteria %></p>
+                <% for (let i = 0; i < organisationTypes.length; i += 1) { %>
+                <% if (organisationTypes[i].isSelected) { %>
+                <input name="organisationType" value="<%= organisationTypes[i].id %>" type="hidden">
                 <% } %>
-                <fieldset class="search-input">
-                    <label for="criteria" class="vh">Search by name, legal name, URN, UID, UPIN or UKPRN</label>
-                    <input type="text" id="criteria" name="criteria" value="<%= criteria %>" class="form-control"
-                           placeholder="Search by name, legal name, URN, UID, UPIN or UKPRN">
-                </fieldset>
-                <fieldset class="search-submit">
-                    <button type="submit" class="button">Search</button>
-                </fieldset>
-            </div>
-        </form>
-        <form method="post" class="show-filters">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <input type="hidden" name="criteria" value="<%= criteria %>"/>
-            <input type="hidden" name="page" value="<%= page %>"/>
-            <input type="hidden" name="showFilters" value="<%= !showFilters %>"/>
-            <input type="hidden" name="isFilterToggle" value="true"/>
-            <button type="submit" class="button-link filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
-        </form>
-    </div>
-    <div class="col-4 pull-right">
-        <aside>
-            <h2 class="heading-medium">Actions</h2>
-            <ul class="list">
-                <li><a href="/organisations/run-pp-sync">Run Provider Profile sync</a></li>
-                <li><a href="/organisations/create-org">Create new organisation</a></li>
-            </ul>
-        </aside>
-    </div>
+                <% } %>
 
-    <div class="col-6">
-        <div class="buttons pull-right">
-        </div>
-    </div>
+                <% for (let i = 0; i < organisationStatuses.length; i += 1) { %>
+                <% if (organisationStatuses[i].isSelected) { %>
+                <input name="organisationStatus" value="<%= organisationStatuses[i].id %>" type="hidden">
+                <% } %>
+                <% } %>
 
-</div>
-
-<div class="row">
-    <% if (showFilters) { %>
-        <div class="col-4">
-            <form method="post">
+                <div class="govuk-form-group <%= (locals.validationMessages.criteria !== undefined) ? 'form-group-error' : '' %>">
+                    <% if (locals.validationMessages.criteria !== undefined) { %>
+                        <p class="error-message" id="validation-service"><%=locals.validationMessages.criteria %></p>
+                    <% } %>
+                    <fieldset class="govuk-fieldset">
+                        <label for="criteria" class="vh">Search by name, legal name, URN, UID, UPIN or UKPRN</label>
+                        <input class="govuk-input govuk-!-width-two-thirds" type="text" id="criteria" name="criteria" value="<%= criteria %>" class="form-control"
+                            placeholder="Search by name, legal name, URN, UID, UPIN or UKPRN">
+                            <button type="submit" class="govuk-button">Search</button>
+                    </fieldset>    
+                </div>
+            </form>
+            <form method="post" class="show-filters">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                 <input type="hidden" name="criteria" value="<%= criteria %>"/>
                 <input type="hidden" name="page" value="<%= page %>"/>
-                <input type="hidden" name="showFilters" value="true"/>
-
-                <div class="filter-box">
-                    <div class="container-head js-container-head">
-                        <div class="option-select-label">
-                            Organisation type
-                        </div>
-                    </div>
-                    <div role="group" aria-labelledby="option-select-title-organisationtype" class="options-container"
-                         id="organisationtypes">
-                        <div class="js-auto-height-inner">
-                            <% for (let i = 0; i < organisationTypes.length; i += 1) { %>
-                                <label>
-                                    <input name="organisationType" value="<%= organisationTypes[i].id %>"
-                                           type="checkbox" <%= (organisationTypes[i].isSelected ? 'checked="checked"' : '') %>>
-                                    <%= organisationTypes[i].name %>
-                                </label>
-                            <% } %>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="filter-box">
-                    <div class="container-head js-container-head">
-                        <div class="option-select-label">
-                            Organisation Status
-                        </div>
-                    </div>
-                    <div role="group" aria-labelledby="option-select-title-organisationstatus" class="options-container"
-                         id="organisationStatuses">
-                        <div class="js-auto-height-inner">
-                            <% for (let i = 0; i < organisationStatuses.length; i += 1) { %>
-                                <label>
-                                    <input name="organisationStatus" value="<%= organisationStatuses[i].id %>"
-                                           type="checkbox" <%= (organisationStatuses[i].isSelected ? 'checked="checked"' : '') %>>
-                                    <%= organisationStatuses[i].name %>
-                                </label>
-                            <% } %>
-                        </div>
-                    </div>
-                </div>
-                <button class="button-secondary">Apply filter</button>
+                <input type="hidden" name="showFilters" value="<%= !showFilters %>"/>
+                <input type="hidden" name="isFilterToggle" value="true"/>
+                <button type="submit" class="button-link filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
             </form>
         </div>
-    <% } %>
-    <% if (locals.organisations) { %>
-        <div class="col-<%= (showFilters ? 8 : 12) %>">
-                <%- include('../../sharedViews/pagination', paginationModel); %>
-                <table class="data">
-                    <thead>
-                    <tr class="sortable">
-                        <th scope="col" class="cwp-35">Name</th>
-                        <th scope="col" class="cwp-35">Legal name</th>
-                        <th scope="col" class="cwp-20">Type</th>
-                        <th scope="col" class="cwp-10">URN</th>
-                        <th scope="col" class="cwp-10">UID</th>
-                        <th scope="col" class="cwp-10">UPIN</th>
-                        <th scope="col" class="cwp-10">UKPRN</th>
-                        <th scope="col" class="cwp-10">Status</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <% if(locals.organisations.length === 0 && locals.criteria) { %>
-                        <tr>
-                            <td colspan="6"><span class="empty-state">No organisations found</span></td>
-                        </tr>
-                    <% } %>
-                    <% for (let i = 0; i < locals.organisations.length; i++) { %>
-                        <tr>
-                            <td class="breakable"><a href="/organisations/<%= organisations[i].id %>/users?criteria=<%= locals.criteria %>&page=<%= locals.page %>&showFilters=<%= locals.showFilters %>&<%= organisationTypesQuery %>&<%= organisationStatusesQuery %>"><%= organisations[i].name %></a></td>
-                            <td><%= organisations[i].LegalName %></td>
-                            <td><%= organisations[i].type ? organisations[i].type.name : organisations[i].providerTypeName || organisations[i].category.name  %></td>
-                            <td><%= organisations[i].urn %></td>
-                            <td><%= organisations[i].uid %></td>
-                            <td><%= organisations[i].upin %></td>
-                            <td><%= organisations[i].ukprn %></td>
-                            <td><%= organisations[i].status ? organisations[i].status.name : '' %></td>
-                        </tr>
-                    <% } %>
-                    </tbody>
-                </table>
-                <%- include('../../sharedViews/pagination', paginationModel); %>
-
+        <div class="govuk-grid-column-one-third">
+        <aside>
+            <h2 class="govuk-heading-m">Actions</h2>
+            <ul class="govuk-list">
+                <li><a class="govuk-link" href="/organisations/run-pp-sync">Run Provider Profile sync</a></li>
+                <li><a class="govuk-link" href="/organisations/create-org">Create new organisation</a></li>
+            </ul>
+        </aside>
         </div>
+    </div>    
+    <div class="govuk-grid-row">
+        <% if (showFilters) { %>
+            <div class="govuk-grid-column-one-third">
+                <form method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                    <input type="hidden" name="criteria" value="<%= criteria %>"/>
+                    <input type="hidden" name="page" value="<%= page %>"/>
+                    <input type="hidden" name="showFilters" value="true"/>
 
-    <% } %>
-</div>
+                    <div class="filter-box">
+                        <div class="container-head js-container-head">
+                            <div class="option-select-label">
+                                Organisation type
+                            </div>
+                        </div>
+                        <div role="group" aria-labelledby="option-select-title-organisationtype" class="options-container"
+                            id="organisationtypes">
+                            <div class="js-auto-height-inner">
+                                <% for (let i = 0; i < organisationTypes.length; i += 1) { %>
+                                    <label class="govuk-label">
+                                        <input name="organisationType" value="<%= organisationTypes[i].id %>"
+                                            type="checkbox" <%= (organisationTypes[i].isSelected ? 'checked="checked"' : '') %>>
+                                        <%= organisationTypes[i].name %>
+                                    </label>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-box">
+                        <div class="container-head js-container-head">
+                            <div class="option-select-label">
+                                Organisation Status
+                            </div>
+                        </div>
+                        <div role="group" aria-labelledby="option-select-title-organisationstatus" class="options-container"
+                            id="organisationStatuses">
+                            <div class="js-auto-height-inner">
+                                <% for (let i = 0; i < organisationStatuses.length; i += 1) { %>
+                                    <label class="govuk-label">
+                                        <input name="organisationStatus" value="<%= organisationStatuses[i].id %>"
+                                            type="checkbox" <%= (organisationStatuses[i].isSelected ? 'checked="checked"' : '') %>>
+                                        <%= organisationStatuses[i].name %>
+                                    </label>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="govuk-button govuk-button--secondary">Apply filter</button>
+                </form>
+            </div>
+        <% } %>
+        <% if (locals.organisations) { %>
+            <div class="<%= (showFilters) ? 'govuk-grid-column-two-thirds' : 'govuk-grid-column-full' %>">
+                    <%- include('../../sharedViews/paginationNew', paginationModel); %>
+                    <table class="govuk-table">
+                        <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header">Name</th>
+                            <th scope="col" class="govuk-table__header">Legal name</th>
+                            <th scope="col" class="govuk-table__header">Type</th>
+                            <th scope="col" class="govuk-table__header">URN</th>
+                            <th scope="col" class="govuk-table__header">UID</th>
+                            <th scope="col" class="govuk-table__header">UPIN</th>
+                            <th scope="col" class="govuk-table__header">UKPRN</th>
+                            <th scope="col" class="govuk-table__header">Status</th>
+                        </tr>
+                        </thead>
+                        <tbody class="govuk-table__body">
+                        <% if(locals.organisations.length === 0 && locals.criteria) { %>
+                            <tr class="govuk-table__row govuk-body">
+                                <td colspan="6"><span class="empty-state">No organisations found</span></td>
+                            </tr>
+                        <% } %>
+                        <% for (let i = 0; i < locals.organisations.length; i++) { %>
+                            <tr class="govuk-table__row govuk-body">
+                                <td class="govuk-table__cell govuk-body-s"><a href="/organisations/<%= organisations[i].id %>/users?criteria=<%= locals.criteria %>&page=<%= locals.page %>&showFilters=<%= locals.showFilters %>&<%= organisationTypesQuery %>&<%= organisationStatusesQuery %>"><%= organisations[i].name %></a></td>
+                                <td class="govuk-table__cell govuk-body-s"><%= organisations[i].LegalName %></td>
+                                <td class="govuk-table__cell govuk-body-s"><%= organisations[i].type ? organisations[i].type.name : organisations[i].providerTypeName || organisations[i].category.name  %></td>
+                                <td class="govuk-table__cell govuk-body-s"><%= organisations[i].urn %></td>
+                                <td class="govuk-table__cell govuk-body-s"><%= organisations[i].uid %></td>
+                                <td class="govuk-table__cell govuk-body-s"><%= organisations[i].upin %></td>
+                                <td class="govuk-table__cell govuk-body-s"><%= organisations[i].ukprn %></td>
+                                <td class="govuk-table__cell govuk-body-s"><%= organisations[i].status ? organisations[i].status.name : '' %></td>
+                            </tr>
+                        <% } %>
+                        </tbody>
+                    </table>
+                    <%- include('../../sharedViews/paginationNew', paginationModel); %>
+            </div>
+        <% } %>
+    </div>
+</div>    
