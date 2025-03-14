@@ -1,6 +1,8 @@
 const getNewUser = (req, res) => {
   const model = {
     csrfToken: req.csrfToken(),
+    layout: "sharedViews/layoutNew.ejs",
+    backLink: "/users",
     firstName: "",
     lastName: "",
     email: "",
