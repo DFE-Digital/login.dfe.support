@@ -1,5 +1,6 @@
 <%
 const disableNextAndPrevious = locals.disableNextAndPrevious || false;
+const disableNextAndPrevious = locals.disableNextAndPrevious || false;
 const pages = locals.numberOfPages;
 const page = locals.page;
 const numberOfResultsOnPagePage = locals.numberOfResultsOnPage;
@@ -66,21 +67,21 @@ if (upperWindowBound < pages) {
             <li class="govuk-pagination__item govuk-pagination__item--ellipses"><span>&ctdot;</span></li>
             <% } %>
 
-            <% for (let i = 0; i < pageBracketMiddle.length; i++) { %>
-            <li class="govuk-pagination__item">
-                <% if (locals.currentPage === pageBracketMiddle[i]) { %>
-                <span class="govuk-pagination__item--current"><%= pageBracketMiddle[i] %></span>
-                <% } else if (locals.method === 'post') { %>
-                <%- include('pageForm', {page: pageBracketMiddle[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
-                <% } else { %>
-                <%- include('pageLink', {page: pageBracketMiddle[i], data: locals.data || []}); %>
+                <% for (let i = 0; i < pageBracketMiddle.length; i++) { %>
+                <li class="govuk-pagination__item">
+                    <% if (locals.currentPage === pageBracketMiddle[i]) { %>
+                    <span class="govuk-pagination__item--current"><%= pageBracketMiddle[i] %></span>
+                    <% } else if (locals.method === 'post') { %>
+                    <%- include('pageForm', {page: pageBracketMiddle[i], csrfToken: locals.csrfToken, data: locals.data || []}); %>
+                    <% } else { %>
+                    <%- include('pageLink', {page: pageBracketMiddle[i], data: locals.data || []}); %>
+                    <% } %>
+                </li>
                 <% } %>
-            </li>
-            <% } %>
 
-            <% if (pageBracketRight.length > 0) { %>
-            <li class="govuk-pagination__item govuk-pagination__item--ellipses"><span>&ctdot;</span></li>
-            <% } %>
+                <% if (pageBracketRight.length > 0) { %>
+                <li class="govuk-pagination__item govuk-pagination__item--ellipses"><span>&ctdot;</span></li>
+                <% } %>
 
             <% for (let i = 0; i < pageBracketRight.length; i++) { %>
             <li class="govuk-pagination__item">
