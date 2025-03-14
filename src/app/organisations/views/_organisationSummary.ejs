@@ -1,111 +1,136 @@
 <% if (locals.flash.info) { %>
-    <div class="row">
-        <div class="col-12">
-            <div class="notification notification-success">
-                <%= locals.flash.info %>
-            </div>
+     <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+        <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">Success</h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+            <p class="govuk-body"><%= locals.flash.info %></p>
         </div>
     </div>
 <% } %>
-<div class="row">
-    <div class="col-8">
-        <h1 class="heading-xlarge heading-breakable">
-            <span class="heading-secondary"><%= organisation.category.name %></span>
-            <%= organisation.name %>
-        </h1>
-        <dl class="inline condensed">
-            <% if (organisation.LegalName) { %>
-                <dt class="label">Legal name:</dt>
-                <dd><%= organisation.LegalName %></dd>
-            <% } %>
-            
-            <% if (organisation.type || organisation.providerTypeName) { %>
-                <dt class="govuk-label">Type:</dt>
-                <dd class="govuk-label"><%=(organisation.type ? organisation.type.name : organisation.providerTypeName)%></dd>
-                <% } else if (organisation.category) { %>
-                <dt class="govuk-label">Category:</dt>
-                <dd class="govuk-label"><%=organisation.category.name%></dd>
-            <% } %>
 
-            <dt class="label">Address: </dt>
-            <dd><%= organisation.address || 'Not Recorded' %></dd>
-
-            <% if (organisation.urn) { %>
-                <dt class="label">URN:</dt>
-                <% if (organisation.status.id === 4) { %>
-                    <dd><%=organisation.urn%></dd>
-                <%}else {%>
-                    <dd><a href="https://get-information-schools.service.gov.uk/Establishments/Establishment/Details/<%=organisation.urn%>" target="_blank"><%=organisation.urn%></a></dd>
-                <% } %>
-            <% } %>
-
-            <% if (organisation.uid) { %>
-                <dt class="label">UID:</dt>
-                <% if (organisation.status.id === 2) { %>
-                    <dd><%=organisation.uid%></dd>
-                <%}else {%>
-                    <dd><a href="https://get-information-schools.service.gov.uk/Groups/Group/Details/<%=organisation.uid%>" target="_blank"><%=organisation.uid%></a></dd>
-                <% } %>
-            <% } %>
-
-            <% if (organisation.ukprn) { %>
-                <dt class="label">UKPRN:</dt>
-                <dd><%= organisation.ukprn %></dd>
-            <% } %>
-
-            <% if (organisation.upin) { %>
-                <dt class="label">UPIN:</dt>
-                <dd><%= organisation.upin %></dd>
-            <% } %>
-
-            <% if (organisation.establishmentNumber) { %>
-                <dt class="label">Establishment number: </dt>
-                <dd><%= organisation.establishmentNumber %></dd>
-            <% } %>
-
-            <% if (organisation.localAuthority) { %>
-                <dt class="label">Local authority: </dt>
-                <dd>
-                    <% if (organisation.localAuthority.name && organisation.localAuthority.code && organisation.localAuthority.id) { %>
-                        <a href="/organisations/<%= organisation.localAuthority.id %>/users"><%= organisation.localAuthority.name %></a> (<%= organisation.localAuthority.code %>)
-                    <% } else { %>
-                        Unknown
-                    <% } %>
-                </dd>
-            <% } %>
-
-            <dt class="label">Legacy ID: </dt>
-            <dd><%= organisation.legacyId %></dd>
-
-            <dt class="label">Status: </dt>
-            <dd><%= organisation.status.name || 'Unknown' %></dd>
-            <% if (organisation.companyRegistrationNumber) { %>
-                <dt class="label">Company Number: </dt>
-                <dd><%= organisation.companyRegistrationNumber %></dd>
-            <% } %>
-        </dl>
-    </div>
-    <div class="col-4">
-        <aside>
-            <h2 class="heading-medium">Actions</h2>
-            <ul class="list">
-                <li><a href="web-service-sync">Send WS Sync</a></li>
-                <% if (organisation.category.id === '008') { %>
-                <li><a href="edit-organisation">Edit Organisation</a></li>
-                <% } %>
-            </ul>
-        </aside>
-    </div>
-</div>
-
-<nav>
-    <ul class="tabs" role="tablist">
-
-        <% if(locals.area === 'users') { %>
-            <li class="active">Users</li>
-        <% } else { %>
-            <li><a href="users" role="tab">Users</a></li>
+<div class="govuk-grid-column-two-thirds">
+<h1 class="govuk-heading-xl">
+    <span class="govuk-caption-l"><%= organisation.category.name %></span>
+    <%= organisation.name %>
+</h1>
+<dl class="govuk-summary-list govuk-summary-list--no-border">
+    <% if (organisation.LegalName) { %>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key govuk-!-padding-0">Legal name:</dt>
+            <dd class="govuk-summary-list__value govuk-!-padding-0"><%= organisation.LegalName %></dd>
+        </div>
+    <% } %>
+    <% if (organisation.type || organisation.providerTypeName) { %>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key govuk-!-padding-0">Type:</dt>
+            <dd class="govuk-summary-list__value govuk-!-padding-0"><%=(organisation.type ? organisation.type.name : organisation.providerTypeName)%></dd>
+        </div>
+        <% } else if (organisation.category) { %>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-padding-0">Category:</dt>
+                <dd class="govuk-summary-list__value govuk-!-padding-0"><%=organisation.category.name%></dd>
+            </div>
         <% } %>
+        <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-padding-0">Address: </dt>
+            <dd class="govuk-summary-list__value govuk-!-padding-0"><%= organisation.address || 'Not Recorded' %></dd>
+        </div>
+    <% if (organisation.urn) { %>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key govuk-!-padding-0">URN:</dt>
+            <% if (organisation.status.id === 4) { %>
+                <dd class="govuk-summary-list__value govuk-!-padding-0"><%=organisation.urn%></dd>
+            <%}else {%>
+                <dd class="govuk-summary-list__value govuk-!-padding-0"><a href="https://get-information-schools.service.gov.uk/Establishments/Establishment/Details/<%=organisation.urn%>" target="_blank"><%=organisation.urn%></a></dd>
+            <% } %>    
+        </div>
+    <% } %>
 
+    <% if (organisation.uid) { %>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key govuk-!-padding-0">UID:</dt>
+            <% if (organisation.status.id === 2) { %>
+                <dd class="govuk-summary-list__value govuk-!-padding-0"><%=organisation.uid%></dd>
+            <%}else {%>
+                <dd class="govuk-summary-list__value govuk-!-padding-0"><a href="https://get-information-schools.service.gov.uk/Groups/Group/Details/<%=organisation.uid%>" target="_blank"><%=organisation.uid%></a></dd>
+            <% } %>
+        </div>
+    <% } %>
+
+    <% if (organisation.ukprn) { %>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key govuk-!-padding-0">UKPRN:</dt>
+            <dd class="govuk-summary-list__value govuk-!-padding-0"><%= organisation.ukprn %></dd>    
+        </div>
+    <% } %>
+
+    <% if (organisation.upin) { %>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key govuk-!-padding-0">UPIN:</dt>
+            <dd class="govuk-summary-list__value govuk-!-padding-0"><%= organisation.upin %></dd>
+        </div>
+    <% } %>
+
+    <% if (organisation.establishmentNumber) { %>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key govuk-!-padding-0">Establishment number: </dt>
+            <dd class="govuk-summary-list__value govuk-!-padding-0"><%= organisation.establishmentNumber %></dd>
+        </div>
+    <% } %>
+
+    <% if (organisation.localAuthority) { %>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key govuk-!-padding-0">Local authority: </dt>
+            <dd class="govuk-summary-list__value govuk-!-padding-0">
+                <% if (organisation.localAuthority.name && organisation.localAuthority.code && organisation.localAuthority.id) { %>
+                    <a href="/organisations/<%= organisation.localAuthority.id %>/users"><%= organisation.localAuthority.name %></a> (<%= organisation.localAuthority.code %>)
+                <% } else { %>
+                    Unknown
+                <% } %>
+            </dd> 
+        </div>
+    <% } %>
+    <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key govuk-!-padding-0">Legacy ID: </dt>
+        <dd class="govuk-summary-list__value govuk-!-padding-0"><%= organisation.legacyId %></dd>   
+    </div>
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-!-padding-0">Status: </dt>
+        <dd class="govuk-summary-list__value govuk-!-padding-0"><%= organisation.status.name || 'Unknown' %></dd>
+    </div>
+    <% if (organisation.companyRegistrationNumber) { %>
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key govuk-!-padding-0">Company Number: </dt>
+            <dd class="govuk-summary-list__value govuk-!-padding-0"><%= organisation.companyRegistrationNumber %></dd> 
+        </div>
+    <% } %>
+</dl>
+</div>
+<div class="govuk-grid-column-one-third">
+<aside>
+    <h2 class="govuk-heading-m">Actions</h2>
+    <ul class="govuk-list">
+        <li><a class="govuk-link" href="web-service-sync">Send WS Sync</a></li>
+        <% if (organisation.category.id === '008') { %>
+        <li><a class="govuk-link" href="edit-organisation">Edit Organisation</a></li>
+        <% } %>
     </ul>
+</aside>
+</div>
+<nav class="govuk-grid-column-full govuk-!-margin-0 govuk-!-padding-0">
+    <div class="govuk-tabs" data-module="govuk-tabs">
+        <ul class="govuk-tabs__list" role="tablist">
+            <% if(locals.area === 'users') { %>
+                <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">Users</li>
+            <% } else { %>
+                <li class="govuk-tabs__list-item"><a class="govuk-tabs__tab"href="users" role="tab">Users</a></li>
+            <% } %>
+        </ul>
+    </div>
 </nav>
+
+
+
+
+

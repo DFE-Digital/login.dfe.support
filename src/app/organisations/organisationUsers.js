@@ -33,6 +33,8 @@ const render = async (req, res, dataSource) => {
   });
   sendResult(req, res, "organisations/views/users", {
     csrfToken: req.csrfToken(),
+    layout: "sharedViews/layoutNew.ejs",
+    backLink: "/organisations",
     organisation: organisation,
     users,
     page: pageNumber,
