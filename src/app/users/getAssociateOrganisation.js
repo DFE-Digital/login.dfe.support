@@ -2,7 +2,7 @@ const getAssociateOrganisation = async (req, res) => {
   res.render("users/views/associateOrganisation", {
     csrfToken: req.csrfToken(),
     layout: "sharedViews/layoutNew.ejs",
-    backLink: "/users",
+    backLink: true,
     criteria: "",
     results: undefined,
     page: 1,

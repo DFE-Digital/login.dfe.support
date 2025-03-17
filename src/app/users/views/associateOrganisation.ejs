@@ -1,11 +1,6 @@
-<% if (canSkip) { %>
-<a href="new-user" class="link-back">Back</a>
-<% } else { %>
-<a href="organisations" class="link-back">Back</a>
-<% } %>
-
 <%
 const paginationModel = {
+    disableNextAndPrevious: true,
     method: 'post',
     csrfToken,
     currentPage: locals.page,
@@ -17,7 +12,8 @@ const paginationModel = {
     ]
 }
 %>
-<div class="govuk-width-container" style="border: 3px solid red;">
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-half">
                 <h1 class="govuk-heading-xl">
@@ -26,36 +22,27 @@ const paginationModel = {
                 <p class="govuk-body">Search for the organisation the new user should be associated with  </p>
             </div>
         </div>
-        
-
-
-                    <form class="govuk-form-group" method="post">
-                        <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
-                        <input type="hidden" name="page" value="1" />
-                        <fieldset class="govuk-fieldset">
-                            <label for="criteria" class="vh">Search by organisation name or unique identifier</label>
-                            <input type="text" id="criteria" name="criteria" class="govuk-input govuk-!-width-one-half" value="<%=criteria%>">
-                            <button type="submit" class="govuk-button">Search</button>
-                        </fieldset>
-                    </form>
-
-        
-
-        
-           
-                <%if(results && results.length > 0) {%>
-    
-            <%if (numberOfPages > 1) {%>
-                <%- include('../../sharedViews/paginationNew', paginationModel); %>
-            <%}%>
-            <div class="govuk-grid-row">
+        <form class="govuk-form-group" method="post">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+            <input type="hidden" name="page" value="1" />
+            <fieldset class="govuk-fieldset">
+                <label for="criteria" class="vh">Search by organisation name or unique identifier</label>
+                <input type="text" id="criteria" name="criteria" class="govuk-input govuk-!-width-one-half" value="<%=criteria%>">
+                <button type="submit" class="govuk-button">Search</button>
+            </fieldset>
+        </form>
+        <%if(results && results.length > 0) {%>
+        <%if (numberOfPages > 1) {%>
+            <%- include('../../sharedViews/paginationNew', paginationModel); %>
+        <%}%>
+        <div class="govuk-grid-row">
             <div class="col-12">
                 <ol class="search-results">
                     <%for (let i = 0; i < results.length; i += 1) {%>
                     <%const org = results[i];%>
                     <li>
                         <article>
-                            <h2 class="heading-medium">
+                            <h2 class="govuk-heading-m">
                                 <form method="post">
                                     <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
                                     <input type="hidden" name="selectedOrganisation" value="<%=org.id%>" />
@@ -63,10 +50,9 @@ const paginationModel = {
                                 </form>
                             </h2>
                             <dl class="inline">
-
                                 <% if (org.LegalName) { %>
-                                    <dt class="label">Legal name:</dt>
-                                    <dd><%= org.LegalName %></dd>
+                                    <dt class="govuk-label">Legal name:</dt>
+                                    <dd class="govuk-label"><%= org.LegalName %></dd>
                                 <% } %>
 
                                 <% if (org.type || org.providerTypeName) { %>
@@ -77,35 +63,35 @@ const paginationModel = {
                                     <dd class="govuk-label"><%=org.category.name%></dd>
                                 <% } %>
 
-                                <dt>Address</dt>
-                                <dd><%=org.address%></dd>
+                                <dt class="govuk-label">Address</dt>
+                                <dd class="govuk-label"><%=org.address%></dd>
 
                                 <%if(org.urn) {%>
-                                    <dt>URN</dt>
-                                    <dd><%=org.urn%></dd>
+                                    <dt class="govuk-label">URN</dt>
+                                    <dd class="govuk-label"><%=org.urn%></dd>
                                     <%} else if(org.uid) {%>
-                                    <dt>UID</dt>
-                                    <dd><%=org.uid%></dd>
+                                    <dt class="govuk-label">UID</dt>
+                                    <dd class="govuk-label"><%=org.uid%></dd>
                                 <%}%>
 
                                 <% if (org.ukprn) { %>
-                                    <dt>UKPRN</dt>
-                                    <dd><%=org.ukprn%></dd>
+                                    <dt class="govuk-label">UKPRN</dt>
+                                    <dd class="govuk-label"><%=org.ukprn%></dd>
                                 <% } %>
 
                                 <% if (org.upin) { %>
-                                    <dt>UPIN</dt>
-                                    <dd><%=org.upin%></dd>
+                                    <dt class="govuk-label">UPIN</dt>
+                                    <dd class="govuk-label"><%=org.upin%></dd>
                                 <% } %>
 
                                 <% if (org.legacyId) { %>
-                                    <dt>Legacy ID</dt>
-                                    <dd><%=org.legacyId%></dd>
+                                    <dt class="govuk-label">Legacy ID</dt>
+                                    <dd class="govuk-label"><%=org.legacyId%></dd>
                                 <% } %>
 
                                 <% if (org.status && org.status.name) { %>
-                                    <dt>Status</dt>
-                                    <dd><%=org.status.name%></dd>
+                                    <dt class="govuk-label">Status</dt>
+                                    <dd class="govuk-label"><%=org.status.name%></dd>
                                 <% } %>
                             </dl>
                         </article>
@@ -114,28 +100,25 @@ const paginationModel = {
                 </ol>
             </div>
         </div>
-
         <%if (numberOfPages > 1) {%>
             <%- include('../../sharedViews/paginationNew', paginationModel); %>
         <%}%>
-
         <%} else if (results && results.length === 0) {%>
-        <div class="grid-row">
-            <div class="col-8">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
                 <div class="empty-state">
-                    <p>No organisations found matching search criteria</p>
+                    <p class="govuk-body">No organisations found matching search criteria</p>
                 </div>
             </div>
         </div>
         <%} else if (canSkip) {%>
-        <div class="grid-row">
-            <div class="col-8">
-                <p>You can <a href="confirm-new-user">skip this step</a> if you do not want to associate the user with an organisation at this time.</p>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <p class="govuk-body">You can <a class="govuk-link" href="confirm-new-user">skip this step</a> if you do not want to associate the user with an organisation at this time.</p>
             </div>
         </div>
         <%}%>
-
-            
+    </main>
 </div>            
 
     
