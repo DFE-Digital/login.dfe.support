@@ -167,8 +167,8 @@ const organisationStatusesQuery = locals.organisationStatuses.filter(x => x.isSe
                         </thead>
                         <tbody class="govuk-table__body">
                         <% if(locals.organisations.length === 0 && locals.criteria) { %>
-                            <tr class="govuk-table__row govuk-body">
-                                <td colspan="6"><span class="empty-state">No organisations found</span></td>
+                            <tr class="govuk-table__row">
+                                <td class="govuk-body-s"><span>No organisations found</span></td>
                             </tr>
                         <% } %>
                         <% for (let i = 0; i < locals.organisations.length; i++) { %>
