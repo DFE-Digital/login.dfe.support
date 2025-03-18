@@ -68,6 +68,8 @@ describe("When adding new users personal details", () => {
     expect(res.render.mock.calls[0][0]).toBe("users/views/newUser");
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
+      backLink: "/users",
+      layout: "sharedViews/layoutNew.ejs",
       firstName: "",
       lastName: "Howlett",
       email: "logan@x-men.test",
@@ -87,6 +89,8 @@ describe("When adding new users personal details", () => {
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
       firstName: "James",
+      backLink: "/users",
+      layout: "sharedViews/layoutNew.ejs",
       lastName: "",
       email: "logan@x-men.test",
       validationMessages: {
@@ -104,6 +108,8 @@ describe("When adding new users personal details", () => {
     expect(res.render.mock.calls[0][0]).toBe("users/views/newUser");
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
+      backLink: "/users",
+      layout: "sharedViews/layoutNew.ejs",
       firstName: "James",
       lastName: "Howlett",
       email: "",
@@ -122,6 +128,8 @@ describe("When adding new users personal details", () => {
     expect(res.render.mock.calls[0][0]).toBe("users/views/newUser");
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
+      backLink: "/users",
+      layout: "sharedViews/layoutNew.ejs",
       firstName: "James",
       lastName: "Howlett",
       email: "not-an-email-address",
@@ -140,6 +148,8 @@ describe("When adding new users personal details", () => {
     expect(res.render.mock.calls[0][0]).toBe("users/views/newUser");
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
+      backLink: "/users",
+      layout: "sharedViews/layoutNew.ejs",
       firstName: "James",
       lastName: "Howlett",
       email: "logan@x-men.test",
