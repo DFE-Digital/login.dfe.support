@@ -1,175 +1,180 @@
-<%if (role !== '') {%>
-<a href="organisation-permissions" class="link-back">Back</a>
-<%} else {%>
-<a href="associate-organisation" class="link-back">Back</a>
-<%}%>
-
-<div class="grid-row">
-    <div class="col-8">
-        <form method="post">
-            <h1 class="heading-xlarge">
-                Review invite details
-            </h1>
-            <p>Please review these details before sending an invite.  The user will need to confirm their email address and create a password before their DfE Sign-in account becomes active.</p>
-            <h2 class="heading-medium">Personal details 
-                <a class="bold-small pull-right" href="new-user?review=true">
-                Change<span class="hidden"> personal details</span>
-                </a>
-            </h2>
-            <dl class="rows">
-                <dt>First name</dt>
-                <dd><%=user.firstName%></dd>
-
-                <dt>Last name</dt>
-                <dd><%=user.lastName%></dd>
-
-                <dt>Email address</dt>
-                <dd><%=user.email%></dd>
-
-            </dl>
-
-            <h2 class="heading-medium">Organisation </h2>
-
-            <%if (organisation) {%>
-            <dl class="rows spacer">
-                <dt>Organisation</dt>
-                <dd><%=organisation.name%></dd>
-                <dt>Permission level</dt>
-                <dd><%=role.name%>
-                    <a class="bold pull-right" href="organisation-permissions">
-                        Change<span class="hidden"> organisation permissions</span>
-                    </a></dd>
-            </dl>
-            <%} else {%>
-            <p><em>No organisation added</em></p>
-            <%}%>
-
-            <hr>
-
-            <h2 class="heading-medium">Content of the email invitation to <%=user.firstName%> <%=user.lastName%> </h2>
-
-            <div class="form-group">
-                <fieldset class="inline with-sub-title">
-                    <legend>
-                        <h2 class="heading-small">
-                            Your response
-                        </h2>
-                    </legend>
-                    <div class="multiple-choice">
-                        <input id="content-default" type="radio" name="email-contents-choice" value="Approve" checked>
-                        <label for="content-default">Default</label>
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <form method="post">
+                <h1 class="govuk-heading-xl">
+                    Review invite details
+                </h1>
+                <p class="govuk-body">Please review these details before sending an invite. The user will need to confirm their email address and create a password before their DfE Sign-in account becomes active.</p>
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-three-quarters">
+                        <h2 class="govuk-heading-m">Personal details</h2>
                     </div>
-                    <div class="multiple-choice" data-target="custom-email-contents">
-                        <input id="content-custom" type="radio" name="email-contents-choice" value="Reject">
-                        <label for="content-custom">Custom</label>
+                    <div class="govuk-grid-column-one-quarter">
+                        <a class="govuk-link" href="new-user?review=true">
+                            Change<span class="govuk-visually-hidden"> personal details</span>
+                        </a>
                     </div>
-                </fieldset>
-            </div>
-
-            <div class="pnl js-hidden" id="custom-email-contents">
-                <div class="form-group">
-                    <label class="form-label" for="email-subject">Email subject line</label>
-                    <% if (locals.entra && locals.entra.useEntraForAccountRegistration === true) { %>
-                        <input class="form-control full-width" name="email-subject" id="email-subject" value="You’ve been invited to join DfE Sign-in">
-                    <% } else { %>
-                        <input class="form-control full-width" name="email-subject" id="email-subject" value="((VERIFICATION CODE)) is your DfE Sign-in verification code">
-                    <% } %>
                 </div>
-                <div class="form-group">
-                    <label class="form-label" for="email-contents">Email contents</label>
-                    <div class="email-editor">
-                        <p>Dear <%=user.firstName%> <%=user.lastName%></p>
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">First name</dt>
+                        <dd class="govuk-summary-list__value"><%=user.firstName%></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Last name</dt>
+                        <dd class="govuk-summary-list__value"><%=user.lastName%></dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Email address</dt>
+                        <dd class="govuk-summary-list__value"><%=user.email%></dd>
+                    </div>
+                </dl>
 
-                        <% if (locals.entra && locals.entra.useEntraForAccountRegistration === true) { %>
-                            <textarea class="form-control full-width" rows="8" name="email-contents" id="email-contents">Your email address <%=locals.user.email%> can now be used to create a DfE Sign-in account.</textarea>
-                            <p>Visit the registration page to create your account.</p>
-                        <% } else { %>
-                            <textarea class="form-control full-width" rows="8" name="email-contents" id="email-contents"></textarea>
+                <h2 class="govuk-heading-m">Organisation</h2>
 
-                            <%if (organisation) {%>
-                                <p>You have been invited to set up a DfE Sign-in account for ((ORGANISATION)).</p> 
-                            <%} else {%>
-                                <p>You have been invited to set up a DfE Sign-in account.</p>  
-                            <%}%>
-                            <%if (role.name !== '' && role.name === "Approver") {%>
-                                <p>You will have an approver account. Approvers can manage other users at their organisation and add services to their account.</p>
-                            <%}%>
+                <% if (organisation) { %>
+                    <dl class="govuk-summary-list">
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">Organisation</dt>
+                            <dd class="govuk-summary-list__value"><%=organisation.name%></dd>
+                        </div>
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">Permission level</dt>
+                            <dd class="govuk-summary-list__value"><%=role.name%>
+                                <a class="govuk-link" href="organisation-permissions">
+                                    Change<span class="govuk-visually-hidden"> organisation permissions</span>
+                                </a>
+                            </dd>
+                        </div>
+                    </dl>
+                <% } else { %>
+                    <p class="govuk-body"><em>No organisation added</em></p>
+                <% } %>
 
-                            <p>To create a DfE Sign-in account, please verify your email and set a password by selecting the link below.</p>
+                <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
-                            <div class="static-text">
-                                <p>Your verification code:</p>
-                                <p class="code">VERIFICATION CODE</p>
-                                <p>The verification code will expire after 24 hours.</p>
-                                <p>[Verify email and set password](link)</p>
+                <h2 class="govuk-heading-m">Content of the email invitation to <%=user.firstName%> <%=user.lastName%></h2>
+
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h2 class="govuk-heading-s">
+                                Your response
+                            </h2>
+                        </legend>
+                        <div class="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input id="content-default" class="govuk-radios__input" type="radio" name="email-contents-choice" value="Approve" checked>
+                                <label class="govuk-label govuk-radios__label" for="content-default">Default</label>
                             </div>
+                            <div class="govuk-radios__item" data-target="custom-email-contents">
+                                <input id="content-custom" class="govuk-radios__input" type="radio" name="email-contents-choice" value="Reject">
+                                <label class="govuk-label govuk-radios__label" for="content-custom">Custom</label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="govuk-radios__conditional js-hidden" id="custom-email-contents">
+                    <div class="govuk-form-group">
+                        <label class="govuk-label" for="email-subject">Email subject line</label>
+                        <% if (locals.entra && locals.entra.useEntraForAccountRegistration === true) { %>
+                            <input class="govuk-input govuk-input--width-10" name="email-subject" id="email-subject" value="You’ve been invited to join DfE Sign-in">
+                        <% } else { %>
+                            <input class="govuk-input govuk-input--width-10" name="email-subject" id="email-subject" value="((VERIFICATION CODE)) is your DfE Sign-in verification code">
                         <% } %>
-                        
-                        <div class="static-text">
-                            <p>Kind regards,
-                                <br>The Department for Education Sign-in Team
-                                <br><b>Need support?</b> <a class="govuk-link" href="<%=locals.urls.help%>">Contact us for further help?</a>
-                            </p>
-                            <p>This is an automatically generated email; do not reply.
-                                <br>Received this email in error? No action is necessary.
-                            </p> 
+                    </div>
+                    <div class="govuk-form-group">
+                        <label class="govuk-label" for="email-contents">Email contents</label>
+                        <div class="govuk-body">
+                            <p>Dear <%=user.firstName%> <%=user.lastName%></p>
+
+                            <% if (locals.entra && locals.entra.useEntraForAccountRegistration === true) { %>
+                                <textarea class="govuk-textarea" rows="8" name="email-contents" id="email-contents">Your email address <%=locals.user.email%> can now be used to create a DfE Sign-in account.</textarea>
+                                <p class="govuk-body">Visit the registration page to create your account.</p>
+                            <% } else { %>
+                                <textarea class="govuk-textarea" rows="8" name="email-contents" id="email-contents"></textarea>
+
+                                <% if (organisation) { %>
+                                    <p class="govuk-body">You have been invited to set up a DfE Sign-in account for ((ORGANISATION)).</p>
+                                <% } else { %>
+                                    <p class="govuk-body">You have been invited to set up a DfE Sign-in account.</p>
+                                <% } %>
+                                <% if (role.name !== '' && role.name === "Approver") { %>
+                                    <p class="govuk-body">You will have an approver account. Approvers can manage other users at their organisation and add services to their account.</p>
+                                <% } %>
+
+                                <p class="govuk-body">To create a DfE Sign-in account, please verify your email and set a password by selecting the link below.</p>
+
+                                <div class="govuk-inset-text">
+                                    <p class="govuk-body">Your verification code:</p>
+                                    <p class="govuk-body govuk-!-font-weight-bold">VERIFICATION CODE</p>
+                                    <p class="govuk-body">The verification code will expire after 24 hours.</p>
+                                    <p class="govuk-body"><a class="govuk-link" href="#">[Verify email and set password]</a></p>
+                                </div>
+                            <% } %>
+
+                            <div class="govuk-inset-text">
+                                <p class="govuk-body">Kind regards, <br>The Department for Education Sign-in Team<br><b>Need support?</b> <a class="govuk-link" href="<%=locals.urls.help%>">Contact us for further help?</a></p>
+                                <p class="govuk-body">This is an automatically generated email; do not reply.<br>Received this email in error? No action is necessary.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <hr>
-            <h2 class="heading-medium">Destination for user</h2>
+                <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+                <h2 class="govuk-heading-m">Destination for user</h2>
 
-            <div class="form-group">
-                <fieldset class="inline with-sub-title">
-                    <legend>
-                        <h2 class="heading-small">
-                            Your response
-                        </h2>
-                    </legend>
-                    <div class="multiple-choice">
-                        <input id="redirect-default" type="radio" name="redirect-choice" value="Approve" checked>
-                        <label for="redirect-default">Default</label>
-                    </div>
-                    <div class="multiple-choice" data-target="custom-redirect">
-                        <input id="redirect-custom" type="radio" name="redirect-choice" value="Reject">
-                        <label for="redirect-custom">Custom</label>
-                    </div>
-                </fieldset>
-            </div>
-
-            <div class="pnl js-hidden" id="custom-redirect">
-                <div class="form-group">
-                    <label for="user-destination">
-                        <span class="form-label-bold">Destination for user</span>
-                        <span class="form-hint">Decide where the user will be redirected after completing their registration</span>
-                    </label>
-
-                    <select id="invite-destination" name="invite-destination" class="form-control select2" style="width: 75%;">
-                        <% for (let i = 0; i < oidcClients.length; i++) { %>
-                        <% const service = oidcClients[i]; %>
-                        <optgroup label="<%= service.name %> (<%= service.relyingParty.client_id%>)" >
-                            <% if (service.relyingParty.service_home) { %>
-                            <option value="<%= service.relyingParty.client_id%>{split}<%= service.relyingParty.service_home %>"> <%= service.relyingParty.service_home %></option>
-                            <%}%>
-                            <% for (let a = 0; a < service.relyingParty.redirect_uris.length; a++) { %>
-                            <option value="<%= service.relyingParty.client_id%>{split}<%= service.relyingParty.redirect_uris[a] %>"> <%= service.relyingParty.redirect_uris[a] %></option>
-                            <% } %>
-
-                        <% } %>
-                        </optgroup>
-
-                    </select>
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h2 class="govuk-heading-s">
+                                Your response
+                            </h2>
+                        </legend>
+                        <div class="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input id="redirect-default" class="govuk-radios__input" type="radio" name="redirect-choice" value="Approve" checked>
+                                <label class="govuk-label govuk-radios__label" for="redirect-default">Default</label>
+                            </div>
+                            <div class="govuk-radios__item" data-target="custom-redirect">
+                                <input id="redirect-custom" class="govuk-radios__input" type="radio" name="redirect-choice" value="Reject">
+                                <label class="govuk-label govuk-radios__label" for="redirect-custom">Custom</label>
+                            </div>
+                        </div>
+                    </fieldset>
                 </div>
-            </div>
 
-        <div class="form-submit">
+                <div class="govuk-radios__conditional js-hidden" id="custom-redirect">
+                    <div class="govuk-form-group">
+                        <label for="user-destination">
+                            <span class="govuk-label govuk-label--bold">Destination for user</span>
+                            <span class="govuk-hint">Decide where the user will be redirected after completing their registration</span>
+                        </label>
 
-                <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+                        <select id="invite-destination" name="invite-destination" class="govuk-select">
+                            <% for (let i = 0; i < oidcClients.length; i++) { %>
+                                <% const service = oidcClients[i]; %>
+                                <optgroup label="<%= service.name %> (<%= service.relyingParty.client_id%>)">
+                                    <% if (service.relyingParty.service_home) { %>
+                                        <option value="<%= service.relyingParty.client_id%>{split}<%= service.relyingParty.service_home %>"> <%= service.relyingParty.service_home %></option>
+                                    <% } %>
+                                    <% for (let a = 0; a < service.relyingParty.redirect_uris.length; a++) { %>
+                                        <option value="<%= service.relyingParty.client_id%>{split}<%= service.relyingParty.redirect_uris[a] %>"> <%= service.relyingParty.redirect_uris[a] %></option>
+                                    <% } %>
+                                </optgroup>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
 
+                <div class="govuk-form-group">
+                    <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+                </div>
+                
+                <button class="govuk-button">Submit</button>
+            </form>
         </div>
-            <button class="button">Submit</button>
-        </form>
     </div>
 </div>

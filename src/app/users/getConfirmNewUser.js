@@ -34,6 +34,11 @@ const getConfirmNewUser = async (req, res) => {
         }
       : "",
     oidcClients: oidcClients.services,
+    backLink:
+      req.session.user.organisationId !== ""
+        ? "associate-organisation"
+        : "organisation-permissions",
+    layout: "sharedViews/layoutNew.ejs",
   });
 };
 
