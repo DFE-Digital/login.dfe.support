@@ -66,7 +66,7 @@ describe("when associating user to organisations", () => {
       "users/views/associateOrganisation",
     );
     expect(res.render.mock.calls[0][1]).toEqual({
-      backLink: "/new-user",
+      backLink: true,
       layout: "sharedViews/layoutNew.ejs",
       csrfToken: "token",
       criteria: "something",
