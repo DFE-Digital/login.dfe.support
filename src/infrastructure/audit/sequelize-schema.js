@@ -1,6 +1,5 @@
 const Sequelize = require("sequelize");
 const config = require("./../config");
-const Op = Sequelize.Op;
 
 const getIntValueOrDefault = (value, defaultValue = 0) => {
   if (!value) {
@@ -29,7 +28,6 @@ const dbOpts = {
   },
   host: config.audit.params.host,
   dialect: config.audit.params.dialect,
-  operatorsAliases: Op,
   dialectOptions: {
     encrypt: config.audit.params.encrypt || true,
   },
