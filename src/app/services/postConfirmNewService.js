@@ -27,8 +27,15 @@ const postConfirmNewService = async (req, res) => {
     helpHidden: model.hideFromContactUs === undefined ? false : true,
   };
 
+  // authorization_code if code is selected.
+  // implicit if id_token, token, or id_token AND token are selected.
   const grantTypes = [];
-  grantTypes.push("authorization_code");
+  if (model.responseTypesCode) {
+    grantTypes.push("authorization_code");
+  }
+  if (model.responseTypesToken || model.responseTypesIdToken) {
+    grantTypes.push("implicit");
+  }
   if (model.refreshToken) {
     grantTypes.push("refresh_token");
   }

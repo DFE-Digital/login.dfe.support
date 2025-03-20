@@ -59,7 +59,7 @@ describe("when displaying the post create new service", () => {
         api_secret: "this.is.an.api.secret",
         client_id: "TestClientId",
         client_secret: "this.is.a.client.secret",
-        grant_types: ["authorization_code", "refresh_token"],
+        grant_types: ["authorization_code", "implicit", "refresh_token"],
         params: {
           helpHidden: false,
           hideApprover: true,
@@ -79,6 +79,31 @@ describe("when displaying the post create new service", () => {
     expect(req.session.createServiceData).toBe(undefined);
   });
 
+  it("should not have authorization_code in grant types if code not present", async () => {
+    req.session.createServiceData.responseTypesCode = undefined;
+    await postConfirmNewService(req, res);
+
+    expect(createService.mock.calls).toHaveLength(1);
+    expect(
+      createService.mock.calls[0][0].relyingParty.grant_types,
+    ).toStrictEqual(["implicit", "refresh_token"]);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/users");
+  });
+
+  it("should not have implicit in grant types if token or idToken not present", async () => {
+    req.session.createServiceData.responseTypesIdToken = undefined;
+    req.session.createServiceData.responseTypesToken = undefined;
+    await postConfirmNewService(req, res);
+
+    expect(createService.mock.calls).toHaveLength(1);
+    expect(
+      createService.mock.calls[0][0].relyingParty.grant_types,
+    ).toStrictEqual(["authorization_code", "refresh_token"]);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/users");
+  });
+
   it("should not have refresh_token in grant types if not present", async () => {
     req.session.createServiceData.refreshToken = "";
     await postConfirmNewService(req, res);
@@ -86,7 +111,7 @@ describe("when displaying the post create new service", () => {
     expect(createService.mock.calls).toHaveLength(1);
     expect(
       createService.mock.calls[0][0].relyingParty.grant_types,
-    ).toStrictEqual(["authorization_code"]);
+    ).toStrictEqual(["authorization_code", "implicit"]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/users");
   });
