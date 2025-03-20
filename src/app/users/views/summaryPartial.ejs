@@ -1,48 +1,70 @@
 <% if(locals.user.status.id === 0) { %>
-    <div class="row">
-        <div class="col-12">
-            <div class="notification">
-                <p>
-                    This account was deactivated
-                    <a href="confirm-reactivation" class="action">Reactivate</a>
-                </p>
-            </div>
+    <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+        <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+            Important
+            </h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+            <p class="govuk-notification-banner__heading">
+            This account was deactivated
+            </p>
         </div>
     </div>
     <% } %>
     <% if(locals.user.status.id === -2) { %>
-        <div class="row">
-            <div class="col-12">
-                <div class="notification">
-                    <p>
-                        This account invitation was deactivated
-                        <a href="confirm-invitation-reactivation" class="action">Reactivate invitation</a>
-                    </p>
-                </div>
+        <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+            <div class="govuk-notification-banner__header">
+                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                Important
+                </h2>
+            </div>
+            <div class="govuk-notification-banner__content">
+                <p class="govuk-notification-banner__heading">
+                    This account invitation was deactivated
+                    <a class="govuk-link" href="confirm-invitation-reactivation" class="action">Reactivate invitation</a>
+                </p>
             </div>
         </div>
         <% } %>
     <% if(locals.user.pendingEmail) { %>
-    <div class="notification notification-information" tabindex="0">
+    <div class="govuk-notification-banner notification-information" tabindex="0">
         <h2>Pending email address change</h2>
-        <p>Waiting for <%= user.name %> to confirm the new email address of <%= user.pendingEmail %>.</p>
-        <p>
+        <p class="govuk-body">Waiting for <%= user.name %> to confirm the new email address of <%= user.pendingEmail %>.</p>
+        <p class="govuk-body">
         <form method="post" action="cancel-change-email">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <button class="button-text">Cancel change email</button>
+            <button class="govuk-button">Cancel change email</button>
         </form>
         </p>
     </div>
-    <% } %>
-    <% if (locals.flash.info) { %>
-    <div class="row">
-        <div class="col-12">
-            <div class="notification notification-success">
-                <%= locals.flash.info %>
+    <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+            <div class="govuk-notification-banner__header">
+                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                Pending email address change
+                </h2>
+            </div>
+            <div class="govuk-notification-banner__content">
+                <p class="govuk-body">Waiting for <%= user.name %> to confirm the new email address of <%= user.pendingEmail %>.</p>
+                <p class="govuk-body">
+                <form method="post" action="cancel-change-email">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                    <button class="govuk-button">Cancel change email</button>
+                </form>
+                </p>
             </div>
         </div>
-    </div>
     <% } %>
+    <% if (locals.flash.info) { %>
+    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+        <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">Success</h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+            <p class="govuk-body"><%=locals.flash.info%></p>
+        </div>
+    </div>
+<% } %>
     
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
