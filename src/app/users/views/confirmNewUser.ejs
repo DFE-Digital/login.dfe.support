@@ -12,7 +12,7 @@
                     </div>
                     <div class="govuk-grid-column-one-quarter">
                         <a class="govuk-link" href="new-user?review=true">
-                            Change<span class="govuk-visually-hidden"> personal details</span>
+                            Change
                         </a>
                     </div>
                 </div>
@@ -41,10 +41,15 @@
                         </div>
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">Permission level</dt>
-                            <dd class="govuk-summary-list__value"><%=role.name%>
-                                <a class="govuk-link" href="organisation-permissions">
-                                    Change<span class="govuk-visually-hidden"> organisation permissions</span>
-                                </a>
+                            <dd class="govuk-summary-list__value">
+                                <div class="govuk-grid-row">
+                                    <div class="govuk-grid-column-two-thirds">
+                                        <p class="govuk-summary-list__value govuk-!-padding-top-0 govuk-!-padding-bottom-0"><%=role.name%></p>
+                                    </div>
+                                    <div class="govuk-grid-column-one-quarter govuk-!-padding-0">
+                                        <a class="govuk-link govuk-body-s govuk-!-padding-0" href="organisation-permissions">Change</a>
+                                    </div>
+                                </div>
                             </dd>
                         </div>
                     </dl>
