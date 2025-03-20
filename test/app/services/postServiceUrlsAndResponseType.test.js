@@ -95,6 +95,35 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult).toHaveBeenCalledTimes(0);
   });
 
+  it("should redirect to the service urls and response type page on success with multiple redirect and logout redirect urls", async () => {
+    // If multiple are entered in the form, it gets sent as an array instead of a single value
+    // This test makes sure the rest of the form handles the data in both forms correctly
+    req.body.redirect_uris = [
+      "https://test-url.com/redirect",
+      "https://test-url2.com/redirect2",
+    ];
+    req.body.post_logout_redirect_uris = [
+      "https://test-url.com/log-out-redirect",
+      "https://test-url2.com/log-out-redirect2",
+    ];
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("confirm-new-service");
+    expect(sendResult).toHaveBeenCalledTimes(0);
+  });
+
+  it("should redirect to the service urls and response type page on success with no logout redirect urls", async () => {
+    req.body.post_logout_redirect_uris = undefined;
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("confirm-new-service");
+    expect(sendResult).toHaveBeenCalledTimes(0);
+  });
+
   it("should render the page if there is an error saving to the session", async () => {
     req.session = {
       createServiceData: {

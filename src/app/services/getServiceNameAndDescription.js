@@ -5,6 +5,8 @@ const getServiceNameAndDescription = async (req, res) => {
     return res.redirect("/users");
   }
 
+  const model = req.session.createServiceData;
+
   sendResult(req, res, "services/views/serviceNameAndDescription", {
     csrfToken: req.csrfToken(),
     layout: "sharedViews/layoutNew.ejs",
@@ -12,6 +14,8 @@ const getServiceNameAndDescription = async (req, res) => {
     backLink: true,
     cancelLink: "/users",
     validationMessages: {},
+    name: model.name,
+    description: model.description,
   });
 };
 
