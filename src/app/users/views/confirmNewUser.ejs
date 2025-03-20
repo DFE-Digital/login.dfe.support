@@ -7,27 +7,31 @@
                 </h1>
                 <p class="govuk-body">Please review these details before sending an invite. The user will need to confirm their email address and create a password before their DfE Sign-in account becomes active.</p>
                 <div class="govuk-grid-row">
-                    <div class="govuk-grid-column-three-quarters">
+                    <div class="govuk-grid-column-three-quarters"> 
                         <h2 class="govuk-heading-m">Personal details</h2>
-                    </div>
-                    <div class="govuk-grid-column-one-quarter">
-                        <a class="govuk-link" href="new-user?review=true">
-                            Change
-                        </a>
                     </div>
                 </div>
                 <dl class="govuk-summary-list">
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">First name</dt>
                         <dd class="govuk-summary-list__value"><%=user.firstName%></dd>
+                        <dd class="govuk-summary-list__actions">
+                                <a class="govuk-link" href="new-user?review=true"> Change <span class="govuk-visually-hidden">Personal details</span></a>
+                            </dd>
                     </div>
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">Last name</dt>
                         <dd class="govuk-summary-list__value"><%=user.lastName%></dd>
+                        <dd class="govuk-summary-list__actions">
+                                <a class="govuk-link" href="new-user?review=true"> Change <span class="govuk-visually-hidden">Personal details</span></a>
+                            </dd>
                     </div>
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">Email address</dt>
                         <dd class="govuk-summary-list__value"><%=user.email%></dd>
+                        <dd class="govuk-summary-list__actions">
+                                <a class="govuk-link" href="new-user?review=true"> Change <span class="govuk-visually-hidden">Personal details</span></a>
+                            </dd>
                     </div>
                 </dl>
 
@@ -38,18 +42,17 @@
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">Organisation</dt>
                             <dd class="govuk-summary-list__value"><%=organisation.name%></dd>
+                            <dd class="govuk-summary-list__actions">
+                                <a class="govuk-link" href="associate-organisation"> Change <span class="govuk-visually-hidden">organisation</span></a>
+                            </dd>
                         </div>
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">Permission level</dt>
                             <dd class="govuk-summary-list__value">
-                                <div class="govuk-grid-row">
-                                    <div class="govuk-grid-column-two-thirds">
-                                        <p class="govuk-summary-list__value govuk-!-padding-top-0 govuk-!-padding-bottom-0"><%=role.name%></p>
-                                    </div>
-                                    <div class="govuk-grid-column-one-quarter govuk-!-padding-0">
-                                        <a class="govuk-link govuk-body-s govuk-!-padding-0" href="organisation-permissions">Change</a>
-                                    </div>
-                                </div>
+                                <%= role.name %>
+                            </dd>
+                            <dd class="govuk-summary-list__actions">
+                                <a class="govuk-link" href="organisation-permissions"> Change <span class="govuk-visually-hidden">organisation permissions</span></a>
                             </dd>
                         </div>
                     </dl>
