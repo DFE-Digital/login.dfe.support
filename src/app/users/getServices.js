@@ -129,6 +129,8 @@ const action = async (req, res) => {
 
   sendResult(req, res, "users/views/services", {
     csrfToken: req.csrfToken(),
+    layout: "sharedViews/layoutNew.ejs",
+    backLink: true,
     user,
     showChangeEmail,
     organisations: allOrganisationsForUser,
