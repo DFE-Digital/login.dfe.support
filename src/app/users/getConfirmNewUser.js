@@ -34,6 +34,8 @@ const getConfirmNewUser = async (req, res) => {
         }
       : "",
     oidcClients: oidcClients.services,
+    backLink: true,
+    layout: "sharedViews/layoutNew.ejs",
   });
 };
 
