@@ -1,8 +1,6 @@
-<a href="/organisations" class="link-back">Back</a>
-<%- include('_organisationSummary', {area: 'users', organisation: locals.organisation}); %>
-
 <%
 const paginationModel = {
+    disableNextAndPrevious: true,
     method: 'post',
     csrfToken,
     currentPage: locals.page,
@@ -12,37 +10,38 @@ const paginationModel = {
 }
 %>
 
-<div class="row">
-    <div class="col-12">
-        <%- include('../../sharedViews/pagination', paginationModel); %>
-        <table class="data">
-            <thead>
-            <tr>
-                <th scope="col" class="cwp-15">Name</th>
-                <th scope="col" class="cwp-35">Email</th>
-                <th scope="col" class="cwp-20">Permission level</th>
-                <th scope="col" class="cwp-15">Last Login</th>
-                <th scope="col" class="cwp-15">Status</th>
+<div class="govuk-width-container">
+    <%- include('_organisationSummary', {area: 'users', organisation: locals.organisation}); %>
+    <%- include('../../sharedViews/paginationNew', paginationModel); %>
+    <table class="govuk-table">
+        <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">Name</th>
+                <th scope="col" class="govuk-table__header">Email</th>
+                <th scope="col" class="govuk-table__header">Permission level</th>
+                <th scope="col" class="govuk-table__header">Last Login</th>
+                <th scope="col" class="govuk-table__header">Status</th>
             </tr>
-            </thead>
-            <tbody>
-            <%users.forEach((user) => {%>
-                <tr>
-                    <td class="breakable"><a href="/users/<%=user.id%>"><%=user.name%></a></td>
-                    <td class="breakable"><%=user.email%></td>
-                    <td class="breakable"><%=user.organisation.role.description%></td>
-                    <td class="breakable">
-                        <% if (user.formattedLastLogin) {%>
-                            <%= user.formattedLastLogin %>
-                        <% } else {%>
-                            Never
-                        <% } %>
-                    </td>
-                    <td class="breakable"><%=user.status.description%></td>
-                </tr>
-            <%})%>
-            </tbody>
-        </table>
-        <%- include('../../sharedViews/pagination', paginationModel); %>
+        </thead>
+        <tbody class="govuk-table__body">
+        <%users.forEach((user) => {%>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell"><a href="/users/<%=user.id%>"><%=user.name%></a></td>
+                <td class="govuk-table__cell"><%=user.email%></td>
+                <td class="govuk-table__cell"><%=user.organisation.role.description%></td>
+                <td class="govuk-table__cell">
+                    <% if (user.formattedLastLogin) {%>
+                        <%= user.formattedLastLogin %>
+                    <% } else {%>
+                        Never
+                    <% } %>
+                </td>
+                <td class="govuk-table__cell"><%=user.status.description%></td>
+            </tr>
+        <%})%>
+        </tbody>
+    </table>
+    <div>
+        <%- include('../../sharedViews/paginationNew', paginationModel); %>
     </div>
 </div>
