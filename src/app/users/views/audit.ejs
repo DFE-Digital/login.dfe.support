@@ -1,51 +1,56 @@
-<%- include('summaryPartial', {area: 'audit', user: locals.user}); %>
+<div class="govuk-width-container">
+    <%- include('summaryPartial', {area: 'audit', user: locals.user}); %>
 
-<div class="row meta">
-    <div class="col-12">
-        <form method="POST">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                <button class="button" style="margin-bottom: 1.25em;" type="submit" onclick="this.form.submit(); this.disabled=true; this.innerText='Processing Update';">Update and refresh</button>
-        </form>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <form method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                    <button class="govuk-button" style="margin-bottom: 1.25em;" type="submit" onclick="this.form.submit(); this.disabled=true; this.innerText='Processing Update';">Update and refresh</button>
+            </form>
+        </div>
+    </div>
+
+    <%
+        const paginationModel = {
+            disableNextAndPrevious: true,
+            currentPage: locals.page,
+            numberOfPages: locals.numberOfPages,
+            totalNumberOfResults: locals.totalNumberOfResults,
+            numberOfResultsOnPage: locals.audits.length,
+            data: [],
+        };
+    %>
+
+    <%- include('../../sharedViews/paginationNew', paginationModel); %>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <table class="govuk-table">
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header">Date</th>
+                        <th scope="col" class="govuk-table__header">Event</th>
+                        <th scope="col" class="govuk-table__header">Service</th>
+                        <th scope="col" class="govuk-table__header">Organisation</th>
+                        <th scope="col" class="govuk-table__header">Result</th>
+                        <th scope="col" class="govuk-table__header">User</th>
+                    </tr>
+                </thead>
+                <tbody class="govuk-table__body">
+                <% for(let a = 0;a < locals.audits.length; a++) { %>
+                <% const audit = locals.audits[a]; %>
+                    <tr class="govuk-table__row">
+                        <td><%= audit.formattedTimestamp %></td>
+                        <td class="govuk-table__cell"><%= audit.event.description %></td>
+                        <td class="govuk-table__cell"><%= audit.service ? audit.service.name : '' %></td>
+                        <td class="govuk-table__cell"><%= audit.organisation ? audit.organisation.name: '' %></td>
+                        <td class="govuk-table__cell"><%= audit.result ? 'Success' : 'Failure' %></td>
+                        <td class="govuk-table__cell"><%= audit.user ? audit.user.name : '' %></td>
+                    </tr>
+                <% } %>
+                </tbody>
+            </table>
+            <%- include('../../sharedViews/pagination', paginationModel); %>
+        </div>
     </div>
 </div>
 
-<%
-	const paginationModel = {
-		currentPage: locals.page,
-		numberOfPages: locals.numberOfPages,
-		totalNumberOfResults: locals.totalNumberOfResults,
-		numberOfResultsOnPage: locals.audits.length,
-		data: [],
-	};
-%>
-
-<%- include('../../sharedViews/pagination', paginationModel); %>
-<div class="row">
-    <div class="col-12">
-        <table class="data">
-            <thead>
-                <tr>
-                    <th scope="col" class="cwp-20">Date</th>
-                    <th scope="col" class="cwp-30">Event</th>
-                    <th scope="col" class="cwp-15">Service</th>
-                    <th scope="col" class="cwp-10">Organisation</th>
-                    <th scope="col" class="cwp-10">Result</th>
-                    <th scope="col" class="cwp-15">User</th>
-                </tr>
-            </thead>
-            <tbody>
-            <% for(let a = 0;a < locals.audits.length; a++) { %>
-            <% const audit = locals.audits[a]; %>
-                <tr>
-                    <td><%= audit.formattedTimestamp %></td>
-                    <td class="breakable"><%= audit.event.description %></td>
-                    <td class="breakable"><%= audit.service ? audit.service.name : '' %></td>
-                    <td class="breakable"><%= audit.organisation ? audit.organisation.name: '' %></td>
-                    <td class="breakable"><%= audit.result ? 'Success' : 'Failure' %></td>
-                    <td class="breakable"><%= audit.user ? audit.user.name : '' %></td>
-                </tr>
-            <% } %>
-            </tbody>
-        </table>
-        <%- include('../../sharedViews/pagination', paginationModel); %>
-    </div>
