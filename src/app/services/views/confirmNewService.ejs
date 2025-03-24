@@ -25,7 +25,7 @@
               <%= model.name %>
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="service-name-and-description">Change<span class="govuk-visually-hidden"> name</span></a>
+              <a class="govuk-link" href="service-name-and-description#name">Change<span class="govuk-visually-hidden"> name</span></a>
             </dd>
           </div>
           <div class="govuk-summary-list__row">
@@ -36,7 +36,7 @@
               <%= model.description %>
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="service-name-and-description">Change<span class="govuk-visually-hidden"> description</span></a>
+              <a class="govuk-link" href="service-name-and-description#description">Change<span class="govuk-visually-hidden"> description</span></a>
             </dd>
           </div>
           <div class="govuk-summary-list__row">
@@ -47,7 +47,7 @@
               <%= model.homeUrl %>
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> home url</span></a>
+              <a class="govuk-link" href="service-urls-and-response-type#homeUrl">Change<span class="govuk-visually-hidden"> home url</span></a>
             </dd>
           </div>
           <div class="govuk-summary-list__row">
@@ -58,7 +58,7 @@
               <%= model.postPasswordResetUrl %>
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> post password reset url</span></a>
+              <a class="govuk-link" href="service-urls-and-response-type#postPasswordResetUrl">Change<span class="govuk-visually-hidden"> post password reset url</span></a>
             </dd>
           </div>
           <div class="govuk-summary-list__row">
@@ -69,7 +69,7 @@
               <%= model.clientId %>
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> client id</span></a>
+              <a class="govuk-link" href="service-urls-and-response-type#clientId">Change<span class="govuk-visually-hidden"> client id</span></a>
             </dd>
           </div>
           <div class="govuk-summary-list__row">
@@ -82,7 +82,7 @@
               <%})%>
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> post password reset url</span></a>
+              <a class="govuk-link" href="service-urls-and-response-type#redirect_uris-input-1">Change<span class="govuk-visually-hidden"> redirect urls</span></a>
             </dd>
           </div>
           <div class="govuk-summary-list__row">
@@ -95,7 +95,7 @@
               <%})%>
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> post password reset url</span></a>
+              <a class="govuk-link" href="service-urls-and-response-type#post_logout_redirect_uris-input-1">Change<span class="govuk-visually-hidden"> logout redirect urls</span></a>
             </dd>
           </div>
           <div class="govuk-summary-list__row">
@@ -106,42 +106,44 @@
               <%= model.responseTypesCode %> <%= model.responseTypesIdToken %> <%= model.responseTypesToken %>
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> response types</span></a>
+              <a class="govuk-link" href="service-urls-and-response-type#response_types-code">Change<span class="govuk-visually-hidden"> response types</span></a>
             </dd>
           </div>
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-              Refresh token
-            </dt>
-            <dd class="govuk-summary-list__value">
-              <%= model.postPasswordResetUrl %>
-            </dd>
-            <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> refresh token</span></a>
-            </dd>
-          </div>
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-              Client secret
-            </dt>
-            <dd class="govuk-summary-list__value">
-              <%= model.clientSecret %>
-            </dd>
-            <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> client secret</span></a>
-            </dd>
-          </div>
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-              Token endpoint authentication method
-            </dt>
-            <dd class="govuk-summary-list__value">
-              <%= model.tokenEndpointAuthenticationMethod %>
-            </dd>
-            <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> token endpoint authentication method</span></a>
-            </dd>
-          </div>
+          <% if (model.responseTypesCode) { %>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                Refresh token
+              </dt>
+              <dd class="govuk-summary-list__value">
+                <%= (model.refreshToken !== undefined) ? 'true' : 'false' %>
+              </dd>
+              <dd class="govuk-summary-list__actions">
+                <a class="govuk-link" href="service-urls-and-response-type#refreshToken">Change<span class="govuk-visually-hidden"> refresh token</span></a>
+              </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                Client secret
+              </dt>
+              <dd class="govuk-summary-list__value">
+                <%= model.clientSecret %>
+              </dd>
+              <dd class="govuk-summary-list__actions">
+                <a class="govuk-link" href="service-urls-and-response-type#clientSecret">Change<span class="govuk-visually-hidden"> client secret</span></a>
+              </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                Token endpoint authentication method
+              </dt>
+              <dd class="govuk-summary-list__value">
+                <%= model.tokenEndpointAuthenticationMethod %>
+              </dd>
+              <dd class="govuk-summary-list__actions">
+                <a class="govuk-link" href="service-urls-and-response-type#tokenEndpointAuthenticationMethod">Change<span class="govuk-visually-hidden"> token endpoint authentication method</span></a>
+              </dd>
+            </div>
+          <% } %>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">
               API secret
@@ -150,7 +152,7 @@
               <%= model.apiSecret %>
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="service-urls-and-response-type">Change<span class="govuk-visually-hidden"> api secret</span></a>
+              <a class="govuk-link" href="service-urls-and-response-type#apiSecret">Change<span class="govuk-visually-hidden"> api secret</span></a>
             </dd>
           </div>
         </dl>

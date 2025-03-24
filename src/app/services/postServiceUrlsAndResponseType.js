@@ -22,6 +22,13 @@ const validateInput = async (req) => {
     validationMessages: {},
   };
 
+  // If code response type is NOT selected then silently discard these 3 values.
+  if (!model.responseTypesCode) {
+    model.refreshToken = undefined;
+    model.clientSecret = "";
+    model.tokenEndpointAuthenticationMethod = undefined;
+  }
+
   // redirect_uris and post_logout_redirect_uris values are an array if multiple values entered,
   // a string if one value entered and undefined when nothing entered.
   // Making sure that these values are always in an array saves us having to constantly check that later down the line.
@@ -157,11 +164,20 @@ const validateInput = async (req) => {
       "Log out redirect urls must all be unique";
   }
 
-  if (!model.clientSecret) {
-    model.validationMessages.clientSecret = "Enter a client secret";
-  } else if (model.clientSecret.length > 255) {
-    model.validationMessages.clientSecret =
-      "Client secret must be 255 characters or less";
+  const isCodeOrIdTokenSelected =
+    model.responseTypesCode || model.responseTypesIdToken;
+  if (model.responseTypesToken && !isCodeOrIdTokenSelected) {
+    model.validationMessages.responseTypesToken =
+      "Select more than 1 response type when 'token' is selected as a response type";
+  }
+
+  if (model.responseTypesCode) {
+    if (!model.clientSecret) {
+      model.validationMessages.clientSecret = "Enter a client secret";
+    } else if (model.clientSecret.length > 255) {
+      model.validationMessages.clientSecret =
+        "Client secret must be 255 characters or less";
+    }
   }
 
   if (!model.apiSecret) {
