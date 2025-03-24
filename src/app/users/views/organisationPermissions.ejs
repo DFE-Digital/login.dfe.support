@@ -1,36 +1,39 @@
-<a href="associate-organisation" class="link-back">Back</a>
-<div class="grid-row">
-    <div class="col-8">
-        <h1 class="heading-xlarge">
-            Permission level
-        </h1>
-        <p class="lede">Select the permission level for <b><%=userFullName%></b> at <b><%=organisationName%></b></p>
+<div class="govuk-width-container">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">
+        Permission level
+      </h1>
+      <p class="govuk-body">Select the permission level for <b><%= userFullName %></b> at <b><%= organisationName %></b></p>
     </div>
-</div>
-<div class="grid-row">
-    <div class="col-6">
-        <form method="post">
-            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
-            <div class="form-group <%= (locals.validationMessages.selectedLevel !== undefined) ? 'form-group-error' : '' %>">
-                <fieldset>
-                    <% if (locals.validationMessages.selectedLevel !== undefined) { %>
-                    <p class="error-message" id="validation-permission-level"><%=locals.validationMessages.selectedLevel %></p>
-                    <% } %>
-                    <div class="multiple-choice">
-                        <input id="level-user" type="radio" name="selectedLevel" value="0"
-                        <%= locals.selectedLevel === 0 ? 'checked' : '' %> >
-                        <label for="level-user">End user</label>
-                    </div>
-                    <div class="multiple-choice">
-                        <input id="level-approver" type="radio" name="selectedLevel" value="10000"
-                        <%= locals.selectedLevel === 10000 ? 'checked' : '' %> >
-                        <label for="level-approver">Approver</label>
-                    </div>
-                </fieldset>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form method="post">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+        <div class="govuk-form-group <%= (locals.validationMessages.selectedLevel !== undefined) ? 'govuk-form-group--error' : '' %>">
+          <fieldset class="govuk-fieldset">
+            <% if (locals.validationMessages.selectedLevel !== undefined) { %>
+              <p class="govuk-error-message" id="validation-permission-level">
+                <span class="govuk-visually-hidden">Error:</span> <%= locals.validationMessages.selectedLevel %>
+              </p>
+            <% } %>
+            <div class="govuk-radios">
+              <div class="govuk-radios__item">
+                <input id="level-user" class="govuk-radios__input" type="radio" name="selectedLevel" value="0" <%= locals.selectedLevel === 0 ? 'checked' : '' %> >
+                <label class="govuk-label govuk-radios__label" for="level-user">End user</label>
+              </div>
+              <div class="govuk-radios__item">
+                <input id="level-approver" class="govuk-radios__input" type="radio" name="selectedLevel" value="10000" <%= locals.selectedLevel === 10000 ? 'checked' : '' %> >
+                <label class="govuk-label govuk-radios__label" for="level-approver">Approver</label>
+              </div>
             </div>
-            <div class="form-submit">
-                <button class="button">Continue</button>
-            </div>
-        </form>
+          </fieldset>
+        </div>
+        <div class="govuk-form-group">
+          <button class="govuk-button" type="submit">Continue</button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
