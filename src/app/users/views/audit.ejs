@@ -5,7 +5,10 @@
         <div class="govuk-grid-column-full">
             <form method="POST">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                    <button class="govuk-button" style="margin-bottom: 1.25em;" type="submit" onclick="this.form.submit(); this.disabled=true; this.innerText='Processing Update';">Update and refresh</button>
+                <button class="govuk-button govuk-!-margin-bottom-3" type="submit" 
+                        onclick="this.form.submit(); this.disabled=true; this.innerText='Processing Update';">
+                    Update and refresh
+                </button>
             </form>
         </div>
     </div>
@@ -22,35 +25,43 @@
     %>
 
     <%- include('../../sharedViews/paginationNew', paginationModel); %>
+
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-            <table class="govuk-table">
-                <thead class="govuk-table__head">
-                    <tr class="govuk-table__row">
-                        <th scope="col" class="govuk-table__header">Date</th>
-                        <th scope="col" class="govuk-table__header">Event</th>
-                        <th scope="col" class="govuk-table__header">Service</th>
-                        <th scope="col" class="govuk-table__header">Organisation</th>
-                        <th scope="col" class="govuk-table__header">Result</th>
-                        <th scope="col" class="govuk-table__header">User</th>
-                    </tr>
-                </thead>
-                <tbody class="govuk-table__body">
-                <% for(let a = 0;a < locals.audits.length; a++) { %>
-                <% const audit = locals.audits[a]; %>
-                    <tr class="govuk-table__row">
-                        <td><%= audit.formattedTimestamp %></td>
-                        <td class="govuk-table__cell"><%= audit.event.description %></td>
-                        <td class="govuk-table__cell"><%= audit.service ? audit.service.name : '' %></td>
-                        <td class="govuk-table__cell"><%= audit.organisation ? audit.organisation.name: '' %></td>
-                        <td class="govuk-table__cell"><%= audit.result ? 'Success' : 'Failure' %></td>
-                        <td class="govuk-table__cell"><%= audit.user ? audit.user.name : '' %></td>
-                    </tr>
-                <% } %>
-                </tbody>
-            </table>
-            <%- include('../../sharedViews/pagination', paginationModel); %>
+            <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="audit">
+                <table class="govuk-table">
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header">Date</th>
+                            <th scope="col" class="govuk-table__header">Event</th>
+                            <th scope="col" class="govuk-table__header">Service</th>
+                            <th scope="col" class="govuk-table__header">Organisation</th>
+                            <th scope="col" class="govuk-table__header">Result</th>
+                            <th scope="col" class="govuk-table__header">User</th>
+                        </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+                        <% if (locals.audits.length > 0) { %>
+                            <% for(let a = 0; a < locals.audits.length; a++) { %>
+                                <% const audit = locals.audits[a]; %>
+                                <tr class="govuk-table__row">
+                                    <td class="govuk-table__cell"><%= audit.formattedTimestamp %></td>
+                                    <td class="govuk-table__cell"><%= audit.event.description %></td>
+                                    <td class="govuk-table__cell"><%= audit.service ? audit.service.name : '' %></td>
+                                    <td class="govuk-table__cell"><%= audit.organisation ? audit.organisation.name : '' %></td>
+                                    <td class="govuk-table__cell"><%= audit.result ? 'Success' : 'Failure' %></td>
+                                    <td class="govuk-table__cell"><%= audit.user ? audit.user.name : '' %></td>
+                                </tr>
+                            <% } %>
+                        <% } else { %>
+                            <tr class="govuk-table__row">
+                                <td colspan="6" class="govuk-table__cell govuk-body">No audit records available.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+            <%- include('../../sharedViews/paginationNew', paginationModel); %>
         </div>
     </div>
 </div>
-

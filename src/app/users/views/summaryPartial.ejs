@@ -11,148 +11,151 @@
             </p>
         </div>
     </div>
-    <% } %>
-    <% if(locals.user.status.id === -2) { %>
-        <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
-            <div class="govuk-notification-banner__header">
-                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
-                Important
-                </h2>
-            </div>
-            <div class="govuk-notification-banner__content">
-                <p class="govuk-notification-banner__heading">
-                    This account invitation was deactivated
-                    <a class="govuk-link" href="confirm-invitation-reactivation" class="action">Reactivate invitation</a>
-                </p>
-            </div>
-        </div>
-        <% } %>
-    <% if(locals.user.pendingEmail) { %>
-    <div class="govuk-notification-banner notification-information" tabindex="0">
-        <h2>Pending email address change</h2>
-        <p class="govuk-body">Waiting for <%= user.name %> to confirm the new email address of <%= user.pendingEmail %>.</p>
-        <p class="govuk-body">
-        <form method="post" action="cancel-change-email">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <button class="govuk-button">Cancel change email</button>
-        </form>
-        </p>
-    </div>
+<% } %>
+<% if(locals.user.status.id === -2) { %>
     <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
-            <div class="govuk-notification-banner__header">
-                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
-                Pending email address change
-                </h2>
-            </div>
-            <div class="govuk-notification-banner__content">
-                <p class="govuk-body">Waiting for <%= user.name %> to confirm the new email address of <%= user.pendingEmail %>.</p>
-                <p class="govuk-body">
-                <form method="post" action="cancel-change-email">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                    <button class="govuk-button">Cancel change email</button>
-                </form>
-                </p>
-            </div>
-        </div>
-    <% } %>
-    <% if (locals.flash.info) { %>
-    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
         <div class="govuk-notification-banner__header">
-            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">Success</h2>
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+            Important
+            </h2>
         </div>
         <div class="govuk-notification-banner__content">
-            <p class="govuk-body"><%=locals.flash.info%></p>
+            <p class="govuk-notification-banner__heading">
+                This account invitation was deactivated
+                <a class="govuk-link" href="confirm-invitation-reactivation" class="action">Reactivate invitation</a>
+            </p>
         </div>
     </div>
 <% } %>
-    
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-xl">
-                <span class="govuk-caption-l"><%= user.email %></span>
-                <%= user.name %>
-            </h1>
-            <dl class="govuk-summary-list govuk-summary-list--no-border">
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key govuk-!-padding-0">Last login:</dt>
-                    <dd class="govuk-summary-list__value govuk-!-padding-0"><%= user.formattedLastLogin ? user.formattedLastLogin : 'Never' %></dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key govuk-!-padding-0">Account status:</dt>
-                    <dd class="govuk-summary-list__value govuk-!-padding-0"><%= user.status.description %></dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key govuk-!-padding-0">Number of logins in last 12 months:</dt>
-                    <dd class="govuk-summary-list__value govuk-!-padding-0"><%= user.loginsInPast12Months.successful %></dd>
-                </div>
-            </dl>
+<% if(locals.user.pendingEmail) { %>
+    <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+        <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+            Pending email address change
+            </h2>
         </div>
-        <div class="govuk-grid-column-one-third">
-            <% if(!locals.isInvitation) { %>
-                <aside>
-                    <h2 class="govuk-heading-m">Actions</h2>
-                    <ul class="govuk-list">
-                        <% if(locals.user.status.id !== 0) { %>
-                            <li><a class="govuk-link" href="associate-organisation">Add organisation</a></li>
-                        <% } %>
-                        <% if (locals.organisations.length > 0 && locals.user.status.id !== 0) { %>
-                            <li><a class="govuk-link" href="select-organisation">Add services</a></li>
-                        <% } %>
-                        <% if(locals.user.status.id !== 0 && showChangeEmail) { %>
-                            <li><a class="govuk-link" href="edit-email">Change user's email address</a></li>
-                        <% } %>
-                        <% if(locals.user.status.id === 0) { %>
-                            <li><a class="govuk-link" href="confirm-reactivation">Reactivate user</a></li>
-                        <% } else { %>
-                            <li><a class="govuk-link" href="confirm-deactivation">Deactivate user</a></li>
-                        <% } %>
-                        <% if(locals.user.status.id !== 0) { %>
-                            <li><a class="govuk-link" href="edit-profile">Edit user's details</a></li>
-                        <% } %>
-                            <li><a class="govuk-link" href="web-service-sync">Send WS Sync</a></li>
-                            <li><a class="govuk-link" href="manage-console-services">Manage console roles</a></li>
-                    </ul>
-                </aside>
-            <% } else if (locals.isInvitation && !locals.user.deactivated) { %>
-                <aside>
-                    <h2 class="govuk-heading-m">Actions</h2>
-                    <ul class="govuk-list">
-                        <li><a class="govuk-link" href="associate-organisation">Add organisation</a></li>
-                        <% if (locals.organisations.length > 0) { %>
-                            <li><a class="govuk-link" href="select-organisation">Add services</a></li>
-                        <% } %>
-                        <li><a class="govuk-link" href="edit-email">Change user's email address</a></li>
-                        <li><a class="govuk-link" href="edit-profile">Edit user's details</a></li>
-                        <li><a class="govuk-link" href="confirm-invitation-deactivation">Deactivate user</a></li>
-                        <li><a class="govuk-link" href="resend-invitation"> Resend invitation email</a></li>
-                    </ul>
-                </aside>
-            <% } %>
+        <div class="govuk-notification-banner__content">
+            <p class="govuk-body">Waiting for <%= user.name %> to confirm the new email address of <%= user.pendingEmail %>.</p>
+            <p class="govuk-body">
+            <form method="post" action="cancel-change-email">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <button class="govuk-button">Cancel change email</button>
+            </form>
+            </p>
         </div>
     </div>
-    
-    <nav class="govuk-grid-column-full govuk-!-margin-0 govuk-!-padding-0">
+<% } %>
+<% if (locals.flash.info) { %>
+<div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+    <div class="govuk-notification-banner__header">
+        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">Success</h2>
+    </div>
+    <div class="govuk-notification-banner__content">
+        <p class="govuk-body"><%=locals.flash.info%></p>
+    </div>
+</div>
+<% } %>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">
+            <span class="govuk-caption-l"><%= user.email %></span>
+            <%= user.name %>
+        </h1>
+        <dl class="govuk-summary-list govuk-summary-list--no-border">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-padding-0">Last login:</dt>
+                <dd class="govuk-summary-list__value govuk-!-padding-0"><%= user.formattedLastLogin ? user.formattedLastLogin : 'Never' %></dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-padding-0">Account status:</dt>
+                <dd class="govuk-summary-list__value govuk-!-padding-0"><%= user.status.description %></dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-padding-0">Number of logins in last 12 months:</dt>
+                <dd class="govuk-summary-list__value govuk-!-padding-0"><%= user.loginsInPast12Months.successful %></dd>
+            </div>
+        </dl>
+    </div>
+    <div class="govuk-grid-column-one-third">
+        <% if(!locals.isInvitation) { %>
+            <aside>
+                <h2 class="govuk-heading-m">Actions</h2>
+                <ul class="govuk-list">
+                    <% if(locals.user.status.id !== 0) { %>
+                        <li><a class="govuk-link" href="associate-organisation">Add organisation</a></li>
+                    <% } %>
+                    <% if (locals.organisations.length > 0 && locals.user.status.id !== 0) { %>
+                        <li><a class="govuk-link" href="select-organisation">Add services</a></li>
+                    <% } %>
+                    <% if(locals.user.status.id !== 0 && showChangeEmail) { %>
+                        <li><a class="govuk-link" href="edit-email">Change user's email address</a></li>
+                    <% } %>
+                    <% if(locals.user.status.id === 0) { %>
+                        <li><a class="govuk-link" href="confirm-reactivation">Reactivate user</a></li>
+                    <% } else { %>
+                        <li><a class="govuk-link" href="confirm-deactivation">Deactivate user</a></li>
+                    <% } %>
+                    <% if(locals.user.status.id !== 0) { %>
+                        <li><a class="govuk-link" href="edit-profile">Edit user's details</a></li>
+                    <% } %>
+                        <li><a class="govuk-link" href="web-service-sync">Send WS Sync</a></li>
+                        <li><a class="govuk-link" href="manage-console-services">Manage console roles</a></li>
+                </ul>
+            </aside>
+        <% } else if (locals.isInvitation && !locals.user.deactivated) { %>
+            <aside>
+                <h2 class="govuk-heading-m">Actions</h2>
+                <ul class="govuk-list">
+                    <li><a class="govuk-link" href="associate-organisation">Add organisation</a></li>
+                    <% if (locals.organisations.length > 0) { %>
+                        <li><a class="govuk-link" href="select-organisation">Add services</a></li>
+                    <% } %>
+                    <li><a class="govuk-link" href="edit-email">Change user's email address</a></li>
+                    <li><a class="govuk-link" href="edit-profile">Edit user's details</a></li>
+                    <li><a class="govuk-link" href="confirm-invitation-deactivation">Deactivate user</a></li>
+                    <li><a class="govuk-link" href="resend-invitation"> Resend invitation email</a></li>
+                </ul>
+            </aside>
+        <% } %>
+    </div>
+</div>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
         <div class="govuk-tabs" data-module="govuk-tabs">
-            <ul class="govuk-tabs__list" role="tablist">
+            <ul class="govuk-tabs__list">
                 <% if(locals.area === 'organisations') { %>
-                    <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">Organisations</li>
+                    <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+                        <span class="govuk-tabs__tab" >Organisations</span>
+                    </li>
                 <% } else { %>
-                    <li class="govuk-tabs__list-item"><a href="organisations" role="tab">Organisations</a></li>
+                    <li class="govuk-tabs__list-item">
+                        <a class="govuk-tabs__tab" href="organisations">Organisations</a>
+                    </li>
                 <% } %>
         
                 <% if(locals.area === 'services') { %>
-                    <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">Services</li>
+                    <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+                        <span class="govuk-tabs__tab">Services</span>
+                    </li>
                 <% } else { %>
-                    <li class="govuk-tabs__list-item"><a href="services" role="tab">Services</a></li>
+                    <li class="govuk-tabs__list-item">
+                        <a class="govuk-tabs__tab" href="services" >Services</a>
+                    </li>
                 <% } %>
         
                 <% if(!locals.isInvitation) { %>
                     <% if(locals.area === 'audit') { %>
-                        <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">Audit</li>
+                        <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+                            <span class="govuk-tabs__tab">Audit</span>
+                        </li>
                     <% } else { %>
-                        <li class="govuk-tabs__list-item"><a href="audit" role="tab">Audit</a></li>
+                        <li class="govuk-tabs__list-item">
+                            <a class="govuk-tabs__tab" href="audit">Audit</a>
+                        </li>
                     <% } %>
                 <% } %>
             </ul>
         </div>
-    </nav>
+    </div>
+</div>
+    
