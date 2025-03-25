@@ -12,6 +12,9 @@ const clearNewUserSessionData = (req) => {
   if (req.session.user) {
     req.session.user = undefined;
   }
+  if (req.session.createServiceData) {
+    req.session.createServiceData = undefined;
+  }
 };
 
 const unpackMultiSelect = (parameter) => {
