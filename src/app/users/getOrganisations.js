@@ -143,6 +143,8 @@ const action = async (req, res) => {
 
   sendResult(req, res, "users/views/organisations", {
     csrfToken: req.csrfToken(),
+    layout: "sharedViews/layoutNew.ejs",
+    backLink: "/users",
     user,
     showChangeEmail,
     organisations: sortedOrgs,
