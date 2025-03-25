@@ -1,4 +1,5 @@
-<%- include('summaryPartial', {area: 'services', user: locals.user, isInvitation: locals.isInvitation}); %>
+<div class="govuk-width-container">
+    <%- include('summaryPartial', {area: 'services', user: locals.user, isInvitation: locals.isInvitation}); %>
 
 <% let hasServices = false %>
 
@@ -10,7 +11,7 @@
     <article class="organisation-services">
         <section class="organisation">
             <header>
-                <h3 class="heading-small spacer-heading"><%=org.name%>
+                <h3 class="govuk-heading-s spacer-heading"><%=org.name%>
                     <%= org.status ? `(${org.status.name})` : '' %>
                     <% if (org.naturalIdentifiers && org.naturalIdentifiers.length !== 0) { %>
                         (<%= org.naturalIdentifiers.join(', ') %>)
@@ -20,24 +21,24 @@
         </section>
         <section class="services">
 
-            <table class="data no-borders">
-                <thead>
-                <tr>
-                    <th scope="col" class="cwp-30">Service</th>
-                    <th scope="col" class="cwp-25">User type</th>
-                    <th scope="col" class="cwp-15">Activated</th>
+            <table class="govuk-table">
+                <thead class="govuk-grid-row">
+                <tr class="govuk-table__row">
+                    <th scope="col" class="govuk-table__header govuk-!-width-one-half">Service</th>
+                    <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">User type</th>
+                    <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">Activated</th>
                 </tr>
                 </thead>
                 <tbody>
                 <%for(let s = 0; s < org.services.length; s++) {%>
                 <%const service = org.services[s];%>
-                <tr>
-                    <td><a href="organisations/<%=org.id%>/services/<%=service.id%>"><%=service.name%></a></td>
-                    <td><%=service.userType.name%></td>
+                <tr class="govuk-table__row">
+                    <td class="govuk-table__cell"><a class="govuk-link" href="organisations/<%=org.id%>/services/<%=service.id%>"><%=service.name%></a></td>
+                    <td class="govuk-table__cell"><%=service.userType.name%></td>
                     <%if(service.formattedRequestDate) {%>
-                    <td><%= service.formattedRequestDate %></td>
+                    <td class="govuk-table__cell"><%= service.formattedRequestDate %></td>
                     <%} else {%>
-                    <td>Pending</td>
+                    <td class="govuk-table__cell">Pending</td>
                     <%}%>
                 </tr>
                 <%}%>
@@ -50,6 +51,9 @@
 
 <% if (!hasServices) { %>
 <div class="empty-state">
-    <p><%= user.name %> is not associated with any services</p>
+    <p class="govuk-body"><%= user.name %> is not associated with any services</p>
 </div>
 <% } %>
+
+
+</div>
