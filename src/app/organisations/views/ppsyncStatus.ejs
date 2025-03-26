@@ -1,89 +1,89 @@
-<a href="/organisations" class="link-back">Back</a>
-<div class="row">
-    <div class="col-12">
-        <h1 class="heading-large">Run Provider Profile Sync</h1>
-    </div>
-    <div class="col-12">
-        <p>The following table tells you if the sync has run successfully or failed on each step.</p>
-    </div>
-</div>
-<%
-const paginationModel = {
-    currentPage: locals.page,
-    numberOfPages: locals.numberOfPages,
-    totalNumberOfResults: locals.totalNumberOfResults,
-    numberOfResultsOnPage: locals.audits.length,
-    data: [],
-};
-%>
-
-<%- include('../../sharedViews/pagination', paginationModel); %>
-<div class="row">
-    <div class="col-12">
-        <table class="data">
-            <thead>
-                <tr>
-                    <th scope="col" class="cwp-20">Start date</th>
-                    <th scope="col" class="cwp-30">End date</th>
-                   <!-- <th scope="col" class="cwp-15">Status</th> -->
-                    <th scope="col" class="cwp-15">Step1</th>
-                    <th scope="col" class="cwp-10">Step2</th>
-                    <th scope="col" class="cwp-10">Step3</th>
-                </tr>
-            </thead>
-            <tbody>
-            <% for(let a = 0;a < locals.audits.length; a++) { %>
-            <% const audit = locals.audits[a]; %>
-                <tr>
-                    <%if (audit.formattedStartDate){%>
-                    <td><%= audit.formattedStartDate %></td>
-                        <%}else{%>
-                            <td></td>
-                        <%}%>
-                    <%if (audit.formattedEndDate){%>
-                    <td><%= audit.formattedEndDate %></td>
-                        <%}else{%>
-                            <td></td>
-                        <%}%>
-                    <td class="breakable"><%= audit.statusStep1 === 2? 'SUCCESS' : (audit.statusStep1 === 3?'FAILURE' : '') %></td>
-                    <td class="breakable"><%= audit.statusStep2 === 2? 'SUCCESS' : (audit.statusStep2 === 3?'FAILURE' : '') %></td>
-                    <td class="breakable"><%= audit.statusStep3 === 2? 'SUCCESS' : (audit.statusStep3 === 3?'FAILURE' : '') %></td>
-                </tr>
-            <% } %>
-            </tbody>
-        </table>
-        <%- include('../../sharedViews/pagination', paginationModel); %>
-        <div class="row">
-            <div class="col-12">
-                <h2 class="heading-medium">Provider Profile Email</h2>
-            </div>
-            <div class="col-12">
-                <form method="post" id="form-pp-sync">
-
-                    <div class="form-group <%= (locals.validationMessages.emailStatus !== undefined) ? 'form-group-error' : '' %>">
-                        <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                        <p>Tick this box to confirm you have received the Provider Profile email.</p>
-                        <% if (locals.validationMessages.emailStatus !== undefined) { %>
-                            <p class="error-message" id="validation-firstName"><%= locals.validationMessages.emailStatus %></p>
-                        <% } %>
-                        <div class="multiple-choice">
-                         <input type="checkbox" id="emailStatus" name="emailStatus" value="checked"> <label> Email received </label>
-                        </div>
-                    </div>
-
-                  <div class="form-submit submit-buttons">
-                    <%if(locals.syncInP){%>
-                        <button type="submit" disabled class="button">Submit</button>
-                     <%}else{%>
-                    <button type="submit" class="button">Submit</button>
-                        <%}%>
-                    <a href="<%= locals.cancelLink %>" class="button button-secondary">Cancel</a>
-                </div>
-                </form>
-            </div>
-
-
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l">Run Provider Profile Sync</h1>
+        </div>
+        <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body">The following table tells you if the sync has run successfully or failed on each step.</p>
         </div>
     </div>
+    <%
+    const paginationModel = {
+        currentPage: locals.page,
+        numberOfPages: locals.numberOfPages,
+        totalNumberOfResults: locals.totalNumberOfResults,
+        numberOfResultsOnPage: locals.audits.length,
+        data: [],
+    };
+    %>
+    <%- include('../../sharedViews/paginationNew', paginationModel); %>
+    <div class="govuk-grid-row"> 
+        <div class="govuk-grid-column-full">
+            <table class="govuk-table">
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header">Start date</th>
+                        <th scope="col" class="govuk-table__header">End date</th>
+                    <!-- <th scope="col" class="cwp-15">Status</th> -->
+                        <th scope="col" class="govuk-table__header">Step1</th>
+                        <th scope="col" class="govuk-table__header">Step2</th>
+                        <th scope="col" class="govuk-table__header">Step3</th>
+                    </tr>
+                </thead>
+                <tbody class="govuk-table__body">
+                <% for(let a = 0;a < locals.audits.length; a++) { %>
+                <% const audit = locals.audits[a]; %>
+                    <tr class="govuk-table__row">
+                        <%if (audit.formattedStartDate){%>
+                        <td class="govuk-table__cell"><%= audit.formattedStartDate %></td>
+                            <%}else{%>
+                                <td class="govuk-table__cell"></td>
+                            <%}%>
+                        <%if (audit.formattedEndDate){%>
+                        <td class="govuk-table__cell"><%= audit.formattedEndDate %></td>
+                            <%}else{%>
+                                <td class="govuk-table__cell"></td>
+                            <%}%>
+                        <td class="govuk-table__cell"><%= audit.statusStep1 === 2? 'SUCCESS' : (audit.statusStep1 === 3?'FAILURE' : '') %></td>
+                        <td class="govuk-table__cell"><%= audit.statusStep2 === 2? 'SUCCESS' : (audit.statusStep2 === 3?'FAILURE' : '') %></td>
+                        <td class="govuk-table__cell"><%= audit.statusStep3 === 2? 'SUCCESS' : (audit.statusStep3 === 3?'FAILURE' : '') %></td>
+                    </tr>
+                <% } %>
+                </tbody>
+            </table>
+            <%- include('../../sharedViews/paginationNew', paginationModel); %>
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <h2 class="govuk-heading-m">Provider Profile Email</h2>
+                </div>
+                <div class="govuk-grid-column-two-thirds">
+                    <form method="post" id="form-pp-sync">
 
+                        <div class="govuk-form-group <%= (locals.validationMessages.emailStatus !== undefined) ? 'govuk-form-group-error' : '' %>">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                                <p class="govuk-body">Tick this box to confirm you have received the Provider Profile email.</p>
+                            <% if (locals.validationMessages.emailStatus !== undefined) { %>
+                                <p class="govuk-body" id="validation-firstName"><%= locals.validationMessages.emailStatus %></p>
+                            <% } %>
+                            <div class="govuk-checkboxes">
+                                <div class="govuk-checkboxes__item">
+                                    <input class="govuk-checkboxes__input" type="checkbox" id="emailStatus" name="emailStatus" value="checked"> 
+                                    <label class="govuk-label govuk-checkboxes__label"> Email received </label>
+                                </div>
+                            </div>
+                        </div>
 
+                    <div class="form-submit submit-buttons">
+                        <%if(locals.syncInP){%>
+                            <button type="submit" disabled class="govuk-button">Submit</button>
+                        <%}else{%>
+                            <button type="submit" class="govuk-button">Submit</button>
+                            <%}%>
+                        <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
