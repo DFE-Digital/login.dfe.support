@@ -96,10 +96,10 @@ const search = async (req) => {
     inputSource.isFilterToggle !== "true" &&
     inputSource.showFilters !== "true"
   ) {
-    if (!criteria || criteria.length < 4) {
+    if (!criteria || criteria.length < 3) {
       return {
         validationMessages: {
-          criteria: "Please enter at least 4 characters",
+          criteria: "Please enter at least 3 characters",
         },
       };
     }
