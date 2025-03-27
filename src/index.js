@@ -74,19 +74,21 @@ const init = async () => {
   const styleSources = [self, "'unsafe-inline'", allowedOrigin];
   const imgSources = [self, "data:", "blob:", allowedOrigin];
   const fontSources = [self, "data:", allowedOrigin];
+  const defaultSources = [self, allowedOrigin];
 
   if (config.hostingEnvironment.env === "dev") {
-    scriptSources.push("localhost");
-    styleSources.push("localhost");
-    imgSources.push("localhost");
-    fontSources.push("localhost");
+    scriptSources.push("localhost:*");
+    styleSources.push("localhost:*");
+    imgSources.push("localhost:*");
+    fontSources.push("localhost:*");
+    defaultSources.push("localhost:*");
   }
 
   app.use(
     helmet({
       contentSecurityPolicy: {
         directives: {
-          defaultSrc: [self],
+          defaultSrc: defaultSources,
           scriptSrc: scriptSources,
           styleSrc: styleSources,
           imgSrc: imgSources,
