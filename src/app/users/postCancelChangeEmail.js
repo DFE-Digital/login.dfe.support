@@ -9,7 +9,7 @@ const {
 
 const updateUserIndex = async (uid, correlationId) => {
   const user = await getUserDetailsById(uid, correlationId);
-  user.pendingEmail = undefined;
+  user.pendingEmail = null;
 
   await updateUserDetails(user, correlationId);
 
