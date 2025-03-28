@@ -14,13 +14,20 @@ const validateInput = async (req) => {
     responseTypesCode: req.body["response_types-code"] || "",
     responseTypesIdToken: req.body["response_types-id_token"] || "",
     responseTypesToken: req.body["response_types-token"] || "",
-    refreshToken: req.body.refreshToken || "",
+    refreshToken: req.body.refreshToken,
     clientSecret: req.body.clientSecret || "",
     tokenEndpointAuthenticationMethod:
       req.body.tokenEndpointAuthenticationMethod,
     apiSecret: req.body.apiSecret || "",
     validationMessages: {},
   };
+
+  // If code response type is NOT selected then silently discard these 3 values.
+  if (!model.responseTypesCode) {
+    model.refreshToken = undefined;
+    model.clientSecret = "";
+    model.tokenEndpointAuthenticationMethod = undefined;
+  }
 
   // redirect_uris and post_logout_redirect_uris values are an array if multiple values entered,
   // a string if one value entered and undefined when nothing entered.
@@ -124,58 +131,53 @@ const validateInput = async (req) => {
 
   // Logout redirect urls validation
   const logoutRedirectUris = model.service.postLogoutRedirectUris;
-  const areLogoutUrisNotPopulated =
-    !logoutRedirectUris ||
-    logoutRedirectUris.length === 0 ||
-    (logoutRedirectUris.length === 1 && !logoutRedirectUris[0]);
-
-  if (areLogoutUrisNotPopulated) {
+  await Promise.all(
+    logoutRedirectUris.map(async (url) => {
+      if (url.length > 1024) {
+        if (model.validationMessages.post_logout_redirect_uris !== undefined) {
+          model.validationMessages.post_logout_redirect_uris +=
+            "<br/>Log out redirect url must be 1024 characters or less";
+        } else {
+          model.validationMessages.post_logout_redirect_uris =
+            "Log out redirect url must be 1024 characters or less";
+        }
+      }
+      try {
+        new URL(url);
+      } catch {
+        if (model.validationMessages.post_logout_redirect_uris !== undefined) {
+          model.validationMessages.post_logout_redirect_uris +=
+            "<br/>Log out redirect url must be a valid url";
+        } else {
+          model.validationMessages.post_logout_redirect_uris =
+            "Log out redirect url must be a valid url";
+        }
+      }
+    }),
+  );
+  if (
+    logoutRedirectUris.some(
+      (value, i) => logoutRedirectUris.indexOf(value) !== i,
+    )
+  ) {
     model.validationMessages.post_logout_redirect_uris =
-      "Enter a log out redirect url";
-  } else {
-    await Promise.all(
-      logoutRedirectUris.map(async (url) => {
-        if (url.length > 1024) {
-          if (
-            model.validationMessages.post_logout_redirect_uris !== undefined
-          ) {
-            model.validationMessages.post_logout_redirect_uris +=
-              "<br/>Log out redirect url must be 1024 characters or less";
-          } else {
-            model.validationMessages.post_logout_redirect_uris =
-              "Log out redirect url must be 1024 characters or less";
-          }
-        }
-        try {
-          new URL(url);
-        } catch {
-          if (
-            model.validationMessages.post_logout_redirect_uris !== undefined
-          ) {
-            model.validationMessages.post_logout_redirect_uris +=
-              "<br/>Log out redirect url must be a valid url";
-          } else {
-            model.validationMessages.post_logout_redirect_uris =
-              "Log out redirect url must be a valid url";
-          }
-        }
-      }),
-    );
-    if (
-      logoutRedirectUris.some(
-        (value, i) => logoutRedirectUris.indexOf(value) !== i,
-      )
-    ) {
-      model.validationMessages.post_logout_redirect_uris =
-        "Log out redirect urls must all be unique";
-    }
+      "Log out redirect urls must all be unique";
   }
 
-  if (!model.clientSecret) {
-    model.validationMessages.clientSecret = "Enter a client secret";
-  } else if (model.clientSecret.length > 255) {
-    model.validationMessages.clientSecret =
-      "Client secret must be 255 characters or less";
+  const isCodeOrIdTokenSelected =
+    model.responseTypesCode || model.responseTypesIdToken;
+  if (model.responseTypesToken && !isCodeOrIdTokenSelected) {
+    model.validationMessages.responseTypesToken =
+      "Select more than 1 response type when 'token' is selected as a response type";
+  }
+
+  if (model.responseTypesCode) {
+    if (!model.clientSecret) {
+      model.validationMessages.clientSecret = "Enter a client secret";
+    } else if (model.clientSecret.length > 255) {
+      model.validationMessages.clientSecret =
+        "Client secret must be 255 characters or less";
+    }
   }
 
   if (!model.apiSecret) {
@@ -227,7 +229,7 @@ const postServiceUrlsAndResponseType = async (req, res) => {
         model,
       );
     }
-    return res.redirect("/users");
+    return res.redirect("confirm-new-service");
   });
 };
 

@@ -13,8 +13,25 @@ describe("when displaying the get service name and description page", () => {
   let req;
 
   beforeEach(() => {
-    req = getRequestMock();
+    req = getRequestMock({
+      session: {
+        createServiceData: {
+          serviceType: "idOnly",
+          hideFromUserServices: undefined,
+          hideFromContactUs: undefined,
+        },
+      },
+    });
     res.mockResetAll();
+  });
+
+  it("should redirect back to /users if nothing is in the session", async () => {
+    req.session = {};
+
+    await getServiceNameAndDescription(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/users");
   });
 
   it("then it should return the serviceNameAndDescription view", async () => {

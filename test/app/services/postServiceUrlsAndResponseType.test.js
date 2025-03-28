@@ -26,10 +26,10 @@ describe("when displaying the post choose service type screen", () => {
         clientId: "test-client-id",
         redirect_uris: "https://test-url.com/redirect",
         post_logout_redirect_uris: "https://test-url.com/log-out-redirect",
-        "response_types-code": "",
+        "response_types-code": "responseTypesCode",
         "response_types-id_token": "",
         "response_types-token": "",
-        refreshToken: "",
+        refreshToken: "refresh_token",
         clientSecret: "client-secret",
         apiSecret: "api-secret",
       },
@@ -71,10 +71,10 @@ describe("when displaying the post choose service type screen", () => {
         postLogoutRedirectUris: ["https://test-url.com/log-out-redirect"],
         redirectUris: ["https://test-url.com/redirect"],
       },
-      responseTypesCode: "",
+      responseTypesCode: "responseTypesCode",
       responseTypesIdToken: "",
       responseTypesToken: "",
-      refreshToken: "",
+      refreshToken: "refresh_token",
       clientSecret: "client-secret",
       tokenEndpointAuthenticationMethod: undefined,
       apiSecret: "api-secret",
@@ -91,7 +91,69 @@ describe("when displaying the post choose service type screen", () => {
     await postServiceUrlsAndResponseType(req, res);
 
     expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe("/users");
+    expect(res.redirect.mock.calls[0][0]).toBe("confirm-new-service");
+    expect(sendResult).toHaveBeenCalledTimes(0);
+  });
+
+  it("should redirect to the service urls and response type page on success with multiple redirect and logout redirect urls", async () => {
+    // If multiple are entered in the form, it gets sent as an array instead of a single value
+    // This test makes sure the rest of the form handles the data in both forms correctly
+    req.body.redirect_uris = [
+      "https://test-url.com/redirect",
+      "https://test-url2.com/redirect2",
+    ];
+    req.body.post_logout_redirect_uris = [
+      "https://test-url.com/log-out-redirect",
+      "https://test-url2.com/log-out-redirect2",
+    ];
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("confirm-new-service");
+    expect(sendResult).toHaveBeenCalledTimes(0);
+  });
+
+  it("should redirect to the service urls and response type page on success with no logout redirect urls", async () => {
+    req.body.post_logout_redirect_uris = undefined;
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("confirm-new-service");
+    expect(sendResult).toHaveBeenCalledTimes(0);
+  });
+
+  it("should discard client_secret, refresh_token and tokenEndpointAuthenticationMethod if response type code is not selected", async () => {
+    req.body["response_types-code"] = "";
+    req.body.refreshToken = "refresh_token";
+    req.body.clientSecret = "Test secret";
+    req.body.tokenEndpointAuthenticationMethod =
+      "tokenEndpointAuthenticationMethod";
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("confirm-new-service");
+    expect(req.session.createServiceData).toStrictEqual({
+      serviceType: "idOnlyServiceType",
+      name: "Test name",
+      description: "Test description",
+      homeUrl: "https://test-url.com/home",
+      postPasswordResetUrl: "https://test-url.com/post-password-reset",
+      clientId: "test-client-id",
+      service: {
+        postLogoutRedirectUris: ["https://test-url.com/log-out-redirect"],
+        redirectUris: ["https://test-url.com/redirect"],
+      },
+      responseTypesCode: "",
+      responseTypesIdToken: "",
+      responseTypesToken: "",
+      refreshToken: undefined,
+      clientSecret: "",
+      tokenEndpointAuthenticationMethod: undefined,
+      apiSecret: "api-secret",
+      validationMessages: {},
+    });
     expect(sendResult).toHaveBeenCalledTimes(0);
   });
 
@@ -116,14 +178,14 @@ describe("when displaying the post choose service type screen", () => {
         homeUrl: "https://test-url.com/home",
         postPasswordResetUrl: "https://test-url.com/post-password-reset",
         clientId: "test-client-id",
-        responseTypesCode: "",
+        responseTypesCode: "responseTypesCode",
         responseTypesIdToken: "",
         responseTypesToken: "",
         service: {
           postLogoutRedirectUris: ["https://test-url.com/log-out-redirect"],
           redirectUris: ["https://test-url.com/redirect"],
         },
-        refreshToken: "",
+        refreshToken: "refresh_token",
         clientSecret: "client-secret",
         tokenEndpointAuthenticationMethod: undefined,
         apiSecret: "api-secret",
@@ -137,6 +199,18 @@ describe("when displaying the post choose service type screen", () => {
         },
       },
     );
+  });
+
+  it("should render an the page with an error in validationMessages if no postPasswordResetUrl is entered", async () => {
+    req.body.postPasswordResetUrl = "";
+    exampleErrorResponse.postPasswordResetUrl = "";
+    exampleErrorResponse.validationMessages.postPasswordResetUrl =
+      "Enter a post password reset url";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
   it("should render an the page with an error in validationMessages if no postPasswordResetUrl is entered", async () => {
@@ -331,18 +405,6 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
-  it("should render an the page with an error in validationMessages if no logOutRedirectUrl is entered", async () => {
-    req.body.post_logout_redirect_uris = "";
-    exampleErrorResponse.service.postLogoutRedirectUris = [];
-    exampleErrorResponse.validationMessages.post_logout_redirect_uris =
-      "Enter a log out redirect url";
-
-    await postServiceUrlsAndResponseType(req, res);
-
-    expect(sendResult).toHaveBeenCalledTimes(1);
-    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
-  });
-
   it("should render an the page with an error in validationMessages if logOutRedirectUrl over 1024 characters", async () => {
     req.body.post_logout_redirect_uris =
       "https://" + "Test123456".repeat(125) + ".com"; // 1250 character length string
@@ -421,6 +483,26 @@ describe("when displaying the post choose service type screen", () => {
     ];
     exampleErrorResponse.validationMessages.post_logout_redirect_uris =
       "Log out redirect urls must all be unique";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages if only the token response type is selected", async () => {
+    req.body["response_types-code"] = "";
+    req.body["response_types-id_token"] = "";
+    req.body["response_types-token"] = "responseTypesToken";
+
+    // These 3 aren't part of the test, but modifying these elements makes the test shorter in length
+    exampleErrorResponse.responseTypesCode = "";
+    exampleErrorResponse.responseTypesToken = "responseTypesToken";
+    exampleErrorResponse.refreshToken = undefined;
+    exampleErrorResponse.clientSecret = "";
+
+    exampleErrorResponse.validationMessages.responseTypesToken =
+      "Select more than 1 response type when 'token' is selected as a response type";
 
     await postServiceUrlsAndResponseType(req, res);
 

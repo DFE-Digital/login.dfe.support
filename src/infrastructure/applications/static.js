@@ -9,6 +9,11 @@ const clients = [
     post_logout_redirect_uris: ["https://client.one/signout/complete"],
   },
 ];
+
+const createService = async () => {
+  return Promise.resolve();
+};
+
 const getAllServices = async () => {
   return Promise.resolve([]);
 };
@@ -24,6 +29,7 @@ const isSupportEmailNotificationAllowed = async () => {
 };
 
 module.exports = {
+  createService,
   getServiceById,
   getAllServices,
   isSupportEmailNotificationAllowed,
