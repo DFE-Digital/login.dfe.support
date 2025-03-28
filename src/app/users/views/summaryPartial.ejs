@@ -4,6 +4,9 @@
             <div class="notification">
                 <p>
                     This account was deactivated
+                    <% if (user.deactivation && user.deactivation.reason) { %>
+                        - <%= user.deactivation.reason[0] %>
+                    <% } %>
                     <a href="confirm-reactivation" class="action">Reactivate</a>
                 </p>
             </div>
