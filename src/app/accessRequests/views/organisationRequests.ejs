@@ -52,7 +52,7 @@
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                 <input type="hidden" name="page" value="<%= page %>"/>
                 <input type="hidden" name="showFilters" value="<%= !showFilters %>"/>
-                <button type="submit" class="button-link filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
+                <button type="submit" class="button-link filter-link govuk-!-margin-top-4 govuk-!-margin-padding-2"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
             </form>
         </div>
     </div>
@@ -107,7 +107,7 @@
                 <tbody class="govuk-table__body">
                     <% if (locals.requests && locals.requests.length === 0) { %>
                         <tr class="govuk-table__row govuk-body">
-                            <td colspan="6"><span class="empty-state">There are no outstanding requests.</span></td>
+                            <td class="govuk-!-padding-top-3" colspan="6"><span class="empty-state">There are no outstanding requests.</span></td>
                         </tr>
                     <% } else { %>
                     <% for (let i = 0; i < locals.requests.length; i++) { %>
