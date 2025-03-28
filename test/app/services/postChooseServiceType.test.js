@@ -43,10 +43,34 @@ describe("when displaying the post choose service type screen", () => {
     };
   });
 
-  // This is only temporary until more of the journey has been built
   it("should redirect to the users page on success", async () => {
     await postChooseServiceType(req, res);
 
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe(
+      "/services/service-name-and-description",
+    );
+    expect(sendResult).toHaveBeenCalledTimes(0);
+  });
+
+  it("should redirect to the users page on success and existing session data updated", async () => {
+    // Session data set up to represent back link or change button from a future page
+    (req.session.createServiceData = {
+      serviceType: "idOnlyServiceType",
+      name: "Test name",
+      description: "Test description",
+    }),
+      await postChooseServiceType(req, res);
+
+    // Note hideFromUserServices and hideFromContactUs now populated
+    expect(req.session.createServiceData).toStrictEqual({
+      serviceType: "idOnlyServiceType",
+      name: "Test name",
+      description: "Test description",
+      hideFromUserServices: "hideFromUserServices",
+      hideFromContactUs: "hideFromContactUs",
+      validationMessages: {},
+    });
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe(
       "/services/service-name-and-description",

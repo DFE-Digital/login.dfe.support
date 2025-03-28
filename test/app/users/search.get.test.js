@@ -68,6 +68,25 @@ describe("When processing a get to search for users", () => {
     expect(utils.search).not.toHaveBeenCalled();
   });
 
+  it("should clear existing session data", async () => {
+    req.session = {
+      user: {
+        id: "user-id",
+      },
+      createServiceData: {
+        serviceType: "idOnly",
+        hideFromUserServices: undefined,
+        hideFromContactUs: undefined,
+        name: "newServiceName",
+        description: "newServiceDescription blah",
+      },
+    };
+    await get(req, res);
+
+    expect(req.session.user).toBe(undefined);
+    expect(req.session.createServiceData).toBe(undefined);
+  });
+
   test("then it should include undefined values for search result properties as GET does not do a search anymore", async () => {
     await get(req, res);
 

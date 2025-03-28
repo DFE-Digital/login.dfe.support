@@ -33,7 +33,16 @@ const postChooseServiceType = async (req, res) => {
     return sendResult(req, res, "services/views/chooseServiceType", model);
   }
 
-  req.session.createServiceData = model;
+  // If existing data in session then we'll overlay our changes onto the existing
+  // data.  If no data in session, we'll set it as the current model.
+  if (req.session.createServiceData) {
+    const createServiceData = req.session.createServiceData;
+    Object.assign(createServiceData, model);
+    req.session.createServiceData = createServiceData;
+  } else {
+    req.session.createServiceData = model;
+  }
+
   req.session.save((error) => {
     if (error) {
       // Any error saving to session should hopefully be temporary. Assuming this, we log the error
