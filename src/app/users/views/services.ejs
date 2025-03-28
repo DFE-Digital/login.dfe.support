@@ -7,48 +7,44 @@
         <% const org = locals.organisations[o]; %>
         <% if (org.services.length > 0) { %>
             <% hasServices = true %>
-            <article class="organisation-services">
-                <section class="organisation">
-                    <header>
-                        <h3 class="govuk-heading-s govuk-!-margin-bottom-2">
-                            <%= org.name %>
-                            <%= org.status ? `(${org.status.name})` : '' %>
-                            <% if (org.naturalIdentifiers && org.naturalIdentifiers.length !== 0) { %>
-                                (<%= org.naturalIdentifiers.join(', ') %>)
-                            <% } %>
-                        </h3>
-                    </header>
-                </section>
-                <section class="services">
-                    <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="services">
-                        <table class="govuk-table">
-                            <thead class="govuk-grid-row">
-                                <tr class="govuk-table__row">
-                                    <th scope="col" class="govuk-table__header govuk-!-width-one-half">Service</th>
-                                    <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">User type</th>
-                                    <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">Activated</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% for (let s = 0; s < org.services.length; s++) { %>
-                                    <% const service = org.services[s]; %>
-                                    <tr class="govuk-table__row">
-                                        <td class="govuk-table__cell">
-                                            <a class="govuk-link" href="organisations/<%= org.id %>/services/<%= service.id %>"><%= service.name %></a>
-                                        </td>
-                                        <td class="govuk-table__cell"><%= service.userType.name %></td>
-                                        <% if (service.formattedRequestDate) { %>
-                                            <td class="govuk-table__cell"><%= service.formattedRequestDate %></td>
-                                        <% } else { %>
-                                            <td class="govuk-table__cell">Pending</td>
-                                        <% } %>
-                                    </tr>
+            <div class="govuk-grid-column-full govuk-!-padding-top-2">
+                <header>
+                    <h3 class="govuk-heading-s">
+                        <%= org.name %>
+                        <%= org.status ? `(${org.status.name})` : '' %>
+                        <% if (org.naturalIdentifiers && org.naturalIdentifiers.length !== 0) { %>
+                            (<%= org.naturalIdentifiers.join(', ') %>)
+                        <% } %>
+                    </h3>
+                </header>
+            </div>
+            <div class="govuk-tabs__panel" id="services">
+                <table class="govuk-table">
+                    <thead class="govuk-grid-row">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header govuk-!-width-one-half">Service</th>
+                            <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">User type</th>
+                            <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">Activated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (let s = 0; s < org.services.length; s++) { %>
+                            <% const service = org.services[s]; %>
+                            <tr class="govuk-table__row">
+                                <td class="govuk-table__cell">
+                                    <a class="govuk-link" href="organisations/<%= org.id %>/services/<%= service.id %>"><%= service.name %></a>
+                                </td>
+                                <td class="govuk-table__cell"><%= service.userType.name %></td>
+                                <% if (service.formattedRequestDate) { %>
+                                    <td class="govuk-table__cell"><%= service.formattedRequestDate %></td>
+                                <% } else { %>
+                                    <td class="govuk-table__cell">Pending</td>
                                 <% } %>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-            </article>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
         <% } %>
     <% } %>
 

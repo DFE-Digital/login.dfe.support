@@ -1,18 +1,6 @@
 <div class="govuk-width-container">
     <%- include('summaryPartial', {area: 'audit', user: locals.user}); %>
 
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-            <form method="POST">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                <button class="govuk-button govuk-!-margin-bottom-3" type="submit" 
-                        onclick="this.form.submit(); this.disabled=true; this.innerText='Processing Update';">
-                    Update and refresh
-                </button>
-            </form>
-        </div>
-    </div>
-
     <%
         const paginationModel = {
             disableNextAndPrevious: true,
@@ -24,12 +12,22 @@
         };
     %>
 
-    <%- include('../../sharedViews/paginationNew', paginationModel); %>
-
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-            <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="audit">
+            <div class="govuk-tabs__panel" id="audit">
                 <table class="govuk-table">
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-full">
+                            <form method="POST">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                                <button class="govuk-button" type="submit" 
+                                        onclick="this.form.submit(); this.disabled=true; this.innerText='Processing Update';">
+                                    Update and refresh
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <%- include('../../sharedViews/paginationNew', paginationModel); %>
                     <thead class="govuk-table__head">
                         <tr class="govuk-table__row">
                             <th scope="col" class="govuk-table__header">Date</th>
