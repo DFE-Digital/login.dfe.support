@@ -173,7 +173,7 @@ const organisationStatusesQuery = locals.organisationStatuses.filter(x => x.isSe
                         <% } %>
                         <% for (let i = 0; i < locals.organisations.length; i++) { %>
                             <tr class="govuk-table__row govuk-body">
-                                <td class="govuk-table__cell govuk-body-s"><a href="/organisations/<%= organisations[i].id %>/users?criteria=<%= locals.criteria %>&page=<%= locals.page %>&showFilters=<%= locals.showFilters %>&<%= organisationTypesQuery %>&<%= organisationStatusesQuery %>"><%= organisations[i].name %></a></td>
+                                <td class="govuk-table__cell govuk-body-s"><a class="govuk-link" href="/organisations/<%= organisations[i].id %>/users?criteria=<%= locals.criteria %>&page=<%= locals.page %>&showFilters=<%= locals.showFilters %>&<%= organisationTypesQuery %>&<%= organisationStatusesQuery %>"><%= organisations[i].name %></a></td>
                                 <td class="govuk-table__cell govuk-body-s"><%= organisations[i].LegalName %></td>
                                 <td class="govuk-table__cell govuk-body-s"><%= organisations[i].type ? organisations[i].type.name : organisations[i].providerTypeName || organisations[i].category.name  %></td>
                                 <td class="govuk-table__cell govuk-body-s"><%= organisations[i].urn %></td>

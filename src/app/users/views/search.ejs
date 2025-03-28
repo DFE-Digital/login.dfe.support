@@ -246,7 +246,7 @@ if (services && services.length > 0) {
             <% } %>
             <% for (let i = 0; i < locals.users.length; i++) { %>
             <tr class="govuk-table__row govuk-body">
-                <td class="govuk-table__cell govuk-body-s"><a href="/users/<%= users[i].id %>/organisations<%= baseSortUri %>"><%= users[i].name %></a></td>
+                <td class="govuk-table__cell govuk-body-s"><a class="govuk-link" href="/users/<%= users[i].id %>/organisations<%= baseSortUri %>"><%= users[i].name %></a></td>
                 <td class="govuk-table__cell govuk-body-s"><span><%= users[i].email %></span></td>
                 <td class="govuk-table__cell govuk-body-s">
                     <% if(users[i].organisation) { %>
