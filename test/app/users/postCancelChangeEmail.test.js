@@ -94,7 +94,7 @@ describe("when cancelling the change of email for a user", () => {
     await postCancelChangeEmail(req, res);
 
     expect(updateUserDetails.mock.calls).toHaveLength(1);
-    expect(updateUserDetails.mock.calls[0][0].pendingEmail).toBeUndefined();
+    expect(updateUserDetails.mock.calls[0][0].pendingEmail).toBeNull();
   });
 
   it("then it should audit cancellation", async () => {
