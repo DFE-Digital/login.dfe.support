@@ -14,6 +14,7 @@ const get = async (req, res) => {
   return res.render("accessRequests/views/reviewOrganisationRequest", {
     csrfToken: req.csrfToken(),
     title: "Review request - DfE Sign-in",
+    layout: "sharedViews/layoutNew.ejs",
     backLink: true,
     cancelLink: req._cancelLink,
     request,
@@ -32,6 +33,7 @@ const validate = async (req) => {
   const model = {
     title: "Review request - DfE Sign-in",
     backLink: true,
+    layout: "sharedViews/layoutNew.ejs",
     cancelLink: req._cancelLink,
     request,
     selectedResponse: req.body.selectedResponse,
@@ -48,6 +50,7 @@ const validate = async (req) => {
 
 const post = async (req, res) => {
   const model = await validate(req);
+  console.log(model.layout);
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
