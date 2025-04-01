@@ -1,115 +1,111 @@
-<a href="/users" class="link-back">Back</a>
-<%- include('summaryPartial', {area: 'organisations', user: locals.user, isInvitation: locals.isInvitation}); %>
+<div class="govuk-width-container">
+    <%- include('summaryPartial', {area: 'organisations', user: locals.user, isInvitation: locals.isInvitation}); %>
 
-<% if (locals.organisations.length > 0) {%>
-<table class="data no-borders">
-    <thead>
-        <tr>
-            <th scope="col" class="cwp-20">Organisation</th>
-            <% if (!locals.isInvitation ) {%>
-            <th scope="col" class="cwp-15">Legacy ID/Name</th>
-            <% }%>
-            <th scope="col" class="cwp-15">Permission level</th>
-            <th scope="col" class="cwp-15"></th>
-            <th scope="col" class="cwp-15"></th>
-        </tr>
-    </thead>
-    <tbody>
-        <% for (let o = 0; o < locals.organisations.length; o++) { %>
-        <% const org = locals.organisations[o];%>
-            <% if (org.requestDate) { %>
-            <tr class="pending">
-            <% } else { %>
-            <tr>
-            <% }%>
-                <td> <%=org.name%> <br>
-                    <article class="organisation-services" style="margin-bottom: 0">
-                        <section class="organisation">
-                            <div class="user">
-                                <a href="" class="info-link">Information and approvers <span class="vh">for <%=org.name%></span> </a>
-                            </div>
-                            <div class="meta js-hidden">
-                                <div class="approvers">
-                                    <dl class="inline condensed small-dt">
-                                        <% if (org.LegalName) { %>
-                                        <dt><abbr title="Registered legal name">Legal name: </abbr></dt>
-                                        <dd><%=org.LegalName%></dd>
-                                        <% } %>
-
-                                        <% if (org.urn) { %>
-                                            <dt><abbr title="Unique Reference Number">URN: </abbr></dt>
-                                            <% if (org.status && org.status.id === 4) { %>
-                                                <dd><%=org.urn%></dd>
-                                            <%}else {%>
-                                                <dd><a href="https://get-information-schools.service.gov.uk/Establishments/Establishment/Details/<%=org.urn%>" target="_blank"><%=org.urn%></a></dd>
-                                                <%}%>
-                                        <%}else if(org.uid) {%>
-                                            <dt><abbr title="Unique Identifier">UID: </abbr></dt>
-                                            <% if (org.status && org.status.id === 2) { %>
-                                                <dd><%=org.uid%></dd>
-                                            <%}else {%>
-                                                <dd><a href="https://get-information-schools.service.gov.uk/Groups/Group/Details/<%=org.uid%>" target="_blank"><%=org.uid%></a></dd>
-                                            <%}%> 
-                                        <%}%>
-                                        
-                                        <% if (org.ukprn) { %>
-                                        <dt><abbr title="UK Provider Reference Number">UKPRN: </abbr></dt>
-                                        <dd><%=org.ukprn%></dd>
-                                        <% } %>
-
-                                        <% if (org.upin) { %>
-                                        <dt><abbr title="The Independent Specialist Provider's Unique Provider Identification Number">UPIN: </abbr></dt>
-                                        <dd><%=org.upin%></dd>
-                                        <% } %>
-
-                                        <% if (org.status && org.status.name) { %>
-                                        <dt><abbr title="Status">Status: </abbr></dt>
-                                        <dd><%=org.status.name%></dd>
-                                        <% } %>
-
-                                        <% if (org.approvers && org.approvers.length > 0) { %>
-                                            <dt>Approvers:</dt>
-                                            <dd>
-                                                <ul>
-                                                    <% for (let a = 0; a < org.approvers.length; a++) { %>
-                                                    <li><%=org.approvers[a].name%> <a href="mailto:<%=org.approvers[a].email%>"><%=org.approvers[a].email%></a></li>
+    <% if (locals.organisations.length > 0) { %>
+        <div class="govuk-tabs__panel" id="organisations">
+            <table class="govuk-table">
+                <thead class="govuk-grid-row">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header govuk-!-font-size-16 govuk-!-padding-top-0">Organisation</th>
+                        <% if (!locals.isInvitation) { %>
+                        <th scope="col" class="govuk-table__header govuk-!-font-size-16 govuk-!-padding-top-0">Legacy ID/Name</th>
+                        <% } %>
+                        <th scope="col" class="govuk-table__header govuk-!-font-size-16 govuk-!-padding-top-0">Permission level</th>
+                        <th scope="col" class="govuk-table__header"></th>
+                        <th scope="col" class="govuk-table__header"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (let o = 0; o < locals.organisations.length; o++) { %>
+                    <% const org = locals.organisations[o]; %>
+                        <tr class="govuk-table__row <%= org.requestDate ? 'pending' : '' %>">
+                            <td class="govuk-table__cell"> 
+                                <%= org.name %> 
+                                <br>
+                                <article class="organisation-services govuk-!-margin-bottom-0">
+                                    <section class="organisation">
+                                        <div class="user">
+                                            <a href="" class="info-link">Information and approvers <span class="vh">for <%= org.name %></span> </a>
+                                        </div>
+                                        <div class="meta js-hidden">
+                                            <div class="approvers">
+                                                <dl class="inline condensed small-dt">
+                                                    <% if (org.LegalName) { %>
+                                                    <dt class="govuk-summary-list__key"><abbr title="Registered legal name">Legal name: </abbr></dt>
+                                                    <dd class="govuk-summary-list__value"><%= org.LegalName %></dd>
                                                     <% } %>
-                                                </ul>
-                                            </dd>
-                                        <% } %>
-                                    </dl>
-                                </div>
-                            </div>
-                        </section>
-                    </article>
-                </td>
-                <% if (!locals.isInvitation ) {%>
-                <td><%= org.numericIdentifier && org.textIdentifier ? `${org.numericIdentifier} / ${org.textIdentifier}` : '' -%></td>
-                <% }%>
-                <% if (org.role) { %>
-                <td><%=org.role.name%></td>
-                <% } else { %>
-                    <td>
-                        Requested <br> <%= org.formattedRequestDate %>
-                    </td>
-                <% } %>
-                <% if (org.requestDate) { %>
-                <td></td>
-                <td><a href="/access-requests/<%=org.requestId%>/organisation/review">Review request</a> </td>
-                <% } else { %>
-                    <td>
-                        <a class="govuk-link" href="/users/<%=user.id%>/organisations/<%=org.id%>/edit-permission">Edit <span class="visually-hidden"> user</span> permission level</a> 
-                    </td>
-                    <td>
-                        <a href="/users/<%=user.id%>/organisations/<%=org.id%>/remove-organisation">Remove <span class="visually-hidden"> user</span> organisation</a>
-                    </td>
-                <% } %>
-            </tr>
-        <%}%>
-    </tbody>
-</table>
-<% } else { %>
-<div class="empty-state">
-    <p><%= user.name %> is not associated with any organisations</p>
+                                                    <% if (org.urn) { %>
+                                                        <dt class="govuk-summary-list__key"><abbr title="Unique Reference Number">URN: </abbr></dt>
+                                                        <% if (org.status && org.status.id === 4) { %>
+                                                            <dd class="govuk-summary-list__value"><%= org.urn %></dd>
+                                                        <% } else { %>
+                                                            <dd class="govuk-summary-list__value"><a href="https://get-information-schools.service.gov.uk/Establishments/Establishment/Details/<%= org.urn %>" target="_blank"><%= org.urn %></a></dd>
+                                                        <% } %>
+                                                    <% } else if (org.uid) { %>
+                                                        <dt class="govuk-summary-list__key"><abbr title="Unique Identifier">UID: </abbr></dt>
+                                                        <% if (org.status && org.status.id === 2) { %>
+                                                            <dd class="govuk-summary-list__value"><%= org.uid %></dd>
+                                                        <% } else { %>
+                                                            <dd class="govuk-summary-list__value"><a href="https://get-information-schools.service.gov.uk/Groups/Group/Details/<%= org.uid %>" target="_blank"><%= org.uid %></a></dd>
+                                                        <% } %>
+                                                    <% } %>
+                                                    <% if (org.ukprn) { %>
+                                                    <dt class="govuk-summary-list__key"><abbr title="UK Provider Reference Number">UKPRN: </abbr></dt>
+                                                    <dd class="govuk-summary-list__value"><%= org.ukprn %></dd>
+                                                    <% } %>
+                                                    <% if (org.upin) { %>
+                                                    <dt class="govuk-summary-list__key"><abbr title="The Independent Specialist Provider's Unique Provider Identification Number">UPIN: </abbr></dt>
+                                                    <dd class="govuk-summary-list__value"><%= org.upin %></dd>
+                                                    <% } %>
+                                                    <% if (org.status && org.status.name) { %>
+                                                    <dt class="govuk-summary-list__key"><abbr title="Status">Status: </abbr></dt>
+                                                    <dd class="govuk-summary-list__value"><%= org.status.name %></dd>
+                                                    <% } %>
+                                                    <% if (org.approvers && org.approvers.length > 0) { %>
+                                                        <dt class="govuk-summary-list__key">Approvers:</dt>
+                                                        <dd class="govuk-summary-list__value">
+                                                            <ul>
+                                                                <% for (let a = 0; a < org.approvers.length; a++) { %>
+                                                                <li><%= org.approvers[a].name %> <a href="mailto:<%= org.approvers[a].email %>"><%= org.approvers[a].email %></a></li>
+                                                                <% } %>
+                                                            </ul>
+                                                        </dd>
+                                                    <% } %>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </article>
+                            </td>
+                            <% if (!locals.isInvitation) { %>
+                            <td class="govuk-table__cell"><%= org.numericIdentifier && org.textIdentifier ? `${org.numericIdentifier} / ${org.textIdentifier}` : '' %></td>
+                            <% } %>
+                            <% if (org.role) { %>
+                            <td class="govuk-table__cell"><%= org.role.name %></td>
+                            <% } else { %>
+                                <td class="govuk-table__cell">
+                                    Requested <br> <%= org.formattedRequestDate %>
+                                </td>
+                            <% } %>
+                            <% if (org.requestDate) { %>
+                            <td class="govuk-table__cell"></td>
+                            <td class="govuk-table__cell"><a href="/access-requests/<%= org.requestId %>/organisation/review">Review request</a> </td>
+                            <% } else { %>
+                                <td class="govuk-table__cell">
+                                    <a class="govuk-link" href="/users/<%= user.id %>/organisations/<%= org.id %>/edit-permission">Edit <span class="visually-hidden"> user</span> permission level</a>
+                                </td>
+                                <td class="govuk-table__cell">
+                                    <a class="govuk-link" href="/users/<%= user.id %>/organisations/<%= org.id %>/remove-organisation">Remove <span class="visually-hidden"> user</span> organisation</a>
+                                </td>
+                            <% } %>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    <% } else { %>
+    <div class="empty-state">
+        <p class="govuk-body"><%= user.name %> is not associated with any organisations</p>
+    </div>
+    <% } %>
 </div>
-<% } %>
