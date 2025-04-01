@@ -276,6 +276,8 @@ const getAudit = async (req, res) => {
 
   sendResult(req, res, "users/views/audit", {
     csrfToken: req.csrfToken(),
+    layout: "sharedViews/layoutNew.ejs",
+    backLink: true,
     user,
     showChangeEmail,
     organisations: userOrganisations,
