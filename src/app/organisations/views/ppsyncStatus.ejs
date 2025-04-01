@@ -53,17 +53,14 @@
             </table>
             <%- include('../../sharedViews/paginationNew', paginationModel); %>
             <div class="govuk-grid-row">
-                <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-grid-column-full">
                     <h2 class="govuk-heading-m">Provider Profile Email</h2>
-                </div>
-                <div class="govuk-grid-column-two-thirds">
                     <form method="post" id="form-pp-sync">
-
-                        <div class="govuk-form-group <%= (locals.validationMessages.emailStatus !== undefined) ? 'govuk-form-group-error' : '' %>">
+                        <div class="govuk-form-group <%= (locals.validationMessages.emailStatus !== undefined) ? 'govuk-form-group--error' : '' %>">
                             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                                 <p class="govuk-body">Tick this box to confirm you have received the Provider Profile email.</p>
                             <% if (locals.validationMessages.emailStatus !== undefined) { %>
-                                <p class="govuk-body" id="validation-firstName"><%= locals.validationMessages.emailStatus %></p>
+                                <p class="govuk-error-message" id="validation-firstName"><%= locals.validationMessages.emailStatus %></p>
                             <% } %>
                             <div class="govuk-checkboxes">
                                 <div class="govuk-checkboxes__item">
@@ -72,15 +69,14 @@
                                 </div>
                             </div>
                         </div>
-
-                    <div class="form-submit submit-buttons">
-                        <%if(locals.syncInP){%>
-                            <button type="submit" disabled class="govuk-button">Submit</button>
-                        <%}else{%>
-                            <button type="submit" class="govuk-button">Submit</button>
-                            <%}%>
-                        <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
-                    </div>
+                        <div class="govuk-button-group">
+                            <%if(locals.syncInP){%>
+                                <button type="submit" disabled class="govuk-button">Submit</button>
+                            <%}else{%>
+                                <button type="submit" class="govuk-button">Submit</button>
+                                <%}%>
+                            <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
+                        </div>
                     </form>
                 </div>
             </div>
