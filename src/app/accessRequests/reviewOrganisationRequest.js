@@ -50,7 +50,6 @@ const validate = async (req) => {
 
 const post = async (req, res) => {
   const model = await validate(req);
-  console.log(model.layout);
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();

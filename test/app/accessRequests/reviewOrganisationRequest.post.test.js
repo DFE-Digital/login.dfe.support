@@ -115,6 +115,7 @@ describe("when reviewing an organisation request", () => {
     );
     expect(res.render.mock.calls[0][1]).toEqual({
       backLink: true,
+      layout: "sharedViews/layoutNew.ejs",
       cancelLink: "/access-requests",
       csrfToken: "token",
       request: {
@@ -173,6 +174,7 @@ describe("when reviewing an organisation request", () => {
     );
     expect(res.render.mock.calls[0][1]).toEqual({
       backLink: true,
+      layout: "sharedViews/layoutNew.ejs",
       cancelLink: "/access-requests",
       csrfToken: "token",
       request: {

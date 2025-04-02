@@ -1,5 +1,5 @@
 <div class="govuk-width-container">
-    <div class="grid-row">
+    <div class="govuk-grid-row">
         <div class="govuk-grid-column-half">
             <h1 class="govuk-heading-xl">
                 Review request
@@ -63,7 +63,7 @@
             </dl>
 
             <form method="post">
-                <div class="govuk-form-group <%= (locals.validationMessages.selectedResponse !== undefined) ? 'govuk-form-group-error' : '' %>">
+                <div class="govuk-form-group <%= (locals.validationMessages.selectedResponse !== undefined) ? 'govuk-form-group--error' : '' %>">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                     <fieldset class="govuk-fieldset" aria-describedby="validation-selected-organisation">
                         <% if (locals.validationMessages.selectedResponse !== undefined) { %>
@@ -87,7 +87,7 @@
                 </div>
                 <div class="govuk-button-group">
                     <button type="submit" class="govuk-button" data-module="govuk-button">Continue</button>
-                    <a href="<%= locals.cancelLink %>" class="govuk-link">Cancel</a>
+                    <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
                 </div>
             </form>
         </div>
