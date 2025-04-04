@@ -51,9 +51,12 @@ const get = async (req, res) => {
       `organisations/${userOrganisations[0].organisation.id}`,
     );
   }
+
   return res.render("users/views/selectOrganisation", {
     selectionPrompt: getSelectionPrompt(),
     csrfToken: req.csrfToken(),
+    layout: "sharedViews/layoutNew.ejs",
+    backLink: "organisations",
     organisations: userOrganisations,
     selectedOrganisation: null,
     validationMessages: {},
@@ -65,6 +68,7 @@ const validate = async (req) => {
   const selectedOrg = req.body.selectedOrganisation;
   const model = {
     selectedOrganisation: selectedOrg,
+    layout: "sharedViews/layoutNew.ejs",
     validationMessages: {},
     organisations: userOrganisations,
   };

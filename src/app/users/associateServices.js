@@ -68,6 +68,7 @@ const get = async (req, res) => {
       : "",
     user: req.session.user,
     validationMessages: {},
+    layout: "sharedViews/layoutNew.ejs",
     backLink:
       userOrganisations.length > 1
         ? `/users/${req.params.uid}/select-organisation`
@@ -103,6 +104,7 @@ const validate = async (req) => {
       : "",
     user: req.session.user,
     validationMessages: {},
+    layout: "sharedViews/layoutNew.ejs",
     backLink:
       userOrganisations.length > 1
         ? `/users/${req.params.uid}/select-organisation`

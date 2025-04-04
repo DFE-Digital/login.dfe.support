@@ -1,113 +1,116 @@
-<div class="grid-row">
-    <div class="col-8">
-
-            <h1 class="heading-xlarge">
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-row">
+            <h1 class="govuk-heading-xl">
                 <%=locals.user.isAddService ? 'Review new services' : 'Review service changes' %>
             </h1>
-            <p><%=locals.user.isAddService ? 'Please review these details before granting access.' : 'Please review these details before saving.'%></p>
+            <p class="govuk-body"><%=locals.user.isAddService ? 'Please review these details before granting access.' : 'Please review these details before saving.'%></p>
 
-        <dl class="app-check-your-answers app-check-your-answers--short">
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__title">
-                    Personal details
-                </dt>
-                <dd class="app-check-your-answers__change ">
-                </dd>
-            </div>
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__question">
-                    First name
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%=locals.user.firstName%>
-                </dd>
-            </div>
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Personal details
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        First name
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%=locals.user.firstName%>
+                    </dd>
+                </div>
 
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__question">
-                    Last name
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%=locals.user.lastName%>
-                </dd>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Last name
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%=locals.user.lastName%>
+                    </dd>
 
-            </div>
+                </div>
 
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__question">
-                    Email Address
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%=locals.user.email%>
-                </dd>
-            </div>
-        </dl>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Email Address
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%=locals.user.email%>
+                    </dd>
+                </div>
+            </dl>
 
 
-        <dl class="app-check-your-answers app-check-your-answers--short">
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__title">
-                    Organisation
-                </dt>
-                <dd class="app-check-your-answers__answer"></dd>
-            </div>
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__question">
-                    Name
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%=locals.organisationDetails.organisation.name%>
-                </dd>
-            </div>
-        </dl>
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Organisation
+                    </dt>
+                    <dd class="govuk-summary-list__value"></dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Name
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%=locals.organisationDetails.organisation.name%>
+                    </dd>
+                </div>
+            </dl>
 
-        <dl class="app-check-your-answers app-check-your-answers--short">
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__title">
-                    Services
-                </dt>
-                <dd class="app-check-your-answers__change ">
-                    <a href= "<%=locals.changeLink%>" >
-                        Change
-                    </a>
-                </dd>
-            </div>
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Services
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <a class="govuk-link" href= "<%=locals.changeLink%>" >
+                            Change
+                        </a>
+                    </dd>
+                </div>
 
-            <% if (locals.services.length > 0) { %>
-                <% for (let i = 0; i< locals.services.length; i++) { %>
-                    <% const service = locals.services[i]; %>
-                    <div class="app-check-your-answers__contents__group">
-                        <dt class="app-check-your-answers__group__title">
-                            Service
-                        </dt>
-                        <dd class="app-check-your-answers__group">
-                            <%= service.name%>
-                        </dd>
-                    </div>
-                    <div class="app-check-your-answers__contents">
-                        <dt class="app-check-your-answers__question">
-                            Roles
-                        </dt>
-                        <dd class="app-check-your-answers__answer">
-                            <% if (locals.services[i].roles.length > 0) { %>
-                                <% for (let x = 0; x < locals.services[i].roles.length; x++) { %>
-                                    <% const role = locals.services[i].roles[x]; %>
-                                    <%= role.name %> <br>
+                <% if (locals.services.length > 0) { %>
+                    <% for (let i = 0; i< locals.services.length; i++) { %>
+                        <% const service = locals.services[i]; %>
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Service
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                <%= service.name%>
+                            </dd>
+                        </div>
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Roles
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                <% if (locals.services[i].roles.length > 0) { %>
+                                    <% for (let x = 0; x < locals.services[i].roles.length; x++) { %>
+                                        <% const role = locals.services[i].roles[x]; %>
+                                        <%= role.name %> <br>
+                                    <% } %>
+                                <% } else { %>
+                                    No roles selected
                                 <% } %>
-                            <% } else { %>
-                                No roles selected
-                            <% } %>
-                        </dd>
-                    </div>
+                            </dd>
+                        </div>
+                    <% } %>
                 <% } %>
-            <% } %>
-        </dl>
-        <form method="post">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <div class="form-submit submit-buttons">
-                <button type="submit" class="button"><%=locals.user.isAddService ? "Submit" : "Save"%></button>
-                <a href="<%=locals.user.isAddService ? "/users/" + locals.user.uid + "/organisations" : "/users/" + locals.user.uid + "/services"%>" class="button button-secondary">Cancel</a>
-            </div>
-        </form>
+            </dl>
+            <form method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button" data-module="govuk-button"><%=locals.user.isAddService ? "Submit" : "Save"%></button>
+                    <a href="<%=locals.user.isAddService ? "/users/" + locals.user.uid + "/organisations" : "/users/" + locals.user.uid + "/services"%>" class="govuk-button govuk-button--secondary" data-module="govuk-button">Cancel</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+

@@ -180,7 +180,18 @@ const organisationStatusesQuery = locals.organisationStatuses.filter(x => x.isSe
                                 <td class="govuk-table__cell govuk-body-s"><%= organisations[i].uid %></td>
                                 <td class="govuk-table__cell govuk-body-s"><%= organisations[i].upin %></td>
                                 <td class="govuk-table__cell govuk-body-s"><%= organisations[i].ukprn %></td>
-                                <td class="govuk-table__cell govuk-body-s"><%= organisations[i].status ? organisations[i].status.name : '' %></td>
+                                <td class="govuk-table__cell govuk-body-s">
+                                    <strong class="govuk-tag 
+                                        <%= organisations[i].status.name === "Open" ? "govuk-tag--green" : 
+                                            organisations[i].status.name === "Closed" ? "govuk-tag--red" : 
+                                            organisations[i].status.name === "Proposed to close" ? "govuk-tag--orange" : 
+                                            organisations[i].status.name === "Proposed to open" ? "govuk-tag--light-blue" : 
+                                            organisations[i].status.name === "Locked Restructure" ? "govuk-tag--yellow" : 
+                                            organisations[i].status.name === "Dissolved" ? "govuk-tag--grey" : "" %>">
+                                        <%= organisations[i].status ? organisations[i].status.name : '' %>
+                                    </strong>
+                                </td>
+
                             </tr>
                         <% } %>
                         </tbody>
