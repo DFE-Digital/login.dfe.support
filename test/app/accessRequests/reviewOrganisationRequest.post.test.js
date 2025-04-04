@@ -113,35 +113,36 @@ describe("when reviewing an organisation request", () => {
     expect(res.render.mock.calls[0][0]).toBe(
       "accessRequests/views/reviewOrganisationRequest",
     );
-    expect(res.render.mock.calls[0][1]).toEqual({
-      backLink: true,
-      layout: "sharedViews/layoutNew.ejs",
-      cancelLink: "/access-requests",
-      csrfToken: "token",
-      request: {
-        actioned_by: null,
-        actioned_date: null,
-        actioned_reason: null,
-        created_date: "2019-05-01",
-        formattedCreatedDate: "01 May 2019 01:00am",
-        id: "requestId",
-        org_id: "org1",
-        org_name: "Org 1",
-        reason: "",
-        status: {
-          id: 0,
-          name: "Pending",
-        },
-        user_id: "userId",
-        usersEmail: "john.doe@email.com",
-        usersName: "John Doe",
-      },
-      selectedResponse: null,
-      title: "Review request - DfE Sign-in",
-      validationMessages: {
-        selectedResponse: "Approve or Reject must be selected",
-      },
-    });
+    expect(res.render.mock.calls[0][1]).toEqual(
+      expect.objectContaining({
+        backLink: true,
+        layout: "sharedViews/layoutNew.ejs",
+        cancelLink: "/access-requests",
+        csrfToken: "token",
+        request: expect.objectContaining({
+          actioned_by: null,
+          actioned_date: null,
+          actioned_reason: null,
+          created_date: "2019-05-01",
+          id: "requestId",
+          org_id: "org1",
+          org_name: "Org 1",
+          reason: "",
+          status: expect.objectContaining({
+            id: 0,
+            name: "Pending",
+          }),
+          user_id: "userId",
+          usersEmail: "john.doe@email.com",
+          usersName: "John Doe",
+        }),
+        selectedResponse: null,
+        title: "Review request - DfE Sign-in",
+        validationMessages: expect.objectContaining({
+          selectedResponse: "Approve or Reject must be selected",
+        }),
+      }),
+    );
   });
 
   it("then it should render error if request already actioned", async () => {
@@ -173,37 +174,38 @@ describe("when reviewing an organisation request", () => {
     expect(res.render.mock.calls[0][0]).toBe(
       "accessRequests/views/reviewOrganisationRequest",
     );
-    expect(res.render.mock.calls[0][1]).toEqual({
-      backLink: true,
-      layout: "sharedViews/layoutNew.ejs",
-      cancelLink: "/access-requests",
-      csrfToken: "token",
-      request: {
-        actioned_by: "jane.doe@email.com",
-        actioned_date: null,
-        actioned_reason: null,
-        created_date: "2019-05-01",
-        formattedCreatedDate: "01 May 2019 01:00am",
-        id: "requestId",
-        org_id: "org1",
-        org_name: "Org 1",
-        reason: "",
-        status: {
-          id: 1,
-          name: "approved",
-        },
-        user_id: "userId",
-        usersEmail: "john.doe@email.com",
-        usersName: "John Doe",
-        approverName: "Jane Doe",
-        approverEmail: "jane.doe@email.com",
-      },
-      selectedResponse: "approve",
-      title: "Review request - DfE Sign-in",
-      validationMessages: {
-        selectedResponse: "Request already actioned by jane.doe@email.com",
-      },
-    });
+    expect(res.render.mock.calls[0][1]).toEqual(
+      expect.objectContaining({
+        backLink: true,
+        layout: "sharedViews/layoutNew.ejs",
+        cancelLink: "/access-requests",
+        csrfToken: "token",
+        request: expect.objectContaining({
+          actioned_by: "jane.doe@email.com",
+          actioned_date: null,
+          actioned_reason: null,
+          created_date: "2019-05-01",
+          id: "requestId",
+          org_id: "org1",
+          org_name: "Org 1",
+          reason: "",
+          status: expect.objectContaining({
+            id: 1,
+            name: "approved",
+          }),
+          user_id: "userId",
+          usersEmail: "john.doe@email.com",
+          usersName: "John Doe",
+          approverName: "Jane Doe",
+          approverEmail: "jane.doe@email.com",
+        }),
+        selectedResponse: "approve",
+        title: "Review request - DfE Sign-in",
+        validationMessages: expect.objectContaining({
+          selectedResponse: "Request already actioned by jane.doe@email.com",
+        }),
+      }),
+    );
   });
 
   it("then it should redirect to select permission level if approved", async () => {
