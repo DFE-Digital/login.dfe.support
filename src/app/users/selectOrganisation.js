@@ -51,7 +51,7 @@ const get = async (req, res) => {
       `organisations/${userOrganisations[0].organisation.id}`,
     );
   }
-  console.log("userOrganisations: ", userOrganisations);
+
   return res.render("users/views/selectOrganisation", {
     selectionPrompt: getSelectionPrompt(),
     csrfToken: req.csrfToken(),
