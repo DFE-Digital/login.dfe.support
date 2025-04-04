@@ -82,7 +82,7 @@ describe("when searching for organisations", () => {
       req = getRequestMock({ method: requestConfig.method });
     });
 
-    describe("when search criteria is >= 4 characters", () => {
+    describe("when search criteria is >= 3 characters", () => {
       beforeEach(() => {
         req[requestConfig.dataLocation] = {
           criteria: "org1",
@@ -231,7 +231,7 @@ describe("when searching for organisations", () => {
             organisationStatuses: [],
             showFilters: false,
             validationMessages: {
-              criteria: "Please enter at least 4 characters",
+              criteria: "Please enter at least 3 characters",
             },
           },
         );
