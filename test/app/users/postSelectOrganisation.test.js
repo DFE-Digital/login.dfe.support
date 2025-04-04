@@ -66,6 +66,7 @@ describe("when selecting an organisation", () => {
     expect(res.render.mock.calls[0][0]).toBe(`users/views/selectOrganisation`);
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
+      layout: "sharedViews/layoutNew.ejs",
       selectedOrganisation: undefined,
       organisations: [
         {
