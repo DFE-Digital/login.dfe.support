@@ -87,7 +87,7 @@ const post = async (req, res) => {
   );
 
   res.flash(
-    "info",
+    "rejected",
     `Request rejected - an email has been sent to ${model.request.usersEmail}.`,
   );
   if (model.requestFrom && model.requestFrom === "organisation")
