@@ -1,36 +1,40 @@
-<div class="grid-row">
-    <div class="col-8">
-        <h1 class="heading-xlarge">
-            Select permission level
-        </h1>
-        <p class="lede">Select the permission level for <%= locals.request.usersName %> at <%= locals.request.org_name %></p>
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-half">
+            <h1 class="govuk-heading-xl">
+                Select permission level
+            </h1>
+            <p class="govuk-body">Select the permission level for <%= locals.request.usersName %> at <%= locals.request.org_name %></p>
+        </div>
     </div>
-</div>
-<div class="grid-row">
-    <div class="col-6">
-        <form method="post" class="prevent-form-double-submission">
-            <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
-            <div class="form-group <%= (locals.validationMessages.selectedLevel !== undefined) ? 'form-group-error' : '' %>">
-                <fieldset>
-                    <% if (locals.validationMessages.selectedLevel !== undefined) { %>
-                    <p class="error-message" id="validation-permission-level"><%=locals.validationMessages.selectedLevel %></p>
-                    <% } %>
-                    <div class="multiple-choice">
-                        <input id="level-user" type="radio" name="selectedLevel" value="0">
-                        <label for="level-user">End user</label>
-                    </div>
-                    <div class="multiple-choice">
-                        <input id="level-approver" type="radio" name="selectedLevel" value="10000">
-                        <label for="level-approver">Approver</label>
-                    </div>
-                </fieldset>
-            </div>
-            <div class="form-submit">
-                <div class="form-submit submit-buttons">
-                    <button type="submit" class="button">Confirm</button>
-                    <a href="<%= locals.cancelLink %>" class="button button-secondary">Cancel</a>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-half">
+            <form method="post" class="prevent-form-double-submission">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
+                <div class="govuk-form-group <%= (locals.validationMessages.selectedLevel !== undefined) ? 'govuk-form-group--error' : '' %>">
+                    <fieldset class="govuk-fieldset">
+                        <% if (locals.validationMessages.selectedLevel !== undefined) { %>
+                        <p class="govuk-error-message" id="validation-permission-level"><%=locals.validationMessages.selectedLevel %></p>
+                        <% } %>
+                        <div class="govuk-checkboxes">
+                            <div class="govuk-checkboxes__item">
+                                <input class="govuk-checkboxes__input" id="level-user" type="radio" name="selectedLevel" value="0">
+                                <label class="govuk-label govuk-checkboxes__label" for="level-user">End user</label>
+                            </div>
+                            <div class="govuk-checkboxes__item">
+                                <input class="govuk-checkboxes__input" id="level-approver" type="radio" name="selectedLevel" value="10000">
+                                <label class="govuk-label govuk-checkboxes__label" for="level-approver">Approver</label>
+                            </div>
+                        </div>
+                    </fieldset>
                 </div>
-            </div>
-        </form>
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button">Confirm</button>
+                    <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+

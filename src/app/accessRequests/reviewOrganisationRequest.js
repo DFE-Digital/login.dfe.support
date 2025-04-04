@@ -14,6 +14,7 @@ const get = async (req, res) => {
   return res.render("accessRequests/views/reviewOrganisationRequest", {
     csrfToken: req.csrfToken(),
     title: "Review request - DfE Sign-in",
+    layout: "sharedViews/layoutNew.ejs",
     backLink: true,
     cancelLink: req._cancelLink,
     request,
@@ -24,6 +25,9 @@ const get = async (req, res) => {
 
 const validate = async (req) => {
   const request = await getAndMapOrgRequest(req);
+  request.formattedCreatedDate = request.created_date
+    ? dateFormat(request.created_date, "longDateFormat")
+    : "";
   if (req.params.from === "organisation") {
     req._cancelLink = `/users/${request.user_id}/organisations`;
   } else {
@@ -32,6 +36,7 @@ const validate = async (req) => {
   const model = {
     title: "Review request - DfE Sign-in",
     backLink: true,
+    layout: "sharedViews/layoutNew.ejs",
     cancelLink: req._cancelLink,
     request,
     selectedResponse: req.body.selectedResponse,
