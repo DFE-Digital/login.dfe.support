@@ -1,3 +1,4 @@
+const logger = require("../../infrastructure/logger");
 const { sendResult } = require("../../infrastructure/utils");
 const {
   deactivate,
@@ -107,11 +108,52 @@ const postBulkUserActionsEmails = async (req, res) => {
 
   for (const tickedUser of tickedUsers) {
     const userId = reqBody[tickedUser];
+    const user = await getUserDetailsById(userId, req.id);
     if (isDeactivateTicked) {
       if (userId.startsWith("inv-")) {
         await deactivateInvitedUser(req, userId);
+        // logger audit (deactivated invite)
+        logger.audit(
+          `${req.user.email} (id: ${req.user.sub}) deactivated user invitation ${user.email} (id: ${userId})`,
+          {
+            type: "support",
+            subType: "user-edit",
+            userId: req.user.sub,
+            userEmail: req.user.email,
+            editedUser: userId,
+            editedFields: [
+              {
+                name: "status",
+                oldValue: user.status.id,
+                newValue: -2,
+              },
+            ],
+            reason: req.body.reason,
+          },
+        );
       } else {
         await deactivateUser(req, userId);
+        // logger audit (deactivated user)
+        logger.audit(
+          `${req.user.email} (id: ${req.user.sub}) deactivated user ${
+            user.email
+          } (id: ${userId})`,
+          {
+            type: "support",
+            subType: "user-edit",
+            userId: req.user.sub,
+            userEmail: req.user.email,
+            editedUser: userId,
+            editedFields: [
+              {
+                name: "status",
+                oldValue: user.status.id,
+                newValue: 0,
+              },
+            ],
+            reason: req.body.reason,
+          },
+        );
       }
     }
 
