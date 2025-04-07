@@ -20,6 +20,7 @@ const get = async (req, res) => {
     csrfToken: req.csrfToken(),
     request,
     title: "Select permission level - DfE Sign-in",
+    layout: "sharedViews/layoutNew.ejs",
     backLink: true,
     cancelLink:
       req.params.from === "organisation"
