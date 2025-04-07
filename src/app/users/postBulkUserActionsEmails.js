@@ -110,7 +110,6 @@ const postBulkUserActionsEmails = async (req, res) => {
     if (isDeactivateTicked) {
       if (userId.startsWith("inv-")) {
         await deactivateInvitedUser(req, user);
-        // logger audit (deactivated invite)
         logger.audit(
           `${req.user.email} (id: ${req.user.sub}) deactivated user invitation ${user.email} (id: ${userId})`,
           {
@@ -131,7 +130,6 @@ const postBulkUserActionsEmails = async (req, res) => {
         );
       } else {
         await deactivateUser(req, user);
-        // logger audit (deactivated user)
         logger.audit(
           `${req.user.email} (id: ${req.user.sub}) deactivated user ${
             user.email
