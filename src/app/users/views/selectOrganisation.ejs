@@ -20,7 +20,7 @@
                         <% for(let i= 0; i < locals.organisations.length; i++) {
                             const org = locals.organisations[i];
                         %>
-                        <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios govuk-!-width-three-quarters" data-module="govuk-radios">
                             <div class="govuk-radios__item">
                                 <input class="govuk-radios__input" id="<%= org.organisation.id %>" type="radio" name="selectedOrganisation" value="<%= org.organisation.id %>">
                                 <label class="govuk-label govuk-radios__label govuk-!-font-weight-bold" for="<%= org.organisation.id %>">
@@ -30,7 +30,9 @@
                                 <div id="<%= org.organisation.id %>" class="govuk-hint govuk-radios__hint">
                                     <% if (org.naturalIdentifiers) { %>
                                             <%= org.naturalIdentifiers.join(', ') %>
+                                        <br>
                                     <% } %>
+
                                     <% if (org.organisation.LegalName) { %>
                                             Legal Name: <%= org.organisation.LegalName %>
                                     <% } %>
