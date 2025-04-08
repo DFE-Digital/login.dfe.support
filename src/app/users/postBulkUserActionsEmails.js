@@ -125,7 +125,7 @@ const postBulkUserActionsEmails = async (req, res) => {
                 newValue: -2,
               },
             ],
-            reason: req.body.reason,
+            reason: "Bulk user actions - deactivation",
           },
         );
       } else {
@@ -147,7 +147,7 @@ const postBulkUserActionsEmails = async (req, res) => {
                 newValue: 0,
               },
             ],
-            reason: req.body.reason,
+            reason: "Bulk user actions - deactivation",
           },
         );
       }
