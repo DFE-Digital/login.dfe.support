@@ -1,94 +1,98 @@
-<div class="row">
-    <div class="col-8">
-        <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessage) { %>
-            <div class="notice" style="margin-top: 1.25em;">
-                <i class="icon icon-important">
-                    <span class="visually-hidden">Warning</span>
-                </i>
-                <strong class="bold-small">
-                    <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessage %>
-                </strong>
-            </div>
-        <% } %>
-        <h1 class="heading-xlarge">
-            <%=locals.user.isAddService ? 'Select roles' : 'Edit service'%>
-        </h1>
-        <% if (locals.user.isAddService) { %>
-            <p>Showing service <%= locals.currentService%> of <%=locals.totalNumberOfServices%></p>
-        <% } %>
-        <dl class="app-check-your-answers app-check-your-answers--short">
-
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__title">
-                    User
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%= locals.name%>
-                </dd>
-            </div>
-
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__title">
-                    Organisation
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%=locals.organisationDetails.organisation.name%>
-                </dd>
-            </div>
-
-            <div class="app-check-your-answers__contents">
-                <dt class="app-check-your-answers__title">
-                    Service
-                </dt>
-                <dd class="app-check-your-answers__answer">
-                    <%=locals.serviceDetails.name%>
-                </dd>
-            </div>
-        </dl>
-        <form method="post">
-            <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-            <div class="form-group  <%= (locals.validationMessages.roles !== undefined) ? 'form-group-error' : '' %>">
-                <fieldset>
-                    <% if (locals.validationMessages.roles !== undefined) { %>
-                    <p class="error-message" id="validation-selected-role"><%-locals.validationMessages.roles%></p>
-                    <% } %>
-                    <% if (locals.serviceRoles.length > 0) { %>
-                        <legend>
-                            <span class="body-text">Select all required roles</span>
-                        </legend>
-                        <% for (let i = 0; i < locals.serviceRoles.length; i++) { %>
-                            <% const role = locals.serviceRoles[i]; %>
-                            <div class="multiple-choice">
-                                <input id="<%=role.id%>" type="checkbox" name="role" value="<%=role.id%>"
-                                    <% if (locals.selectedRoles.roles && locals.selectedRoles.roles.length > 0) {
-                                    for(let i = 0; i < locals.selectedRoles.roles.length; i++) {
-                                        const selectedRole = locals.selectedRoles.roles[i];
-                                    %>
-                                    <%= role.id === selectedRole ? 'checked': ''%><% } }%>>
-                                <label for="<%=role.id%>"><%=role.name%></label>
-                            </div>
-                        <% } %>
-                    <% } else { %>
-                        <legend><h2 class="heading-small">There are no available roles for <%= locals.serviceDetails.name %>.</h2></legend>
-                    <% } %>
-                </fieldset>
-            </div>
-            <% if (!(!locals.user.isAddService && locals.serviceRoles.length === 0)) {%>
-            <div class="form-submit submit-buttons">
-                <button type="submit" class="button">Continue</button>
-                <a href="<%= locals.cancelLink %>" class="button button-secondary">Cancel</a>
-            </div>
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <% if (locals.serviceDetails.relyingParty && locals.serviceDetails.relyingParty.params && locals.serviceDetails.relyingParty.params.serviceConfirmMessage) { %>
+                <div class="notice" style="margin-top: 1.25em;">
+                    <i class="icon icon-important">
+                        <span class="visually-hidden">Warning</span>
+                    </i>
+                    <strong class="bold-small">
+                        <%- locals.serviceDetails.relyingParty.params.serviceConfirmMessage %>
+                    </strong>
+                </div>
             <% } %>
-        </form>
+            <h1 class="govuk-heading-xl">
+                <%=locals.user.isAddService ? 'Select roles' : 'Edit service'%>
+            </h1>
+            <% if (locals.user.isAddService) { %>
+                <p class="govuk-body">Showing service <%= locals.currentService%> of <%=locals.totalNumberOfServices%></p>
+            <% } %>
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        User
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%= locals.name%>
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Organisation
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%=locals.organisationDetails.organisation.name%>
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%=locals.serviceDetails.name%>
+                    </dd>
+                </div>
+            </dl>
+            <form method="post">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+                <div class="govuk-form-group  <%= (locals.validationMessages.roles !== undefined) ? 'govuk-form-group--error' : '' %>">
+                    <fieldset class="govuk-fieldset">
+                        <% if (locals.validationMessages.roles !== undefined) { %>
+                        <p class="govuk-error-message" id="validation-selected-role"><%-locals.validationMessages.roles%></p>
+                        <% } %>
+                        <% if (locals.serviceRoles.length > 0) { %>
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                Select all required roles
+                            </legend>
+                            <% for (let i = 0; i < locals.serviceRoles.length; i++) { %>
+                                <% const role = locals.serviceRoles[i]; %>
+                                <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input" id="<%=role.id%>" type="checkbox" name="role" value="<%=role.id%>"
+                                            <% if (locals.selectedRoles.roles && locals.selectedRoles.roles.length > 0) {
+                                            for(let i = 0; i < locals.selectedRoles.roles.length; i++) {
+                                                const selectedRole = locals.selectedRoles.roles[i];
+                                            %>
+                                            <%= role.id === selectedRole ? 'checked': ''%><% } }%>>
+                                        <label class="govuk-label govuk-checkboxes__label" for="<%=role.id%>"><%=role.name%></label>
+                                    </div>
+                                </div>
+                            <% } %>
+                        <% } else { %>
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">There are no available roles for <%= locals.serviceDetails.name %>.</legend>
+                        <% } %>
+                    </fieldset>
+                </div>
+                <% if (!(!locals.user.isAddService && locals.serviceRoles.length === 0)) {%>
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button" data-module="govuk-button">Continue</button>
+                    <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary" data-module="govuk-button">Cancel</a>
+                </div>
+                <% } %>
+            </form>
+        </div>
+        <% if (!locals.user.isAddService) { %>
+        <div class="col-4">
+            <aside>
+                <h2 class="heading-medium">Actions</h2>
+                <ul class="list">
+                    <li><a href="<%=locals.serviceDetails.id%>/remove-service">Remove service</a> </li>
+                </ul>
+            </aside>
+        </div>
+        <% }%>
     </div>
-    <% if (!locals.user.isAddService) { %>
-    <div class="col-4">
-        <aside>
-            <h2 class="heading-medium">Actions</h2>
-            <ul class="list">
-                <li><a href="<%=locals.serviceDetails.id%>/remove-service">Remove service</a> </li>
-            </ul>
-        </aside>
-    </div>
-    <% }%>
 </div>
+
+
