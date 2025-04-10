@@ -214,7 +214,7 @@ const config = {
     version: process.env.CDN_ASSETS_VERSION
   },
   entra: {
-    useEntraForAccountRegistration: process.env.ENTRA_USE_FOR_ACCOUNT_REGISTRATION
+    useEntraForAccountRegistration: process.env.ENTRA_USE_FOR_ACCOUNT_REGISTRATION?.toLowerCase() === 'true'
   }
 }
 
