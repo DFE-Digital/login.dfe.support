@@ -91,6 +91,7 @@ const config = {
     type: "azuresearch",
     params: {
       serviceName: process.env.AZURE_SEARCH_NAME,
+      apiKey: process.env.AZURE_SEARCH_API_KEY,
       indexPointerConnectionString: process.env.REDIS_CONN + "/3?tls=true"
     }
   },
