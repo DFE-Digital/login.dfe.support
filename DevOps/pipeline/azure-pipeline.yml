@@ -162,7 +162,7 @@ stages:
                       appRepoName: ${{variables.applicationFullName}}
                       healthCheckEndpoint: healthcheck
                       existTag: ${{parameters.existTag}}
-                      ${{ if eq(variables.ContRegServerTran, 'true') }}:
+                      ${{ if eq(env, 'tran') }}:
                         ContRegServerCode: $(tranShaCode)
                       ${{ else }}:
                         ContRegServerCode: $(prShaCode)
