@@ -1,3 +1,4 @@
+const logger = require("../../infrastructure/logger");
 const { sendResult } = require("../../infrastructure/utils");
 const {
   deactivate,
@@ -39,34 +40,32 @@ const validateInput = async (req) => {
   return model;
 };
 
-const updateUserIndex = async (uid, correlationId) => {
-  const user = await getUserDetailsById(uid, correlationId);
+const updateUserIndex = async (user, correlationId) => {
   user.status = {
     id: 0,
     description: "Deactivated",
   };
 
   await updateUserDetails(user, correlationId);
-  await waitForIndexToUpdate(uid, (updated) => updated.status.id === 0);
+  await waitForIndexToUpdate(user.id, (updated) => updated.status.id === 0);
 };
 
-const updateInvitedUserIndex = async (uid, correlationId) => {
-  const user = await getUserDetailsById(uid, correlationId);
+const updateInvitedUserIndex = async (user, correlationId) => {
   user.status.id = -2;
   user.status.description = "Deactivated Invitation";
 
   await updateUserDetails(user, correlationId);
-  await waitForIndexToUpdate(uid, (updated) => updated.status.id === -2);
+  await waitForIndexToUpdate(user.id, (updated) => updated.status.id === -2);
 };
 
-const deactivateUser = async (req, id) => {
-  await deactivate(id, req.id);
-  await updateUserIndex(id, req.id);
+const deactivateUser = async (req, user) => {
+  await deactivate(user.id, req.id);
+  await updateUserIndex(user, req.id);
 };
 
-const deactivateInvitedUser = async (req, userId) => {
-  await deactivateInvite(userId, "Bulk user deactivation", req.id);
-  await updateInvitedUserIndex(userId, req.id);
+const deactivateInvitedUser = async (req, user) => {
+  await deactivateInvite(user.id, "Bulk user deactivation", req.id);
+  await updateInvitedUserIndex(user, req.id);
 };
 
 const postBulkUserActionsEmails = async (req, res) => {
@@ -107,11 +106,50 @@ const postBulkUserActionsEmails = async (req, res) => {
 
   for (const tickedUser of tickedUsers) {
     const userId = reqBody[tickedUser];
+    const user = await getUserDetailsById(userId, req.id);
     if (isDeactivateTicked) {
       if (userId.startsWith("inv-")) {
-        await deactivateInvitedUser(req, userId);
+        await deactivateInvitedUser(req, user);
+        logger.audit(
+          `${req.user.email} (id: ${req.user.sub}) deactivated user invitation ${user.email} (id: ${userId})`,
+          {
+            type: "support",
+            subType: "user-edit",
+            userId: req.user.sub,
+            userEmail: req.user.email,
+            editedUser: userId,
+            editedFields: [
+              {
+                name: "status",
+                oldValue: user.status.id,
+                newValue: -2,
+              },
+            ],
+            reason: "Bulk user actions - deactivation",
+          },
+        );
       } else {
-        await deactivateUser(req, userId);
+        await deactivateUser(req, user);
+        logger.audit(
+          `${req.user.email} (id: ${req.user.sub}) deactivated user ${
+            user.email
+          } (id: ${userId})`,
+          {
+            type: "support",
+            subType: "user-edit",
+            userId: req.user.sub,
+            userEmail: req.user.email,
+            editedUser: userId,
+            editedFields: [
+              {
+                name: "status",
+                oldValue: user.status.id,
+                newValue: 0,
+              },
+            ],
+            reason: "Bulk user actions - deactivation",
+          },
+        );
       }
     }
 
