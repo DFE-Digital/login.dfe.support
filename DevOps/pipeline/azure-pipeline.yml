@@ -156,7 +156,7 @@ stages:
                       deploymentLocation: ${{location}}
                       gitCheck: ${{parameters.gitCheck}}
                       tier: presentation
-                      tierPlan: prestier-g3
+                      tierPlan: prestier-g4
                       shaUse: ${{parameters.shaUse}}
                       slotDeploy: ${{parameters.slotDeploy}}
                       appRepoName: ${{variables.applicationFullName}}
