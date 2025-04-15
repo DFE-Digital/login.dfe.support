@@ -41,7 +41,7 @@ const postConfirmDeactivate = async (req, res) => {
     req.body["select-reason"] === "Select a reason" &&
     req.body.reason.match(/^\s*$/) !== null
   ) {
-    sendResult(req, res, "users/views/confirmDeactivate", {
+    sendResult(req, res, "users/views/confirmInvitationDeactivate", {
       csrfToken: req.csrfToken(),
       layout: "sharedViews/layoutNew.ejs",
       backLink: "services",
