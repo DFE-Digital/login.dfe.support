@@ -35,7 +35,7 @@ describe("when getting users audit details", () => {
       id: "correlationId",
       csrfToken: () => "token",
       accepts: () => ["text/html"],
-      session: { type: "audit" },
+      session: { type: "audit", params: { searchType: "organisations" } },
       query: {
         page: 3,
       },

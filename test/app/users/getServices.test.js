@@ -48,7 +48,9 @@ describe("when getting users service details", () => {
       params: {
         uid: "user1",
       },
-      session: {},
+      session: {
+        params: { searchType: "organisations" },
+      },
     };
 
     res = {
