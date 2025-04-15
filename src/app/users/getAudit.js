@@ -278,7 +278,7 @@ const getAudit = async (req, res) => {
     csrfToken: req.csrfToken(),
     layout: "sharedViews/layoutNew.ejs",
     backLink:
-      req.session.params.searchType === "organisations"
+      req.session?.params?.searchType === "organisations"
         ? "/organisations"
         : "/users",
     user,

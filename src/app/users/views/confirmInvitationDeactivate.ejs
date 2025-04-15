@@ -7,9 +7,9 @@
             <form method="post" id="form-deactivate">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                 <fieldset class="govuk-fieldset">
-                    <legend><p class="govuk-body">Please confirm you would like to deactivate the user.</p></legend>
+                    <legend><p class="govuk-body">Please confirm you would like to deactivate the invitation.</p></legend>
                     <div class="govuk-form-group <%= (locals.validationMessages.reason !== undefined) ? 'govuk-form-group--error' : '' %>">
-                        <label class="govuk-label" for="reason">Reason for deactivation of user (mandatory)</span> </label>
+                        <label class="govuk-label" for="reason">Reason for deactivation of invitation (mandatory)</span> </label>
                         <select class="govuk-select govuk-form-group govuk-!-margin-bottom-2" name="select-reason" required>
                             <option selected value="Select a reason">Select a reason</option>
                             <option value="Generic email" >Generic email</option>

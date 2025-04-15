@@ -158,6 +158,21 @@ describe("when getting users audit details", () => {
       csrfToken: "token",
     });
   });
+  it("then it should include '/organisations' as the backLink in model", async () => {
+    await getAudit(req, res);
+
+    expect(sendResult.mock.calls[0][3]).toMatchObject({
+      backLink: "/organisations",
+    });
+  });
+  it("then it should include '/users' as the backLink in model", async () => {
+    req.session.params.searchType = "/users";
+    await getAudit(req, res);
+
+    expect(sendResult.mock.calls[0][3]).toMatchObject({
+      backLink: "/users",
+    });
+  });
 
   it("then it should include user details in model", async () => {
     await getAudit(req, res);

@@ -268,6 +268,22 @@ describe("when getting users service details", () => {
     });
   });
 
+  it("then it should include '/organisations' as the backLink in model", async () => {
+    await getServices(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      backLink: "/organisations",
+    });
+  });
+  it("then it should include '/users' as the backLink in model", async () => {
+    req.session.params.searchType = "/users";
+    await getServices(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      backLink: "/users",
+    });
+  });
+
   it("then it should get organisations mapping for user", async () => {
     await getServices(req, res);
 
