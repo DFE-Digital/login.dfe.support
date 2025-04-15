@@ -40,7 +40,9 @@ describe("when getting users organisation details", () => {
       params: {
         uid: "user1",
       },
-      session: {},
+      session: {
+        params: { searchType: "organisations" },
+      },
     };
 
     res = {
@@ -186,6 +188,22 @@ describe("when getting users organisation details", () => {
     expect(getUserDetails.mock.calls[0][0]).toBe(req);
     expect(res.render.mock.calls[0][1].user).toMatchObject({
       id: "user1",
+    });
+  });
+
+  it("then it should include '/organisations' as the backLink in model", async () => {
+    await getOrganisations(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      backLink: "/organisations",
+    });
+  });
+  it("should set the backlink to /users if the search type session param is not organisations", async () => {
+    req.session.params.searchType = "/users";
+    await getOrganisations(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      backLink: "/users",
     });
   });
 

@@ -1,39 +1,44 @@
-<% if (locals.flash.info) { %>
-<div class="row">
-    <div class="col-12">
-        <div class="notification notification-success">
-            <%=locals.flash.info%>
+<div class="govuk-width-container">
+    <% if (locals.flash.info) { %>
+    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+        <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">Success</h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+            <p class="govuk-body"><%= locals.flash.info %></p>
         </div>
     </div>
-</div>
-<% } %>
+    <% } %>
 
-<div class="row">
-    <div class="col-8">
-        <h1 class="heading-xlarge">
-            Edit <%=user.name%>&apos;s email address
-        </h1>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">
+                Edit <%=user.name%>&apos;s email address
+            </h1>
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-12">
-        <form method="post" id="form-edit-user">
-            <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-            <fieldset>
-                <legend class="vh">Edit <%=user.name%>&apos;s email address</legend>
-                <div class="form-group <%= (locals.validationMessages.email !== undefined) ? 'form-group-error' : '' %>">
-                    <label class="form-label" for="email">Email address</span> </label>
-                    <% if (locals.validationMessages.email !== undefined) { %>
-                    <p class="error-message" id="validation-email"><%=locals.validationMessages.email %></p>
-                    <% } %>
-                    <input class="form-control" id="email" name="email" type="text" <% if (locals.validationMessages.email !== undefined) { %> aria-invalid="true" aria-describedby="validation-email" <% } %> value="<%=email%>">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <form method="post" id="form-edit-user">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+                <fieldset class="govuk-fieldset">
+                    <legend class="vh">Edit <%=user.name%>&apos;s email address</legend>
+                    <div class="govuk-form-group <%= (locals.validationMessages.email !== undefined) ? 'govuk-form-group--error' : '' %>">
+                        <label class="govuk-label" for="email">Email address</span> </label>
+                        <% if (locals.validationMessages.email !== undefined) { %>
+                        <p class="govuk-error-message" id="validation-email"><%=locals.validationMessages.email %></p>
+                        <% } %>
+                        <input class="govuk-input govuk-!-width-two-thirds" id="email" name="email" type="text" <% if (locals.validationMessages.email !== undefined) { %> aria-invalid="true" aria-describedby="validation-email" <% } %> value="<%=email%>">
+                    </div>
+                </fieldset>
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button">Save</button>
                 </div>
-            </fieldset>
-            <div class="form-submit submit-buttons">
-                <button type="submit" class="button">Save</button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
+
 </div>
+
 
 

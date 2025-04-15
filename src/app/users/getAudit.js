@@ -277,7 +277,10 @@ const getAudit = async (req, res) => {
   sendResult(req, res, "users/views/audit", {
     csrfToken: req.csrfToken(),
     layout: "sharedViews/layoutNew.ejs",
-    backLink: true,
+    backLink:
+      req.session?.params?.searchType === "organisations"
+        ? "/organisations"
+        : "/users",
     user,
     showChangeEmail,
     organisations: userOrganisations,
