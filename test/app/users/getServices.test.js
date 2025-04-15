@@ -268,14 +268,14 @@ describe("when getting users service details", () => {
     });
   });
 
-  it("then it should include '/organisations' as the backLink in model", async () => {
+  it("should set the backlink to /organisations if the search type session param is organisations", async () => {
     await getServices(req, res);
 
     expect(res.render.mock.calls[0][1]).toMatchObject({
       backLink: "/organisations",
     });
   });
-  it("then it should include '/users' as the backLink in model", async () => {
+  it("should set the backlink to /users if the search type session param is not organisations", async () => {
     req.session.params.searchType = "/users";
     await getServices(req, res);
 

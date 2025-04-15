@@ -158,14 +158,14 @@ describe("when getting users audit details", () => {
       csrfToken: "token",
     });
   });
-  it("then it should include '/organisations' as the backLink in model", async () => {
+  it("should set the backlink to /organisations if the search type session param is organisations", async () => {
     await getAudit(req, res);
 
     expect(sendResult.mock.calls[0][3]).toMatchObject({
       backLink: "/organisations",
     });
   });
-  it("then it should include '/users' as the backLink in model", async () => {
+  it("should set the backlink to /users if the search type session param is not organisations", async () => {
     req.session.params.searchType = "/users";
     await getAudit(req, res);
 

@@ -198,7 +198,7 @@ describe("when getting users organisation details", () => {
       backLink: "/organisations",
     });
   });
-  it("then it should include '/users' as the backLink in model", async () => {
+  it("should set the backlink to /users if the search type session param is not organisations", async () => {
     req.session.params.searchType = "/users";
     await getOrganisations(req, res);
 
