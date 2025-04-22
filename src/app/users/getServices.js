@@ -9,7 +9,7 @@ const {
   getInvitationOrganisations,
 } = require("../../infrastructure/organisations");
 const { getAllServices } = require("../../infrastructure/applications");
-// const { getUserStatus } = require("../../infrastructure/directories");
+const { getUserStatus } = require("../../infrastructure/directories");
 const logger = require("../../infrastructure/logger");
 
 const getOrganisations = async (userId, correlationId) => {
@@ -62,10 +62,11 @@ const action = async (req, res) => {
   user.formattedLastLogin = user.lastLogin
     ? dateFormat(user.lastLogin, "longDateFormat")
     : "";
-  // if(user status === 0) {
-  // const userStatus = getUserStatus(user.id);
-  // user.deactivation = userStatus;
-  //}
+  if (user.status.id === 0) {
+    const userStatus = await getUserStatus(user.id);
+    const statusChangeReasons = userStatus.statusChangeReasons;
+    user.statusChangeReasons = statusChangeReasons;
+  }
   const organisationDetails = await getOrganisations(user.id, req.id);
   const allServices = await getAllServices();
   const externalServices = allServices.services.filter(

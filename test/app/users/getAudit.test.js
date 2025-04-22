@@ -55,10 +55,18 @@ describe("when getting users audit details", () => {
     getUserDetails.mockReset();
     getUserDetails.mockReturnValue({
       id: "user1",
+      status: {
+        id: 1,
+        description: "Activated",
+      },
     });
     getUserDetailsById.mockReset();
     getUserDetailsById.mockReturnValue({
       id: "user1",
+      status: {
+        id: 1,
+        description: "Activated",
+      },
     });
 
     sendResult.mockReset();
@@ -180,6 +188,10 @@ describe("when getting users audit details", () => {
     expect(sendResult.mock.calls[0][3]).toMatchObject({
       user: {
         id: "user1",
+        status: {
+          id: 1,
+          description: "Activated",
+        },
       },
     });
   });

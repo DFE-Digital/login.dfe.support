@@ -8,10 +8,9 @@
         <div class="govuk-notification-banner__content">
             <p class="govuk-notification-banner__heading">
             This account was deactivated
-            <% if (user.deactivation && user.deactivation.reason) { %>
-                - <%= user.deactivation.reason[0] %>
+            <% if (user.statusChangeReasons) { %>
+                - <%= user.statusChangeReasons[0].reason %>
             <% } %>
-            <a href="confirm-reactivation" class="action">Reactivate</a>
             </p>
         </div>
     </div>

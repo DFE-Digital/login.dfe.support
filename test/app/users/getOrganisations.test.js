@@ -52,6 +52,10 @@ describe("when getting users organisation details", () => {
     getUserDetails.mockReset();
     getUserDetails.mockReturnValue({
       id: "user1",
+      status: {
+        id: 1,
+        description: "Activated",
+      },
     });
 
     getUserOrganisations.mockReset();
