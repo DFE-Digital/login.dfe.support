@@ -35,7 +35,7 @@ describe("when getting users audit details", () => {
       id: "correlationId",
       csrfToken: () => "token",
       accepts: () => ["text/html"],
-      session: { type: "audit" },
+      session: { type: "audit", params: { searchType: "organisations" } },
       query: {
         page: 3,
       },
@@ -156,6 +156,21 @@ describe("when getting users audit details", () => {
 
     expect(sendResult.mock.calls[0][3]).toMatchObject({
       csrfToken: "token",
+    });
+  });
+  it("should set the backlink to /organisations if the search type session param is organisations", async () => {
+    await getAudit(req, res);
+
+    expect(sendResult.mock.calls[0][3]).toMatchObject({
+      backLink: "/organisations",
+    });
+  });
+  it("should set the backlink to /users if the search type session param is not organisations", async () => {
+    req.session.params.searchType = "/users";
+    await getAudit(req, res);
+
+    expect(sendResult.mock.calls[0][3]).toMatchObject({
+      backLink: "/users",
     });
   });
 

@@ -1,15 +1,15 @@
 <% if (locals.flash.info || locals.activeSync) { %>
-    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
-        <div class="govuk-notification-banner__header">
-            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">Success</h2>
-        </div>
-        <div class="govuk-notification-banner__content">
-            <p class="govuk-body"><%= locals.flash.info || locals.activeSync %></p>
+    <div class="govuk-width-container">
+        <div class="govuk-notification-banner govuk-notification-banner--success govuk-!-margin-5" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+            <div class="govuk-notification-banner__header">
+                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">Success</h2>
+            </div>
+            <div class="govuk-notification-banner__content">
+                <p class="govuk-body"><%= locals.flash.info || locals.activeSync %></p>
+            </div>
         </div>
     </div>
 <% } %>
-
-
 <%
 const paginationModel = {
     disableNextAndPrevious: true,
@@ -173,14 +173,25 @@ const organisationStatusesQuery = locals.organisationStatuses.filter(x => x.isSe
                         <% } %>
                         <% for (let i = 0; i < locals.organisations.length; i++) { %>
                             <tr class="govuk-table__row govuk-body">
-                                <td class="govuk-table__cell govuk-body-s"><a href="/organisations/<%= organisations[i].id %>/users?criteria=<%= locals.criteria %>&page=<%= locals.page %>&showFilters=<%= locals.showFilters %>&<%= organisationTypesQuery %>&<%= organisationStatusesQuery %>"><%= organisations[i].name %></a></td>
+                                <td class="govuk-table__cell govuk-body-s"><a class="govuk-link" href="/organisations/<%= organisations[i].id %>/users?criteria=<%= locals.criteria %>&page=<%= locals.page %>&showFilters=<%= locals.showFilters %>&<%= organisationTypesQuery %>&<%= organisationStatusesQuery %>"><%= organisations[i].name %></a></td>
                                 <td class="govuk-table__cell govuk-body-s"><%= organisations[i].LegalName %></td>
                                 <td class="govuk-table__cell govuk-body-s"><%= organisations[i].type ? organisations[i].type.name : organisations[i].providerTypeName || organisations[i].category.name  %></td>
                                 <td class="govuk-table__cell govuk-body-s"><%= organisations[i].urn %></td>
                                 <td class="govuk-table__cell govuk-body-s"><%= organisations[i].uid %></td>
                                 <td class="govuk-table__cell govuk-body-s"><%= organisations[i].upin %></td>
                                 <td class="govuk-table__cell govuk-body-s"><%= organisations[i].ukprn %></td>
-                                <td class="govuk-table__cell govuk-body-s"><%= organisations[i].status ? organisations[i].status.name : '' %></td>
+                                <td class="govuk-table__cell govuk-body-s">
+                                    <strong class="govuk-tag 
+                                        <%= organisations[i].status.name === "Open" ? "govuk-tag--green" : 
+                                            organisations[i].status.name === "Closed" ? "govuk-tag--red" : 
+                                            organisations[i].status.name === "Proposed to close" ? "govuk-tag--orange" : 
+                                            organisations[i].status.name === "Proposed to open" ? "govuk-tag--light-blue" : 
+                                            organisations[i].status.name === "Locked Restructure" ? "govuk-tag--yellow" : 
+                                            organisations[i].status.name === "Dissolved" ? "govuk-tag--grey" : "" %>">
+                                        <%= organisations[i].status ? organisations[i].status.name : '' %>
+                                    </strong>
+                                </td>
+
                             </tr>
                         <% } %>
                         </tbody>

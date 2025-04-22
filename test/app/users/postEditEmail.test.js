@@ -119,6 +119,8 @@ describe("when changing email address", () => {
     expect(res.render.mock.calls[0][0]).toBe("users/views/editEmail");
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
+      layout: "sharedViews/layoutNew.ejs",
+      backLink: "services",
       email: "",
       user: userDetails,
       validationMessages: {
@@ -136,6 +138,8 @@ describe("when changing email address", () => {
     expect(res.render.mock.calls[0][0]).toBe("users/views/editEmail");
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
+      backLink: "services",
+      layout: "sharedViews/layoutNew.ejs",
       email: "not-an-email-address",
       user: userDetails,
       validationMessages: {
@@ -153,6 +157,8 @@ describe("when changing email address", () => {
     expect(res.render.mock.calls[0][0]).toBe("users/views/editEmail");
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
+      layout: "sharedViews/layoutNew.ejs",
+      backLink: "services",
       email: "rupert.grint@hogwarts.school.test",
       user: userDetails,
       validationMessages: {

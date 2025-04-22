@@ -2,6 +2,7 @@ const { organisation } = require("login.dfe.dao");
 const { ServiceBusClient } = require("@azure/service-bus");
 const logger = require("../../infrastructure/logger");
 const { sendResult } = require("../../infrastructure/utils");
+const { dateFormat } = require("../helpers/dateFormatterHelper");
 
 const validateInput = async (req) => {
   const model = {
@@ -37,8 +38,17 @@ const postPpsyncStatus = async (req, res) => {
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
+    model.layout = "sharedViews/layoutNew.ejs";
     const ppauditData = await organisation.getPpAuditPaging(pageNumber);
-    model.audits = ppauditData.audits;
+    model.audits = ppauditData.audits.map((audit) => ({
+      ...audit,
+      formattedStartDate: audit.startDate
+        ? dateFormat(audit.startDate, "longDateFormat")
+        : "",
+      formattedEndDate: audit.endDate
+        ? dateFormat(audit.endDate, "longDateFormat")
+        : "",
+    }));
     model.numberOfPages = ppauditData.totalNumberOfPages;
     model.page = pageNumber;
     model.totalNumberOfResults = ppauditData.totalNumberOfRecords;

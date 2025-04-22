@@ -113,6 +113,7 @@ describe("when rejecting an organisation request", () => {
     expect(res.render.mock.calls[0][1]).toEqual({
       backLink: true,
       cancelLink: "/access-requests/undefined/review",
+      layout: "sharedViews/layoutNew.ejs",
       csrfToken: "token",
       request: {
         actioned_by: "john.approver@email.com",
@@ -141,7 +142,7 @@ describe("when rejecting an organisation request", () => {
     });
   });
 
-  it("then it should render error view if rejection reason is to long", async () => {
+  it("then it should render error view if rejection reason is too long", async () => {
     req.body.reason = createString(1001);
 
     await post(req, res);
@@ -155,6 +156,7 @@ describe("when rejecting an organisation request", () => {
       backLink: true,
       cancelLink: "/access-requests/undefined/review",
       csrfToken: "token",
+      layout: "sharedViews/layoutNew.ejs",
       request: {
         actioned_by: null,
         actioned_date: null,

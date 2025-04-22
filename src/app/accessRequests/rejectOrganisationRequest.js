@@ -13,6 +13,7 @@ const get = async (req, res) => {
     csrfToken: req.csrfToken(),
     title: "Reason for rejection - DfE Sign-in",
     backLink: true,
+    layout: "sharedViews/layoutNew.ejs",
     cancelLink:
       req.params.from === "organisation"
         ? `/access-requests/${req.params.rid}/${req.params.from}/review`
@@ -26,6 +27,7 @@ const validate = async (req) => {
   const request = await getAndMapOrgRequest(req);
   const model = {
     title: "Reason for rejection - DfE Sign-in",
+    layout: "sharedViews/layoutNew.ejs",
     backLink: true,
     requestFrom: req.params.from,
     cancelLink:
@@ -85,7 +87,7 @@ const post = async (req, res) => {
   );
 
   res.flash(
-    "info",
+    "rejected",
     `Request rejected - an email has been sent to ${model.request.usersEmail}.`,
   );
   if (model.requestFrom && model.requestFrom === "organisation")
