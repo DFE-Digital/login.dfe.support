@@ -157,7 +157,8 @@ describe("When confirming deactivation of user", () => {
     expect(deactivate.mock.calls[0][0]).toBe(
       "915a7382-576b-4699-ad07-a9fd329d3867",
     );
-    expect(deactivate.mock.calls[0][1]).toBe("correlationId");
+    expect(deactivate.mock.calls[0][1]).toBe("some reason for deactivation");
+    expect(deactivate.mock.calls[0][2]).toBe("correlationId");
   });
 
   it("then it should update user in search index", async () => {
@@ -224,7 +225,10 @@ describe("When confirming deactivation of user given a reason from the select me
     expect(deactivate.mock.calls[0][0]).toBe(
       "915a7382-576b-4699-ad07-a9fd329d3867",
     );
-    expect(deactivate.mock.calls[0][1]).toBe("correlationId");
+    expect(deactivate.mock.calls[0][1]).toBe(
+      "some selected reason for deactivation",
+    );
+    expect(deactivate.mock.calls[0][2]).toBe("correlationId");
   });
 
   it("then it should update user in search index", async () => {
@@ -291,7 +295,10 @@ describe("When confirming deactivation of user given a reason from the select me
     expect(deactivate.mock.calls[0][0]).toBe(
       "915a7382-576b-4699-ad07-a9fd329d3867",
     );
-    expect(deactivate.mock.calls[0][1]).toBe("correlationId");
+    expect(deactivate.mock.calls[0][1]).toBe(
+      "some selected reason for deactivation - some text reason for deactivation",
+    );
+    expect(deactivate.mock.calls[0][2]).toBe("correlationId");
   });
 
   it("then it should update user in search index", async () => {

@@ -58,8 +58,8 @@ const updateInvitedUserIndex = async (user, correlationId) => {
   await waitForIndexToUpdate(user.id, (updated) => updated.status.id === -2);
 };
 
-const deactivateUser = async (req, user) => {
-  await deactivate(user.id, req.id);
+const deactivateUser = async (req, user, reason) => {
+  await deactivate(user.id, reason, req.id);
   await updateUserIndex(user, req.id);
 };
 
@@ -100,6 +100,7 @@ const postBulkUserActionsEmails = async (req, res) => {
   const isDeactivateTicked = reqBody["deactivate-users"] || false;
   const isRemoveServicesAndRequestsTicked =
     reqBody["remove-services-and-requests"] || false;
+  const userDeactivationReason = "Bulk user actions - deactivation";
 
   // Get all the inputs and figure out which users were ticked
   const tickedUsers = Object.keys(reqBody).filter((v) => v.startsWith("user-"));
@@ -125,11 +126,11 @@ const postBulkUserActionsEmails = async (req, res) => {
                 newValue: -2,
               },
             ],
-            reason: "Bulk user actions - deactivation",
+            reason: userDeactivationReason,
           },
         );
       } else {
-        await deactivateUser(req, user);
+        await deactivateUser(req, user, userDeactivationReason);
         logger.audit(
           `${req.user.email} (id: ${req.user.sub}) deactivated user ${
             user.email
@@ -147,7 +148,7 @@ const postBulkUserActionsEmails = async (req, res) => {
                 newValue: 0,
               },
             ],
-            reason: "Bulk user actions - deactivation",
+            reason: userDeactivationReason,
           },
         );
       }

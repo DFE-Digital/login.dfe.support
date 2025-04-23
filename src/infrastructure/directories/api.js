@@ -115,7 +115,7 @@ const updateUser = async (uid, givenName, familyName, correlationId) => {
   }
 };
 
-const deactivate = async (uid, correlationId) => {
+const deactivate = async (uid, reason, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   await fetchApi(`${config.directories.service.url}/users/${uid}/deactivate`, {
@@ -123,6 +123,9 @@ const deactivate = async (uid, correlationId) => {
     headers: {
       authorization: `bearer ${token}`,
       "x-correlation-id": correlationId,
+    },
+    body: {
+      reason,
     },
   });
 };

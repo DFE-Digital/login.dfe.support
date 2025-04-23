@@ -64,7 +64,7 @@ const postConfirmDeactivate = async (req, res) => {
       },
     });
   } else {
-    await deactivate(user.id, req.id);
+    await deactivate(user.id, req.body.reason, req.id);
     await updateUserIndex(user.id, req.id);
     if (req.body["remove-services-and-requests"]) {
       const userServiceRequests =

@@ -8,7 +8,7 @@
         <div class="govuk-notification-banner__content">
             <p class="govuk-notification-banner__heading">
             This account was deactivated
-            <% if (user.statusChangeReasons) { %>
+            <% if (user.statusChangeReasons.length > 0) { %>
                 - <%= user.statusChangeReasons[0].reason %>
             <% } %>
             </p>

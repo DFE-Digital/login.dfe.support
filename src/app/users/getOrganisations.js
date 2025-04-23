@@ -93,8 +93,11 @@ const action = async (req, res) => {
     : "";
   if (user.status.id === 0) {
     const userStatus = await getUserStatus(user.id);
-    const statusChangeReasons = userStatus.statusChangeReasons;
-    user.statusChangeReasons = statusChangeReasons;
+    if (userStatus) {
+      user.statusChangeReasons = userStatus.statusChangeReasons;
+    } else {
+      user.statusChangeReasons = [];
+    }
   }
   const organisationDetails = await getOrganisations(user.id, req.id);
   const organisationRequests = !user.id.startsWith("inv-")
