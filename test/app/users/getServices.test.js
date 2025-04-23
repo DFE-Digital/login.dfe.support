@@ -29,6 +29,7 @@ const {
 const {
   getAllServices,
 } = require("./../../../src/infrastructure/applications");
+const { getUserStatus } = require("./../../../src/infrastructure/directories");
 
 const getServices = require("./../../../src/app/users/getServices");
 
@@ -64,6 +65,21 @@ describe("when getting users service details", () => {
         id: 1,
         description: "Activated",
       },
+    });
+
+    getUserStatus.mockReset();
+    getUserStatus.mockReturnValue({
+      id: "user1",
+      status: 0,
+      statusChangeReasons: [
+        {
+          id: 1,
+          user_id: "user1",
+          old_status: 1,
+          new_status: 0,
+          reason: "Deactivation reason",
+        },
+      ],
     });
 
     getUserOrganisations.mockReset();
@@ -279,6 +295,7 @@ describe("when getting users service details", () => {
       backLink: "/organisations",
     });
   });
+
   it("should set the backlink to /users if the search type session param is not organisations", async () => {
     req.session.params.searchType = "/users";
     await getServices(req, res);
@@ -352,6 +369,57 @@ describe("when getting users service details", () => {
           grantedAccessOn: new Date("2018-01-19T10:46:59.385Z"),
         },
       ],
+    });
+  });
+
+  it("should include statusChangeReasons in the user model if the status is 0", async () => {
+    getUserDetails.mockReturnValue({
+      id: "user1",
+      status: {
+        id: 0,
+        description: "Dectivated",
+      },
+    });
+    await getServices(req, res);
+
+    expect(res.render.mock.calls[0][1].user).toStrictEqual({
+      formattedLastLogin: "",
+      id: "user1",
+      status: {
+        description: "Dectivated",
+        id: 0,
+      },
+      statusChangeReasons: [
+        {
+          id: 1,
+          new_status: 0,
+          old_status: 1,
+          reason: "Deactivation reason",
+          user_id: "user1",
+        },
+      ],
+    });
+  });
+
+  it("should include an empty statusChangeReasons in the user model one is not found", async () => {
+    getUserStatus.mockReturnValue(null);
+    getUserDetails.mockReturnValue({
+      id: "user1",
+      status: {
+        id: 0,
+        description: "Dectivated",
+      },
+    });
+    await getServices(req, res);
+
+    expect(res.render.mock.calls[0][1].user).toStrictEqual({
+      formattedLastLogin: "",
+      id: "user1",
+      status: {
+        description: "Dectivated",
+        id: 0,
+      },
+      statusChangeReasons: [],
     });
   });
 });

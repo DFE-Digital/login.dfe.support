@@ -15,7 +15,10 @@ const {
   getUserOrganisations,
   getPendingRequestsAssociatedWithUser,
 } = require("../../../src/infrastructure/organisations");
-const { getUsersByIdV2 } = require("../../../src/infrastructure/directories");
+const {
+  getUsersByIdV2,
+  getUserStatus,
+} = require("../../../src/infrastructure/directories");
 const {
   getClientIdForServiceId,
 } = require("../../../src/infrastructure/serviceMapping");
@@ -56,6 +59,21 @@ describe("when getting users organisation details", () => {
         id: 1,
         description: "Activated",
       },
+    });
+
+    getUserStatus.mockReset();
+    getUserStatus.mockReturnValue({
+      id: "user1",
+      status: 0,
+      statusChangeReasons: [
+        {
+          id: 1,
+          user_id: "user1",
+          old_status: 1,
+          new_status: 0,
+          reason: "Deactivation reason",
+        },
+      ],
     });
 
     getUserOrganisations.mockReset();
@@ -202,6 +220,7 @@ describe("when getting users organisation details", () => {
       backLink: "/organisations",
     });
   });
+
   it("should set the backlink to /users if the search type session param is not organisations", async () => {
     req.session.params.searchType = "/users";
     await getOrganisations(req, res);
@@ -349,5 +368,56 @@ describe("when getting users organisation details", () => {
     expect(
       res.render.mock.calls[0][1].organisations[0].approvers,
     ).toMatchObject([]);
+  });
+
+  it("should include statusChangeReasons in the user model if the status is 0", async () => {
+    getUserDetails.mockReturnValue({
+      id: "user1",
+      status: {
+        id: 0,
+        description: "Dectivated",
+      },
+    });
+    await getOrganisations(req, res);
+
+    expect(res.render.mock.calls[0][1].user).toStrictEqual({
+      formattedLastLogin: "",
+      id: "user1",
+      status: {
+        description: "Dectivated",
+        id: 0,
+      },
+      statusChangeReasons: [
+        {
+          id: 1,
+          new_status: 0,
+          old_status: 1,
+          reason: "Deactivation reason",
+          user_id: "user1",
+        },
+      ],
+    });
+  });
+
+  it("should include an empty statusChangeReasons in the user model one is not found", async () => {
+    getUserStatus.mockReturnValue(null);
+    getUserDetails.mockReturnValue({
+      id: "user1",
+      status: {
+        id: 0,
+        description: "Dectivated",
+      },
+    });
+    await getOrganisations(req, res);
+
+    expect(res.render.mock.calls[0][1].user).toStrictEqual({
+      formattedLastLogin: "",
+      id: "user1",
+      status: {
+        description: "Dectivated",
+        id: 0,
+      },
+      statusChangeReasons: [],
+    });
   });
 });
