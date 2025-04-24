@@ -25,9 +25,18 @@ const createService = async (body, correlationId) => {
     );
     return client;
   } catch (e) {
-    logger.error(`An error occurred when creating a new service, ${e}`, {
-      correlationId,
-    });
+    if (e.statusCode === 400) {
+      logger.error(
+        `A 400 error occurred when creating a new service, ${e.error.reasons}`,
+        {
+          correlationId,
+        },
+      );
+    } else {
+      logger.error(`An error occurred when creating a new service, ${e}`, {
+        correlationId,
+      });
+    }
     throw e;
   }
 };
