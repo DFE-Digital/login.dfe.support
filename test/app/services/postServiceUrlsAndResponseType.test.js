@@ -124,39 +124,6 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult).toHaveBeenCalledTimes(0);
   });
 
-  it("should discard client_secret, refresh_token and tokenEndpointAuthenticationMethod if response type code is not selected", async () => {
-    req.body["response_types-code"] = "";
-    req.body.refreshToken = "refresh_token";
-    req.body.clientSecret = "Test secret";
-    req.body.tokenEndpointAuthenticationMethod =
-      "tokenEndpointAuthenticationMethod";
-    await postServiceUrlsAndResponseType(req, res);
-
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe("confirm-new-service");
-    expect(req.session.createServiceData).toStrictEqual({
-      serviceType: "idOnlyServiceType",
-      name: "Test name",
-      description: "Test description",
-      homeUrl: "https://test-url.com/home",
-      postPasswordResetUrl: "https://test-url.com/post-password-reset",
-      clientId: "test-client-id",
-      service: {
-        postLogoutRedirectUris: ["https://test-url.com/log-out-redirect"],
-        redirectUris: ["https://test-url.com/redirect"],
-      },
-      responseTypesCode: "",
-      responseTypesIdToken: "",
-      responseTypesToken: "",
-      refreshToken: undefined,
-      clientSecret: "",
-      tokenEndpointAuthenticationMethod: undefined,
-      apiSecret: "api-secret",
-      validationMessages: {},
-    });
-    expect(sendResult).toHaveBeenCalledTimes(0);
-  });
-
   it("should render the page if there is an error saving to the session", async () => {
     req.session = {
       createServiceData: {
@@ -503,6 +470,26 @@ describe("when displaying the post choose service type screen", () => {
 
     exampleErrorResponse.validationMessages.responseTypesToken =
       "Select more than 1 response type when 'token' is selected as a response type";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages if no response types selected", async () => {
+    req.body["response_types-code"] = "";
+    req.body["response_types-id_token"] = "";
+    req.body["response_types-token"] = "";
+
+    // These 3 aren't part of the test, but modifying these elements makes the test shorter in length
+    exampleErrorResponse.responseTypesCode = "";
+    exampleErrorResponse.responseTypesToken = "";
+    exampleErrorResponse.refreshToken = undefined;
+    exampleErrorResponse.clientSecret = "";
+
+    exampleErrorResponse.validationMessages.responseTypes =
+      "Select at least 1 response type";
 
     await postServiceUrlsAndResponseType(req, res);
 
