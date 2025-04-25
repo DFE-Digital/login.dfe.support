@@ -124,6 +124,40 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult).toHaveBeenCalledTimes(0);
   });
 
+  it("should discard client_secret, refresh_token and tokenEndpointAuthenticationMethod if response type code is not selected", async () => {
+    req.body["response_types-code"] = "";
+    req.body["response_types-id_token"] = "response_types-idToken";
+    req.body.refreshToken = "refresh_token";
+    req.body.clientSecret = "Test secret";
+    req.body.tokenEndpointAuthenticationMethod =
+      "tokenEndpointAuthenticationMethod";
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("confirm-new-service");
+    expect(req.session.createServiceData).toStrictEqual({
+      serviceType: "idOnlyServiceType",
+      name: "Test name",
+      description: "Test description",
+      homeUrl: "https://test-url.com/home",
+      postPasswordResetUrl: "https://test-url.com/post-password-reset",
+      clientId: "test-client-id",
+      service: {
+        postLogoutRedirectUris: ["https://test-url.com/log-out-redirect"],
+        redirectUris: ["https://test-url.com/redirect"],
+      },
+      responseTypesCode: "",
+      responseTypesIdToken: "response_types-idToken",
+      responseTypesToken: "",
+      refreshToken: undefined,
+      clientSecret: "",
+      tokenEndpointAuthenticationMethod: undefined,
+      apiSecret: "api-secret",
+      validationMessages: {},
+    });
+    expect(sendResult).toHaveBeenCalledTimes(0);
+  });
+
   it("should render the page if there is an error saving to the session", async () => {
     req.session = {
       createServiceData: {
