@@ -19,21 +19,22 @@ const {
 
 const correlationId = "abc123";
 const userId = "user1";
-const userStatus = 0;
 
 const apiResponse = {
-  id: userId,
-  status: userStatus,
-  deactivation: [
+  id: "78071717-4247-480d-90a3-3d531379ebf8",
+  status: 0,
+  statusChangeReasons: [
     {
-      deactivated_at: "2024-06-04T09:47:36.718Z",
-      userId: userId,
-      reason: "This is a deactivation reason",
+      id: 1,
+      user_id: "78071717-4247-480d-90a3-3d531379ebf8",
+      old_status: 1,
+      new_status: 0,
+      reason: "Deactivation reason",
     },
   ],
 };
 
-describe("when getting a page of users from directories api", () => {
+describe("when getting the status of a user from the directories api", () => {
   beforeEach(() => {
     fetchApi.mockReset();
     fetchApi.mockImplementation(() => {
@@ -48,7 +49,7 @@ describe("when getting a page of users from directories api", () => {
     });
   });
 
-  it("then it sends a POST directories api with ids in the body", async () => {
+  it("then it sends a GET to the directories api with id in the body", async () => {
     await getUserStatus(userId, correlationId);
 
     expect(fetchApi.mock.calls).toHaveLength(1);

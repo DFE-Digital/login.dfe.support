@@ -216,11 +216,7 @@ const getAudit = async (req, res) => {
     : "";
   if (user.status.id === 0) {
     const userStatus = await getUserStatus(user.id);
-    if (userStatus) {
-      user.statusChangeReasons = userStatus.statusChangeReasons;
-    } else {
-      user.statusChangeReasons = [];
-    }
+    user.statusChangeReasons = userStatus ? userStatus.statusChangeReasons : [];
   }
   const userOrganisations = await getUserOrganisations(req.params.uid, req.id);
   req.session.type = "audit";
