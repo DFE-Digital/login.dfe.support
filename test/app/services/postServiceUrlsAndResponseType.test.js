@@ -126,6 +126,7 @@ describe("when displaying the post choose service type screen", () => {
 
   it("should discard client_secret, refresh_token and tokenEndpointAuthenticationMethod if response type code is not selected", async () => {
     req.body["response_types-code"] = "";
+    req.body["response_types-id_token"] = "response_types-idToken";
     req.body.refreshToken = "refresh_token";
     req.body.clientSecret = "Test secret";
     req.body.tokenEndpointAuthenticationMethod =
@@ -146,7 +147,7 @@ describe("when displaying the post choose service type screen", () => {
         redirectUris: ["https://test-url.com/redirect"],
       },
       responseTypesCode: "",
-      responseTypesIdToken: "",
+      responseTypesIdToken: "response_types-idToken",
       responseTypesToken: "",
       refreshToken: undefined,
       clientSecret: "",
@@ -503,6 +504,26 @@ describe("when displaying the post choose service type screen", () => {
 
     exampleErrorResponse.validationMessages.responseTypesToken =
       "Select more than 1 response type when 'token' is selected as a response type";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages if no response types selected", async () => {
+    req.body["response_types-code"] = "";
+    req.body["response_types-id_token"] = "";
+    req.body["response_types-token"] = "";
+
+    // These 3 aren't part of the test, but modifying these elements makes the test shorter in length
+    exampleErrorResponse.responseTypesCode = "";
+    exampleErrorResponse.responseTypesToken = "";
+    exampleErrorResponse.refreshToken = undefined;
+    exampleErrorResponse.clientSecret = "";
+
+    exampleErrorResponse.validationMessages.responseTypes =
+      "Select at least 1 response type";
 
     await postServiceUrlsAndResponseType(req, res);
 
