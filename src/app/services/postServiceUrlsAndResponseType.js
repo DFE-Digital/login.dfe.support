@@ -164,6 +164,15 @@ const validateInput = async (req) => {
       "Log out redirect urls must all be unique";
   }
 
+  // Response types validation
+  if (
+    !model.responseTypesCode &&
+    !model.responseTypesToken &&
+    !model.responseTypesIdToken
+  ) {
+    model.validationMessages.responseTypes = "Select at least 1 response type";
+  }
+
   const isCodeOrIdTokenSelected =
     model.responseTypesCode || model.responseTypesIdToken;
   if (model.responseTypesToken && !isCodeOrIdTokenSelected) {
