@@ -361,6 +361,47 @@ describe("When confirming deactivation of user given a reason from the select me
   });
 });
 
+it("should render the page with an error if the reason is over 1000 characters and the default dropdown option is selected", async () => {
+  const longReason = "Test123456".repeat(110); // 1100 character length string.
+  req.body = {
+    reason: longReason,
+    "select-reason": "Select a reason",
+  };
+  await postConfirmDeactivate(req, res);
+
+  expect(sendResult.mock.calls).toHaveLength(1);
+  expect(sendResult.mock.calls[0][3]).toMatchObject({
+    csrfToken: "token",
+    backLink: "services",
+    reason: longReason,
+    validationMessages: {
+      reason: "Reason cannot be longer than 1000 characters",
+    },
+  });
+  expect(res.redirect.mock.calls).toHaveLength(0);
+});
+
+it("should render the page with an error if the reason is over 1000 characters and a non-default dropdown option is selected", async () => {
+  // Combined length of `${dropdownReason} - ${textReason}` cannot be more than 1k charaters
+  const longReason = "Test123456".repeat(99); // 990 character length string.
+  req.body = {
+    reason: longReason,
+    "select-reason": "Generic email",
+  };
+  await postConfirmDeactivate(req, res);
+
+  expect(sendResult.mock.calls).toHaveLength(1);
+  expect(sendResult.mock.calls[0][3]).toMatchObject({
+    csrfToken: "token",
+    backLink: "services",
+    reason: longReason,
+    validationMessages: {
+      reason: "Reason cannot be longer than 1000 characters",
+    },
+  });
+  expect(res.redirect.mock.calls).toHaveLength(0);
+});
+
 describe("When the remove all services and requests checkbox is ticked", () => {
   beforeEach(() => {
     req.body = {

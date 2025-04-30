@@ -21,24 +21,21 @@ const updateUserIndex = async (uid, correlationId) => {
 
 const postConfirmDeactivate = async (req, res) => {
   const user = await getUserDetails(req);
+  const isDefaultDropdownReasonSelected =
+    req.body["select-reason"] &&
+    req.body["select-reason"] === "Select a reason";
+  const isNonDefaultDropdownReasonSelected =
+    req.body["select-reason"] &&
+    req.body["select-reason"] !== "Select a reason";
 
-  if (
-    req.body["select-reason"] &&
-    req.body["select-reason"] !== "Select a reason" &&
-    req.body.reason.trim() === ""
-  ) {
+  if (isNonDefaultDropdownReasonSelected && req.body.reason.trim() === "") {
     req.body.reason = req.body["select-reason"];
-  } else if (
-    req.body["select-reason"] &&
-    req.body["select-reason"] !== "Select a reason" &&
-    req.body.reason.length > 0
-  ) {
+  } else if (isNonDefaultDropdownReasonSelected && req.body.reason.length > 0) {
     req.body.reason = `${req.body["select-reason"]} - ${req.body.reason}`;
   }
 
   if (
-    req.body["select-reason"] &&
-    req.body["select-reason"] === "Select a reason" &&
+    isDefaultDropdownReasonSelected &&
     req.body.reason.match(/^\s*$/) !== null
   ) {
     sendResult(req, res, "users/views/confirmInvitationDeactivate", {
