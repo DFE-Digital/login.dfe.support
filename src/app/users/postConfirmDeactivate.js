@@ -30,132 +30,156 @@ const updateUserIndex = async (uid, correlationId) => {
   await waitForIndexToUpdate(uid, (updated) => updated.status.id === 0);
 };
 
-const postConfirmDeactivate = async (req, res) => {
-  const user = await getUserDetails(req);
-  const correlationId = req.id;
-  // If just the dropdown is selected, have the reason be that.  If both dropdown and text are used, then the reason
-  //  is both of them separated with a '-'
-  if (
-    req.body["select-reason"] &&
-    req.body["select-reason"] !== "Select a reason" &&
-    req.body.reason.trim() === ""
-  ) {
-    req.body.reason = req.body["select-reason"];
-  } else if (
-    req.body["select-reason"] &&
-    req.body["select-reason"] !== "Select a reason" &&
-    req.body.reason.length > 0
-  ) {
-    req.body.reason = `${req.body["select-reason"]} - ${req.body.reason}`;
+const validateInput = (req) => {
+  const model = {
+    reason: req.body.reason,
+    selectReason: req.body["select-reason"],
+    validationMessages: {},
+  };
+  const isDefaultDropdownReasonSelected =
+    model.selectReason && model.selectReason === "Select a reason";
+
+  if (isDefaultDropdownReasonSelected) {
+    if (model.reason.trim().length === 0) {
+      model.validationMessages.reason = "Please give a reason for deactivation";
+    }
+    if (model.reason.length > 1000) {
+      model.validationMessages.reason =
+        "Reason cannot be longer than 1000 characters";
+    }
+  } else {
+    if (model.reason.trim().length > 0) {
+      // Only need to do a length check if a typed reason has been provided added as all the
+      // dropdown reasons are nowhere near 1000 characters
+      const reasonLengthToBeTested = `${req.body["select-reason"]} - ${model.reason}`;
+      if (reasonLengthToBeTested.length > 1000) {
+        model.validationMessages.reason =
+          "Reason cannot be longer than 1000 characters";
+      }
+    }
   }
 
-  if (
-    req.body["select-reason"] &&
-    req.body["select-reason"] === "Select a reason" &&
-    req.body.reason.match(/^\s*$/) !== null
-  ) {
-    sendResult(req, res, "users/views/confirmDeactivate", {
+  return model;
+};
+
+const postConfirmDeactivate = async (req, res) => {
+  const model = validateInput(req);
+
+  if (Object.keys(model.validationMessages).length > 0) {
+    return sendResult(req, res, "users/views/confirmDeactivate", {
       csrfToken: req.csrfToken(),
       layout: "sharedViews/layoutNew.ejs",
       backLink: "services",
-      reason: "",
-      validationMessages: {
-        reason: "Please give a reason for deactivation",
-      },
+      reason: model.reason,
+      validationMessages: model.validationMessages,
     });
-  } else {
-    await deactivate(user.id, req.id);
-    await updateUserIndex(user.id, req.id);
-    if (req.body["remove-services-and-requests"]) {
-      const userServiceRequests =
-        (await getUserServiceRequestsByUserId(user.id)) || [];
-      for (const serviceRequest of userServiceRequests) {
-        // Request status 0 is 'pending', 2 is 'overdue', 3 is 'no approvers'
-        if (
-          serviceRequest.status === 0 ||
-          serviceRequest.status === 2 ||
-          serviceRequest.status === 3
-        ) {
-          logger.info(
-            `Rejecting service request with id: ${serviceRequest.id}`,
-            { correlationId },
-          );
-          const requestBody = {
-            status: -1,
-            actioned_reason: "User deactivation",
-            actioned_by: req.user.sub,
-            actioned_at: new Date(),
-          };
-          updateUserServiceRequest(serviceRequest.id, requestBody, req.id);
-        }
-      }
+  }
 
-      const organisationRequests =
-        (await getPendingRequestsAssociatedWithUser(user.id)) || [];
-      for (const organisationRequest of organisationRequests) {
-        // Request status 0 is 'pending', 2 is 'overdue' and 3 is 'no approvers'
-        if (
-          organisationRequest.status.id === 0 ||
-          organisationRequest.status.id === 2 ||
-          organisationRequest.status.id === 3
-        ) {
-          logger.info(
-            `Rejecting organisation request with id: ${organisationRequest.id}`,
-            { correlationId },
-          );
-          const status = -1;
-          const actionedReason = "User deactivation";
-          const actionedBy = req.user.sub;
-          const actionedAt = new Date();
-          updateRequestById(
-            organisationRequest.id,
-            status,
-            actionedBy,
-            actionedReason,
-            actionedAt,
-            req.id,
-          );
-        }
-      }
+  // Now that we're sure we've got a sensible payload, start getting details and reshaping data
+  const isNonDefaultDropdownReasonSelected =
+    model.selectReason && model.selectReason !== "Select a reason";
+  const user = await getUserDetails(req);
+  const correlationId = req.id;
+  let reason = model.reason.trim();
+  if (isNonDefaultDropdownReasonSelected) {
+    if (reason.length === 0) {
+      reason = req.body["select-reason"];
+    } else {
+      // If it non default and not empty then both are populated, and we combine them with a - in the middle
+      reason = `${req.body["select-reason"]} - ${model.reason}`;
+    }
+  }
 
-      const userServices = (await getServicesByUserId(user.id)) || [];
-      for (const service of userServices) {
+  await deactivate(user.id, reason, req.id);
+  await updateUserIndex(user.id, req.id);
+  if (req.body["remove-services-and-requests"]) {
+    const userServiceRequests =
+      (await getUserServiceRequestsByUserId(user.id)) || [];
+    for (const serviceRequest of userServiceRequests) {
+      // Request status 0 is 'pending', 2 is 'overdue', 3 is 'no approvers'
+      if (
+        serviceRequest.status === 0 ||
+        serviceRequest.status === 2 ||
+        serviceRequest.status === 3
+      ) {
+        logger.info(`Rejecting service request with id: ${serviceRequest.id}`, {
+          correlationId,
+        });
+        const requestBody = {
+          status: -1,
+          actioned_reason: "User deactivation",
+          actioned_by: req.user.sub,
+          actioned_at: new Date(),
+        };
+        updateUserServiceRequest(serviceRequest.id, requestBody, req.id);
+      }
+    }
+
+    const organisationRequests =
+      (await getPendingRequestsAssociatedWithUser(user.id)) || [];
+    for (const organisationRequest of organisationRequests) {
+      // Request status 0 is 'pending', 2 is 'overdue' and 3 is 'no approvers'
+      if (
+        organisationRequest.status.id === 0 ||
+        organisationRequest.status.id === 2 ||
+        organisationRequest.status.id === 3
+      ) {
         logger.info(
-          `Removing service from user: ${service.userId} with serviceId: ${service.serviceId} and organisationId: ${service.organisationId}`,
+          `Rejecting organisation request with id: ${organisationRequest.id}`,
           { correlationId },
         );
-        removeServiceFromUser(
-          service.userId,
-          service.serviceId,
-          service.organisationId,
+        const status = -1;
+        const actionedReason = "User deactivation";
+        const actionedBy = req.user.sub;
+        const actionedAt = new Date();
+        updateRequestById(
+          organisationRequest.id,
+          status,
+          actionedBy,
+          actionedReason,
+          actionedAt,
           req.id,
         );
       }
     }
 
-    logger.audit(
-      `${req.user.email} (id: ${req.user.sub}) deactivated user ${
-        user.email
-      } (id: ${user.id})`,
-      {
-        type: "support",
-        subType: "user-edit",
-        userId: req.user.sub,
-        userEmail: req.user.email,
-        editedUser: user.id,
-        editedFields: [
-          {
-            name: "status",
-            oldValue: user.status.id,
-            newValue: 0,
-          },
-        ],
-        reason: req.body.reason,
-      },
-    );
-
-    return res.redirect("services");
+    const userServices = (await getServicesByUserId(user.id)) || [];
+    for (const service of userServices) {
+      logger.info(
+        `Removing service from user: ${service.userId} with serviceId: ${service.serviceId} and organisationId: ${service.organisationId}`,
+        { correlationId },
+      );
+      removeServiceFromUser(
+        service.userId,
+        service.serviceId,
+        service.organisationId,
+        req.id,
+      );
+    }
   }
+
+  logger.audit(
+    `${req.user.email} (id: ${req.user.sub}) deactivated user ${
+      user.email
+    } (id: ${user.id})`,
+    {
+      type: "support",
+      subType: "user-edit",
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      editedUser: user.id,
+      editedFields: [
+        {
+          name: "status",
+          oldValue: user.status.id,
+          newValue: 0,
+        },
+      ],
+      reason: reason,
+    },
+  );
+
+  return res.redirect("services");
 };
 
 module.exports = postConfirmDeactivate;

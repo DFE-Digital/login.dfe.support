@@ -115,7 +115,7 @@ const updateUser = async (uid, givenName, familyName, correlationId) => {
   }
 };
 
-const deactivate = async (uid, correlationId) => {
+const deactivate = async (uid, reason, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
   await fetchApi(`${config.directories.service.url}/users/${uid}/deactivate`, {
@@ -123,6 +123,9 @@ const deactivate = async (uid, correlationId) => {
     headers: {
       authorization: `bearer ${token}`,
       "x-correlation-id": correlationId,
+    },
+    body: {
+      reason,
     },
   });
 };
@@ -380,6 +383,28 @@ const getUsersByIdV2 = async (ids, correlationId) => {
   }
 };
 
+const getUserStatus = async (id, correlationId) => {
+  const token = await jwtStrategy(config.directories.service).getBearerToken();
+
+  try {
+    return await fetchApi(
+      `${config.directories.service.url}/users/${id}/status`,
+      {
+        method: "GET",
+        headers: {
+          authorization: `bearer ${token}`,
+          "x-correlation-id": correlationId,
+        },
+      },
+    );
+  } catch (e) {
+    if (e.statusCode === 404) {
+      return null;
+    }
+    throw e;
+  }
+};
+
 const getLegacyUsernames = async (userIds, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
@@ -418,6 +443,7 @@ module.exports = {
   deleteChangeEmailCode,
   getUsersById,
   resendInvite,
-  getLegacyUsernames,
   getUsersByIdV2,
+  getUserStatus,
+  getLegacyUsernames,
 };

@@ -11,6 +11,7 @@ const {
   getServiceIdForClientId,
 } = require("./../../infrastructure/serviceMapping");
 const { getServiceById } = require("./../../infrastructure/applications");
+const { getUserStatus } = require("../../infrastructure/directories");
 const {
   getOrganisationById,
   getUserOrganisations,
@@ -213,6 +214,10 @@ const getAudit = async (req, res) => {
   user.formattedLastLogin = user.lastLogin
     ? dateFormat(user.lastLogin, "longDateFormat")
     : "";
+  if (user.status.id === 0) {
+    const userStatus = await getUserStatus(user.id);
+    user.statusChangeReasons = userStatus ? userStatus.statusChangeReasons : [];
+  }
   const userOrganisations = await getUserOrganisations(req.params.uid, req.id);
   req.session.type = "audit";
   const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;

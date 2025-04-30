@@ -17,6 +17,7 @@ const { deactivate } = require("../../../src/infrastructure/directories/api");
 
 const correlationId = "abc123";
 const userId = "user-1";
+const userDeactivationReason = "Test reason";
 
 describe("when deactivating an invite from the directories api", () => {
   beforeEach(() => {
@@ -32,7 +33,7 @@ describe("when deactivating an invite from the directories api", () => {
   });
 
   it("then it should call invitations resource with invitation id", async () => {
-    await deactivate(userId, correlationId);
+    await deactivate(userId, userDeactivationReason, correlationId);
 
     expect(fetchApi.mock.calls).toHaveLength(1);
     expect(fetchApi.mock.calls[0][0]).toBe(
@@ -44,7 +45,7 @@ describe("when deactivating an invite from the directories api", () => {
   });
 
   it("then it should use the token from jwt strategy as bearer token", async () => {
-    await deactivate(userId, correlationId);
+    await deactivate(userId, userDeactivationReason, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
@@ -54,11 +55,14 @@ describe("when deactivating an invite from the directories api", () => {
   });
 
   it("then it should include the correlation id", async () => {
-    await deactivate(userId, correlationId);
+    await deactivate(userId, userDeactivationReason, correlationId);
 
     expect(fetchApi.mock.calls[0][1]).toMatchObject({
       headers: {
         "x-correlation-id": correlationId,
+      },
+      body: {
+        reason: userDeactivationReason,
       },
     });
   });

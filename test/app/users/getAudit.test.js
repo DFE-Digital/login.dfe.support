@@ -5,6 +5,7 @@ jest.mock("./../../../src/infrastructure/utils");
 jest.mock("./../../../src/app/users/utils");
 jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/applications");
+jest.mock("./../../../src/infrastructure/directories");
 jest.mock("./../../../src/infrastructure/serviceMapping");
 jest.mock("./../../../src/infrastructure/audit");
 jest.mock("ioredis");
@@ -24,6 +25,7 @@ const {
 const {
   getServiceById,
 } = require("./../../../src/infrastructure/applications");
+const { getUserStatus } = require("./../../../src/infrastructure/directories");
 const getAudit = require("./../../../src/app/users/getAudit");
 
 describe("when getting users audit details", () => {
@@ -55,10 +57,34 @@ describe("when getting users audit details", () => {
     getUserDetails.mockReset();
     getUserDetails.mockReturnValue({
       id: "user1",
+      status: {
+        id: 1,
+        description: "Activated",
+      },
     });
+
+    getUserStatus.mockReset();
+    getUserStatus.mockReturnValue({
+      id: "user1",
+      status: 0,
+      statusChangeReasons: [
+        {
+          id: 1,
+          user_id: "user1",
+          old_status: 1,
+          new_status: 0,
+          reason: "Deactivation reason",
+        },
+      ],
+    });
+
     getUserDetailsById.mockReset();
     getUserDetailsById.mockReturnValue({
       id: "user1",
+      status: {
+        id: 1,
+        description: "Activated",
+      },
     });
 
     sendResult.mockReset();
@@ -180,6 +206,10 @@ describe("when getting users audit details", () => {
     expect(sendResult.mock.calls[0][3]).toMatchObject({
       user: {
         id: "user1",
+        status: {
+          id: 1,
+          description: "Activated",
+        },
       },
     });
   });
@@ -312,5 +342,70 @@ describe("when getting users audit details", () => {
     expect(getServiceById.mock.calls).toHaveLength(2);
     expect(getServiceById.mock.calls[0][0]).toBe("service-1");
     expect(getServiceById.mock.calls[1][0]).toBe("service-2");
+  });
+
+  it("should include statusChangeReasons in the user model if the status is 0", async () => {
+    getUserDetails.mockReturnValue({
+      id: "user1",
+      status: {
+        id: 0,
+        description: "Dectivated",
+      },
+    });
+    getUserDetailsById.mockReturnValue({
+      id: "user1",
+      status: {
+        id: 0,
+        description: "Dectivated",
+      },
+    });
+    await getAudit(req, res);
+
+    expect(sendResult.mock.calls[0][3].user).toStrictEqual({
+      formattedLastLogin: "",
+      id: "user1",
+      status: {
+        description: "Dectivated",
+        id: 0,
+      },
+      statusChangeReasons: [
+        {
+          id: 1,
+          new_status: 0,
+          old_status: 1,
+          reason: "Deactivation reason",
+          user_id: "user1",
+        },
+      ],
+    });
+  });
+
+  it("should include an empty statusChangeReasons in the user model one is not found", async () => {
+    getUserStatus.mockReturnValue(null);
+    getUserDetails.mockReturnValue({
+      id: "user1",
+      status: {
+        id: 0,
+        description: "Dectivated",
+      },
+    });
+    getUserDetailsById.mockReturnValue({
+      id: "user1",
+      status: {
+        id: 0,
+        description: "Dectivated",
+      },
+    });
+    await getAudit(req, res);
+
+    expect(sendResult.mock.calls[0][3].user).toStrictEqual({
+      formattedLastLogin: "",
+      id: "user1",
+      status: {
+        description: "Dectivated",
+        id: 0,
+      },
+      statusChangeReasons: [],
+    });
   });
 });
