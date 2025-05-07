@@ -15,10 +15,7 @@ const {
   getUserDetailsById,
 } = require("./../../../src/app/users/utils");
 const { sendResult } = require("./../../../src/infrastructure/utils");
-const {
-  getPageOfUserAudits,
-  getUserChangeHistory,
-} = require("./../../../src/infrastructure/audit");
+const { getPageOfUserAudits } = require("./../../../src/infrastructure/audit");
 const {
   getServiceIdForClientId,
 } = require("./../../../src/infrastructure/serviceMapping");
@@ -129,22 +126,6 @@ describe("when getting users audit details", () => {
       ],
       numberOfPages: 3,
       numberOfRecords: 56,
-    });
-
-    getUserChangeHistory.mockReset();
-    getUserChangeHistory.mockReturnValue({
-      audits: [
-        {
-          type: "support",
-          subType: "user-edit",
-          success: false,
-          userId: "user1",
-          userEmail: "some.user@test.tester",
-          level: "audit",
-          message: "Some detailed message",
-          timestamp: "2018-01-29T17:31:00.000Z",
-        },
-      ],
     });
 
     getServiceIdForClientId.mockReset();
