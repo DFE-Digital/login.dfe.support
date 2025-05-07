@@ -104,7 +104,7 @@ const getPageOfUserAudits = async (userId, pageNumber) => {
         level: currentRow.level,
         message: currentRow.message,
         timestamp: currentRow.createdAt,
-        organisationId: currentRow.organisationId,
+        organisationId: currentRow.organisationid,
       };
       entities.push(currentEntity);
     }

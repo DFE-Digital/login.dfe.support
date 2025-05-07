@@ -48,6 +48,9 @@ const db = new Sequelize(
   dbOpts,
 );
 
+// Mapping organisationid to organisationId as the all lowercase column
+// is an oddity and this conversion should reduce mistakes when using
+// that field on this object.
 const logs = db.define(
   "AuditLogs",
   {
@@ -63,7 +66,10 @@ const logs = db.define(
     type: Sequelize.STRING,
     subType: Sequelize.STRING,
     userId: Sequelize.UUID,
-    organisationId: Sequelize.UUID,
+    organisationId: {
+      type: Sequelize.UUID,
+      field: "organisationid",
+    },
   },
   {
     timestamps: true,

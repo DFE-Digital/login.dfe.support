@@ -51,6 +51,15 @@ const describeAuditEvent = async (audit, req) => {
     return audit.type;
   }
 
+  if (
+    audit.subType === "user-service-deleted" ||
+    audit.subType === "user-services-added" ||
+    audit.subType === "user-service-updated" ||
+    audit.subType === "org-edit"
+  ) {
+    return audit.message;
+  }
+
   if (audit.type === "support" && audit.subType === "user-edit") {
     const viewedUser = audit.editedUser
       ? await getCachedUserById(audit.editedUser, req.id)
