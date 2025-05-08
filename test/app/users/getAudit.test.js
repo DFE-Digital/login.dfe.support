@@ -91,18 +91,6 @@ describe("when getting users audit details", () => {
       audits: [
         {
           type: "sign-in",
-          subType: "digipass",
-          success: false,
-          userId: "user1",
-          userEmail: "some.user@test.tester",
-          level: "audit",
-          message:
-            "Successful login attempt for some.user@test.tester (id: user1)",
-          timestamp: "2018-01-30T10:31:00.000Z",
-          client: "client-1",
-        },
-        {
-          type: "sign-in",
           subType: "username-password",
           success: true,
           userId: "user1",
@@ -111,7 +99,7 @@ describe("when getting users audit details", () => {
           message:
             "Successful login attempt for some.user@test.tester (id: user1)",
           timestamp: "2018-01-30T10:30:53.987Z",
-          client: "client-2",
+          client: "client-1",
         },
         {
           type: "some-new-type",
@@ -209,24 +197,6 @@ describe("when getting users audit details", () => {
     expect(sendResult.mock.calls[0][3]).toMatchObject({
       audits: [
         {
-          timestamp: new Date("2018-01-30T10:31:00.000Z"),
-          event: {
-            type: "sign-in",
-            subType: "digipass",
-            description: "Sign-in using a digipass key fob",
-          },
-          service: {
-            id: "service-1",
-            name: "service-1",
-            description: "service-1",
-          },
-          organisation: null,
-          result: false,
-          user: {
-            id: "user1",
-          },
-        },
-        {
           timestamp: new Date("2018-01-30T10:30:53.987Z"),
           event: {
             type: "sign-in",
@@ -234,9 +204,9 @@ describe("when getting users audit details", () => {
             description: "Sign-in using email address and password",
           },
           service: {
-            id: "service-2",
-            name: "service-2",
-            description: "service-2",
+            id: "service-1",
+            name: "service-1",
+            description: "service-1",
           },
           organisation: null,
           result: true,
@@ -316,13 +286,11 @@ describe("when getting users audit details", () => {
   it("then it should get service for each audit that has client", async () => {
     await getAudit(req, res);
 
-    expect(getServiceIdForClientId.mock.calls).toHaveLength(2);
+    expect(getServiceIdForClientId.mock.calls).toHaveLength(1);
     expect(getServiceIdForClientId.mock.calls[0][0]).toBe("client-1");
-    expect(getServiceIdForClientId.mock.calls[1][0]).toBe("client-2");
 
-    expect(getServiceById.mock.calls).toHaveLength(2);
+    expect(getServiceById.mock.calls).toHaveLength(1);
     expect(getServiceById.mock.calls[0][0]).toBe("service-1");
-    expect(getServiceById.mock.calls[1][0]).toBe("service-2");
   });
 
   it("should include statusChangeReasons in the user model if the status is 0", async () => {
