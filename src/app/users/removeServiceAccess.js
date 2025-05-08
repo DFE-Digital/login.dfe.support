@@ -83,12 +83,13 @@ const post = async (req, res) => {
   }
 
   logger.audit(
-    `${req.user.email} (id: ${req.user.sub}) removed service ${service.name} for organisation id: ${organisationId}) for user ${req.session.user.email} (id: ${uid})`,
+    `${req.user.email} removed service ${service.name} for user ${req.session.user.email}`,
     {
       type: "support",
       subType: "user-service-deleted",
       userId: req.user.sub,
       userEmail: req.user.email,
+      organisationId,
       editedUser: uid,
       editedFields: [
         {

@@ -75,6 +75,7 @@ const addOrganisationToUser = async (uid, req) => {
       subType: "user-org",
       userId: req.user.sub,
       userEmail: req.user.email,
+      organisationId,
       editedUser: uid,
       editedFields: [
         {

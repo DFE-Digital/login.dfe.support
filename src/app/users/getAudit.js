@@ -40,9 +40,6 @@ const describeAuditEvent = async (audit, req) => {
       case "username-password":
         description += " using email address and password";
         break;
-      case "digipass":
-        description += " using a digipass key fob";
-        break;
     }
     return description;
   }
