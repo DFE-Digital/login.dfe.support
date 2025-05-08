@@ -28,30 +28,6 @@ const mapAuditEntity = (auditEntity) => {
   return audit;
 };
 
-const getPageOfAudits = async (where, pageNumber) => {
-  const auditLogs = await logs.findAll({
-    where,
-    order: [["createdAt", "DESC"]],
-    offset: (pageNumber - 1) * pageSize,
-    limit: pageSize,
-    include: ["metaData"],
-  });
-  const count = (
-    await logs.findAll({
-      attributes: [
-        [Sequelize.fn("COUNT", Sequelize.col("id")), "CountOfAudits"],
-      ],
-      where,
-    })
-  )[0].get("CountOfAudits");
-
-  return {
-    audits: auditLogs.map(mapAuditEntity),
-    numberOfPages: Math.ceil(count / pageSize),
-    numberOfRecords: count,
-  };
-};
-
 const getPageOfUserAudits = async (userId, pageNumber) => {
   const queryWhere = `
     WHERE type != 'technical-audit'
@@ -104,7 +80,7 @@ const getPageOfUserAudits = async (userId, pageNumber) => {
         level: currentRow.level,
         message: currentRow.message,
         timestamp: currentRow.createdAt,
-        organisationId: currentRow.organisationId,
+        organisationId: currentRow.organisationid,
       };
       entities.push(currentEntity);
     }
@@ -141,123 +117,7 @@ const getAllAuditsSince = async (sinceDate) => {
   return auditLogs.map(mapAuditEntity);
 };
 
-const getUserAudit = async (userId, pageNumber) => {
-  const metaSubQuery = db.dialect.QueryGenerator.selectQuery("AuditLogMeta", {
-    attributes: ["AuditId"],
-    where: {
-      [Op.or]: [
-        {
-          key: {
-            [Op.eq]: "editedUser",
-          },
-        },
-        {
-          key: {
-            [Op.eq]: "viewedUser",
-          },
-        },
-      ],
-      value: {
-        [Op.eq]: userId,
-      },
-    },
-  }).slice(0, -1);
-
-  return getPageOfAudits(
-    {
-      [Op.or]: {
-        userId: {
-          [Op.eq]: userId,
-        },
-        id: {
-          [Op.in]: [Sequelize.literal(metaSubQuery)],
-        },
-      },
-    },
-    pageNumber,
-  );
-};
-
-const getUserLoginAuditsSince = async (userId, sinceDate) => {
-  const auditLogs = await logs.findAll({
-    where: {
-      userId: {
-        [Op.eq]: userId,
-      },
-      type: {
-        [Op.eq]: "sign-in",
-      },
-      createdAt: {
-        [Op.gte]: sinceDate,
-      },
-    },
-    order: [["createdAt", "DESC"]],
-    include: ["metaData"],
-  });
-
-  return auditLogs.map(mapAuditEntity);
-};
-
-const getUserLoginAuditsForService = async (userId, clientId, pageNumber) => {
-  const metaSubQuery = db.dialect.QueryGenerator.selectQuery("AuditLogMeta", {
-    attributes: ["AuditId"],
-    where: {
-      key: {
-        [Op.eq]: "ClientId",
-      },
-      value: {
-        [Op.eq]: clientId,
-      },
-    },
-  }).slice(0, -1);
-
-  return getPageOfAudits(
-    {
-      userId: {
-        [Op.eq]: userId,
-      },
-      id: {
-        [Op.in]: [Sequelize.literal(metaSubQuery)],
-      },
-    },
-    pageNumber,
-  );
-};
-
-const getUserChangeHistory = async (userId, pageNumber) => {
-  const metaSubQuery = db.dialect.QueryGenerator.selectQuery("AuditLogMeta", {
-    attributes: ["AuditId"],
-    where: {
-      key: {
-        [Op.eq]: "editedUser",
-      },
-      value: {
-        [Op.eq]: userId,
-      },
-    },
-  }).slice(0, -1);
-
-  return getPageOfAudits(
-    {
-      type: {
-        [Op.eq]: "support",
-      },
-      subType: {
-        [Op.eq]: "user-edit",
-      },
-      id: {
-        [Op.in]: [Sequelize.literal(metaSubQuery)],
-      },
-    },
-    pageNumber,
-  );
-};
-
 module.exports = {
   getAllAuditsSince,
-  getUserAudit,
-  getUserLoginAuditsSince,
-  getUserLoginAuditsForService,
-  getUserChangeHistory,
   getPageOfUserAudits,
 };

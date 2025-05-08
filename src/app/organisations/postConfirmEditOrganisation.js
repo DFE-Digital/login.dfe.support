@@ -18,27 +18,14 @@ const postConfirmEditOrganisation = async (req, res) => {
     address,
   };
 
-  logger.audit(
-    `User: ${req.user.email} (id: ${req.user.sub}) - About to update organisation ${organisation.name}: Org id: ${req.params.id}`,
-    {
-      type: "support",
-      subType: "org-edit",
-      userId: req.user.sub,
-      organisationId: req.params.id,
-    },
-  );
-
   await editOrganisation(organisation.id, body, correlationId);
 
-  logger.audit(
-    `Organisation ${organisation.name} (id: ${req.params.id}) successfully updated`,
-    {
-      type: "support",
-      subType: "org-edit",
-      userId: req.user.sub,
-      organisationId: req.params.id,
-    },
-  );
+  logger.audit(`${req.user.email} edited organisation data`, {
+    type: "support",
+    subType: "org-edit",
+    userId: req.user.sub,
+    organisationId: req.params.id,
+  });
 
   res.flash("info", "Organisation details updated");
   req.session.editOrgFormData = undefined;
