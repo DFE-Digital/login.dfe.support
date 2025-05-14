@@ -40,15 +40,21 @@ const describeAuditEvent = async (audit, req) => {
       case "username-password":
         description += " using email address and password";
         break;
-      case "digipass":
-        description += " using a digipass key fob";
-        break;
     }
     return description;
   }
 
   if (audit.type === "Sign-out") {
     return audit.type;
+  }
+
+  if (
+    audit.subType === "user-service-deleted" ||
+    audit.subType === "user-services-added" ||
+    audit.subType === "user-service-updated" ||
+    audit.subType === "org-edit"
+  ) {
+    return audit.message;
   }
 
   if (audit.type === "support" && audit.subType === "user-edit") {

@@ -96,7 +96,7 @@ const searchForUsers = async (
   }
 };
 
-// TODO: Add correllation ID
+// TODO: Add correlation ID
 const getSearchDetailsForUserById = async (id) => {
   try {
     const user = await callApi(`/users/${id}`, "GET");
