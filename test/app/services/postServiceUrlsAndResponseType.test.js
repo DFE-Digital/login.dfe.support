@@ -276,10 +276,11 @@ describe("when displaying the post choose service type screen", () => {
   });
 
   it("should render an the page with an error in validationMessages if homeUrl over 1024 characters", async () => {
-    req.body.homeUrl = "Test123456".repeat(125); // 1250 character length string
-    exampleErrorResponse.homeUrl = "Test123456".repeat(125); // 1250 character length string
+    req.body.homeUrl = "https://" + "Test123456".repeat(30) + ".com"; // 300+ character length string
+    exampleErrorResponse.homeUrl =
+      "https://" + "Test123456".repeat(30) + ".com"; // 300+ character length string
     exampleErrorResponse.validationMessages.homeUrl =
-      "Home url must be 1024 characters or less";
+      "Home url must be 200 characters or less";
 
     await postServiceUrlsAndResponseType(req, res);
 
@@ -292,6 +293,18 @@ describe("when displaying the post choose service type screen", () => {
     exampleErrorResponse.homeUrl = "anInvalidUrl@slbsh!$$%";
     exampleErrorResponse.validationMessages.homeUrl =
       "Home url must be a valid url";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages if a homeUrl with an invalid protocol is entered", async () => {
+    req.body.homeUrl = "ftp://a-valid-url.com/valid";
+    exampleErrorResponse.homeUrl = "ftp://a-valid-url.com/valid";
+    exampleErrorResponse.validationMessages.homeUrl =
+      "Home url protocol can only be http or https";
 
     await postServiceUrlsAndResponseType(req, res);
 
@@ -358,13 +371,13 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
-  it("should render an the page with an error in validationMessages if redirectUrl over 1024 characters", async () => {
-    req.body.redirect_uris = "https://" + "Test123456".repeat(125) + ".com"; // 1250 character length string
+  it("should render an the page with an error in validationMessages if redirectUrl over 200 characters", async () => {
+    req.body.redirect_uris = "https://" + "Test123456".repeat(30) + ".com"; // 300+ character length string
     exampleErrorResponse.service.redirectUris = [
-      "https://" + "Test123456".repeat(125) + ".com",
-    ]; // 1250 character length string
+      "https://" + "Test123456".repeat(30) + ".com",
+    ]; // 300+ character length string
     exampleErrorResponse.validationMessages.redirect_uris =
-      "Redirect url must be 1024 characters or less";
+      "Redirect url must be 200 characters or less";
 
     await postServiceUrlsAndResponseType(req, res);
 
@@ -372,17 +385,17 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
-  it("should render an the page with multiple errors in validationMessages if redirectUrl over 1024 characters", async () => {
+  it("should render an the page with multiple errors in validationMessages if redirectUrl over 200 characters", async () => {
     req.body.redirect_uris = [
       "invalidurl123",
-      "https://" + "Test123456".repeat(125) + ".com",
-    ]; // 1250 character length string
+      "https://" + "Test123456".repeat(30) + ".com",
+    ]; // 300+ character length string
     exampleErrorResponse.service.redirectUris = [
       "invalidurl123",
-      "https://" + "Test123456".repeat(125) + ".com",
-    ]; // 1250 character length string
+      "https://" + "Test123456".repeat(30) + ".com",
+    ]; // 300+ character length string
     exampleErrorResponse.validationMessages.redirect_uris =
-      "Redirect url must be a valid url<br/>Redirect url must be 1024 characters or less";
+      "Redirect url must be a valid url<br/>Redirect url must be 200 characters or less";
 
     await postServiceUrlsAndResponseType(req, res);
 
@@ -417,6 +430,33 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
+  it("should render an the page with an error in validationMessages if redirectUrl with an invalid protocol is entered", async () => {
+    req.body.redirect_uris = "ftp://valid-url-com/valid";
+    exampleErrorResponse.service.redirectUris = ["ftp://valid-url-com/valid"];
+    exampleErrorResponse.validationMessages.redirect_uris =
+      "Redirect uri protocol can only be http or https";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with multiple errors in validationMessages if redirectUrl with an invalid protocol is entered", async () => {
+    req.body.redirect_uris = ["invalidurl123", "ftp://valid-url-com/valid"];
+    exampleErrorResponse.service.redirectUris = [
+      "invalidurl123",
+      "ftp://valid-url-com/valid",
+    ];
+    exampleErrorResponse.validationMessages.redirect_uris =
+      "Redirect url must be a valid url<br/>Redirect uri protocol can only be http or https";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
   it("should render an the page with an error in validationMessages if a multiple identical redirectUrl are entered", async () => {
     req.body.redirect_uris = ["https://validurl.com", "https://validurl.com"];
     exampleErrorResponse.service.redirectUris = [
@@ -434,12 +474,12 @@ describe("when displaying the post choose service type screen", () => {
 
   it("should render an the page with an error in validationMessages if logOutRedirectUrl over 1024 characters", async () => {
     req.body.post_logout_redirect_uris =
-      "https://" + "Test123456".repeat(125) + ".com"; // 1250 character length string
+      "https://" + "Test123456".repeat(30) + ".com"; // 300+ character length string
     exampleErrorResponse.service.postLogoutRedirectUris = [
-      "https://" + "Test123456".repeat(125) + ".com",
-    ]; // 1250 character length string
+      "https://" + "Test123456".repeat(30) + ".com",
+    ]; // 300+ character length string
     exampleErrorResponse.validationMessages.post_logout_redirect_uris =
-      "Log out redirect url must be 1024 characters or less";
+      "Log out redirect url must be 200 characters or less";
 
     await postServiceUrlsAndResponseType(req, res);
 
@@ -450,14 +490,14 @@ describe("when displaying the post choose service type screen", () => {
   it("should render an the page with an error in validationMessages if multiple errors, including logOutRedirectUrl over 1024 characters", async () => {
     req.body.post_logout_redirect_uris = [
       "invalidurl123",
-      "https://" + "Test123456".repeat(125) + ".com",
-    ]; // 1250 character length string
+      "https://" + "Test123456".repeat(30) + ".com",
+    ]; // 300+ character length string
     exampleErrorResponse.service.postLogoutRedirectUris = [
       "invalidurl123",
-      "https://" + "Test123456".repeat(125) + ".com",
-    ]; // 1250 character length string
+      "https://" + "Test123456".repeat(30) + ".com",
+    ]; // 300+ character length string
     exampleErrorResponse.validationMessages.post_logout_redirect_uris =
-      "Log out redirect url must be a valid url<br/>Log out redirect url must be 1024 characters or less";
+      "Log out redirect url must be a valid url<br/>Log out redirect url must be 200 characters or less";
 
     await postServiceUrlsAndResponseType(req, res);
 
@@ -490,6 +530,38 @@ describe("when displaying the post choose service type screen", () => {
     ];
     exampleErrorResponse.validationMessages.post_logout_redirect_uris =
       "Log out redirect url must be a valid url";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages if logOutRedirectUrl with an invalid protocol is entered", async () => {
+    req.body.post_logout_redirect_uris = "ftp://valid-url-com/valid";
+    exampleErrorResponse.service.postLogoutRedirectUris = [
+      "ftp://valid-url-com/valid",
+    ];
+    exampleErrorResponse.validationMessages.post_logout_redirect_uris =
+      "Log out redirect url protocol can only be http or https";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with multiple errors in validationMessages if logOutRedirectUrl with an invalid protocol is entered", async () => {
+    req.body.post_logout_redirect_uris = [
+      "invalidurl123",
+      "ftp://valid-url-com/valid",
+    ];
+    exampleErrorResponse.service.postLogoutRedirectUris = [
+      "invalidurl123",
+      "ftp://valid-url-com/valid",
+    ];
+    exampleErrorResponse.validationMessages.post_logout_redirect_uris =
+      "Log out redirect url must be a valid url<br/>Log out redirect url protocol can only be http or https";
 
     await postServiceUrlsAndResponseType(req, res);
 

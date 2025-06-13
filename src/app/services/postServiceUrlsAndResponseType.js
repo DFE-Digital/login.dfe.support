@@ -81,22 +81,24 @@ const validateInput = async (req) => {
     }
   }
 
-  // TODO The maximum length of the URLs is not verified (max length should be 200 chars)
-  // TODO URLs should start with http
+  // Home url validation
   if (!model.homeUrl) {
     model.validationMessages.homeUrl = "Enter a home url";
-  } else if (model.homeUrl.length > 1024) {
+  } else if (model.homeUrl.length > 200) {
     model.validationMessages.homeUrl =
-      "Home url must be 1024 characters or less";
+      "Home url must be 200 characters or less";
   } else {
     try {
-      new URL(model.homeUrl);
+      const homeUrl = new URL(model.homeUrl);
+      if (!isCorrectProtocol(homeUrl)) {
+        model.validationMessages.homeUrl =
+          "Home url protocol can only be http or https";
+      }
     } catch {
       model.validationMessages.homeUrl = "Home url must be a valid url";
     }
   }
 
-  // TODO Client ID must only contain letters a to z, hyphens and numbers
   if (!model.clientId) {
     model.validationMessages.clientId = "Enter a client id";
   } else if (model.clientId.length > 50) {
@@ -117,8 +119,6 @@ const validateInput = async (req) => {
   }
 
   // Redirect url validation
-  // TODO The maximum length of the URLs is not verified (max length should be 200 chars)
-  // TODO URLs should start with http
   const redirectUris = model.service.redirectUris;
   const areRedirectUrisNotPopulated =
     !redirectUris ||
@@ -130,17 +130,26 @@ const validateInput = async (req) => {
   } else {
     await Promise.all(
       redirectUris.map(async (url) => {
-        if (url.length > 1024) {
+        if (url.length > 200) {
           if (model.validationMessages.redirect_uris !== undefined) {
             model.validationMessages.redirect_uris +=
-              "<br/>Redirect url must be 1024 characters or less";
+              "<br/>Redirect url must be 200 characters or less";
           } else {
             model.validationMessages.redirect_uris =
-              "Redirect url must be 1024 characters or less";
+              "Redirect url must be 200 characters or less";
           }
         }
         try {
-          new URL(url);
+          const redirectUri = new URL(url);
+          if (!isCorrectProtocol(redirectUri)) {
+            if (model.validationMessages.redirect_uris !== undefined) {
+              model.validationMessages.redirect_uris +=
+                "<br/>Redirect uri protocol can only be http or https";
+            } else {
+              model.validationMessages.redirect_uris =
+                "Redirect uri protocol can only be http or https";
+            }
+          }
         } catch {
           if (model.validationMessages.redirect_uris !== undefined) {
             model.validationMessages.redirect_uris +=
@@ -158,23 +167,32 @@ const validateInput = async (req) => {
   }
 
   // Logout redirect urls validation
-  //The form can be submitted when Logout redirect URL is blank (it should be mandatory)
-  // TODO The maximum length of the URLs is not verified (max length should be 200 chars)
-  // TODO URLs should start with http
+  // TODO The form can be submitted when Logout redirect URL is blank (it should be mandatory)
   const logoutRedirectUris = model.service.postLogoutRedirectUris;
   await Promise.all(
     logoutRedirectUris.map(async (url) => {
-      if (url.length > 1024) {
+      if (url.length > 200) {
         if (model.validationMessages.post_logout_redirect_uris !== undefined) {
           model.validationMessages.post_logout_redirect_uris +=
-            "<br/>Log out redirect url must be 1024 characters or less";
+            "<br/>Log out redirect url must be 200 characters or less";
         } else {
           model.validationMessages.post_logout_redirect_uris =
-            "Log out redirect url must be 1024 characters or less";
+            "Log out redirect url must be 200 characters or less";
         }
       }
       try {
-        new URL(url);
+        const postLogoutRedirectUrl = new URL(url);
+        if (!isCorrectProtocol(postLogoutRedirectUrl)) {
+          if (
+            model.validationMessages.post_logout_redirect_uris !== undefined
+          ) {
+            model.validationMessages.post_logout_redirect_uris +=
+              "<br/>Log out redirect url protocol can only be http or https";
+          } else {
+            model.validationMessages.post_logout_redirect_uris =
+              "Log out redirect url protocol can only be http or https";
+          }
+        }
       } catch {
         if (model.validationMessages.post_logout_redirect_uris !== undefined) {
           model.validationMessages.post_logout_redirect_uris +=
