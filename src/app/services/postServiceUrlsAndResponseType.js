@@ -1,6 +1,21 @@
 const { sendResult } = require("../../infrastructure/utils");
+const { URL } = require("url");
 const logger = require("../../infrastructure/logger");
 const { getAllServices } = require("../../infrastructure/applications/api");
+
+// TODO maybe put this somewhere else?  was in a utils.js folder in manage
+/**
+ * Determines if the url has an http: or https: protocol
+ *
+ * @param {URL} url A URL object
+ * @returns true if the protocol is http: or https:.  False otherwise
+ */
+const isCorrectProtocol = (url) => {
+  if (url && url.protocol !== "http:" && url.protocol !== "https:") {
+    return false;
+  }
+  return true;
+};
 
 const validateInput = async (req) => {
   const model = {
@@ -46,21 +61,28 @@ const validateInput = async (req) => {
       : [req.body.post_logout_redirect_uris];
   }
 
+  // Post password reset url validation
   if (!model.postPasswordResetUrl) {
     model.validationMessages.postPasswordResetUrl =
       "Enter a post password reset url";
-  } else if (model.postPasswordResetUrl.length > 1024) {
+  } else if (model.postPasswordResetUrl.length > 200) {
     model.validationMessages.postPasswordResetUrl =
-      "Post password reset url must be 1024 characters or less";
+      "Post password reset url must be 200 characters or less";
   } else {
     try {
-      new URL(model.postPasswordResetUrl);
+      const postPasswordResetUrl = new URL(model.postPasswordResetUrl);
+      if (!isCorrectProtocol(postPasswordResetUrl)) {
+        model.validationMessages.postPasswordResetUrl =
+          "Post password reset url protocol can only be http or https";
+      }
     } catch {
       model.validationMessages.postPasswordResetUrl =
         "Post password reset url must be a valid url";
     }
   }
 
+  // TODO The maximum length of the URLs is not verified (max length should be 200 chars)
+  // TODO URLs should start with http
   if (!model.homeUrl) {
     model.validationMessages.homeUrl = "Enter a home url";
   } else if (model.homeUrl.length > 1024) {
@@ -74,11 +96,15 @@ const validateInput = async (req) => {
     }
   }
 
+  // TODO Client ID must only contain letters a to z, hyphens and numbers
   if (!model.clientId) {
     model.validationMessages.clientId = "Enter a client id";
   } else if (model.clientId.length > 50) {
     model.validationMessages.clientId =
       "Client id must be 50 characters or less";
+  } else if (!/^[A-Za-z0-9-]+$/.test(model.clientId)) {
+    model.validationMessages.clientId =
+      "Client ID must only contain letters a to z, hyphens and numbers";
   } else {
     const allServices = await getAllServices();
     const isMatchingClientId = allServices.services.find(
@@ -91,6 +117,8 @@ const validateInput = async (req) => {
   }
 
   // Redirect url validation
+  // TODO The maximum length of the URLs is not verified (max length should be 200 chars)
+  // TODO URLs should start with http
   const redirectUris = model.service.redirectUris;
   const areRedirectUrisNotPopulated =
     !redirectUris ||
@@ -130,6 +158,9 @@ const validateInput = async (req) => {
   }
 
   // Logout redirect urls validation
+  //The form can be submitted when Logout redirect URL is blank (it should be mandatory)
+  // TODO The maximum length of the URLs is not verified (max length should be 200 chars)
+  // TODO URLs should start with http
   const logoutRedirectUris = model.service.postLogoutRedirectUris;
   await Promise.all(
     logoutRedirectUris.map(async (url) => {

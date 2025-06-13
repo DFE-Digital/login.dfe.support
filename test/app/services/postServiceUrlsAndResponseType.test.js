@@ -226,11 +226,13 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
-  it("should render an the page with an error in validationMessages if postPasswordResetUrl over 1024 characters", async () => {
-    req.body.postPasswordResetUrl = "Test123456".repeat(125); // 1250 character length string
-    exampleErrorResponse.postPasswordResetUrl = "Test123456".repeat(125); // 1250 character length string
+  it("should render an the page with an error in validationMessages if postPasswordResetUrl over 200 characters", async () => {
+    req.body.postPasswordResetUrl =
+      "https://" + "Test123456".repeat(30) + ".com"; // 300+ character length string
+    exampleErrorResponse.postPasswordResetUrl =
+      "https://" + "Test123456".repeat(30) + ".com"; // 300+ character length string
     exampleErrorResponse.validationMessages.postPasswordResetUrl =
-      "Post password reset url must be 1024 characters or less";
+      "Post password reset url must be 200 characters or less";
 
     await postServiceUrlsAndResponseType(req, res);
 
@@ -243,6 +245,18 @@ describe("when displaying the post choose service type screen", () => {
     exampleErrorResponse.postPasswordResetUrl = "anInvalidUrl@slbsh!!!$$%";
     exampleErrorResponse.validationMessages.postPasswordResetUrl =
       "Post password reset url must be a valid url";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages if a postPasswordResetUrl with an invalid protocol is entered", async () => {
+    req.body.postPasswordResetUrl = "ftp://a-valid-url.com/valid";
+    exampleErrorResponse.postPasswordResetUrl = "ftp://a-valid-url.com/valid";
+    exampleErrorResponse.validationMessages.postPasswordResetUrl =
+      "Post password reset url protocol can only be http or https";
 
     await postServiceUrlsAndResponseType(req, res);
 
@@ -301,6 +315,18 @@ describe("when displaying the post choose service type screen", () => {
     exampleErrorResponse.clientId = "Test123456".repeat(6); // 60 character length string
     exampleErrorResponse.validationMessages.clientId =
       "Client id must be 50 characters or less";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should render an the page with an error in validationMessages if clientId contains non-hypen and non-alphanumeric characters", async () => {
+    req.body.clientId = "Test123!&^%*";
+    exampleErrorResponse.clientId = "Test123!&^%*";
+    exampleErrorResponse.validationMessages.clientId =
+      "Client ID must only contain letters a to z, hyphens and numbers";
 
     await postServiceUrlsAndResponseType(req, res);
 
