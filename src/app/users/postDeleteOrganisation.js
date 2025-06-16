@@ -64,8 +64,8 @@ const postDeleteOrganisation = async (req, res) => {
     }
     await deleteUserOrg(uid, req);
     if (isEmailAllowed) {
-      const getAllUserDetails = await getById(uid, req.id);
-      if (getAllUserDetails.statusId === 1) {
+      const userDetails = await getById(uid, req.id);
+      if (userDetails.statusId === 1) {
         const notificationClient = new NotificationClient({
           connectionString: config.notifications.connectionString,
         });
