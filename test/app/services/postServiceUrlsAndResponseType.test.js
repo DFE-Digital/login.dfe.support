@@ -114,16 +114,6 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult).toHaveBeenCalledTimes(0);
   });
 
-  it("should redirect to the service urls and response type page on success with no logout redirect urls", async () => {
-    req.body.post_logout_redirect_uris = undefined;
-
-    await postServiceUrlsAndResponseType(req, res);
-
-    expect(res.redirect.mock.calls).toHaveLength(1);
-    expect(res.redirect.mock.calls[0][0]).toBe("confirm-new-service");
-    expect(sendResult).toHaveBeenCalledTimes(0);
-  });
-
   it("should discard client_secret, refresh_token and tokenEndpointAuthenticationMethod if response type code is not selected", async () => {
     req.body["response_types-code"] = "";
     req.body["response_types-id_token"] = "response_types-idToken";
@@ -359,6 +349,7 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
+  // redirectUrl tests
   it("should render an the page with an error in validationMessages if no redirectUrl is entered", async () => {
     req.body.redirect_uris = "";
     exampleErrorResponse.service.redirectUris = [];
@@ -465,6 +456,19 @@ describe("when displaying the post choose service type screen", () => {
     ];
     exampleErrorResponse.validationMessages.redirect_uris =
       "Redirect urls must all be unique";
+
+    await postServiceUrlsAndResponseType(req, res);
+
+    expect(sendResult).toHaveBeenCalledTimes(1);
+    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  // logOutRedirectUrl tests
+  it("should render an the page with an error in validationMessages if logOutRedirectUrl is empty", async () => {
+    req.body.post_logout_redirect_uris = undefined;
+    exampleErrorResponse.service.postLogoutRedirectUris = [];
+    exampleErrorResponse.validationMessages.post_logout_redirect_uris =
+      "Enter at least 1 logout redirect URL";
 
     await postServiceUrlsAndResponseType(req, res);
 

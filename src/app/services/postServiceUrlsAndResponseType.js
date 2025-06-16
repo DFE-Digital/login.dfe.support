@@ -3,12 +3,11 @@ const { URL } = require("url");
 const logger = require("../../infrastructure/logger");
 const { getAllServices } = require("../../infrastructure/applications/api");
 
-// TODO maybe put this somewhere else?  was in a utils.js folder in manage
 /**
  * Determines if the url has an http: or https: protocol
  *
  * @param {URL} url A URL object
- * @returns true if the protocol is http: or https:.  False otherwise
+ * @returns true if the protocol is http: or https:.  false otherwise.
  */
 const isCorrectProtocol = (url) => {
   if (url && url.protocol !== "http:" && url.protocol !== "https:") {
@@ -167,50 +166,58 @@ const validateInput = async (req) => {
   }
 
   // Logout redirect urls validation
-  // TODO The form can be submitted when Logout redirect URL is blank (it should be mandatory)
   const logoutRedirectUris = model.service.postLogoutRedirectUris;
-  await Promise.all(
-    logoutRedirectUris.map(async (url) => {
-      if (url.length > 200) {
-        if (model.validationMessages.post_logout_redirect_uris !== undefined) {
-          model.validationMessages.post_logout_redirect_uris +=
-            "<br/>Log out redirect url must be 200 characters or less";
-        } else {
-          model.validationMessages.post_logout_redirect_uris =
-            "Log out redirect url must be 200 characters or less";
-        }
-      }
-      try {
-        const postLogoutRedirectUrl = new URL(url);
-        if (!isCorrectProtocol(postLogoutRedirectUrl)) {
+  if (!logoutRedirectUris || logoutRedirectUris.length === 0) {
+    model.validationMessages.post_logout_redirect_uris =
+      "Enter at least 1 logout redirect URL";
+  } else {
+    await Promise.all(
+      logoutRedirectUris.map(async (url) => {
+        if (url.length > 200) {
           if (
             model.validationMessages.post_logout_redirect_uris !== undefined
           ) {
             model.validationMessages.post_logout_redirect_uris +=
-              "<br/>Log out redirect url protocol can only be http or https";
+              "<br/>Log out redirect url must be 200 characters or less";
           } else {
             model.validationMessages.post_logout_redirect_uris =
-              "Log out redirect url protocol can only be http or https";
+              "Log out redirect url must be 200 characters or less";
           }
         }
-      } catch {
-        if (model.validationMessages.post_logout_redirect_uris !== undefined) {
-          model.validationMessages.post_logout_redirect_uris +=
-            "<br/>Log out redirect url must be a valid url";
-        } else {
-          model.validationMessages.post_logout_redirect_uris =
-            "Log out redirect url must be a valid url";
+        try {
+          const postLogoutRedirectUrl = new URL(url);
+          if (!isCorrectProtocol(postLogoutRedirectUrl)) {
+            if (
+              model.validationMessages.post_logout_redirect_uris !== undefined
+            ) {
+              model.validationMessages.post_logout_redirect_uris +=
+                "<br/>Log out redirect url protocol can only be http or https";
+            } else {
+              model.validationMessages.post_logout_redirect_uris =
+                "Log out redirect url protocol can only be http or https";
+            }
+          }
+        } catch {
+          if (
+            model.validationMessages.post_logout_redirect_uris !== undefined
+          ) {
+            model.validationMessages.post_logout_redirect_uris +=
+              "<br/>Log out redirect url must be a valid url";
+          } else {
+            model.validationMessages.post_logout_redirect_uris =
+              "Log out redirect url must be a valid url";
+          }
         }
-      }
-    }),
-  );
-  if (
-    logoutRedirectUris.some(
-      (value, i) => logoutRedirectUris.indexOf(value) !== i,
-    )
-  ) {
-    model.validationMessages.post_logout_redirect_uris =
-      "Log out redirect urls must all be unique";
+      }),
+    );
+    if (
+      logoutRedirectUris.some(
+        (value, i) => logoutRedirectUris.indexOf(value) !== i,
+      )
+    ) {
+      model.validationMessages.post_logout_redirect_uris =
+        "Log out redirect urls must all be unique";
+    }
   }
 
   // Response types validation
