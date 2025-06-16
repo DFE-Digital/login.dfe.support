@@ -14,6 +14,7 @@ const {
 const {
   getSearchDetailsForUserById,
   updateIndex,
+  getById,
 } = require("./../../infrastructure/search");
 const {
   isSupportEmailNotificationAllowed,
@@ -63,15 +64,18 @@ const postDeleteOrganisation = async (req, res) => {
     }
     await deleteUserOrg(uid, req);
     if (isEmailAllowed) {
-      const notificationClient = new NotificationClient({
-        connectionString: config.notifications.connectionString,
-      });
-      await notificationClient.sendUserRemovedFromOrganisation(
-        req.session.user.email,
-        req.session.user.firstName,
-        req.session.user.lastName,
-        req.session.org.name,
-      );
+      const getAllUserDetails = await getById(uid, req.id);
+      if (getAllUserDetails.statusId === 1) {
+        const notificationClient = new NotificationClient({
+          connectionString: config.notifications.connectionString,
+        });
+        await notificationClient.sendUserRemovedFromOrganisation(
+          req.session.user.email,
+          req.session.user.firstName,
+          req.session.user.lastName,
+          req.session.org.name,
+        );
+      }
     }
   }
 
