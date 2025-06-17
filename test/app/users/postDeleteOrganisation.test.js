@@ -10,7 +10,14 @@ jest.mock("./../../../src/infrastructure/organisations", () => ({
   deleteUserOrganisation: jest.fn(),
   getUserOrganisations: jest.fn(),
 }));
-jest.mock("./../../../src/infrastructure/search");
+jest.mock("./../../../src/infrastructure/search", () => {
+  return {
+    getSearchDetailsForUserById: jest.fn(),
+    updateIndex: jest.fn(),
+    getById: jest.fn(),
+  };
+});
+
 jest.mock("./../../../src/app/users/utils");
 
 jest.mock("login.dfe.jobs-client");
@@ -25,6 +32,7 @@ const {
 } = require("../../../src/infrastructure/organisations");
 const {
   getSearchDetailsForUserById,
+  getById,
 } = require("../../../src/infrastructure/search");
 const {
   removeServiceFromInvitation,
@@ -57,6 +65,19 @@ describe("when removing a users access to an organisation", () => {
           name: expectedOrgName,
         },
       },
+    });
+    getById.mockReset();
+    getById.mockReturnValue({
+      organisations: [
+        {
+          id: "org1",
+          name: expectedOrgName,
+          categoryId: "004",
+          statusId: 1,
+          roleId: 0,
+        },
+      ],
+      statusId: 1,
     });
     res.mockResetAll();
     getSearchDetailsForUserById.mockReset();
@@ -141,5 +162,29 @@ describe("when removing a users access to an organisation", () => {
     expect(sendUserRemovedFromOrganisationStub.mock.calls[0][3]).toBe(
       expectedOrgName,
     );
+  });
+
+  it("then it should not send an email notification to deactivated user", async () => {
+    getById.mockReset();
+    getById.mockReturnValue({
+      organisations: [
+        {
+          id: "org1",
+          name: "organisationName",
+          categoryId: "004",
+          statusId: 1,
+          roleId: 0,
+        },
+      ],
+      statusId: 0,
+    });
+
+    await postDeleteOrganisation(req, res);
+
+    expect(sendUserRemovedFromOrganisationStub.mock.calls).toHaveLength(0);
+
+    expect(res.flash.mock.calls).toHaveLength(1);
+    expect(deleteUserOrganisation.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls).toHaveLength(1);
   });
 });
