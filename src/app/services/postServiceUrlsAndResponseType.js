@@ -1,6 +1,20 @@
 const { sendResult } = require("../../infrastructure/utils");
+const { URL } = require("url");
 const logger = require("../../infrastructure/logger");
 const { getAllServices } = require("../../infrastructure/applications/api");
+
+/**
+ * Determines if the url has an http: or https: protocol
+ *
+ * @param {URL} url A URL object
+ * @returns true if the protocol is http: or https:.  false otherwise.
+ */
+const isCorrectProtocol = (url) => {
+  if (url && url.protocol !== "http:" && url.protocol !== "https:") {
+    return false;
+  }
+  return true;
+};
 
 const validateInput = async (req) => {
   const model = {
@@ -46,29 +60,39 @@ const validateInput = async (req) => {
       : [req.body.post_logout_redirect_uris];
   }
 
+  // Post password reset url validation
   if (!model.postPasswordResetUrl) {
     model.validationMessages.postPasswordResetUrl =
       "Enter a post password reset url";
-  } else if (model.postPasswordResetUrl.length > 1024) {
+  } else if (model.postPasswordResetUrl.length > 200) {
     model.validationMessages.postPasswordResetUrl =
-      "Post password reset url must be 1024 characters or less";
+      "Post password reset url must be 200 characters or less";
   } else {
     try {
-      new URL(model.postPasswordResetUrl);
+      const postPasswordResetUrl = new URL(model.postPasswordResetUrl);
+      if (!isCorrectProtocol(postPasswordResetUrl)) {
+        model.validationMessages.postPasswordResetUrl =
+          "Post password reset url protocol can only be http or https";
+      }
     } catch {
       model.validationMessages.postPasswordResetUrl =
         "Post password reset url must be a valid url";
     }
   }
 
+  // Home url validation
   if (!model.homeUrl) {
     model.validationMessages.homeUrl = "Enter a home url";
-  } else if (model.homeUrl.length > 1024) {
+  } else if (model.homeUrl.length > 200) {
     model.validationMessages.homeUrl =
-      "Home url must be 1024 characters or less";
+      "Home url must be 200 characters or less";
   } else {
     try {
-      new URL(model.homeUrl);
+      const homeUrl = new URL(model.homeUrl);
+      if (!isCorrectProtocol(homeUrl)) {
+        model.validationMessages.homeUrl =
+          "Home url protocol can only be http or https";
+      }
     } catch {
       model.validationMessages.homeUrl = "Home url must be a valid url";
     }
@@ -79,6 +103,9 @@ const validateInput = async (req) => {
   } else if (model.clientId.length > 50) {
     model.validationMessages.clientId =
       "Client id must be 50 characters or less";
+  } else if (!/^[A-Za-z0-9-]+$/.test(model.clientId)) {
+    model.validationMessages.clientId =
+      "Client ID must only contain letters a to z, hyphens and numbers";
   } else {
     const allServices = await getAllServices();
     const isMatchingClientId = allServices.services.find(
@@ -102,17 +129,26 @@ const validateInput = async (req) => {
   } else {
     await Promise.all(
       redirectUris.map(async (url) => {
-        if (url.length > 1024) {
+        if (url.length > 200) {
           if (model.validationMessages.redirect_uris !== undefined) {
             model.validationMessages.redirect_uris +=
-              "<br/>Redirect url must be 1024 characters or less";
+              "<br/>Redirect url must be 200 characters or less";
           } else {
             model.validationMessages.redirect_uris =
-              "Redirect url must be 1024 characters or less";
+              "Redirect url must be 200 characters or less";
           }
         }
         try {
-          new URL(url);
+          const redirectUri = new URL(url);
+          if (!isCorrectProtocol(redirectUri)) {
+            if (model.validationMessages.redirect_uris !== undefined) {
+              model.validationMessages.redirect_uris +=
+                "<br/>Redirect uri protocol can only be http or https";
+            } else {
+              model.validationMessages.redirect_uris =
+                "Redirect uri protocol can only be http or https";
+            }
+          }
         } catch {
           if (model.validationMessages.redirect_uris !== undefined) {
             model.validationMessages.redirect_uris +=
@@ -131,37 +167,57 @@ const validateInput = async (req) => {
 
   // Logout redirect urls validation
   const logoutRedirectUris = model.service.postLogoutRedirectUris;
-  await Promise.all(
-    logoutRedirectUris.map(async (url) => {
-      if (url.length > 1024) {
-        if (model.validationMessages.post_logout_redirect_uris !== undefined) {
-          model.validationMessages.post_logout_redirect_uris +=
-            "<br/>Log out redirect url must be 1024 characters or less";
-        } else {
-          model.validationMessages.post_logout_redirect_uris =
-            "Log out redirect url must be 1024 characters or less";
-        }
-      }
-      try {
-        new URL(url);
-      } catch {
-        if (model.validationMessages.post_logout_redirect_uris !== undefined) {
-          model.validationMessages.post_logout_redirect_uris +=
-            "<br/>Log out redirect url must be a valid url";
-        } else {
-          model.validationMessages.post_logout_redirect_uris =
-            "Log out redirect url must be a valid url";
-        }
-      }
-    }),
-  );
-  if (
-    logoutRedirectUris.some(
-      (value, i) => logoutRedirectUris.indexOf(value) !== i,
-    )
-  ) {
+  if (!logoutRedirectUris || logoutRedirectUris.length === 0) {
     model.validationMessages.post_logout_redirect_uris =
-      "Log out redirect urls must all be unique";
+      "Enter at least 1 logout redirect URL";
+  } else {
+    await Promise.all(
+      logoutRedirectUris.map(async (url) => {
+        if (url.length > 200) {
+          if (
+            model.validationMessages.post_logout_redirect_uris !== undefined
+          ) {
+            model.validationMessages.post_logout_redirect_uris +=
+              "<br/>Log out redirect url must be 200 characters or less";
+          } else {
+            model.validationMessages.post_logout_redirect_uris =
+              "Log out redirect url must be 200 characters or less";
+          }
+        }
+        try {
+          const postLogoutRedirectUrl = new URL(url);
+          if (!isCorrectProtocol(postLogoutRedirectUrl)) {
+            if (
+              model.validationMessages.post_logout_redirect_uris !== undefined
+            ) {
+              model.validationMessages.post_logout_redirect_uris +=
+                "<br/>Log out redirect url protocol can only be http or https";
+            } else {
+              model.validationMessages.post_logout_redirect_uris =
+                "Log out redirect url protocol can only be http or https";
+            }
+          }
+        } catch {
+          if (
+            model.validationMessages.post_logout_redirect_uris !== undefined
+          ) {
+            model.validationMessages.post_logout_redirect_uris +=
+              "<br/>Log out redirect url must be a valid url";
+          } else {
+            model.validationMessages.post_logout_redirect_uris =
+              "Log out redirect url must be a valid url";
+          }
+        }
+      }),
+    );
+    if (
+      logoutRedirectUris.some(
+        (value, i) => logoutRedirectUris.indexOf(value) !== i,
+      )
+    ) {
+      model.validationMessages.post_logout_redirect_uris =
+        "Log out redirect urls must all be unique";
+    }
   }
 
   // Response types validation
