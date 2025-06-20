@@ -387,6 +387,10 @@ const rejectOpenUserServiceRequestsForUser = async (userId, req) => {
   const correlationId = req.id;
   const userServiceRequests =
     (await getUserServiceRequestsByUserId(userId)) || [];
+  logger.info(
+    `Rejecting ${userServiceRequests.length} service request(s) from user ${userId}`,
+    { correlationId },
+  );
   for (const serviceRequest of userServiceRequests) {
     // Request status 0 is 'pending', 2 is 'overdue', 3 is 'no approvers'
     if (
@@ -412,6 +416,10 @@ const rejectOpenOrganisationRequestsForUser = async (userId, req) => {
   const correlationId = req.id;
   const organisationRequests =
     (await getPendingRequestsAssociatedWithUser(userId)) || [];
+  logger.info(
+    `Rejecting ${organisationRequests.length} organisation request(s) from user ${userId}`,
+    { correlationId },
+  );
   for (const organisationRequest of organisationRequests) {
     // Request status 0 is 'pending', 2 is 'overdue' and 3 is 'no approvers'
     if (
@@ -442,6 +450,10 @@ const rejectOpenOrganisationRequestsForUser = async (userId, req) => {
 const removeAllServicesForUser = async (userId, req) => {
   const correlationId = req.id;
   const userServices = (await getServicesByUserId(userId)) || [];
+  logger.info(
+    `Removing ${userServices.length} service(s) from user ${userId}`,
+    { correlationId },
+  );
   for (const service of userServices) {
     logger.info(
       `Removing service from user: ${service.userId} with serviceId: ${service.serviceId} and organisationId: ${service.organisationId}`,

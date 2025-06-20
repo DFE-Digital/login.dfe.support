@@ -95,6 +95,10 @@ const postConfirmDeactivate = async (req, res) => {
   if (req.body["remove-services-and-requests"]) {
     const userServiceRequests =
       (await getUserServiceRequestsByUserId(user.id)) || [];
+    logger.info(
+      `Rejecting ${userServiceRequests.length} service request(s) from user ${user.id}`,
+      { correlationId },
+    );
     for (const serviceRequest of userServiceRequests) {
       // Request status 0 is 'pending', 2 is 'overdue', 3 is 'no approvers'
       if (
@@ -117,6 +121,10 @@ const postConfirmDeactivate = async (req, res) => {
 
     const organisationRequests =
       (await getPendingRequestsAssociatedWithUser(user.id)) || [];
+    logger.info(
+      `Rejecting ${organisationRequests.length} organisation request(s) from user ${user.id}`,
+      { correlationId },
+    );
     for (const organisationRequest of organisationRequests) {
       // Request status 0 is 'pending', 2 is 'overdue' and 3 is 'no approvers'
       if (
@@ -144,6 +152,10 @@ const postConfirmDeactivate = async (req, res) => {
     }
 
     const userServices = (await getServicesByUserId(user.id)) || [];
+    logger.info(
+      `Removing ${userServices.length} service(s) from user ${user.id}`,
+      { correlationId },
+    );
     for (const service of userServices) {
       logger.info(
         `Removing service from user: ${service.userId} with serviceId: ${service.serviceId} and organisationId: ${service.organisationId}`,
