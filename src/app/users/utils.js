@@ -388,7 +388,7 @@ const rejectOpenUserServiceRequestsForUser = async (userId, req) => {
   const userServiceRequests =
     (await getUserServiceRequestsByUserId(userId)) || [];
   logger.info(
-    `Rejecting ${userServiceRequests.length} service request(s) from user ${userId}`,
+    `Found ${userServiceRequests.length} service request(s) for user ${userId}. Rejecting any outstanding requests.`,
     { correlationId },
   );
   for (const serviceRequest of userServiceRequests) {
@@ -417,7 +417,7 @@ const rejectOpenOrganisationRequestsForUser = async (userId, req) => {
   const organisationRequests =
     (await getPendingRequestsAssociatedWithUser(userId)) || [];
   logger.info(
-    `Rejecting ${organisationRequests.length} organisation request(s) from user ${userId}`,
+    `Found ${organisationRequests.length} organisation request(s) for user ${userId}. Rejecting any outstanding requests.`,
     { correlationId },
   );
   for (const organisationRequest of organisationRequests) {

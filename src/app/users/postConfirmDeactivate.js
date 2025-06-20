@@ -96,7 +96,7 @@ const postConfirmDeactivate = async (req, res) => {
     const userServiceRequests =
       (await getUserServiceRequestsByUserId(user.id)) || [];
     logger.info(
-      `Rejecting ${userServiceRequests.length} service request(s) from user ${user.id}`,
+      `Found ${userServiceRequests.length} service request(s) for user ${user.id}. Rejecting any outstanding requests.`,
       { correlationId },
     );
     for (const serviceRequest of userServiceRequests) {
@@ -122,7 +122,7 @@ const postConfirmDeactivate = async (req, res) => {
     const organisationRequests =
       (await getPendingRequestsAssociatedWithUser(user.id)) || [];
     logger.info(
-      `Rejecting ${organisationRequests.length} organisation request(s) from user ${user.id}`,
+      `Found ${organisationRequests.length} organisation request(s) for user ${user.id}. Rejecting any outstanding requests.`,
       { correlationId },
     );
     for (const organisationRequest of organisationRequests) {
