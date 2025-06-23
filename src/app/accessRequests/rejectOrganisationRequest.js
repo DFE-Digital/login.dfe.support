@@ -75,16 +75,14 @@ const post = async (req, res) => {
   );
 
   //audit organisation rejected
-  logger.audit(
-    `${req.user.email} (id: ${req.user.sub}) rejected organisation request for ${model.request.org_id})`,
-    {
-      type: "approver",
-      subType: "rejected-org",
-      userId: req.user.sub,
-      editedUser: model.request.user_id,
-      reason: model.reason,
-    },
-  );
+  logger.audit(`${req.user.email} rejected organisation request`, {
+    type: "approver",
+    subType: "rejected-org",
+    userId: req.user.sub,
+    organisationId: model.request.org_id,
+    editedUser: model.request.user_id,
+    reason: model.reason,
+  });
 
   res.flash(
     "rejected",
