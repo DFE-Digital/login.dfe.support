@@ -2,20 +2,13 @@ const logger = require("../../infrastructure/logger");
 const {
   getUserDetails,
   getUserDetailsById,
+  rejectOpenOrganisationRequestsForUser,
+  rejectOpenUserServiceRequestsForUser,
+  removeAllServicesForUser,
   updateUserDetails,
   waitForIndexToUpdate,
 } = require("./utils");
 
-const {
-  getUserServiceRequestsByUserId,
-  updateUserServiceRequest,
-  getServicesByUserId,
-  removeServiceFromUser,
-} = require("../../infrastructure/access");
-const {
-  getPendingRequestsAssociatedWithUser,
-  updateRequestById,
-} = require("../../infrastructure/organisations");
 const { deactivate } = require("../../infrastructure/directories");
 const { sendResult } = require("../../infrastructure/utils");
 
@@ -79,7 +72,6 @@ const postConfirmDeactivate = async (req, res) => {
   const isNonDefaultDropdownReasonSelected =
     model.selectReason && model.selectReason !== "Select a reason";
   const user = await getUserDetails(req);
-  const correlationId = req.id;
   let reason = model.reason.trim();
   if (isNonDefaultDropdownReasonSelected) {
     if (reason.length === 0) {
@@ -92,82 +84,11 @@ const postConfirmDeactivate = async (req, res) => {
 
   await deactivate(user.id, reason, req.id);
   await updateUserIndex(user.id, req.id);
+
   if (req.body["remove-services-and-requests"]) {
-    const userServiceRequests =
-      (await getUserServiceRequestsByUserId(user.id)) || [];
-    logger.info(
-      `Found ${userServiceRequests.length} service request(s) for user ${user.id}. Rejecting any outstanding requests.`,
-      { correlationId },
-    );
-    for (const serviceRequest of userServiceRequests) {
-      // Request status 0 is 'pending', 2 is 'overdue', 3 is 'no approvers'
-      if (
-        serviceRequest.status === 0 ||
-        serviceRequest.status === 2 ||
-        serviceRequest.status === 3
-      ) {
-        logger.info(`Rejecting service request with id: ${serviceRequest.id}`, {
-          correlationId,
-        });
-        const requestBody = {
-          status: -1,
-          actioned_reason: "User deactivation",
-          actioned_by: req.user.sub,
-          actioned_at: new Date(),
-        };
-        updateUserServiceRequest(serviceRequest.id, requestBody, req.id);
-      }
-    }
-
-    const organisationRequests =
-      (await getPendingRequestsAssociatedWithUser(user.id)) || [];
-    logger.info(
-      `Found ${organisationRequests.length} organisation request(s) for user ${user.id}. Rejecting any outstanding requests.`,
-      { correlationId },
-    );
-    for (const organisationRequest of organisationRequests) {
-      // Request status 0 is 'pending', 2 is 'overdue' and 3 is 'no approvers'
-      if (
-        organisationRequest.status.id === 0 ||
-        organisationRequest.status.id === 2 ||
-        organisationRequest.status.id === 3
-      ) {
-        logger.info(
-          `Rejecting organisation request with id: ${organisationRequest.id}`,
-          { correlationId },
-        );
-        const status = -1;
-        const actionedReason = "User deactivation";
-        const actionedBy = req.user.sub;
-        const actionedAt = new Date();
-        updateRequestById(
-          organisationRequest.id,
-          status,
-          actionedBy,
-          actionedReason,
-          actionedAt,
-          req.id,
-        );
-      }
-    }
-
-    const userServices = (await getServicesByUserId(user.id)) || [];
-    logger.info(
-      `Removing ${userServices.length} service(s) from user ${user.id}`,
-      { correlationId },
-    );
-    for (const service of userServices) {
-      logger.info(
-        `Removing service from user: ${service.userId} with serviceId: ${service.serviceId} and organisationId: ${service.organisationId}`,
-        { correlationId },
-      );
-      removeServiceFromUser(
-        service.userId,
-        service.serviceId,
-        service.organisationId,
-        req.id,
-      );
-    }
+    await rejectOpenUserServiceRequestsForUser(user.id, req);
+    await rejectOpenOrganisationRequestsForUser(user.id, req);
+    await removeAllServicesForUser(user.id, req);
   }
 
   logger.audit(
