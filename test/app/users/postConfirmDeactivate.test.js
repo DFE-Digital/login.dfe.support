@@ -14,6 +14,9 @@ const logger = require("../../../src/infrastructure/logger");
 const {
   getUserDetails,
   getUserDetailsById,
+  rejectOpenOrganisationRequestsForUser,
+  rejectOpenUserServiceRequestsForUser,
+  removeAllServicesForUser,
   updateUserDetails,
 } = require("../../../src/app/users/utils");
 const { deactivate } = require("../../../src/infrastructure/directories");
@@ -33,13 +36,15 @@ const { sendResult } = require("../../../src/infrastructure/utils");
 let req;
 let res;
 
+const userId = "915a7382-576b-4699-ad07-a9fd329d3867";
+
 beforeEach(() => {
   req = {
     id: "correlationId",
     csrfToken: () => "token",
     accepts: () => ["text/html"],
     params: {
-      uid: "915a7382-576b-4699-ad07-a9fd329d3867",
+      uid: userId,
     },
     body: {
       reason: "some reason for deactivation",
@@ -57,7 +62,7 @@ beforeEach(() => {
   logger.audit.mockReset();
 
   getUserDetails.mockReset().mockReturnValue({
-    id: "915a7382-576b-4699-ad07-a9fd329d3867",
+    id: userId,
     name: "Rupert Grint",
     firstName: "Rupert",
     lastName: "Grint",
@@ -74,7 +79,7 @@ beforeEach(() => {
   });
 
   getUserDetailsById.mockReset().mockReturnValue({
-    id: "915a7382-576b-4699-ad07-a9fd329d3867",
+    id: userId,
     name: "Rupert Grint",
     firstName: "Rupert",
     lastName: "Grint",
@@ -146,6 +151,9 @@ describe("When confirming deactivation of user", () => {
   it("then it should redirect to view user profile", async () => {
     await postConfirmDeactivate(req, res);
 
+    expect(rejectOpenOrganisationRequestsForUser).not.toHaveBeenCalled();
+    expect(rejectOpenUserServiceRequestsForUser).not.toHaveBeenCalled();
+    expect(removeAllServicesForUser).not.toHaveBeenCalled();
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });
@@ -414,6 +422,15 @@ describe("When the remove all services and requests checkbox is ticked", () => {
   it("then it should redirect to view user profile on the happy path", async () => {
     await postConfirmDeactivate(req, res);
 
+    expect(rejectOpenOrganisationRequestsForUser).toHaveBeenCalledWith(
+      userId,
+      req,
+    );
+    expect(rejectOpenUserServiceRequestsForUser).toHaveBeenCalledWith(
+      userId,
+      req,
+    );
+    expect(removeAllServicesForUser).toHaveBeenCalledWith(userId, req);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });

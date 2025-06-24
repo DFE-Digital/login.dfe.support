@@ -79,7 +79,7 @@ describe("When processing a user search request", () => {
       expect(result.criteria).toEqual("user.one+1@unit.test");
     });
 
-    it("should put the criteria in double quotes if there is not a dash character in it", async () => {
+    it("should put the criteria in double quotes if there is a dash character in it", async () => {
       req.body.criteria = "user.one-1@unit.test";
 
       const result = await search(req);
