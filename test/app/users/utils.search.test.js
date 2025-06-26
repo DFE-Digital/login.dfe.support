@@ -17,6 +17,7 @@ const { search } = require("../../../src/app/users/utils");
 
 describe("When processing a user search request", () => {
   let usersSearchResult;
+  const lastLogin = new Date(2018, 0, 11, 11, 30, 57).toISOString();
 
   beforeEach(() => {
     usersSearchResult = {
@@ -27,7 +28,7 @@ describe("When processing a user search request", () => {
           organisation: {
             name: "Testco",
           },
-          lastLogin: new Date(2018, 0, 11, 11, 30, 57),
+          lastLogin: lastLogin,
           status: {
             description: "Active",
           },
@@ -78,6 +79,23 @@ describe("When processing a user search request", () => {
       expect(result.criteria).toEqual("user.one+1@unit.test");
     });
 
+    it("should put the criteria in double quotes if there is a dash character in it", async () => {
+      req.body.criteria = "user.one-1@unit.test";
+
+      const result = await search(req);
+
+      expect(searchForUsers).toHaveBeenCalled();
+      // Note the double quotes (with one set of quotes escaped)
+      expect(searchForUsers).toHaveBeenCalledWith(
+        '"user.one-1@unit.test"*',
+        1,
+        "name",
+        "asc",
+        { organisationCategories: [], services: [], statusId: [] },
+      );
+      expect(result.criteria).toEqual("user.one-1@unit.test");
+    });
+
     test("then it should not search if criteria includes any other special characters", async () => {
       req.body.criteria = "user.one£@unit.test";
 
@@ -87,6 +105,62 @@ describe("When processing a user search request", () => {
       expect(result).toEqual({
         validationMessages: {
           criteria: "Special characters cannot be used",
+        },
+      });
+    });
+
+    it("should not search if criteria includes any other special characters and filtering is off", async () => {
+      req.body.isFilterToggle = "true";
+      req.body.showFilters = "true";
+      req.body.criteria = "user.one£@unit.test";
+
+      const result = await search(req);
+
+      expect(searchForUsers).toHaveBeenCalled();
+      expect(result).toEqual({
+        criteria: "",
+        page: 1,
+        sortBy: "name",
+        sortOrder: "asc",
+        numberOfPages: 3,
+        totalNumberOfResults: undefined,
+        users: [
+          {
+            name: "Timmy Tester",
+            email: "timmy@tester.test",
+            organisation: {
+              name: "Testco",
+            },
+            lastLogin: lastLogin,
+            status: {
+              description: "Active",
+            },
+          },
+        ],
+        validationMessages: {
+          criteria: "Special characters cannot be used",
+        },
+        sort: {
+          name: {
+            nextDirection: "desc",
+            applied: true,
+          },
+          email: {
+            nextDirection: "asc",
+            applied: false,
+          },
+          organisation: {
+            nextDirection: "asc",
+            applied: false,
+          },
+          lastLogin: {
+            nextDirection: "asc",
+            applied: false,
+          },
+          status: {
+            nextDirection: "asc",
+            applied: false,
+          },
         },
       });
     });
@@ -113,6 +187,16 @@ describe("When processing a user search request", () => {
     });
 
     test("then it should default to page 1", async () => {
+      const actual = await search(req);
+
+      expect(actual).toMatchObject({
+        page: 1,
+      });
+      expect(searchForUsers.mock.calls[0][1]).toBe(1);
+    });
+
+    it("should default to page 1 if the supplied page is not a number", async () => {
+      req.body.page = "not-a-number";
       const actual = await search(req);
 
       expect(actual).toMatchObject({
