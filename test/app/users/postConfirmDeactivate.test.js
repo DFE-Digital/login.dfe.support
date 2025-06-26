@@ -14,6 +14,9 @@ const logger = require("../../../src/infrastructure/logger");
 const {
   getUserDetails,
   getUserDetailsById,
+  rejectOpenOrganisationRequestsForUser,
+  rejectOpenUserServiceRequestsForUser,
+  removeAllServicesForUser,
   updateUserDetails,
 } = require("../../../src/app/users/utils");
 const { deactivate } = require("../../../src/infrastructure/directories");
@@ -33,13 +36,15 @@ const { sendResult } = require("../../../src/infrastructure/utils");
 let req;
 let res;
 
+const userId = "915a7382-576b-4699-ad07-a9fd329d3867";
+
 beforeEach(() => {
   req = {
     id: "correlationId",
     csrfToken: () => "token",
     accepts: () => ["text/html"],
     params: {
-      uid: "915a7382-576b-4699-ad07-a9fd329d3867",
+      uid: userId,
     },
     body: {
       reason: "some reason for deactivation",
@@ -57,7 +62,7 @@ beforeEach(() => {
   logger.audit.mockReset();
 
   getUserDetails.mockReset().mockReturnValue({
-    id: "915a7382-576b-4699-ad07-a9fd329d3867",
+    id: userId,
     name: "Rupert Grint",
     firstName: "Rupert",
     lastName: "Grint",
@@ -74,7 +79,7 @@ beforeEach(() => {
   });
 
   getUserDetailsById.mockReset().mockReturnValue({
-    id: "915a7382-576b-4699-ad07-a9fd329d3867",
+    id: userId,
     name: "Rupert Grint",
     firstName: "Rupert",
     lastName: "Grint",
@@ -146,6 +151,9 @@ describe("When confirming deactivation of user", () => {
   it("then it should redirect to view user profile", async () => {
     await postConfirmDeactivate(req, res);
 
+    expect(rejectOpenOrganisationRequestsForUser).not.toHaveBeenCalled();
+    expect(rejectOpenUserServiceRequestsForUser).not.toHaveBeenCalled();
+    expect(removeAllServicesForUser).not.toHaveBeenCalled();
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });
@@ -414,6 +422,15 @@ describe("When the remove all services and requests checkbox is ticked", () => {
   it("then it should redirect to view user profile on the happy path", async () => {
     await postConfirmDeactivate(req, res);
 
+    expect(rejectOpenOrganisationRequestsForUser).toHaveBeenCalledWith(
+      userId,
+      req,
+    );
+    expect(rejectOpenUserServiceRequestsForUser).toHaveBeenCalledWith(
+      userId,
+      req,
+    );
+    expect(removeAllServicesForUser).toHaveBeenCalledWith(userId, req);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });
@@ -433,63 +450,6 @@ describe("When the remove all services and requests checkbox is ticked", () => {
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });
 
-  it("should call updateUserServiceRequest when the returned request has a status of 0, 2 or 3", async () => {
-    getUserServiceRequestsByUserId.mockReset().mockReturnValue([
-      {
-        id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-        userId: "01A52B72-AE88-47BC-800B-E7DFFCE54344",
-        serviceId: "7B7E2D82-1228-4547-907C-40A2A35D0704",
-        organisationId: "11BE2E1F-4227-4FDE-81D9-14B1E3322D48",
-        status: 0,
-        createdAt: "2024-06-04T09:47:36.718Z",
-        updatedAt: "2024-06-09T00:00:00.173Z",
-        requestType: "service",
-      },
-      {
-        id: "dd657fbb-65b6-4b08-bab8-6d85069b59fa",
-        userId: "01A52B72-AE88-47BC-800B-E7DFFCE54344",
-        serviceId: "1dbafbb3-be86-462f-9fd2-d6681ab2873a",
-        organisationId: "11BE2E1F-4227-4FDE-81D9-14B1E3322D48",
-        status: 2,
-        createdAt: "2024-06-04T09:47:36.718Z",
-        updatedAt: "2024-06-09T00:00:00.173Z",
-        requestType: "service",
-      },
-      {
-        id: "e3a843d1-0866-4e9f-904f-391bfb769c2d",
-        userId: "01A52B72-AE88-47BC-800B-E7DFFCE54344",
-        serviceId: "1dbafbb3-be86-462f-9fd2-d6681ab2873a",
-        organisationId: "11BE2E1F-4227-4FDE-81D9-14B1E3322D48",
-        status: 3,
-        createdAt: "2024-06-04T09:47:36.718Z",
-        updatedAt: "2024-06-09T00:00:00.173Z",
-        requestType: "service",
-      },
-      {
-        id: "2adfac19-d682-4940-8b2f-0b82747e0daa",
-        userId: "01A52B72-AE88-47BC-800B-E7DFFCE54344",
-        serviceId: "91207517-8429-4388-9961-473df046d09e",
-        organisationId: "11BE2E1F-4227-4FDE-81D9-14B1E3322D48",
-        status: -1,
-        createdAt: "2024-06-04T09:47:36.718Z",
-        updatedAt: "2024-06-09T00:00:00.173Z",
-        requestType: "service",
-      },
-    ]);
-    await postConfirmDeactivate(req, res);
-
-    expect(updateUserServiceRequest.mock.calls).toHaveLength(3);
-    expect(updateUserServiceRequest.mock.calls[0][0]).toEqual(
-      "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-    );
-    expect(updateUserServiceRequest.mock.calls[1][0]).toEqual(
-      "dd657fbb-65b6-4b08-bab8-6d85069b59fa",
-    );
-    expect(updateUserServiceRequest.mock.calls[2][0]).toEqual(
-      "e3a843d1-0866-4e9f-904f-391bfb769c2d",
-    );
-  });
-
   it("should not call updateRequestById when getPendingRequestsAssociatedWithUser returns an empty array", async () => {
     getPendingRequestsAssociatedWithUser.mockReset().mockReturnValue([]);
     await postConfirmDeactivate(req, res);
@@ -502,94 +462,6 @@ describe("When the remove all services and requests checkbox is ticked", () => {
     expect(updateRequestById.mock.calls).toMatchObject([]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("services");
-  });
-
-  it("should call updateRequestById when the returned request has a status of 0, 2 or 3", async () => {
-    getPendingRequestsAssociatedWithUser.mockReset().mockReturnValue([
-      {
-        id: "0b62b8da-2a6e-4c66-9f32-a7b784ff4f65",
-        org_id: "org1",
-        org_name: "org name",
-        urn: null,
-        ukprn: null,
-        uid: null,
-        org_status: {
-          id: 1,
-          name: "Open",
-        },
-        user_id: "user 1",
-        created_at: "12/12/2019",
-        status: {
-          id: 0,
-          name: "pending",
-        },
-      },
-      {
-        id: "42e765df-d1ce-4bc1-843c-71d5f69ad2ed",
-        org_id: "org1",
-        org_name: "org name",
-        urn: null,
-        ukprn: null,
-        uid: null,
-        org_status: {
-          id: 1,
-          name: "Open",
-        },
-        user_id: "user 1",
-        created_at: "12/12/2019",
-        status: {
-          id: 2,
-          name: "overdue",
-        },
-      },
-      {
-        id: "2fc17d50-d641-4175-895e-e7bbba65c25e",
-        org_id: "org1",
-        org_name: "org name",
-        urn: null,
-        ukprn: null,
-        uid: null,
-        org_status: {
-          id: 1,
-          name: "Open",
-        },
-        user_id: "user 1",
-        created_at: "12/12/2019",
-        status: {
-          id: 3,
-          name: "No approver",
-        },
-      },
-      {
-        id: "ed383257-2091-41ed-8422-5c59deb19b02",
-        org_id: "org1",
-        org_name: "org name",
-        urn: null,
-        ukprn: null,
-        uid: null,
-        org_status: {
-          id: 1,
-          name: "Open",
-        },
-        user_id: "user 1",
-        created_at: "12/12/2019",
-        status: {
-          id: -1,
-          name: "rejected",
-        },
-      },
-    ]);
-    await postConfirmDeactivate(req, res);
-    expect(updateRequestById.mock.calls).toHaveLength(3);
-    expect(updateRequestById.mock.calls[0][0]).toEqual(
-      "0b62b8da-2a6e-4c66-9f32-a7b784ff4f65",
-    );
-    expect(updateRequestById.mock.calls[1][0]).toEqual(
-      "42e765df-d1ce-4bc1-843c-71d5f69ad2ed",
-    );
-    expect(updateRequestById.mock.calls[2][0]).toEqual(
-      "2fc17d50-d641-4175-895e-e7bbba65c25e",
-    );
   });
 
   it("should not call removeServiceFromUser when getServicesByUserId returns an empty array", async () => {
