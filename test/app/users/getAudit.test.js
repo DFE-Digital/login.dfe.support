@@ -25,6 +25,22 @@ const {
 const { getUserStatus } = require("./../../../src/infrastructure/directories");
 const getAudit = require("./../../../src/app/users/getAudit");
 
+const organisationId = "org-1";
+
+const createSimpleAuditRecord = (type, subType, message) => {
+  return {
+    type,
+    subType,
+    userId: "user1",
+    userEmail: "some.user@test.tester",
+    editedUser: "edited-user1",
+    organisationId,
+    level: "audit",
+    message,
+    timestamp: "2025-01-29T17:31:00.000Z",
+  };
+};
+
 describe("when getting users audit details", () => {
   let req;
   let res;
@@ -111,6 +127,11 @@ describe("when getting users audit details", () => {
           message: "Some detailed message",
           timestamp: "2018-01-29T17:31:00.000Z",
         },
+        createSimpleAuditRecord(
+          "manage",
+          "user-service-added",
+          "some.user@test.tester added service Test Service for user another.user@example.com",
+        ),
       ],
       numberOfPages: 3,
       numberOfRecords: 56,
@@ -228,8 +249,71 @@ describe("when getting users audit details", () => {
             id: "user1",
           },
         },
+        {
+          timestamp: new Date("2025-01-29T17:31:00.000Z"),
+          formattedTimestamp: "29 Jan 2025 05:31pm",
+          event: {
+            type: "manage",
+            subType: "user-service-added",
+            description:
+              "some.user@test.tester added service Test Service for user another.user@example.com",
+          },
+          service: null,
+          organisation: undefined,
+          result: true,
+          user: {
+            id: "user1",
+            status: {
+              id: 1,
+              description: "Activated",
+            },
+            formattedLastLogin: "",
+          },
+        },
       ],
     });
+  });
+
+  it("should return the message as the type, if the type is Sign-out", async () => {
+    getPageOfUserAudits.mockReturnValue({
+      audits: [
+        createSimpleAuditRecord("Sign-out", undefined, "User logged out"),
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+
+    const auditRows = sendResult.mock.calls[0][3].audits;
+    expect(auditRows[0].event.description).toBe("Sign-out");
+  });
+
+  it("should leave a number of subtypes of message unchanged", async () => {
+    getPageOfUserAudits.mockReturnValue({
+      audits: [
+        createSimpleAuditRecord(
+          "manage",
+          "user-service-added",
+          "some.user@test.tester added service Test Service for user another.user@example.com",
+        ),
+        createSimpleAuditRecord(
+          "manage",
+          "user-service-deleted",
+          "some.user@test.tester removed service Test Service for user another.user@example.com",
+        ),
+      ],
+      numberOfPages: 3,
+      numberOfRecords: 56,
+    });
+    await getAudit(req, res);
+
+    const auditRows = sendResult.mock.calls[0][3].audits;
+    expect(auditRows[0].event.description).toBe(
+      "some.user@test.tester added service Test Service for user another.user@example.com",
+    );
+    expect(auditRows[1].event.description).toBe(
+      "some.user@test.tester removed service Test Service for user another.user@example.com",
+    );
   });
 
   it("then it should include page number in model", async () => {
