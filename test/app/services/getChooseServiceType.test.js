@@ -18,7 +18,7 @@ describe("when displaying the get choose service type", () => {
   });
 
   it("then it should return the get choose service type view", async () => {
-    (req.session = {
+    ((req.session = {
       createServiceData: {
         serviceType: "idOnlyServiceType",
         hideFromUserServices: undefined,
@@ -27,7 +27,7 @@ describe("when displaying the get choose service type", () => {
         description: "Test description",
       },
     }),
-      await getChooseServiceType(req, res);
+      await getChooseServiceType(req, res));
 
     expect(sendResult).toHaveBeenCalledTimes(1);
     expect(sendResult).toHaveBeenCalledWith(

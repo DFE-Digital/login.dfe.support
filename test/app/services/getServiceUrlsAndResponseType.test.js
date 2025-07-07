@@ -60,7 +60,7 @@ describe("when displaying the get choose service type", () => {
   });
 
   it("then it should return the redirect urls if present in the session", async () => {
-    (req.session = {
+    ((req.session = {
       createServiceData: {
         serviceType: "idOnlyServiceType",
         hideFromUserServices: undefined,
@@ -83,7 +83,7 @@ describe("when displaying the get choose service type", () => {
         apiSecret: "this.is.an.api.secret",
       },
     }),
-      await getServiceUrlsAndResponseType(req, res);
+      await getServiceUrlsAndResponseType(req, res));
 
     expect(sendResult).toHaveBeenCalledTimes(1);
     expect(sendResult).toHaveBeenCalledWith(
