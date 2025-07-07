@@ -1,5 +1,4 @@
 require("dotenv").config();
-const appInsights = require("applicationinsights");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
@@ -39,10 +38,6 @@ configSchema.validate();
 
 https.globalAgent.maxSockets = http.globalAgent.maxSockets =
   config.hostingEnvironment.agentKeepAlive.maxSockets || 50;
-
-if (config.hostingEnvironment.applicationInsights) {
-  appInsights.setup(config.hostingEnvironment.applicationInsights).start();
-}
 
 const init = async () => {
   const app = express();
