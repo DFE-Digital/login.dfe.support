@@ -10,7 +10,7 @@ const isAuthorizedToChangeEmail = async (req, res, next) => {
     }
     const user = await Account.getUser(userId);
 
-    // If the user is an internal DSI user who has been migrated to Entra, 
+    // If the user is an internal DSI user who has been migrated to Entra,
     // their email address should not be authorized for change
     if (isInternalEntraUser(user)) {
       return res.status(401).render("errors/views/notAuthorised");
