@@ -55,12 +55,12 @@ describe("when displaying the post choose service type screen", () => {
 
   it("should redirect to the users page on success and existing session data updated", async () => {
     // Session data set up to represent back link or change button from a future page
-    (req.session.createServiceData = {
+    ((req.session.createServiceData = {
       serviceType: "idOnlyServiceType",
       name: "Test name",
       description: "Test description",
     }),
-      await postChooseServiceType(req, res);
+      await postChooseServiceType(req, res));
 
     // Note hideFromUserServices and hideFromContactUs now populated
     expect(req.session.createServiceData).toStrictEqual({
