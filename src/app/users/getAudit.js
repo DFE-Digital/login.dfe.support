@@ -55,7 +55,8 @@ const describeAuditEvent = async (audit, req) => {
     audit.subType === "user-service-updated" ||
     audit.subType === "org-edit" ||
     audit.subType === "rejected-org" ||
-    audit.subType === "user-editemail"
+    audit.subType === "user-editemail" ||
+    audit.subType === "user-view"
   ) {
     return audit.message;
   }
@@ -83,13 +84,6 @@ const describeAuditEvent = async (audit, req) => {
       return newStatus.description;
     }
     return "Edited user";
-  }
-
-  if (audit.type === "support" && audit.subType === "user-view") {
-    const viewedUser = audit.viewedUser
-      ? await getCachedUserById(audit.viewedUser, req.id)
-      : "";
-    return `Viewed user ${viewedUser.firstName} ${viewedUser.lastName}`;
   }
 
   if (audit.type === "support" && audit.subType === "user-search") {

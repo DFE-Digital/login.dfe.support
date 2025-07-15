@@ -121,16 +121,13 @@ const action = async (req, res) => {
     email: user.email,
   };
 
-  logger.audit(
-    `${req.user.email} (id: ${req.user.sub}) viewed user ${user.email} (id: ${user.id})`,
-    {
-      type: "support",
-      subType: "user-view",
-      userId: req.user.sub,
-      userEmail: req.user.email,
-      viewedUser: user.id,
-    },
-  );
+  logger.audit(`${req.user.email} viewed user ${user.email}`, {
+    type: "support",
+    subType: "user-view",
+    userId: req.user.sub,
+    userEmail: req.user.email,
+    viewedUser: user.id,
+  });
 
   sendResult(req, res, "users/views/services", {
     csrfToken: req.csrfToken(),
