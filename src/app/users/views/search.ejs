@@ -252,7 +252,7 @@ if (services && services.length > 0) {
             <tbody class="govuk-table__body">
             <% if(locals.users.length === 0 && locals.criteria) { %>
             <tr class="govuk-table__row">
-                <td colspan="5"><span class="empty-state">No users found</span></td>
+                <td class="govuk-body-s"><span>No users found</span></td>
             </tr>
             <% } %>
             <% for (let i = 0; i < locals.users.length; i++) { %>

@@ -114,6 +114,7 @@ describe("when selecting a permission level", () => {
       backLink: true,
       cancelLink: "/access-requests/undefined/organisation/review",
       csrfToken: "token",
+      layout: "sharedViews/layoutNew.ejs",
       request: {
         actioned_by: null,
         actioned_date: null,
@@ -154,6 +155,7 @@ describe("when selecting a permission level", () => {
     expect(res.render.mock.calls[0][1]).toEqual({
       backLink: true,
       cancelLink: "/access-requests/undefined/organisation/review",
+      layout: "sharedViews/layoutNew.ejs",
       csrfToken: "token",
       request: {
         actioned_by: null,
@@ -215,6 +217,7 @@ describe("when selecting a permission level", () => {
       backLink: true,
       cancelLink: "/access-requests/undefined/organisation/review",
       csrfToken: "token",
+      layout: "sharedViews/layoutNew.ejs",
       request: {
         actioned_by: "jane.doe@email.com",
         actioned_date: null,

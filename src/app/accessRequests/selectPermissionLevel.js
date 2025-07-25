@@ -39,6 +39,7 @@ const validate = async (req) => {
   const model = {
     request,
     title: "Select permission level - DfE Sign-in",
+    layout: "sharedViews/layoutNew.ejs",
     backLink: true,
     requestFrom: req.params.from,
     cancelLink:
