@@ -9,27 +9,28 @@
     </div>
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-half">
-            <form method="post" class="prevent-form-double-submission">
-                <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
-                <div class="govuk-form-group <%= (locals.validationMessages.selectedLevel !== undefined) ? 'govuk-form-group--error' : '' %>">
-                    <fieldset class="govuk-fieldset">
+            <form method="post">
+                <div class="govuk-form-group <%= (locals.validationMessages.selectedResponse !== undefined) ? 'govuk-form-group--error' : '' %>">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                    <fieldset class="govuk-fieldset" aria-describedby="validation-selected-organisation">
                         <% if (locals.validationMessages.selectedLevel !== undefined) { %>
-                        <p class="govuk-error-message" id="validation-permission-level"><%=locals.validationMessages.selectedLevel %></p>
+                        <p class="govuk-error-message"
+                        id="validation-selected-organisation"><%= locals.validationMessages.selectedLevel %></p>
                         <% } %>
-                        <div class="govuk-checkboxes">
-                            <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" id="level-user" type="radio" name="selectedLevel" value="0">
-                                <label class="govuk-label govuk-checkboxes__label" for="level-user">End user</label>
+                        <div class="govuk-radios" data-module="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="level-user" type="radio" name="selectedLevel" value="0">
+                                <label class="govuk-label govuk-radios__label" for="level-user">End user</label>
                             </div>
-                            <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" id="level-approver" type="radio" name="selectedLevel" value="10000">
-                                <label class="govuk-label govuk-checkboxes__label" for="level-approver">Approver</label>
+                            <div class="govuk-radios__item" data-module="govuk-radios" data-target="panel-message-2">
+                                <input class="govuk-radios__input" id="level-approver" type="radio" name="selectedLevel" value="10000">
+                                <label class="govuk-label govuk-radios__label" for="level-approver">Approver</label>
                             </div>
                         </div>
                     </fieldset>
                 </div>
                 <div class="govuk-button-group">
-                    <button type="submit" class="govuk-button">Confirm</button>
+                    <button type="submit" class="govuk-button" data-module="govuk-button">Continue</button>
                     <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
                 </div>
             </form>

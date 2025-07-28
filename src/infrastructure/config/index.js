@@ -29,8 +29,8 @@ const config = {
     env: process.env.LOCAL_ENV || "azure",
     host: process.env.LOCAL_HOST || process.env.STANDALONE_SUPPORT_HOST_NAME,
     port: process.env.LOCAL_PORT_SUPPORT || 443,
-    sslCert: process.env.LOCAL_SSL_CERT || "",
-    sslKey: process.env.LOCAL_SSL_KEY || "",
+    sslCert: process.env.LOCAL_SSL_CERT ? process.env.LOCAL_SSL_CERT.replace(/\\n/g, '\n') : "",
+    sslKey: process.env.LOCAL_SSL_KEY ? process.env.LOCAL_SSL_KEY.replace(/\\n/g, '\n') : "",
     protocol: "https",
     hstsMaxAge: 86400,
     applicationInsights: process.env.APPLICATIONINSIGHTS_CONNECTION_STRING,
@@ -92,13 +92,13 @@ const config = {
     params: {
       serviceName: process.env.AZURE_SEARCH_NAME,
       apiKey: process.env.AZURE_SEARCH_API_KEY,
-      indexPointerConnectionString: process.env.REDIS_CONN + "/3?tls=true"
+      indexPointerConnectionString: process.env.LOCAL_REDIS_CONN ? process.env.LOCAL_REDIS_CONN + "/3" : process.env.REDIS_CONN + "/3?tls=true"
     }
   },
   claims: {
     type: "redis",
     params: {
-      connectionString: process.env.REDIS_CONN + "/3?tls=true"
+      connectionString: process.env.LOCAL_REDIS_CONN ? process.env.LOCAL_REDIS_CONN + "/3" : process.env.REDIS_CONN + "/3?tls=true"
     }
   },
   directories: {
@@ -146,12 +146,12 @@ const config = {
         idle: 10000
       }
     },
-    cacheConnectionString: process.env.REDIS_CONN + "/7?tls=true"
+    cacheConnectionString: process.env.LOCAL_REDIS_CONN ? process.env.LOCAL_REDIS_CONN + "/7" : process.env.REDIS_CONN + "/7?tls=true"
   },
   serviceMapping: {
     type: "redis",
     params: {
-      connectionString: process.env.REDIS_CONN + "/3?tls=true"
+      connectionString: process.env.LOCAL_REDIS_CONN ? process.env.LOCAL_REDIS_CONN + "/3" : process.env.REDIS_CONN + "/3?tls=true"
     },
     key2SuccessServiceId: process.env.SUCC_SVC_ID
   },
@@ -207,7 +207,7 @@ const config = {
     useGenericAddUser: true
   },
   notifications: {
-    connectionString: process.env.REDIS_CONN + "/4?tls=true"
+    connectionString: process.env.LOCAL_REDIS_CONN ? process.env.LOCAL_REDIS_CONN + "/4" : process.env.REDIS_CONN + "/4?tls=true"
   },
   assets: {
     url: process.env.CDN_HOST_NAME,
