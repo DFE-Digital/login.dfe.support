@@ -71,15 +71,7 @@ junit.xml
 # Dev env
 /config/
 
-.idea/workspace.xml
-.idea/watcherTasks.xml
 access.log
 .DS_Store
 .vscode/
-
-\.idea/markdown-exported-files\.xml
-
-\.idea/markdown-navigator\.xml
-
-\.idea/markdown-navigator/profiles_settings\.xml
 certs/
