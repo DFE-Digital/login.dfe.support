@@ -9,8 +9,8 @@
   "author": "",
   "license": "MIT",
   "scripts": {
-    "dev": "settings='./config/login.dfe.support.dev.json' node src/index.js",
-    "web": "settings='./config/support.dev.json' node src/index.js",
+    "dev": "node src/index.js",
+    "web": "node src/index.js",
     "dev:checks": "npm run lint && npm run test",
     "format": "prettier . --write",
     "lint": "eslint .",
