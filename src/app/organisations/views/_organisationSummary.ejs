@@ -110,12 +110,14 @@
 <div class="govuk-grid-column-one-third">
 <aside>
     <h2 class="govuk-heading-m">Actions</h2>
-    <ul class="govuk-list">
-        <li><a class="govuk-link" href="web-service-sync">Send WS Sync</a></li>
-        <% if (organisation.category.id === '008') { %>
-        <li><a class="govuk-link" href="edit-organisation">Edit Organisation</a></li>
-        <% } %>
-    </ul>
+    <nav aria-label="Actions">
+        <ul class="govuk-list">
+            <li><a class="govuk-link" href="web-service-sync">Send WS Sync</a></li>
+            <% if (organisation.category.id === '008') { %>
+            <li><a class="govuk-link" href="edit-organisation">Edit Organisation</a></li>
+            <% } %>
+        </ul>
+    </nav>
 </aside>
 </div>
 <nav class="govuk-grid-column-full govuk-!-margin-0 govuk-!-padding-0">
