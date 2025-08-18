@@ -112,13 +112,15 @@ if (services && services.length > 0) {
         <div class="govuk-grid-column-one-third">
             <aside>
                 <h2 class="govuk-heading-m">Actions</h2>
-                <ul class="govuk-list">
-                    <li><a class="govuk-link" href="/users/new-user">Invite user</a></li>
-                    <li><a class="govuk-link" href="/users/bulk-user-actions">Bulk user actions</a></li>
-                    <% if (locals.canViewRequests) { %>
-                        <li><a class="govuk-link" href="/access-requests">View user requests</a></li>
-                    <% } %>
-                </ul>
+                <nav aria-label="Actions">
+                    <ul class="govuk-list">
+                        <li><a class="govuk-link" href="/users/new-user">Invite user</a></li>
+                        <li><a class="govuk-link" href="/users/bulk-user-actions">Bulk user actions</a></li>
+                        <% if (locals.canViewRequests) { %>
+                            <li><a class="govuk-link" href="/access-requests">View user requests</a></li>
+                        <% } %>
+                    </ul>
+                </nav>
             </aside>
         </div>
     </div>

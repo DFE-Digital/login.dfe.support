@@ -86,9 +86,11 @@
         <div class="govuk-grid-column-one-third">
             <aside>
                 <h2 class="govuk-heading-m">Actions</h2>
-                <ul class="list">
-                    <li><a class="govuk-link" href="<%=locals.serviceDetails.id%>/remove-service">Remove service</a> </li>
-                </ul>
+                <nav aria-label="Actions">
+                    <ul class="list">
+                        <li><a class="govuk-link" href="<%=locals.serviceDetails.id%>/remove-service">Remove service</a> </li>
+                    </ul>
+                </nav>
             </aside>
         </div>
         <% }%>

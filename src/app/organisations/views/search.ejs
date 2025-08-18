@@ -88,13 +88,15 @@ const organisationStatusesQuery = locals.organisationStatuses.filter(x => x.isSe
             </form>
         </div>
         <div class="govuk-grid-column-one-third">
-        <aside>
-            <h2 class="govuk-heading-m">Actions</h2>
-            <ul class="govuk-list">
-                <li><a class="govuk-link" href="/organisations/run-pp-sync">Run Provider Profile sync</a></li>
-                <li><a class="govuk-link" href="/organisations/create-org">Create new organisation</a></li>
-            </ul>
-        </aside>
+            <aside>
+                <h2 class="govuk-heading-m">Actions</h2>
+                <nav aria-label="Actions">
+                    <ul class="govuk-list">
+                        <li><a class="govuk-link" href="/organisations/run-pp-sync">Run Provider Profile sync</a></li>
+                        <li><a class="govuk-link" href="/organisations/create-org">Create new organisation</a></li>
+                    </ul>
+                </nav>
+            </aside>
         </div>
     </div>    
     <div class="govuk-grid-row">
