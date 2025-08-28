@@ -127,7 +127,11 @@
                             <td class="govuk-table__cell govuk-body-s"><span class="govuk-!-text-break-word"><%= locals.requests[i].usersName %></span> </td>
                             <td class="govuk-table__cell govuk-body-s"><span class="govuk-!-text-break-word"><%= locals.requests[i].usersEmail %></span> </td>
                             <td class="govuk-table__cell govuk-body-s"><span class="govuk-!-text-break-word"><%= locals.requests[i].statusText.name %></span> </td>
-                            <td class="govuk-table__cell govuk-body-s"><span class="govuk-!-text-break-word"><span class="govuk-visually-hidden">Review request from <%= locals.requests[i].usersName %> for <%= locals.requests[i].org_name %> requested on <%= locals.requests[i].formattedCreatedDate %></span><a class="govuk-link" href="access-requests/<%= locals.requests[i].id %>/review">Review</a></span> </td>
+                            <td class="govuk-table__cell govuk-body-s"><span class="govuk-!-text-break-word"><span
+                                        class="govuk-visually-hidden">Review request from <%= locals.requests[i].usersName %> for <%=
+                                                locals.requests[i].org_name %> requested on <%= locals.requests[i].formattedCreatedDate %></span><a
+                                        class="govuk-link" href="access-requests/<%= locals.requests[i].id %>/review">Review</a></span>
+                            </td>
                         </tr>
                         <% } %>
                     <% } %>
