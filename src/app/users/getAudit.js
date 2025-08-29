@@ -49,6 +49,7 @@ const describeAuditEvent = async (audit, req) => {
   }
 
   if (
+    audit.subType === "service-info-edit" ||
     audit.subType === "user-service-deleted" ||
     audit.subType === "user-service-added" ||
     audit.subType === "user-services-added" ||
