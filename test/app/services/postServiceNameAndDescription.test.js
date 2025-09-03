@@ -137,11 +137,11 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
-  it("should render an the page with an error in validationMessages if description over 200 characters", async () => {
-    req.body.description = "Test123456".repeat(21); // 210 character length string
-    exampleErrorResponse.description = "Test123456".repeat(21); // 210 character length string
+  it("should render an the page with an error in validationMessages if description over 400 characters", async () => {
+    req.body.description = "Test123456".repeat(41); // 410 character length string
+    exampleErrorResponse.description = "Test123456".repeat(41); // 410 character length string
     exampleErrorResponse.validationMessages.description =
-      "Description must be 200 characters or less";
+      "Description must be 400 characters or less";
 
     await postServiceNameAndDescription(req, res);
 

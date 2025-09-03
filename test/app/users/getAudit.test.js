@@ -161,19 +161,28 @@ describe("when getting users audit details", () => {
   it("then it should send result using audit view", async () => {
     await getAudit(req, res);
 
+    expect(getUserDetailsById.mock.calls).toHaveLength(1);
+    expect(getUserDetailsById.mock.calls[0][0]).toBe(req.params.uid);
+
     expect(sendResult.mock.calls).toHaveLength(1);
     expect(sendResult.mock.calls[0][0]).toBe(req);
     expect(sendResult.mock.calls[0][1]).toBe(res);
     expect(sendResult.mock.calls[0][2]).toBe("users/views/audit");
-  });
-
-  it("then it should include csrf token in model", async () => {
-    await getAudit(req, res);
 
     expect(sendResult.mock.calls[0][3]).toMatchObject({
       csrfToken: "token",
+      numberOfPages: 3,
+      totalNumberOfResults: 56,
+      user: {
+        id: "user1",
+        status: {
+          id: 1,
+          description: "Activated",
+        },
+      },
     });
   });
+
   it("should set the backlink to /organisations if the search type session param is organisations", async () => {
     await getAudit(req, res);
 
@@ -187,28 +196,6 @@ describe("when getting users audit details", () => {
 
     expect(sendResult.mock.calls[0][3]).toMatchObject({
       backLink: "/users",
-    });
-  });
-
-  it("then it should include user details in model", async () => {
-    await getAudit(req, res);
-
-    expect(sendResult.mock.calls[0][3]).toMatchObject({
-      user: {
-        id: "user1",
-        status: {
-          id: 1,
-          description: "Activated",
-        },
-      },
-    });
-  });
-
-  it("then it should include number of pages of audits in model", async () => {
-    await getAudit(req, res);
-
-    expect(sendResult.mock.calls[0][3]).toMatchObject({
-      numberOfPages: 3,
     });
   });
 
@@ -322,21 +309,6 @@ describe("when getting users audit details", () => {
     expect(sendResult.mock.calls[0][3]).toMatchObject({
       page: 3,
     });
-  });
-
-  it("then it should include total number of records in model", async () => {
-    await getAudit(req, res);
-
-    expect(sendResult.mock.calls[0][3]).toMatchObject({
-      totalNumberOfResults: 56,
-    });
-  });
-
-  it("then it should get user details", async () => {
-    await getAudit(req, res);
-
-    expect(getUserDetailsById.mock.calls).toHaveLength(1);
-    expect(getUserDetailsById.mock.calls[0][0]).toBe(req.params.uid);
   });
 
   it("then it should get page of audits using page 1 if page not specified", async () => {
