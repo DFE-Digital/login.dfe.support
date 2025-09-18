@@ -1,57 +1,53 @@
 <div class="govuk-width-container">
-    <main class="govuk-main-wrapper">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
-                <h1 class="govuk-heading-xl">
-                Invite user
-                </h1>
-            </div>
-            <div class="govuk-grid-column-two-thirds">
-                <p class="govuk-body">Please provide details of the user you’d like to invite, so we can check if they’ve already registered to use DfE Sign-in.</p>
-            </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-xl">
+            Invite user
+            </h1>
         </div>
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-one-half">
-                <form method="post" id="form-new-user">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                <fieldset class="govuk-fieldset govuk-fieldset__legend--l">
-                    <div class="govuk-form-group <%= (locals.validationMessages.firstName !== undefined) ? 'form-group-error' : '' %>">
-                        <label class="govuk-label" for="firstName">First name</span> </label>
-                        <% if (locals.validationMessages.firstName !== undefined) { %>
-                        <p class="error-message" id="validation-firstName"><%= locals.validationMessages.firstName %></p>
-                        <% } %>
-                        <input class="govuk-input" id="firstName" name="firstName" type="text"
-                                <% if (locals.validationMessages.firstName !== undefined) { %>
-                            aria-invalid="true" aria-describedby="validation-firstName"
-                                <% } %>
-                            value="<%=locals.firstName%>">
-                    </div>
-                    <div class="govuk-form-group <%= (locals.validationMessages.lastName !== undefined) ? 'form-group-error' : '' %>">
-                        <label class="govuk-label" for="lastName">Last name</span> </label>
-                        <% if (locals.validationMessages.lastName !== undefined) { %>
-                        <p class="error-message" id="validation-lastName"><%= locals.validationMessages.lastName %></p>
-                        <% } %>
-                        <input class="govuk-input" id="lastName" name="lastName" type="text"
-                            <% if (locals.validationMessages.lastName !== undefined) { %>aria-invalid="true" aria-describedby="validation-lastName"<% } %>
-                            value="<%=locals.lastName%>">
-                    </div>
-                    <div class="govuk-form-group <%= (locals.validationMessages.email !== undefined) ? 'form-group-error' : '' %>">
-                        <label class="govuk-label" for="email">Email address</span> </label>
-                        <% if (locals.validationMessages.email !== undefined) { %>
-                        <p class="error-message" id="validation-lastName"><%= locals.validationMessages.email %></p>
-                        <% } %>
-                        <input class="govuk-input" id="email" name="email" type="email"
-                            <% if (locals.validationMessages.email !== undefined) { %>aria-invalid="true" aria-describedby="validation-email"<% } %>
-                            value="<%=locals.email%>">
-                    </div>
-                </fieldset>
-                <div class="form-submit submit-buttons">
-                    <button type="submit" class="govuk-button">Continue</button>
+        <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body">Please provide details of the user you’d like to invite, so we can check if they’ve already registered to use DfE Sign-in.</p>
+        </div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half">
+            <form method="post" id="form-new-user">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <fieldset class="govuk-fieldset govuk-fieldset__legend--l">
+                <div class="govuk-form-group <%= (locals.validationMessages.firstName !== undefined) ? 'form-group-error' : '' %>">
+                    <label class="govuk-label" for="firstName">First name</span> </label>
+                    <% if (locals.validationMessages.firstName !== undefined) { %>
+                    <p class="error-message" id="validation-firstName"><%= locals.validationMessages.firstName %></p>
+                    <% } %>
+                    <input class="govuk-input" id="firstName" name="firstName" type="text"
+                            <% if (locals.validationMessages.firstName !== undefined) { %>
+                        aria-invalid="true" aria-describedby="validation-firstName"
+                            <% } %>
+                        value="<%=locals.firstName%>">
                 </div>
-                </form>
+                <div class="govuk-form-group <%= (locals.validationMessages.lastName !== undefined) ? 'form-group-error' : '' %>">
+                    <label class="govuk-label" for="lastName">Last name</span> </label>
+                    <% if (locals.validationMessages.lastName !== undefined) { %>
+                    <p class="error-message" id="validation-lastName"><%= locals.validationMessages.lastName %></p>
+                    <% } %>
+                    <input class="govuk-input" id="lastName" name="lastName" type="text"
+                        <% if (locals.validationMessages.lastName !== undefined) { %>aria-invalid="true" aria-describedby="validation-lastName"<% } %>
+                        value="<%=locals.lastName%>">
+                </div>
+                <div class="govuk-form-group <%= (locals.validationMessages.email !== undefined) ? 'form-group-error' : '' %>">
+                    <label class="govuk-label" for="email">Email address</span> </label>
+                    <% if (locals.validationMessages.email !== undefined) { %>
+                    <p class="error-message" id="validation-lastName"><%= locals.validationMessages.email %></p>
+                    <% } %>
+                    <input class="govuk-input" id="email" name="email" type="email"
+                        <% if (locals.validationMessages.email !== undefined) { %>aria-invalid="true" aria-describedby="validation-email"<% } %>
+                        value="<%=locals.email%>">
+                </div>
+            </fieldset>
+            <div class="form-submit submit-buttons">
+                <button type="submit" class="govuk-button">Continue</button>
             </div>
+            </form>
         </div>
-    </main>
+    </div>
 </div>
-
-
