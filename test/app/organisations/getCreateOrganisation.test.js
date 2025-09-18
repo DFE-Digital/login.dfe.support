@@ -29,7 +29,7 @@ describe("when displaying the get create organisations", () => {
         csrfToken: req.csrfToken(),
         backLink: true,
         currentPage: "organisations",
-        layout: "sharedViews/layoutNew.ejs",
+        layout: "sharedViews/layout.ejs",
         validationMessages: {},
       },
     );

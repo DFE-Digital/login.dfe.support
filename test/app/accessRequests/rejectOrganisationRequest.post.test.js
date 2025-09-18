@@ -113,7 +113,7 @@ describe("when rejecting an organisation request", () => {
     expect(res.render.mock.calls[0][1]).toEqual({
       backLink: true,
       cancelLink: "/access-requests/undefined/review",
-      layout: "sharedViews/layoutNew.ejs",
+      layout: "sharedViews/layout.ejs",
       csrfToken: "token",
       request: {
         actioned_by: "john.approver@email.com",
@@ -156,7 +156,7 @@ describe("when rejecting an organisation request", () => {
       backLink: true,
       cancelLink: "/access-requests/undefined/review",
       csrfToken: "token",
-      layout: "sharedViews/layoutNew.ejs",
+      layout: "sharedViews/layout.ejs",
       request: {
         actioned_by: null,
         actioned_date: null,

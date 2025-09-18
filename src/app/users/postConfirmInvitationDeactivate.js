@@ -40,7 +40,7 @@ const postConfirmDeactivate = async (req, res) => {
   ) {
     sendResult(req, res, "users/views/confirmInvitationDeactivate", {
       csrfToken: req.csrfToken(),
-      layout: "sharedViews/layoutNew.ejs",
+      layout: "sharedViews/layout.ejs",
       backLink: "services",
       reason: "",
       validationMessages: {

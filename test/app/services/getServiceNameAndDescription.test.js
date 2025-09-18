@@ -47,7 +47,7 @@ describe("when displaying the get service name and description page", () => {
         backLink: true,
         cancelLink: "/users",
         currentPage: "services",
-        layout: "sharedViews/layoutNew.ejs",
+        layout: "sharedViews/layout.ejs",
         validationMessages: {},
       },
     );

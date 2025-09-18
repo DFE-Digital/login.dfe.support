@@ -76,7 +76,7 @@ const buildModel = async (req) => {
 
   const model = {
     csrfToken: req.csrfToken(),
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     currentPage: "users",
     title: "Requests - DfE Sign-in",
     backLink: "/users",

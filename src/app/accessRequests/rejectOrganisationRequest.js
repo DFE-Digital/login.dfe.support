@@ -13,7 +13,7 @@ const get = async (req, res) => {
     csrfToken: req.csrfToken(),
     title: "Reason for rejection - DfE Sign-in",
     backLink: true,
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     cancelLink:
       req.params.from === "organisation"
         ? `/access-requests/${req.params.rid}/${req.params.from}/review`
@@ -27,7 +27,7 @@ const validate = async (req) => {
   const request = await getAndMapOrgRequest(req);
   const model = {
     title: "Reason for rejection - DfE Sign-in",
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     backLink: true,
     requestFrom: req.params.from,
     cancelLink:

@@ -20,7 +20,7 @@ const get = async (req, res) => {
     csrfToken: req.csrfToken(),
     request,
     title: "Select permission level - DfE Sign-in",
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     backLink: true,
     cancelLink:
       req.params.from === "organisation"
@@ -39,7 +39,7 @@ const validate = async (req) => {
   const model = {
     request,
     title: "Select permission level - DfE Sign-in",
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     backLink: true,
     requestFrom: req.params.from,
     cancelLink:

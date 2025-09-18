@@ -55,7 +55,7 @@ const get = async (req, res) => {
   return res.render("users/views/selectOrganisation", {
     selectionPrompt: getSelectionPrompt(),
     csrfToken: req.csrfToken(),
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     backLink: "organisations",
     organisations: userOrganisations,
     selectedOrganisation: null,
@@ -68,7 +68,7 @@ const validate = async (req) => {
   const selectedOrg = req.body.selectedOrganisation;
   const model = {
     selectedOrganisation: selectedOrg,
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     validationMessages: {},
     organisations: userOrganisations,
   };

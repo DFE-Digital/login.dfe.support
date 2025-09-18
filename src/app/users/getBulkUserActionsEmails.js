@@ -27,7 +27,7 @@ const getBulkUserActionsEmails = async (req, res) => {
 
   const model = {
     csrfToken: req.csrfToken(),
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     backLink: "../bulk-user-actions",
     currentPage: "users",
     users,

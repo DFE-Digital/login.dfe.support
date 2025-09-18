@@ -51,11 +51,13 @@
                     <img src="<%= locals.urls.assets %>/gds-upgrade/images/department-for-education_white.png?version=<%= locals.assets.version %>" alt="Department for Education" class="govuk-header__logotype">
                 </a>
             </div>
+            <% if (!locals.hideSignOut) { %>
             <div class="app-auth-action">
                 <a class="app-auth-action__link" href="/signout">
                     Sign out
                 </a>
             </div>
+            <% } %>
         </div>
     </header>
 

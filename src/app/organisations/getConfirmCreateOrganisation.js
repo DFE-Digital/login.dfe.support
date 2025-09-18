@@ -7,7 +7,7 @@ const getConfirmCreateOrganisation = async (req, res) => {
 
   sendResult(req, res, "organisations/views/confirmCreateOrganisation", {
     csrfToken: req.csrfToken(),
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     currentPage: "organisations",
     backLink: true,
     validationMessages: {},

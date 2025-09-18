@@ -39,7 +39,7 @@ describe("when displaying the get choose service type", () => {
         backLink: true,
         cancelLink: "/users",
         currentPage: "services",
-        layout: "sharedViews/layoutNew.ejs",
+        layout: "sharedViews/layout.ejs",
         validationMessages: {},
         serviceType: "idOnlyServiceType",
         hideFromContactUs: undefined,
@@ -61,7 +61,7 @@ describe("when displaying the get choose service type", () => {
         backLink: true,
         cancelLink: "/users",
         currentPage: "services",
-        layout: "sharedViews/layoutNew.ejs",
+        layout: "sharedViews/layout.ejs",
         validationMessages: {},
       },
     );

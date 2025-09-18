@@ -80,7 +80,7 @@ const getManageConsoleRoles = async (req, res) => {
 
   sendResult(req, res, "users/views/selectManageConsoleRoles", {
     csrfToken: req.csrfToken(),
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     addOrChangeService,
     user,
     serviceSelectedByUser,
