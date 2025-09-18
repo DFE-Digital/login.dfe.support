@@ -108,6 +108,7 @@ const buildModel = async (req, result = {}) => {
     criteria: result.criteria,
     page: result.page,
     layout: "sharedViews/layoutNew.ejs",
+    currentPage: "users",
     numberOfPages: result.numberOfPages,
     totalNumberOfResults: result.totalNumberOfResults,
     users: result.users,

@@ -27,6 +27,7 @@ const getppsyncStatus = async (req, res) => {
     csrfToken: req.csrfToken(),
     backLink: true,
     layout: "sharedViews/layoutNew.ejs",
+    currentPage: "organisations",
     audits: ppauditData.audits,
     syncInP: req.syncInP,
     cancelLink: "/organisations",

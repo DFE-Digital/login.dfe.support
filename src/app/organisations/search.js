@@ -155,6 +155,7 @@ const buildModel = async (req, result = {}) => {
     csrfToken: req.csrfToken(),
     criteria: result.criteria,
     layout: "sharedViews/layoutNew.ejs",
+    currentPage: "organisations",
     page: result.page,
     numberOfPages: result.numberOfPages,
     totalNumberOfResults: result.totalNumberOfResults,
