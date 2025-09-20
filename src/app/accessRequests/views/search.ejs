@@ -75,11 +75,11 @@ const paginationModel = {
             <tbody>
                 <% for (let i = 0; i < locals.usersForApproval.length; i++) { %>
                 <tr>
-                    <td><a href="/users/<%=usersForApproval[i].userId%>/"><%= usersForApproval[i].name %></a></td>
+                    <td><a href="/users/<%=usersForApproval[i].userId%>/" class="govuk-link"><%= usersForApproval[i].name %></a></td>
                     <td><span class="breakable"><%= usersForApproval[i].email %></span> </td>
                     <td><%= usersForApproval[i].organisation.name %></td>
                     <td><%= locals.moment(usersForApproval[i].createdDate).fromNow() %></td>
-                    <td><a href="/access-requests/request/<%= usersForApproval[i].userOrgId %>">Respond <span class="vh"> to <%= usersForApproval[i].name %>'s request</span></a></td>
+                    <td><a href="/access-requests/request/<%= usersForApproval[i].userOrgId %>" class="govuk-link">Respond <span class="vh"> to <%= usersForApproval[i].name %>'s request</span></a></td>
                 </tr>
                 <% } %>
             </tbody>

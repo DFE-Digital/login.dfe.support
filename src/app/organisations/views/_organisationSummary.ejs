@@ -42,7 +42,7 @@
             <% if (organisation.status.id === 4) { %>
                 <dd class="govuk-summary-list__value govuk-!-padding-0"><%=organisation.urn%></dd>
             <%}else {%>
-                <dd class="govuk-summary-list__value govuk-!-padding-0"><a href="https://get-information-schools.service.gov.uk/Establishments/Establishment/Details/<%=organisation.urn%>" target="_blank"><%=organisation.urn%></a></dd>
+                <dd class="govuk-summary-list__value govuk-!-padding-0"><a class="govuk-link" href="https://get-information-schools.service.gov.uk/Establishments/Establishment/Details/<%=organisation.urn%>" target="_blank"><%=organisation.urn%></a></dd>
             <% } %>    
         </div>
     <% } %>
@@ -53,7 +53,7 @@
             <% if (organisation.status.id === 2) { %>
                 <dd class="govuk-summary-list__value govuk-!-padding-0"><%=organisation.uid%></dd>
             <%}else {%>
-                <dd class="govuk-summary-list__value govuk-!-padding-0"><a href="https://get-information-schools.service.gov.uk/Groups/Group/Details/<%=organisation.uid%>" target="_blank"><%=organisation.uid%></a></dd>
+                <dd class="govuk-summary-list__value govuk-!-padding-0"><a class="govuk-link" href="https://get-information-schools.service.gov.uk/Groups/Group/Details/<%=organisation.uid%>" target="_blank"><%=organisation.uid%></a></dd>
             <% } %>
         </div>
     <% } %>
@@ -84,7 +84,7 @@
             <dt class="govuk-summary-list__key govuk-!-padding-0">Local authority: </dt>
             <dd class="govuk-summary-list__value govuk-!-padding-0">
                 <% if (organisation.localAuthority.name && organisation.localAuthority.code && organisation.localAuthority.id) { %>
-                    <a href="/organisations/<%= organisation.localAuthority.id %>/users"><%= organisation.localAuthority.name %></a> (<%= organisation.localAuthority.code %>)
+                    <a class="govuk-link" href="/organisations/<%= organisation.localAuthority.id %>/users"><%= organisation.localAuthority.name %></a> (<%= organisation.localAuthority.code %>)
                 <% } else { %>
                     Unknown
                 <% } %>

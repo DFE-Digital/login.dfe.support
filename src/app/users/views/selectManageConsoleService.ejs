@@ -57,7 +57,7 @@ const paginationModel = {
             <tbody class="govuk-table__body">
                 <% for(let i=0; i< pageOfServices.services.length; i++ ) {%>
                     <tr class="govuk-table__row">
-                        <td class="govuk-table__cell"><a href="add-manage-console-roles/<%= pageOfServices.services[i].id %>"><%= pageOfServices.services[i].name %></a></td>
+                        <td class="govuk-table__cell"><a class="govuk-link" href="add-manage-console-roles/<%= pageOfServices.services[i].id %>"><%= pageOfServices.services[i].name %></a></td>
                         <td class="govuk-table__cell"><%= pageOfServices.services[i].isIdOnlyService ? 'ID only' : 'Role'%></td>
                         <td class="govuk-table__cell"><%= pageOfServices.services[i].isHiddenService ? 'Hidden' : 'Visible'%></td>
                     </tr>
