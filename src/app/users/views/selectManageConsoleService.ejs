@@ -9,6 +9,7 @@ const paginationModel = {
 %>
 
 <div class="govuk-width-container">
+  <div class="govuk-grid-row">
     <% if (locals.flash.info) { %>
         <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
             <div class="govuk-notification-banner__header">
@@ -19,7 +20,7 @@ const paginationModel = {
             </div>
         </div>
     <% } %>
-    <div class="col-8">
+    <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">
             <span class="govuk-caption-l"><%= user.name %></span>
             Manage console roles
@@ -67,4 +68,5 @@ const paginationModel = {
     <% } else { %>
         <p>This user does not have any services mapped to their account.</p>
     <% }; %>
+  </div>
 </div>
