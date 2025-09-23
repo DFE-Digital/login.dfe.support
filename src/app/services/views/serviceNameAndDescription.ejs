@@ -24,7 +24,7 @@
             <input class="govuk-input <%= (locals.validationMessages.name !== undefined) ? 'govuk-input--error' : '' %>" id="name" name="name" type="text" spellcheck="false" value="<%= locals.name %>">
           </div>
 
-          <div class="govuk-form-group govuk-character-count <%= (locals.validationMessages.description !== undefined) ? 'govuk-form-group--error' : '' %>" data-module="govuk-character-count" data-maxlength="200">
+          <div class="govuk-form-group govuk-character-count <%= (locals.validationMessages.description !== undefined) ? 'govuk-form-group--error' : '' %>" data-module="govuk-character-count" data-maxlength="400">
             <h1 class="govuk-label-wrapper">
               <label class="govuk-label govuk-label--l" for="description">
                 Service description
