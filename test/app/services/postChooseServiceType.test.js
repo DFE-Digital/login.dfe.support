@@ -37,7 +37,7 @@ describe("when displaying the post choose service type screen", () => {
       validationMessages: {},
       csrfToken: "token",
       currentPage: "services",
-      layout: "sharedViews/layoutNew.ejs",
+      layout: "sharedViews/layout.ejs",
       backLink: true,
       cancelLink: "/users",
     };
@@ -95,7 +95,7 @@ describe("when displaying the post choose service type screen", () => {
         backLink: true,
         cancelLink: "/users",
         currentPage: "services",
-        layout: "sharedViews/layoutNew.ejs",
+        layout: "sharedViews/layout.ejs",
         serviceType: "idOnlyServiceType",
         hideFromUserServices: "hideFromUserServices",
         hideFromContactUs: "hideFromContactUs",

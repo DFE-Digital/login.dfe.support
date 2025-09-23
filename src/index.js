@@ -9,14 +9,14 @@ const http = require("http");
 const https = require("https");
 const path = require("path");
 const helmet = require("helmet");
-const sanitization = require("login.dfe.sanitization");
+const sanitization = require("login.dfe.express-helpers/sanitization");
 const moment = require("moment");
 const flash = require("login.dfe.express-flash-2");
 const setCorrelationId = require("express-mw-correlation-id");
 const {
   getErrorHandler,
   ejsErrorPages,
-} = require("login.dfe.express-error-handling");
+} = require("login.dfe.express-helpers/error-handling");
 const Redis = require("ioredis");
 const RedisStore = require("connect-redis").default;
 const registerRoutes = require("./routes");

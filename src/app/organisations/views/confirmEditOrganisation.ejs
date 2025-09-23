@@ -1,36 +1,41 @@
-<a href="edit-organisation" class="link-back">Back</a>
-<div class="grid-row">
-    <div class="col-8">
+<div class="govuk-width-container">
+
+<a href="edit-organisation" class="govuk-back-link">Back</a>
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
         <form method="post" id="confirm">
-            <h1 class="heading-xlarge">
+            <h1 class="govuk-heading-xl">
                 Review organisation changes
             </h1>
-            <p>Review these details before confirming.</p>
-            <h2 class="heading-medium">Review details 
+            <p class="govuk-body">Review these details before confirming.</p>
+            <h2 class="govuk-heading-m">Review details 
             </h2>
-            <dl class="app-check-your-answers app-check-your-answers--short">
+            <dl class="govuk-summary-list">
                 <% if (name) { %>
-                    <div class="app-check-your-answers__contents">
-                        <dt class="app-check-your-answers__title">Name</dt>
-                        <dd class="app-check-your-answers__answer"><%= name %></dd>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Name</dt>
+                        <dd class="govuk-summary-list__value"><%= name %></dd>
                     </div>
                 <% } %>
                 <% if (address) { %>
-                <div class="app-check-your-answers__contents">
-                    <dt class="app-check-your-answers__title">Address</dt>
-                    <dd class="app-check-your-answers__answer"><%= address %></dd>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Address</dt>
+                    <dd class="govuk-summary-list__value"><%= address %></dd>
                 </div>
                 <% } %>
             </dl>
 
-            <div class="form-submit submit-buttons">
+            <div class="govuk-button-group">
     
                 <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
 
-                <button type="submit" class="button">Confirm changes</button>
-                <a href="/organisations/<%= organisation.id %>/users" class="button">
+                <button type="submit" class="govuk-button">Confirm changes</button>
+                <a href="/organisations/<%= organisation.id %>/users" class="govuk-button govuk-button--secondary">
                     Cancel</a>
             </div>
         </form>
     </div>
+</div>
+
 </div>

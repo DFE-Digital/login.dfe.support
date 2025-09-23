@@ -53,7 +53,7 @@ const postManageConsoleRoles = async (req, res) => {
     if (!manageConsoleRoleIds.includes(rolesSelectedNew[i])) {
       sendResult(req, res, "users/views/selectManageConsoleRoles", {
         csrfToken: req.csrfToken(),
-        layout: "sharedViews/layoutNew.ejs",
+        layout: "sharedViews/layout.ejs",
         user,
         serviceSelectedByUser,
         addOrChangeService,

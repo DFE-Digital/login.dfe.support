@@ -26,7 +26,7 @@ const paginationModel = {
         <tbody class="govuk-table__body">
         <%users.forEach((user) => {%>
             <tr class="govuk-table__row">
-                <td class="govuk-table__cell"><a href="/users/<%=user.id%>"><%=user.name%></a></td>
+                <td class="govuk-table__cell"><a class="govuk-link" href="/users/<%=user.id%>"><%=user.name%></a></td>
                 <td class="govuk-table__cell"><%=user.email%></td>
                 <td class="govuk-table__cell"><%=user.organisation.role.description%></td>
                 <td class="govuk-table__cell">

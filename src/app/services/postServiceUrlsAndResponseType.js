@@ -261,7 +261,7 @@ const postServiceUrlsAndResponseType = async (req, res) => {
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
     model.currentPage = "services";
-    model.layout = "sharedViews/layoutNew.ejs";
+    model.layout = "sharedViews/layout.ejs";
     model.backLink = true;
     model.cancelLink = "/users";
     return sendResult(
@@ -284,7 +284,7 @@ const postServiceUrlsAndResponseType = async (req, res) => {
         "Something went wrong submitting data, please try again";
       model.csrfToken = req.csrfToken();
       model.currentPage = "services";
-      model.layout = "sharedViews/layoutNew.ejs";
+      model.layout = "sharedViews/layout.ejs";
       model.backLink = true;
       model.cancelLink = "/users";
       return sendResult(

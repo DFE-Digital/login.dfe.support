@@ -84,7 +84,7 @@ const organisationStatusesQuery = locals.organisationStatuses.filter(x => x.isSe
                 <input type="hidden" name="page" value="<%= page %>"/>
                 <input type="hidden" name="showFilters" value="<%= !showFilters %>"/>
                 <input type="hidden" name="isFilterToggle" value="true"/>
-                <button type="submit" class="button-link filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
+                <button type="submit" class="govuk-button govuk-button--secondary filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
             </form>
         </div>
         <div class="govuk-grid-column-one-third">
@@ -110,7 +110,7 @@ const organisationStatusesQuery = locals.organisationStatuses.filter(x => x.isSe
 
                     <div class="filter-box">
                         <div class="container-head js-container-head">
-                            <div class="option-select-label">
+                            <div class="govuk-heading-s govuk-!-margin-0 govuk-!-padding-1 govuk-!-padding-left-2">
                                 Organisation type
                             </div>
                         </div>
@@ -130,7 +130,7 @@ const organisationStatusesQuery = locals.organisationStatuses.filter(x => x.isSe
 
                     <div class="filter-box">
                         <div class="container-head js-container-head">
-                            <div class="option-select-label">
+                            <div class="govuk-heading-s govuk-!-margin-0 govuk-!-padding-1 govuk-!-padding-left-2">
                                 Organisation Status
                             </div>
                         </div>
@@ -150,55 +150,59 @@ const organisationStatusesQuery = locals.organisationStatuses.filter(x => x.isSe
                     <button class="govuk-button govuk-button--secondary">Apply filter</button>
                 </form>
             </div>
+    <% } %>
+    <% if (locals.organisations) { %>
+        <% if (showFilters) { %>
+            <div class="govuk-grid-column-two-thirds">
+        <% } else { %>
+            <div class="govuk-grid-column-full">
         <% } %>
-        <% if (locals.organisations) { %>
-            <div class="<%= (showFilters) ? 'govuk-grid-column-two-thirds' : 'govuk-grid-column-full' %>">
-                    <%- include('../../sharedViews/paginationNew', paginationModel); %>
-                    <table class="govuk-table">
-                        <thead class="govuk-table__head">
+                <%- include('../../sharedViews/paginationNew', paginationModel); %>
+                <table class="govuk-table">
+                    <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header">Name</th>
+                        <th scope="col" class="govuk-table__header">Legal name</th>
+                        <th scope="col" class="govuk-table__header">Type</th>
+                        <th scope="col" class="govuk-table__header">URN</th>
+                        <th scope="col" class="govuk-table__header">UID</th>
+                        <th scope="col" class="govuk-table__header">UPIN</th>
+                        <th scope="col" class="govuk-table__header">UKPRN</th>
+                        <th scope="col" class="govuk-table__header">Status</th>
+                    </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+                    <% if(locals.organisations.length === 0 && locals.criteria) { %>
                         <tr class="govuk-table__row">
-                            <th scope="col" class="govuk-table__header">Name</th>
-                            <th scope="col" class="govuk-table__header">Legal name</th>
-                            <th scope="col" class="govuk-table__header">Type</th>
-                            <th scope="col" class="govuk-table__header">URN</th>
-                            <th scope="col" class="govuk-table__header">UID</th>
-                            <th scope="col" class="govuk-table__header">UPIN</th>
-                            <th scope="col" class="govuk-table__header">UKPRN</th>
-                            <th scope="col" class="govuk-table__header">Status</th>
+                            <td class="govuk-body-s"><span>No organisations found</span></td>
                         </tr>
-                        </thead>
-                        <tbody class="govuk-table__body">
-                        <% if(locals.organisations.length === 0 && locals.criteria) { %>
-                            <tr class="govuk-table__row">
-                                <td class="govuk-body-s"><span>No organisations found</span></td>
-                            </tr>
-                        <% } %>
-                        <% for (let i = 0; i < locals.organisations.length; i++) { %>
-                            <tr class="govuk-table__row govuk-body">
-                                <td class="govuk-table__cell govuk-body-s"><a class="govuk-link" href="/organisations/<%= organisations[i].id %>/users?criteria=<%= locals.criteria %>&page=<%= locals.page %>&showFilters=<%= locals.showFilters %>&<%= organisationTypesQuery %>&<%= organisationStatusesQuery %>"><%= organisations[i].name %></a></td>
-                                <td class="govuk-table__cell govuk-body-s"><%= organisations[i].LegalName %></td>
-                                <td class="govuk-table__cell govuk-body-s"><%= organisations[i].type ? organisations[i].type.name : organisations[i].providerTypeName || organisations[i].category.name  %></td>
-                                <td class="govuk-table__cell govuk-body-s"><%= organisations[i].urn %></td>
-                                <td class="govuk-table__cell govuk-body-s"><%= organisations[i].uid %></td>
-                                <td class="govuk-table__cell govuk-body-s"><%= organisations[i].upin %></td>
-                                <td class="govuk-table__cell govuk-body-s"><%= organisations[i].ukprn %></td>
-                                <td class="govuk-table__cell govuk-body-s">
-                                    <strong class="govuk-tag 
-                                        <%= organisations[i].status.name === "Open" ? "govuk-tag--green" : 
-                                            organisations[i].status.name === "Closed" ? "govuk-tag--red" : 
-                                            organisations[i].status.name === "Proposed to close" ? "govuk-tag--orange" : 
-                                            organisations[i].status.name === "Proposed to open" ? "govuk-tag--light-blue" : 
-                                            organisations[i].status.name === "Locked Restructure" ? "govuk-tag--yellow" : 
-                                            organisations[i].status.name === "Dissolved" ? "govuk-tag--grey" : "" %>">
-                                        <%= organisations[i].status ? organisations[i].status.name : '' %>
-                                    </strong>
-                                </td>
+                    <% } %>
+                    <% for (let i = 0; i < locals.organisations.length; i++) { %>
+                        <tr class="govuk-table__row govuk-body">
+                            <td class="govuk-table__cell govuk-body-s"><a class="govuk-link" href="/organisations/<%= organisations[i].id %>/users?criteria=<%= locals.criteria %>&page=<%= locals.page %>&showFilters=<%= locals.showFilters %>&<%= organisationTypesQuery %>&<%= organisationStatusesQuery %>"><%= organisations[i].name %></a></td>
+                            <td class="govuk-table__cell govuk-body-s"><%= organisations[i].LegalName %></td>
+                            <td class="govuk-table__cell govuk-body-s"><%= organisations[i].type ? organisations[i].type.name : organisations[i].providerTypeName || organisations[i].category.name  %></td>
+                            <td class="govuk-table__cell govuk-body-s"><%= organisations[i].urn %></td>
+                            <td class="govuk-table__cell govuk-body-s"><%= organisations[i].uid %></td>
+                            <td class="govuk-table__cell govuk-body-s"><%= organisations[i].upin %></td>
+                            <td class="govuk-table__cell govuk-body-s"><%= organisations[i].ukprn %></td>
+                            <td class="govuk-table__cell govuk-body-s">
+                                <strong class="govuk-tag 
+                                    <%= organisations[i].status.name === "Open" ? "govuk-tag--green" : 
+                                        organisations[i].status.name === "Closed" ? "govuk-tag--red" : 
+                                        organisations[i].status.name === "Proposed to close" ? "govuk-tag--orange" : 
+                                        organisations[i].status.name === "Proposed to open" ? "govuk-tag--light-blue" : 
+                                        organisations[i].status.name === "Locked Restructure" ? "govuk-tag--yellow" : 
+                                        organisations[i].status.name === "Dissolved" ? "govuk-tag--grey" : "" %>">
+                                    <%= organisations[i].status ? organisations[i].status.name : '' %>
+                                </strong>
+                            </td>
 
-                            </tr>
-                        <% } %>
-                        </tbody>
-                    </table>
-                    <%- include('../../sharedViews/paginationNew', paginationModel); %>
+                        </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+                <%- include('../../sharedViews/paginationNew', paginationModel); %>
             </div>
         <% } %>
     </div>

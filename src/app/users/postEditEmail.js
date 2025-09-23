@@ -19,7 +19,7 @@ const validate = async (req) => {
   const model = {
     email: req.body.email || "",
     validationMessages: {},
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     backLink: "services",
   };
 

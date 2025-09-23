@@ -8,7 +8,7 @@ const get = async (req, res) => {
 
   sendResult(req, res, "users/views/webServiceSync", {
     csrfToken: req.csrfToken(),
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     backLink: "organisations",
     currentPage: "users",
     user,

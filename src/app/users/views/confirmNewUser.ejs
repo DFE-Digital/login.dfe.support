@@ -96,7 +96,7 @@
                     <div class="govuk-form-group">
                         <label class="govuk-label" for="email-contents">Email contents</label>
                         <div class="govuk-body">
-                            <p>Dear <%=user.firstName%> <%=user.lastName%></p>
+                            <p class="govuk-body">Dear <%=user.firstName%> <%=user.lastName%></p>
 
                             <% if (locals.entra && locals.entra.useEntraForAccountRegistration === true) { %>
                                 <textarea class="govuk-textarea" rows="8" name="email-contents" id="email-contents">Your email address <%=locals.user.email%> can now be used to create a DfE Sign-in account.</textarea>

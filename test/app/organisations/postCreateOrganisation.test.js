@@ -65,7 +65,7 @@ describe("when displaying the get create organisations", () => {
       validationMessages: {},
       csrfToken: "token",
       currentPage: "organisations",
-      layout: "sharedViews/layoutNew.ejs",
+      layout: "sharedViews/layout.ejs",
       backLink: true,
     };
   });
@@ -94,7 +94,7 @@ describe("when displaying the get create organisations", () => {
         csrfToken: req.csrfToken(),
         backLink: true,
         currentPage: "organisations",
-        layout: "sharedViews/layoutNew.ejs",
+        layout: "sharedViews/layout.ejs",
         name: "Test name",
         address: "Test address",
         ukprn: "12345678",

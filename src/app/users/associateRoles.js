@@ -70,7 +70,7 @@ const getViewModel = async (req) => {
 
   return {
     csrfToken: req.csrfToken(),
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     name: req.session.user
       ? `${req.session.user.firstName} ${req.session.user.lastName}`
       : "",

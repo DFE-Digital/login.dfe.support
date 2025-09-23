@@ -35,7 +35,7 @@ describe("When calling the getAssociateOrganisation function", () => {
     );
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: "token",
-      layout: "sharedViews/layoutNew.ejs",
+      layout: "sharedViews/layout.ejs",
       backLink: true,
       criteria: "",
       results: undefined,
@@ -72,7 +72,7 @@ describe("When calling the getAssociateOrganisation function", () => {
     );
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: "token",
-      layout: "sharedViews/layoutNew.ejs",
+      layout: "sharedViews/layout.ejs",
       backLink: true,
       criteria: "",
       results: undefined,
@@ -112,7 +112,7 @@ describe("When calling the getAssociateOrganisation function", () => {
     );
     expect(res.render.mock.calls[0][1]).toMatchObject({
       csrfToken: "token",
-      layout: "sharedViews/layoutNew.ejs",
+      layout: "sharedViews/layout.ejs",
       backLink: true,
       criteria: "",
       results: undefined,

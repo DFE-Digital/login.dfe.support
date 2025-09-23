@@ -116,7 +116,7 @@ describe("when reviewing an organisation request", () => {
     expect(res.render.mock.calls[0][1]).toEqual(
       expect.objectContaining({
         backLink: true,
-        layout: "sharedViews/layoutNew.ejs",
+        layout: "sharedViews/layout.ejs",
         cancelLink: "/access-requests",
         csrfToken: "token",
         request: expect.objectContaining({
@@ -177,7 +177,7 @@ describe("when reviewing an organisation request", () => {
     expect(res.render.mock.calls[0][1]).toEqual(
       expect.objectContaining({
         backLink: true,
-        layout: "sharedViews/layoutNew.ejs",
+        layout: "sharedViews/layout.ejs",
         cancelLink: "/access-requests",
         csrfToken: "token",
         request: expect.objectContaining({

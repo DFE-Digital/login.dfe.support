@@ -4,7 +4,7 @@ const logger = require("../../infrastructure/logger");
 
 const validateInput = async (req) => {
   const model = {
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     backLink: "../",
     currentPage: "users",
     emails: req.body.emails || "",

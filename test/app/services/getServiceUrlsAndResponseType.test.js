@@ -49,7 +49,7 @@ describe("when displaying the get choose service type", () => {
         backLink: true,
         cancelLink: "/users",
         currentPage: "services",
-        layout: "sharedViews/layoutNew.ejs",
+        layout: "sharedViews/layout.ejs",
         service: {
           postLogoutRedirectUris: [],
           redirectUris: [],
@@ -95,7 +95,7 @@ describe("when displaying the get choose service type", () => {
         backLink: true,
         cancelLink: "/users",
         currentPage: "services",
-        layout: "sharedViews/layoutNew.ejs",
+        layout: "sharedViews/layout.ejs",
         homeUrl: "https://homeUrl.com",
         postPasswordResetUrl: "https://postPasswordReseturl.com",
         clientId: "TestClientId",

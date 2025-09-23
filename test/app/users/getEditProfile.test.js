@@ -48,7 +48,7 @@ describe("when getting user profile page", () => {
       "users/views/editProfile",
       {
         csrfToken: req.csrfToken(),
-        layout: "sharedViews/layoutNew.ejs",
+        layout: "sharedViews/layout.ejs",
         currentPage: "users",
         backLink: "services",
         user: {

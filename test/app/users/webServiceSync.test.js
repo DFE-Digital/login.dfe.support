@@ -49,7 +49,7 @@ describe("when syncing user for sync", function () {
         csrfToken: req.csrfToken(),
         backLink: "organisations",
         currentPage: "users",
-        layout: "sharedViews/layoutNew.ejs",
+        layout: "sharedViews/layout.ejs",
         user,
       },
     );

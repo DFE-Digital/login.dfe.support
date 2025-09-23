@@ -62,7 +62,7 @@
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                 <input type="hidden" name="page" value="<%= page %>"/>
                 <input type="hidden" name="showFilters" value="<%= !showFilters %>"/>
-                <button type="submit" class="button-link filter-link govuk-!-margin-top-4 govuk-!-margin-padding-2"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
+                <button type="submit" class="govuk-button govuk-button--secondary filter-link govuk-!-margin-top-4 govuk-!-margin-padding-2"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
             </form>
         </div>
     </div>
@@ -77,7 +77,7 @@
 
                     <div class="filter-box">
                         <div class="container-head js-container-head">
-                            <div class="option-select-label">
+                            <div class="govuk-heading-s govuk-!-margin-0 govuk-!-padding-1 govuk-!-padding-left-2">
                                 Request status
                             </div>
                         </div>

@@ -147,7 +147,7 @@ const action = async (req, res) => {
 
   sendResult(req, res, "users/views/organisations", {
     csrfToken: req.csrfToken(),
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     backLink:
       req.session?.params?.searchType === "organisations"
         ? "/organisations"

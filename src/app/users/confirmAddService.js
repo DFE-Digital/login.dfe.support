@@ -56,7 +56,7 @@ const get = async (req, res) => {
 
   return res.render("users/views/confirmAddService", {
     backLink: true,
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     changeLink: req.session.user.isAddService
       ? `/users/${userId}/organisations/${req.params.orgId}`
       : `/users/${userId}/organisations/${req.params.orgId}/services/${req.session.user.services[0].serviceId}`,
