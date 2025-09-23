@@ -9,7 +9,7 @@ const getServiceNameAndDescription = async (req, res) => {
 
   sendResult(req, res, "services/views/confirmNewService", {
     csrfToken: req.csrfToken(),
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     currentPage: "services",
     backLink: true,
     cancelLink: "/users",

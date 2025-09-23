@@ -1,37 +1,47 @@
-<div class="row">
-    <div class="col-8">
-        <h1 class="heading-xlarge">
+<div class="govuk-width-container">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">
             Edit permission level
         </h1>
-        <dl class="rows">
-            <dt>Name</dt>
-            <dd><%=userFullName%></dd>
-            <dt>Organisation</dt>
-            <dd><%=locals.organisation.name%></dd>
-            <dt>Permission level</dt>
-            <dd><%=locals.role.name%></dd>
+        <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Name</dt>
+                <dd class="govuk-summary-list__value"><%=userFullName%></dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Organisation</dt>
+                <dd class="govuk-summary-list__value"><%=locals.organisation.name%></dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Permission level</dt>
+                <dd class="govuk-summary-list__value"><%=locals.role.name%></dd>
+            </div>
         </dl>
         <form method="post">
-            <div class="form-group <%= (locals.validationMessages.selectedLevel !== undefined) ? 'form-group-error' : '' %>">
+            <div class="govuk-form-group <%= (locals.validationMessages.selectedLevel !== undefined) ? 'govuk-form-group--error' : '' %>">
                 <input type="hidden" name="_csrf" value="<%=csrfToken%>"/>
-                <fieldset>
-                    <legend><h2 class="heading-small">Select a new permission level</h2></legend>
+                <fieldset class="govuk-fieldset">
+                    <legend><h2 class="govuk-heading-s">Select a new permission level</h2></legend>
                     <% if (locals.validationMessages.selectedLevel !== undefined) { %>
                     <p class="error-message" id="validation-permission-level"><%=locals.validationMessages.selectedLevel %></p>
                     <% } %>
-                    <div class="multiple-choice">
-                        <input id="level-user" type="radio" name="selectedLevel" value="0" <%= locals.role.id === 0 ? "checked" : ""%>>
-                        <label for="level-user">End user</label>
-                    </div>
-                    <div class="multiple-choice">
-                        <input id="level-approver" type="radio" name="selectedLevel" value="10000" <%= locals.role.id ===10000 ? "checked" : ""%>>
-                        <label for="level-approver">Approver</label>
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="level-user" type="radio" name="selectedLevel" value="0" <%= locals.role.id === 0 ? "checked" : ""%>>
+                            <label class="govuk-label govuk-radios__label" for="level-user">End user</label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="level-approver" type="radio" name="selectedLevel" value="10000" <%= locals.role.id ===10000 ? "checked" : ""%>>
+                            <label class="govuk-label govuk-radios__label" for="level-approver">Approver</label>
+                        </div>
                     </div>
                 </fieldset>
             </div>
-            <div class="form-submit">
-                <button class="button">Save</button>
+            <div class="govuk-button-group">
+                <button class="govuk-button">Save</button>
             </div>
         </form>
     </div>
+  </div>
 </div>

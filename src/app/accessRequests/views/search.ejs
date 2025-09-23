@@ -8,14 +8,14 @@ const paginationModel = {
     data: [],
 };
 %>
-<div class="row">
+<div class="govuk-grid-row">
     <% if (locals.flash.info) { %>
     <div class="notification notification-success">
         <%=locals.flash.info%>
     </div>
     <% } %>
-    <div class="col-6">
-        <h1 class="heading-xlarge">Access requests</h1>
+    <div class="govuk-grid-column-one-third">
+        <h1 class="govuk-heading-xl">Access requests</h1>
     </div>
 </div>
 
@@ -26,8 +26,8 @@ const paginationModel = {
         </ul>
     </nav>
 </div>
-<div class="row">
-    <div class="col-6">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
         <form method="POST">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <div class="search-field">
@@ -36,15 +36,15 @@ const paginationModel = {
                     <input type="text" id="criteria" name="criteria" value="" class="form-control" placeholder="Search by name, email or organisation requested">
                 </fieldset>
                 <fieldset class="search-submit">
-                    <button type="submit" class="button">Search</button>
+                    <button type="submit" class="govuk-button">Search</button>
                 </fieldset>
             </div>
         </form>
     </div>
 </div>
-<div class="grid-row">
+<div class="govuk-grid-row">
 
-    <div class="col-12">
+    <div class="govuk-grid-column-full">
         <%- include('../../sharedViews/pagination', paginationModel); %>
         <table class="data">
             <thead>
@@ -75,11 +75,11 @@ const paginationModel = {
             <tbody>
                 <% for (let i = 0; i < locals.usersForApproval.length; i++) { %>
                 <tr>
-                    <td><a href="/users/<%=usersForApproval[i].userId%>/"><%= usersForApproval[i].name %></a></td>
+                    <td><a href="/users/<%=usersForApproval[i].userId%>/" class="govuk-link"><%= usersForApproval[i].name %></a></td>
                     <td><span class="breakable"><%= usersForApproval[i].email %></span> </td>
                     <td><%= usersForApproval[i].organisation.name %></td>
                     <td><%= locals.moment(usersForApproval[i].createdDate).fromNow() %></td>
-                    <td><a href="/access-requests/request/<%= usersForApproval[i].userOrgId %>">Respond <span class="vh"> to <%= usersForApproval[i].name %>'s request</span></a></td>
+                    <td><a href="/access-requests/request/<%= usersForApproval[i].userOrgId %>" class="govuk-link">Respond <span class="vh"> to <%= usersForApproval[i].name %>'s request</span></a></td>
                 </tr>
                 <% } %>
             </tbody>

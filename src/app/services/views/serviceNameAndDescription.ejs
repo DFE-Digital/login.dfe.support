@@ -1,61 +1,60 @@
 <div class="govuk-width-container">
-  <div class="col-8">
-    <h1 class="govuk-heading-xl">
-        Enter the service name and description
-    </h1>
-      <form method="post">
-        <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-        <div class="govuk-form-group <%= (locals.validationMessages.name !== undefined) ? 'govuk-form-group--error' : '' %>">
-          <label class="govuk-label govuk-label--l" for="name">
-            Service name
-          </label>
-          <% if (locals.validationMessages.name !== undefined) { %>
-          <p id="name-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.name %>
-          </p>
-          <% } %>
-          <p class="govuk-body">Enter the name of the service.  The service name should be:</p>
-          <ul class="govuk-list govuk-list--bullet">
-            <li>unique</li>
-            <li>clear</li>
-            <li>descriptive</li>
-          </ul>
-          <input class="govuk-input <%= (locals.validationMessages.name !== undefined) ? 'govuk-input--error' : '' %>" id="name" name="name" type="text" spellcheck="false" value="<%= locals.name %>">
-        </div>
-
-        <div class="govuk-form-group govuk-character-count <%= (locals.validationMessages.description !== undefined) ? 'govuk-form-group--error' : '' %>" data-module="govuk-character-count" data-maxlength="400">
-          <h1 class="govuk-label-wrapper">
-            <label class="govuk-label govuk-label--l" for="description">
-              Service description
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">
+          Enter the service name and description
+      </h1>
+        <form method="post">
+          <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+          <div class="govuk-form-group <%= (locals.validationMessages.name !== undefined) ? 'govuk-form-group--error' : '' %>">
+            <label class="govuk-label govuk-label--l" for="name">
+              Service name
             </label>
-          </h1>
-          <p class="govuk-body">Enter a description for the service.  The service description will appear at the
-            front-end of the service and should tell users
-          </p>
-          <ul class="govuk-list govuk-list--bullet">
-            <li>what the service is for</li>
-            <li>what the service can do</li>
-            <li>who can use it</li>
-          </ul>
-          <% if (locals.validationMessages.description !== undefined) { %>
-          <p id="description-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span> <%= locals.validationMessages.description %>
-          </p>
-          <% } %>
-          <textarea class="govuk-textarea govuk-js-character-count <%= (locals.validationMessages.description !== undefined) ? 'govuk-textarea--error' : '' %>"
-            id="description" name="description" rows="5" aria-describedby="description-info <%= (locals.validationMessages.description !== undefined) ? 'description-error' : '' %>"><%= locals.description %></textarea>
-          <div id="description-info" class="govuk-hint govuk-character-count__message">
-            You can enter up to 400 characters
+            <% if (locals.validationMessages.name !== undefined) { %>
+            <p id="name-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span><%= locals.validationMessages.name %>
+            </p>
+            <% } %>
+            <p class="govuk-body">Enter the name of the service.  The service name should be:</p>
+            <ul class="govuk-list govuk-list--bullet">
+              <li>unique</li>
+              <li>clear</li>
+              <li>descriptive</li>
+            </ul>
+            <input class="govuk-input <%= (locals.validationMessages.name !== undefined) ? 'govuk-input--error' : '' %>" id="name" name="name" type="text" spellcheck="false" value="<%= locals.name %>">
           </div>
-        </div>
-        <div class="govuk-button-group">
-          <button type="submit" class="govuk-button" data-module="govuk-button">
-            Submit
-          </button>
-          <a class="govuk-link" href="<%= locals.cancelLink %>">Cancel</a>
-        </div>
-    </form>
+
+          <div class="govuk-form-group govuk-character-count <%= (locals.validationMessages.description !== undefined) ? 'govuk-form-group--error' : '' %>" data-module="govuk-character-count" data-maxlength="400">
+            <h1 class="govuk-label-wrapper">
+              <label class="govuk-label govuk-label--l" for="description">
+                Service description
+              </label>
+            </h1>
+            <p class="govuk-body">Enter a description for the service.  The service description will appear at the
+              front-end of the service and should tell users
+            </p>
+            <ul class="govuk-list govuk-list--bullet">
+              <li>what the service is for</li>
+              <li>what the service can do</li>
+              <li>who can use it</li>
+            </ul>
+            <% if (locals.validationMessages.description !== undefined) { %>
+            <p id="description-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> <%= locals.validationMessages.description %>
+            </p>
+            <% } %>
+            <textarea class="govuk-textarea govuk-js-character-count <%= (locals.validationMessages.description !== undefined) ? 'govuk-textarea--error' : '' %>"
+              id="description" name="description" rows="5" aria-describedby="description-info <%= (locals.validationMessages.description !== undefined) ? 'description-error' : '' %>"><%= locals.description %></textarea>
+            <div id="description-info" class="govuk-hint govuk-character-count__message">
+              You can enter up to 400 characters
+            </div>
+          </div>
+          <div class="govuk-button-group">
+            <button type="submit" class="govuk-button" data-module="govuk-button">
+              Submit
+            </button>
+            <a class="govuk-button govuk-button--secondary" href="<%= locals.cancelLink %>">Cancel</a>
+          </div>
+      </form>
+  </div>
 </div>
-
-
-

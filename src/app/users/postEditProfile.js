@@ -88,7 +88,7 @@ const postEditProfile = async (req, res) => {
     sendResult(req, res, "users/views/editProfile", {
       csrfToken: req.csrfToken(),
       backLink: "services",
-      layout: "sharedViews/layoutNew.ejs",
+      layout: "sharedViews/layout.ejs",
       currentPage: "users",
       user,
       validationMessages: validationResult.validationMessages,
@@ -115,7 +115,7 @@ const postEditProfile = async (req, res) => {
         csrfToken: req.csrfToken(),
         user,
         backLink: "services",
-        layout: "sharedViews/layoutNew.ejs",
+        layout: "sharedViews/layout.ejs",
         currentPage: "users",
         isValid: false,
         validationMessages: {

@@ -115,7 +115,7 @@ describe("when adding services to a user", () => {
     expect(res.render.mock.calls[0][0]).toBe("users/views/associateServices");
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
-      layout: "sharedViews/layoutNew.ejs",
+      layout: "sharedViews/layout.ejs",
       name: "test name",
       backLink: "/users/user1/select-organisation",
       organisationDetails: {
@@ -188,7 +188,7 @@ describe("when adding services to a user", () => {
     expect(res.render.mock.calls[0][0]).toBe("users/views/associateServices");
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
-      layout: "sharedViews/layoutNew.ejs",
+      layout: "sharedViews/layout.ejs",
       name: "test name",
       backLink: "/users/user1/select-organisation",
       organisationDetails: {

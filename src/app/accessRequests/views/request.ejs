@@ -1,23 +1,34 @@
-<a href="/access-requests" class="link-back">Back</a>
-<h1 class="heading-xlarge">Access request</h1>
+<a href="/access-requests" class="govuk-back-link">Back</a>
 
-<dl class="rows">
-    <dt>Name</dt>
-    <dd><%=locals.accessRequest.name%></dd>
-    <dt>Email</dt>
-    <dd><%=locals.accessRequest.email%></dd>
+<h1 class="govuk-heading-xl">Access request</h1>
+
+<dl class="govuk-summary-list">
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Name</dt>
+        <dd class="govuk-summary-list__value"><%=locals.accessRequest.name%></dd>
+    </div>
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Email</dt>
+        <dd class="govuk-summary-list__value"><%=locals.accessRequest.email%></dd>
+    </div>
 </dl>
 <hr>
-<dl class="rows">
-    <dt>Organisation</dt>
-    <dd><%=locals.accessRequest.organisation.name%></dd>
+<dl class="govuk-summary-list">
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Organisation</dt>
+        <dd class="govuk-summary-list__value"><%=locals.accessRequest.organisation.name%></dd>
+    </div>
     <% if(locals.accessRequest.organisation.address) {%>
-    <dt>Address</dt>
-    <dd><%=locals.accessRequest.organisation.address%></dd>
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Address</dt>
+        <dd class="govuk-summary-list__value"><%=locals.accessRequest.organisation.address%></dd>
+    </div>
     <% } %>%>
     <% if(locals.accessRequest.organisation.identifier) {%>
-    <dt>ID</dt>
-    <dd><%=locals.accessRequest.organisation.identifier%></dd>
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">ID</dt>
+        <dd class="govuk-summary-list__value"><%=locals.accessRequest.organisation.identifier%></dd>
+    </div>
     <% } %>
 </dl>
 <hr>
@@ -76,7 +87,7 @@
     </div>
     <div class="form-group indent">
         <fieldset class="search-submit">
-            <button type="submit" class="button">Submit</button>
+            <button type="submit" class="govuk-button">Submit</button>
         </fieldset>
     </div>
 </form>

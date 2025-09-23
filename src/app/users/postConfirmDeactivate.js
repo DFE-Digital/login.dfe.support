@@ -61,7 +61,7 @@ const postConfirmDeactivate = async (req, res) => {
   if (Object.keys(model.validationMessages).length > 0) {
     return sendResult(req, res, "users/views/confirmDeactivate", {
       csrfToken: req.csrfToken(),
-      layout: "sharedViews/layoutNew.ejs",
+      layout: "sharedViews/layout.ejs",
       backLink: "services",
       reason: model.reason,
       validationMessages: model.validationMessages,

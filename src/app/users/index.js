@@ -1,5 +1,5 @@
 const express = require("express");
-const { asyncWrapper } = require("login.dfe.express-error-handling");
+const { asyncWrapper } = require("login.dfe.express-helpers/error-handling");
 const { isLoggedIn, setCurrentArea } = require("../../infrastructure/utils");
 const isAuthorizedToChangeEmail = require("../../infrastructure/utils/isAuthorizedToChangeEmail");
 const logger = require("../../infrastructure/logger");

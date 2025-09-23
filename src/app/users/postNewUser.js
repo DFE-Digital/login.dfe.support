@@ -6,7 +6,7 @@ const validateInput = async (req) => {
   const nameRegEx = /^[^±!@£$%^&*_+§¡€#¢§¶•ªº«\\/<>?:;|=.,~"]{1,60}$/i;
   const model = {
     firstName: req.body.firstName || "",
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     backLink: "/users",
     lastName: req.body.lastName || "",
     email: req.body.email || "",

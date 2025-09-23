@@ -38,7 +38,7 @@ const postPpsyncStatus = async (req, res) => {
 
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
-    model.layout = "sharedViews/layoutNew.ejs";
+    model.layout = "sharedViews/layout.ejs";
     const ppauditData = await organisation.getPpAuditPaging(pageNumber);
     model.audits = ppauditData.audits.map((audit) => ({
       ...audit,

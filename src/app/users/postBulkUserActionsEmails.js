@@ -17,7 +17,7 @@ const {
 
 const validateInput = async (req) => {
   const model = {
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     backLink: "../bulk-user-actions",
     currentPage: "users",
     users: [],

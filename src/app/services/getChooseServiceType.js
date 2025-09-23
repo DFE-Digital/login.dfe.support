@@ -7,7 +7,7 @@ const getChooseServiceType = async (req, res) => {
 
   sendResult(req, res, "services/views/chooseServiceType", {
     csrfToken: req.csrfToken(),
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     currentPage: "services",
     backLink: true,
     cancelLink: "/users",

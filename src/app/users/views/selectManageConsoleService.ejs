@@ -9,6 +9,7 @@ const paginationModel = {
 %>
 
 <div class="govuk-width-container">
+  <div class="govuk-grid-row">
     <% if (locals.flash.info) { %>
         <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
             <div class="govuk-notification-banner__header">
@@ -19,7 +20,7 @@ const paginationModel = {
             </div>
         </div>
     <% } %>
-    <div class="col-8">
+    <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">
             <span class="govuk-caption-l"><%= user.name %></span>
             Manage console roles
@@ -56,7 +57,7 @@ const paginationModel = {
             <tbody class="govuk-table__body">
                 <% for(let i=0; i< pageOfServices.services.length; i++ ) {%>
                     <tr class="govuk-table__row">
-                        <td class="govuk-table__cell"><a href="add-manage-console-roles/<%= pageOfServices.services[i].id %>"><%= pageOfServices.services[i].name %></a></td>
+                        <td class="govuk-table__cell"><a class="govuk-link" href="add-manage-console-roles/<%= pageOfServices.services[i].id %>"><%= pageOfServices.services[i].name %></a></td>
                         <td class="govuk-table__cell"><%= pageOfServices.services[i].isIdOnlyService ? 'ID only' : 'Role'%></td>
                         <td class="govuk-table__cell"><%= pageOfServices.services[i].isHiddenService ? 'Hidden' : 'Visible'%></td>
                     </tr>
@@ -65,6 +66,7 @@ const paginationModel = {
         </table>
         <%- include('../../sharedViews/paginationNew', paginationModel); %>
     <% } else { %>
-        <p>This user does not have any services mapped to their account.</p>
+        <p class="govuk-body">This user does not have any services mapped to their account.</p>
     <% }; %>
+  </div>
 </div>

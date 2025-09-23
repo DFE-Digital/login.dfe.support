@@ -43,7 +43,7 @@ const postAssociateOrganisation = async (req, res) => {
 
   return sendResult(req, res, "users/views/associateOrganisation", {
     csrfToken: req.csrfToken(),
-    layout: "sharedViews/layoutNew.ejs",
+    layout: "sharedViews/layout.ejs",
     backLink: true,
     criteria,
     results,
