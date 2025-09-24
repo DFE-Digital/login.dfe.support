@@ -14,10 +14,6 @@ const getServiceIdentifierDetails = async () => {
   return Promise.resolve(null);
 };
 
-const getServicesByInvitationId = async () => {
-  return Promise.resolve(null);
-};
-
 const getSingleUserService = async () => {
   return Promise.resolve(null);
 };
@@ -58,7 +54,6 @@ module.exports = {
   addInvitationService,
   putSingleServiceIdentifierForUser,
   getServiceIdentifierDetails,
-  getServicesByInvitationId,
   getSingleInvitationService,
   getSingleUserService,
   listRolesOfService,

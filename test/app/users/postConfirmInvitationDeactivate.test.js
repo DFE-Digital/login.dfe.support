@@ -8,6 +8,7 @@ jest.mock("./../../../src/infrastructure/access");
 jest.mock("./../../../src/infrastructure/directories");
 jest.mock("./../../../src/infrastructure/utils");
 jest.mock("./../../../src/app/users/utils");
+jest.mock("login.dfe.api-client/invitations");
 
 const { getRequestMock } = require("../../utils");
 const post = require("../../../src/app/users/postConfirmInvitationDeactivate");
@@ -19,10 +20,12 @@ const {
 const { sendResult } = require("../../../src/infrastructure/utils");
 const logger = require("../../../src/infrastructure/logger");
 const {
-  getServicesByInvitationId,
   removeServiceFromInvitation,
 } = require("../../../src/infrastructure/access");
 const { deactivateInvite } = require("../../../src/infrastructure/directories");
+const {
+  getInvitationServicesRaw,
+} = require("login.dfe.api-client/invitations");
 
 describe("When processing a post for a user invitation deactivate request", () => {
   const expectedUserId = "uid-user-1";
@@ -180,7 +183,7 @@ describe("When the remove services checkbox is ticked for a deactivated invite",
 
     updateUserDetails.mockReset();
 
-    getServicesByInvitationId.mockReset().mockReturnValue([
+    getInvitationServicesRaw.mockReset().mockReturnValue([
       {
         userId: "user-id",
         invitationId: "invitation-id",
@@ -212,14 +215,14 @@ describe("When the remove services checkbox is ticked for a deactivated invite",
     });
 
     await post(req, res);
-    expect(getServicesByInvitationId.mock.calls).toMatchObject([]);
+    expect(getInvitationServicesRaw.mock.calls).toMatchObject([]);
     expect(removeServiceFromInvitation.mock.calls).toMatchObject([]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });
 
   it("should continue to work when getServicesByInvitationId returns undefined on a 404", async () => {
-    getServicesByInvitationId.mockReset().mockReturnValue(undefined);
+    getInvitationServicesRaw.mockReset().mockReturnValue(undefined);
     await post(req, res);
     expect(removeServiceFromInvitation.mock.calls).toMatchObject([]);
     expect(res.redirect.mock.calls).toHaveLength(1);

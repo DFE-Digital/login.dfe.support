@@ -23,7 +23,6 @@ const getAllAvailableServices = async (req) => {
     const allUserServicesInOrg = await getAllServicesForUserInOrg(
       req.params.uid,
       req.params.orgId,
-      req.id,
     );
     externalServices = externalServices.filter(
       (ex) => !allUserServicesInOrg.find((as) => as.id === ex.id),

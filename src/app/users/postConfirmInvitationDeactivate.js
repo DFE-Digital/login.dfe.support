@@ -50,7 +50,7 @@ const postConfirmDeactivate = async (req, res) => {
   } else {
     await deactivateInvite(user.id, req.body.reason, req.id);
     await updateUserIndex(user.id, req.id);
-    if (req.body["remove-services-from-invite"]) {
+    if (req.body["remove-services-and-requests"]) {
       await removeAllServicesForInvitedUser(user.id, req);
     }
 

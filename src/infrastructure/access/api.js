@@ -144,28 +144,6 @@ const updateInvitationService = async (
   }
 };
 
-const getServicesByInvitationId = async (iid, correlationId) => {
-  const token = await jwtStrategy(config.access.service).getBearerToken();
-
-  try {
-    return await fetchApi(
-      `${config.access.service.url}/invitations/${iid}/services`,
-      {
-        method: "GET",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-      },
-    );
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return undefined;
-    }
-    throw e;
-  }
-};
-
 const putSingleServiceIdentifierForUser = async (
   userId,
   serviceId,
@@ -385,7 +363,6 @@ const updateUserServiceRequest = async (id, requestBody, correlationId) => {
 
 module.exports = {
   addInvitationService,
-  getServicesByInvitationId,
   putSingleServiceIdentifierForUser,
   getServiceIdentifierDetails,
   getSingleUserService,

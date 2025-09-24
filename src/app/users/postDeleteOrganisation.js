@@ -37,7 +37,6 @@ const postDeleteOrganisation = async (req, res) => {
   const servicesForUserInOrg = await getAllServicesForUserInOrg(
     uid,
     organisationId,
-    req.id,
   );
   const isEmailAllowed = await isSupportEmailNotificationAllowed();
 
