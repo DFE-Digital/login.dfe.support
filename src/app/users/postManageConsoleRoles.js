@@ -1,7 +1,7 @@
 const config = require("../../infrastructure/config");
 const { sendResult } = require("../../infrastructure/utils");
 const { getUserDetails } = require("./utils");
-const { getServiceById } = require("../../infrastructure/applications");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 const {
   listRolesOfService,
   updateUserService,
@@ -25,7 +25,9 @@ const postManageConsoleRoles = async (req, res) => {
     rolesSelectedNew = [req.body.role];
   }
 
-  const serviceSelectedByUser = await getServiceById(req.params.sid);
+  const serviceSelectedByUser = await getServiceRaw({
+    by: { serviceId: req.params.sid },
+  });
   const user = await getUserDetails(req);
   const userManageRoles = await getSingleServiceForUser(
     req.params.uid,

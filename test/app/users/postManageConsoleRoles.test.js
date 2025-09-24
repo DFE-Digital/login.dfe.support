@@ -20,8 +20,8 @@ jest.mock("./../../../src/infrastructure/config", () =>
 );
 jest.mock("login.dfe.policy-engine");
 jest.mock("./../../../src/app/users/getManageConsoleRoles");
-jest.mock("./../../../src/infrastructure/applications", () => ({
-  getServiceById: jest.fn(),
+jest.mock("login.dfe.api-client/services", () => ({
+  getServiceRaw: jest.fn(),
 }));
 jest.mock("./../../../src/app/users/utils", () => ({
   getUserDetails: jest.fn(),
@@ -41,9 +41,7 @@ jest.mock("./../../../src/infrastructure/organisations", () => ({
 // Import dependencies
 const jwtStrategy = require("login.dfe.jwt-strategies");
 const postManageConsoleRoles = require("./../../../src/app/users/postManageConsoleRoles");
-const {
-  getServiceById,
-} = require("./../../../src/infrastructure/applications");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 const {
   putUserInOrganisation,
 } = require("./../../../src/infrastructure/organisations");
@@ -125,7 +123,7 @@ describe("when changing a user's manage console access", () => {
       },
     ]);
 
-    getServiceById.mockResolvedValue({
+    getServiceRaw.mockResolvedValue({
       name: "Test Service",
       id: "testService1",
     });

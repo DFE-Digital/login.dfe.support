@@ -9,8 +9,12 @@ jest.mock("./../../../src/infrastructure/organisations");
 
 jest.mock("./../../../src/infrastructure/applications", () => {
   return {
-    getServiceById: jest.fn(),
     isSupportEmailNotificationAllowed: jest.fn(),
+  };
+});
+jest.mock("login.dfe.api-client/services", () => {
+  return {
+    getServiceRaw: jest.fn(),
   };
 });
 
@@ -24,9 +28,9 @@ jest.mock("./../../../src/infrastructure/access", () => {
 const logger = require("./../../../src/infrastructure/logger");
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const {
-  getServiceById,
   isSupportEmailNotificationAllowed,
 } = require("./../../../src/infrastructure/applications");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 const {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -106,8 +110,8 @@ describe("when removing access to a service", () => {
       },
     ]);
 
-    getServiceById.mockReset();
-    getServiceById.mockReturnValue({
+    getServiceRaw.mockReset();
+    getServiceRaw.mockReturnValue({
       id: "service1",
       dateActivated: "10/10/2018",
       name: "service name",

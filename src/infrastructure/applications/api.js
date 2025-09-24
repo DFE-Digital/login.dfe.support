@@ -41,30 +41,6 @@ const createService = async (body, correlationId) => {
   }
 };
 
-const getServiceById = async (id) => {
-  if (!id) {
-    return undefined;
-  }
-  const token = await jwtStrategy(config.applications.service).getBearerToken();
-  try {
-    const client = await fetchApi(
-      `${config.applications.service.url}/services/${id}`,
-      {
-        method: "GET",
-        headers: {
-          authorization: `bearer ${token}`,
-        },
-      },
-    );
-    return client;
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return undefined;
-    }
-    throw e;
-  }
-};
-
 const getPageOfService = async (pageNumber, pageSize) => {
   const token = await jwtStrategy(config.applications.service).getBearerToken();
 
@@ -135,7 +111,6 @@ const isSupportEmailNotificationAllowed = async () => {
 
 module.exports = {
   createService,
-  getServiceById,
   getPageOfService,
   getAllServices,
   isSupportEmailNotificationAllowed,

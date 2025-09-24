@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const config = require("./../../infrastructure/config");
-const { getServiceById } = require("./../../infrastructure/applications");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 const {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -31,7 +31,7 @@ const getSingleServiceForUser = async (
         organisationId,
         correlationId,
       );
-  const application = await getServiceById(serviceId, correlationId);
+  const application = await getServiceRaw({ by: { serviceId } });
   return {
     id: userService.serviceId,
     roles: userService.roles,
@@ -49,7 +49,9 @@ const getViewModel = async (req) => {
         (x) => x.serviceId === req.params.sid,
       ) + 1
     : 1;
-  const serviceDetails = await getServiceById(req.params.sid, req.id);
+  const serviceDetails = await getServiceRaw({
+    by: { serviceId: req.params.sid },
+  });
   const userOrganisations = userId.startsWith("inv-")
     ? await getInvitationOrganisations(userId.substr(4), req.id)
     : await getUserOrganisations(userId, req.id);
