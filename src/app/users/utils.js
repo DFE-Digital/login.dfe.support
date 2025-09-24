@@ -1,4 +1,5 @@
 const logger = require("./../../infrastructure/logger");
+const { getUserServicesRaw } = require("login.dfe.api-client/users");
 const {
   searchForUsers,
   getSearchDetailsForUserById,
@@ -9,7 +10,6 @@ const {
   getUser,
 } = require("./../../infrastructure/directories");
 const {
-  getServicesByUserId,
   getServicesByInvitationId,
   getUserServiceRequestsByUserId,
   removeServiceFromUser,
@@ -284,7 +284,7 @@ const getUserDetailsById = async (uid, correlationId) => {
     const userSearch = await getSearchDetailsForUserById(uid);
     const rawUser = await getUser(uid, correlationId);
     const user = mapUserToSupportModel(rawUser, userSearch);
-    const serviceDetails = await getServicesByUserId(uid, correlationId);
+    const serviceDetails = await getUserServicesRaw({ userId: uid });
     const hasManageAccess = await checkManageAccess(serviceDetails ?? []);
 
     const ktsDetails = serviceDetails
@@ -337,7 +337,7 @@ const getAllServicesForUserInOrg = async (
 ) => {
   const allUserServices = userId.startsWith("inv-")
     ? await getServicesByInvitationId(userId.substr(4), correlationId)
-    : await getServicesByUserId(userId, correlationId);
+    : await getUserServicesRaw({ userId: userId });
   if (!allUserServices) {
     return [];
   }
@@ -449,7 +449,7 @@ const rejectOpenOrganisationRequestsForUser = async (userId, req) => {
 
 const removeAllServicesForUser = async (userId, req) => {
   const correlationId = req.id;
-  const userServices = (await getServicesByUserId(userId)) || [];
+  const userServices = (await getUserServicesRaw({ userId: userId })) || [];
   logger.info(
     `Removing ${userServices.length} service(s) from user ${userId}`,
     { correlationId },

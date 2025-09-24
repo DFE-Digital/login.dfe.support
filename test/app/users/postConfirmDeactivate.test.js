@@ -9,6 +9,7 @@ jest.mock("./../../../src/infrastructure/utils");
 jest.mock("./../../../src/infrastructure/directories");
 jest.mock("./../../../src/infrastructure/access");
 jest.mock("./../../../src/infrastructure/organisations");
+jest.mock("login.dfe.api-client/users");
 
 const logger = require("../../../src/infrastructure/logger");
 const {
@@ -22,10 +23,10 @@ const {
 const { deactivate } = require("../../../src/infrastructure/directories");
 const {
   getUserServiceRequestsByUserId,
-  getServicesByUserId,
   updateUserServiceRequest,
   removeServiceFromUser,
 } = require("../../../src/infrastructure/access");
+const { getUserServicesRaw } = require("login.dfe.api-client/users");
 const {
   getPendingRequestsAssociatedWithUser,
   updateRequestById,
@@ -131,7 +132,7 @@ beforeEach(() => {
     },
   ]);
 
-  getServicesByUserId.mockReset().mockReturnValue([
+  getUserServicesRaw.mockReset().mockReturnValue([
     {
       userId: "user-1",
       serviceId: "service1Id",
@@ -465,13 +466,13 @@ describe("When the remove all services and requests checkbox is ticked", () => {
   });
 
   it("should not call removeServiceFromUser when getServicesByUserId returns an empty array", async () => {
-    getServicesByUserId.mockReset().mockReturnValue([]);
+    getUserServicesRaw.mockReset().mockReturnValue([]);
     await postConfirmDeactivate(req, res);
     expect(removeServiceFromUser.mock.calls).toMatchObject([]);
   });
 
   it("should continue to work getServicesByUserId returns undefined on a 404", async () => {
-    getServicesByUserId.mockReset().mockReturnValue(undefined);
+    getUserServicesRaw.mockReset().mockReturnValue(undefined);
     await postConfirmDeactivate(req, res);
     expect(removeServiceFromUser.mock.calls).toMatchObject([]);
     expect(res.redirect.mock.calls).toHaveLength(1);
