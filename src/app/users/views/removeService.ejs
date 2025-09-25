@@ -1,47 +1,49 @@
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">
-            Confirm service removal
-        </h1>
-        <p class="lede">Please review these details before removing the service and associated roles.</p>
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">
+                Confirm service removal
+            </h1>
+            <p class="lede">Please review these details before removing the service and associated roles.</p>
 
-        <dl class="govuk-summary-list">
+            <dl class="govuk-summary-list">
 
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    User
-                </dt>
-                <dd class="govuk-summary-list__value">
-                    <%=locals.user.firstName%> <%=locals.user.lastName%>
-                </dd>
-            </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        User
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%=locals.user.firstName%> <%=locals.user.lastName%>
+                    </dd>
+                </div>
 
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    Organisation
-                </dt>
-                <dd class="govuk-summary-list__value">
-                    <%=locals.organisationDetails.organisation.name%>
-                </dd>
-            </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Organisation
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%=locals.organisationDetails.organisation.name%>
+                    </dd>
+                </div>
 
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    Service
-                </dt>
-                <dd class="govuk-summary-list__value">
-                    <%= locals.service.name%>
-                </dd>
-            </div>
-        </dl>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <%= locals.service.name%>
+                    </dd>
+                </div>
+            </dl>
 
-        <form method="post">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <div class="govuk-button-group">
-                <button type="submit" class="govuk-button">Continue</button>
-                <a href="/users/<%=locals.user.uid%>" class="govuk-button govuk-button--secondary">Cancel</a>
-            </div>
-        </form>
+            <form method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button">Continue</button>
+                    <a href="/users/<%=locals.user.uid%>" class="govuk-button govuk-button--secondary">Cancel</a>
+                </div>
+            </form>
 
+        </div>
     </div>
 </div>
