@@ -6,7 +6,9 @@ jest.mock("./../../../src/infrastructure/utils", () => ({
 }));
 jest.mock("./../../../src/infrastructure/applications", () => ({
   getAllServices: jest.fn(),
-  getPageOfService: jest.fn(),
+}));
+jest.mock("login.dfe.api-client/services", () => ({
+  getPaginatedServicesRaw: jest.fn(),
 }));
 jest.mock("./../../../src/infrastructure/access", () => ({
   getServicesByUserId: jest.fn(),
@@ -19,8 +21,8 @@ const getManageConsoleServices = require("./../../../src/app/users/getManageCons
 const { sendResult } = require("./../../../src/infrastructure/utils");
 const {
   getAllServices,
-  getPageOfService,
 } = require("./../../../src/infrastructure/applications");
+const { getPaginatedServicesRaw } = require("login.dfe.api-client/services");
 const { getServicesByUserId } = require("./../../../src/infrastructure/access");
 const { getUserDetails } = require("./../../../src/app/users/utils");
 
@@ -149,8 +151,8 @@ describe("When retrieving manage console services for a user", () => {
       ],
     };
 
-    getPageOfService.mockReset();
-    getPageOfService.mockReturnValue(pageOfServices);
+    getPaginatedServicesRaw.mockReset();
+    getPaginatedServicesRaw.mockReturnValue(pageOfServices);
   });
 
   it("should call getUserDetails", async () => {
@@ -163,11 +165,11 @@ describe("When retrieving manage console services for a user", () => {
     });
   });
 
-  it("should call getPageOfService", async () => {
+  it("should call getPaginatedServicesRaw", async () => {
     await getManageConsoleServices(req, res);
 
-    expect(getPageOfService).toHaveBeenCalled();
-    expect(getPageOfService).toReturnWith({
+    expect(getPaginatedServicesRaw).toHaveBeenCalled();
+    expect(getPaginatedServicesRaw).toReturnWith({
       services: [
         {
           description: "Service for testing purposes",
@@ -199,12 +201,12 @@ describe("When retrieving manage console services for a user", () => {
       ],
     });
 
-    const getPageOfServiceResult = getPageOfService();
-    expect(getPageOfServiceResult.services[0].id).toBe("service1Id");
+    const getPaginatedServicesRawResult = getPaginatedServicesRaw();
+    expect(getPaginatedServicesRawResult.services[0].id).toBe("service1Id");
   });
 
-  it("should set pageOfServices to {services: []} if a undefined is returned from getPageOfService call", async () => {
-    getPageOfService.mockReturnValue(undefined);
+  it("should set pageOfServices to {services: []} if a undefined is returned from getPaginatedServicesRaw call", async () => {
+    getPaginatedServicesRaw.mockReturnValue(undefined);
 
     await getManageConsoleServices(req, res);
 

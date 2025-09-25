@@ -3,6 +3,7 @@ const logger = require("../logger");
 
 const { fetchApi } = require("login.dfe.async-retry");
 const jwtStrategy = require("login.dfe.jwt-strategies");
+const { getPaginatedServicesRaw } = require("login.dfe.api-client/services");
 
 const supportTogglePath = "/constants/toggleflags/email/support";
 
@@ -41,35 +42,16 @@ const createService = async (body, correlationId) => {
   }
 };
 
-const getPageOfService = async (pageNumber, pageSize) => {
-  const token = await jwtStrategy(config.applications.service).getBearerToken();
-
-  try {
-    const client = await fetchApi(
-      `${config.applications.service.url}/services?page=${pageNumber}&pageSize=${pageSize}`,
-      {
-        method: "GET",
-        headers: {
-          authorization: `bearer ${token}`,
-        },
-      },
-    );
-    return client;
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return undefined;
-    }
-    throw e;
-  }
-};
-
 const getAllServices = async () => {
   const services = [];
 
   let pageNumber = 1;
   let numberOfPages = undefined;
   while (numberOfPages === undefined || pageNumber <= numberOfPages) {
-    const page = await getPageOfService(pageNumber, 50);
+    const page = await getPaginatedServicesRaw({
+      pageNumber: pageNumber,
+      pageSize: 50,
+    });
 
     services.push(...page.services);
 
@@ -111,7 +93,6 @@ const isSupportEmailNotificationAllowed = async () => {
 
 module.exports = {
   createService,
-  getPageOfService,
   getAllServices,
   isSupportEmailNotificationAllowed,
 };
