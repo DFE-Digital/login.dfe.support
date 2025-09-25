@@ -42,26 +42,6 @@ const createService = async (body, correlationId) => {
   }
 };
 
-const getAllServices = async () => {
-  const services = [];
-
-  let pageNumber = 1;
-  let numberOfPages = undefined;
-  while (numberOfPages === undefined || pageNumber <= numberOfPages) {
-    const page = await getPaginatedServicesRaw({
-      pageNumber: pageNumber,
-      pageSize: 50,
-    });
-
-    services.push(...page.services);
-
-    numberOfPages = page.numberOfPages;
-    pageNumber += 1;
-  }
-
-  return { services };
-};
-
 const getEmailToggleFlag = async (params) => {
   const token = await jwtStrategy(config.applications.service).getBearerToken();
   try {
@@ -93,6 +73,5 @@ const isSupportEmailNotificationAllowed = async () => {
 
 module.exports = {
   createService,
-  getAllServices,
   isSupportEmailNotificationAllowed,
 };

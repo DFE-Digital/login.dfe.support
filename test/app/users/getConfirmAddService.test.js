@@ -12,16 +12,12 @@ jest.mock("./../../../src/infrastructure/access", () => {
   };
 });
 jest.mock("./../../../src/infrastructure/organisations");
-jest.mock("./../../../src/infrastructure/applications", () => {
-  return {
-    getAllServices: jest.fn(),
-  };
-});
+jest.mock("../../../src/app/services/utils", () => ({
+  getAllServices: jest.fn(),
+}));
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
-const {
-  getAllServices,
-} = require("./../../../src/infrastructure/applications");
+const { getAllServices } = require("../../../src/app/services/utils");
 const { listRolesOfService } = require("./../../../src/infrastructure/access");
 const {
   getUserOrganisations,

@@ -1,9 +1,9 @@
 const { NotificationClient } = require("login.dfe.jobs-client");
 const { get: getSafePath } = require("lodash");
 const {
-  getAllServices,
   isSupportEmailNotificationAllowed,
 } = require("../../infrastructure/applications");
+const { getAllServices } = require("../services/utils");
 const config = require("../../infrastructure/config");
 const {
   listRolesOfService,

@@ -1,5 +1,5 @@
 const { sendResult } = require("../../infrastructure/utils");
-const { getAllServices } = require("../../infrastructure/applications");
+const { getAllServices } = require("../services/utils");
 const { getPaginatedServicesRaw } = require("login.dfe.api-client/services");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { getUserDetails } = require("./utils");
