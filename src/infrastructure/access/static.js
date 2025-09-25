@@ -26,10 +26,6 @@ const updateUserService = async () => {
   return Promise.resolve(null);
 };
 
-const updateInvitationService = async () => {
-  return Promise.resolve(null);
-};
-
 const removeServiceFromUser = async () => {
   return Promise.resolve();
 };
@@ -54,7 +50,6 @@ module.exports = {
   listRolesOfService,
   addUserService,
   updateUserService,
-  updateInvitationService,
   removeServiceFromInvitation,
   removeServiceFromUser,
   getUserServiceRequestsByUserId,

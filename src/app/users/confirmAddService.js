@@ -8,14 +8,16 @@ const config = require("../../infrastructure/config");
 const {
   listRolesOfService,
   addUserService,
-  updateInvitationService,
   updateUserService,
 } = require("../../infrastructure/access");
 const {
   getUserOrganisations,
   getInvitationOrganisations,
 } = require("../../infrastructure/organisations");
-const { addServiceToInvitation } = require("login.dfe.api-client/invitations");
+const {
+  addServiceToInvitation,
+  updateInvitationServiceRoles,
+} = require("login.dfe.api-client/invitations");
 const logger = require("../../infrastructure/logger");
 
 const get = async (req, res) => {
@@ -83,18 +85,16 @@ const post = async (req, res) => {
   const isEmailAllowed = await isSupportEmailNotificationAllowed();
   const organisationId = req.params.orgId;
 
-  const addServiceToInvitationFunc = async (
-    invitationId,
-    serviceId,
-    organisationId,
-    roles,
+  const callServiceToInvitationFunc = async (
+    apiFn,
+    { invitationId, serviceId, organisationId, serviceRoleIds },
   ) => {
     try {
-      return await addServiceToInvitation({
+      return await apiFn({
         invitationId,
         serviceId,
         organisationId,
-        roles,
+        serviceRoleIds,
       });
     } catch (e) {
       const status = e.statusCode ? e.statusCode : 500;
@@ -117,19 +117,18 @@ const post = async (req, res) => {
 
       if (invitationId) {
         req.session.user.isAddService
-          ? await addServiceToInvitationFunc(
+          ? await callServiceToInvitationFunc(addServiceToInvitation, {
               invitationId,
-              service.serviceId,
+              serviceId: service.serviceId,
               organisationId,
-              service.roles,
-            )
-          : await updateInvitationService(
+              serviceRoleIds: service.roles,
+            })
+          : await callServiceToInvitationFunc(updateInvitationServiceRoles, {
               invitationId,
-              service.serviceId,
+              serviceId: service.serviceId,
               organisationId,
-              service.roles,
-              req.id,
-            );
+              serviceRoleIds: service.roles,
+            });
       } else {
         req.session.user.isAddService
           ? await addUserService(

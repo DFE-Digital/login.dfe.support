@@ -17,7 +17,6 @@ jest.mock("./../../../src/infrastructure/access", () => {
     listRolesOfService: jest.fn(),
     addUserService: jest.fn(),
     updateUserService: jest.fn(),
-    updateInvitationService: jest.fn(),
   };
 });
 
@@ -25,10 +24,12 @@ const { getRequestMock, getResponseMock } = require("./../../utils");
 const {
   listRolesOfService,
   addUserService,
-  updateInvitationService,
   updateUserService,
 } = require("./../../../src/infrastructure/access");
-const { addServiceToInvitation } = require("login.dfe.api-client/invitations");
+const {
+  addServiceToInvitation,
+  updateInvitationServiceRoles,
+} = require("login.dfe.api-client/invitations");
 const {
   getAllServices,
   isSupportEmailNotificationAllowed,
@@ -203,7 +204,7 @@ describe("when adding new services to a user", () => {
     expect(addServiceToInvitation).toHaveBeenCalledWith({
       invitationId: "invite1",
       organisationId: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-      roles: [],
+      serviceRoleIds: [],
       serviceId: "service1",
     });
   });
@@ -241,14 +242,13 @@ describe("when adding new services to a user", () => {
     req.params.uid = "inv-invite1";
     await postConfirmAddService(req, res);
 
-    expect(updateInvitationService.mock.calls).toHaveLength(1);
-    expect(updateInvitationService.mock.calls[0][0]).toBe("invite1");
-    expect(updateInvitationService.mock.calls[0][1]).toBe("service1");
-    expect(updateInvitationService.mock.calls[0][2]).toBe(
-      "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-    );
-    expect(updateInvitationService.mock.calls[0][3]).toEqual([]);
-    expect(updateInvitationService.mock.calls[0][4]).toBe("correlationId");
+    expect(updateInvitationServiceRoles.mock.calls).toHaveLength(1);
+    expect(updateInvitationServiceRoles).toHaveBeenCalledWith({
+      invitationId: "invite1",
+      organisationId: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+      serviceId: "service1",
+      serviceRoleIds: [],
+    });
   });
 
   it("then it should should audit adding services to an existing user if isAddService is true", async () => {
