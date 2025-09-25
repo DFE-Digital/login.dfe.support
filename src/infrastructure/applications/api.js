@@ -3,9 +3,7 @@ const logger = require("../logger");
 
 const { fetchApi } = require("login.dfe.async-retry");
 const jwtStrategy = require("login.dfe.jwt-strategies");
-const { getPaginatedServicesRaw } = require("login.dfe.api-client/services");
-
-const supportTogglePath = "/constants/toggleflags/email/support";
+const { getServiceToggleFlagsRaw } = require("login.dfe.api-client/services");
 
 const createService = async (body, correlationId) => {
   if (!body) {
@@ -42,25 +40,8 @@ const createService = async (body, correlationId) => {
   }
 };
 
-const getEmailToggleFlag = async (params) => {
-  const token = await jwtStrategy(config.applications.service).getBearerToken();
-  try {
-    return await fetchApi(`${config.applications.service.url}${params}`, {
-      method: "GET",
-      headers: {
-        authorization: `bearer ${token}`,
-      },
-    });
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return undefined;
-    }
-    throw e;
-  }
-};
-
-const retrieveToggleFlag = async (path) => {
-  const emailToggleFlag = await getEmailToggleFlag(path);
+const retrieveToggleFlag = async (fliters) => {
+  const emailToggleFlag = await getServiceToggleFlagsRaw(fliters);
   if (emailToggleFlag && emailToggleFlag.length === 1) {
     return emailToggleFlag[0].flag;
   }
@@ -68,7 +49,9 @@ const retrieveToggleFlag = async (path) => {
 };
 
 const isSupportEmailNotificationAllowed = async () => {
-  return await retrieveToggleFlag(supportTogglePath);
+  return await retrieveToggleFlag({
+    filters: { serviceToggleType: "email", serviceName: "support" },
+  });
 };
 
 module.exports = {
