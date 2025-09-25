@@ -4,11 +4,10 @@ jest.mock("./../../../src/infrastructure/config", () =>
 jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
-
+jest.mock("login.dfe.api-client/invitations");
 jest.mock("./../../../src/infrastructure/access", () => {
   return {
     listRolesOfService: jest.fn(),
-    addInvitationService: jest.fn(),
     addUserService: jest.fn(),
   };
 });

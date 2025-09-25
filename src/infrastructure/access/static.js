@@ -1,7 +1,3 @@
-const addInvitationService = async () => {
-  return Promise.resolve(null);
-};
-
 const addUserService = async () => {
   return Promise.resolve(null);
 };
@@ -51,7 +47,6 @@ const updateUserServiceRequest = async () => {
 };
 
 module.exports = {
-  addInvitationService,
   putSingleServiceIdentifierForUser,
   getServiceIdentifierDetails,
   getSingleInvitationService,

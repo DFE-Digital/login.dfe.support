@@ -7,7 +7,6 @@ const {
 const config = require("../../infrastructure/config");
 const {
   listRolesOfService,
-  addInvitationService,
   addUserService,
   updateInvitationService,
   updateUserService,
@@ -16,6 +15,7 @@ const {
   getUserOrganisations,
   getInvitationOrganisations,
 } = require("../../infrastructure/organisations");
+const { addServiceToInvitation } = require("login.dfe.api-client/invitations");
 const logger = require("../../infrastructure/logger");
 
 const get = async (req, res) => {
@@ -83,6 +83,31 @@ const post = async (req, res) => {
   const isEmailAllowed = await isSupportEmailNotificationAllowed();
   const organisationId = req.params.orgId;
 
+  const addServiceToInvitationFunc = async (
+    invitationId,
+    serviceId,
+    organisationId,
+    roles,
+  ) => {
+    try {
+      return await addServiceToInvitation({
+        invitationId,
+        serviceId,
+        organisationId,
+        roles,
+      });
+    } catch (e) {
+      const status = e.statusCode ? e.statusCode : 500;
+      if (status === 403) {
+        return false;
+      }
+      if (status === 409) {
+        return false;
+      }
+      throw e;
+    }
+  };
+
   if (req.session.user.services) {
     const allServices = await getAllServices();
 
@@ -92,13 +117,11 @@ const post = async (req, res) => {
 
       if (invitationId) {
         req.session.user.isAddService
-          ? await addInvitationService(
+          ? await addServiceToInvitationFunc(
               invitationId,
               service.serviceId,
               organisationId,
-              [],
               service.roles,
-              req.id,
             )
           : await updateInvitationService(
               invitationId,

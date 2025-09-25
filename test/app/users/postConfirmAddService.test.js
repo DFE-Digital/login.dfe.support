@@ -5,6 +5,7 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/organisations");
+jest.mock("login.dfe.api-client/invitations");
 jest.mock("./../../../src/infrastructure/applications", () => {
   return {
     getAllServices: jest.fn(),
@@ -14,7 +15,6 @@ jest.mock("./../../../src/infrastructure/applications", () => {
 jest.mock("./../../../src/infrastructure/access", () => {
   return {
     listRolesOfService: jest.fn(),
-    addInvitationService: jest.fn(),
     addUserService: jest.fn(),
     updateUserService: jest.fn(),
     updateInvitationService: jest.fn(),
@@ -25,10 +25,10 @@ const { getRequestMock, getResponseMock } = require("./../../utils");
 const {
   listRolesOfService,
   addUserService,
-  addInvitationService,
   updateInvitationService,
   updateUserService,
 } = require("./../../../src/infrastructure/access");
+const { addServiceToInvitation } = require("login.dfe.api-client/invitations");
 const {
   getAllServices,
   isSupportEmailNotificationAllowed,
@@ -85,7 +85,7 @@ describe("when adding new services to a user", () => {
       },
     });
     res.mockResetAll();
-    addInvitationService.mockReset();
+    addServiceToInvitation.mockReset();
     addUserService.mockReset();
     postConfirmAddService =
       require("./../../../src/app/users/confirmAddService").post;
@@ -199,15 +199,13 @@ describe("when adding new services to a user", () => {
     req.params.uid = "inv-invite1";
     await postConfirmAddService(req, res);
 
-    expect(addInvitationService.mock.calls).toHaveLength(1);
-    expect(addInvitationService.mock.calls[0][0]).toBe("invite1");
-    expect(addInvitationService.mock.calls[0][1]).toBe("service1");
-    expect(addInvitationService.mock.calls[0][2]).toBe(
-      "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-    );
-    expect(addInvitationService.mock.calls[0][3]).toEqual([]);
-    expect(addInvitationService.mock.calls[0][4]).toEqual([]);
-    expect(addInvitationService.mock.calls[0][5]).toBe("correlationId");
+    expect(addServiceToInvitation.mock.calls).toHaveLength(1);
+    expect(addServiceToInvitation).toHaveBeenCalledWith({
+      invitationId: "invite1",
+      organisationId: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+      roles: [],
+      serviceId: "service1",
+    });
   });
 
   it("then it should add services to user if req for user", async () => {
