@@ -108,28 +108,6 @@ const putSingleServiceIdentifierForUser = async (
   }
 };
 
-const listRolesOfService = async (serviceId, correlationId) => {
-  const token = await jwtStrategy(config.access.service).getBearerToken();
-
-  try {
-    return await fetchApi(
-      `${config.access.service.url}/services/${serviceId}/roles`,
-      {
-        method: "GET",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-      },
-    );
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return undefined;
-    }
-    throw e;
-  }
-};
-
 const removeServiceFromUser = async (
   userId,
   serviceId,
@@ -210,7 +188,6 @@ const updateUserServiceRequest = async (id, requestBody, correlationId) => {
 
 module.exports = {
   putSingleServiceIdentifierForUser,
-  listRolesOfService,
   addUserService,
   updateUserService,
   removeServiceFromUser,

@@ -5,9 +5,9 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
 jest.mock("login.dfe.api-client/invitations");
+jest.mock("login.dfe.api-client/services");
 jest.mock("./../../../src/infrastructure/access", () => {
   return {
-    listRolesOfService: jest.fn(),
     addUserService: jest.fn(),
   };
 });
@@ -22,7 +22,7 @@ const { getRequestMock, getResponseMock } = require("./../../utils");
 const {
   getAllServices,
 } = require("./../../../src/infrastructure/applications");
-const { listRolesOfService } = require("./../../../src/infrastructure/access");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -87,8 +87,8 @@ describe("when displaying the confirm add service view", () => {
       },
     ]);
 
-    listRolesOfService.mockReset();
-    listRolesOfService.mockReturnValue([
+    getServiceRolesRaw.mockReset();
+    getServiceRolesRaw.mockReturnValue([
       {
         code: "role_code",
         id: "role_id",
@@ -125,9 +125,8 @@ describe("when displaying the confirm add service view", () => {
   it("then it should list all roles of service", async () => {
     await getConfirmAddService(req, res);
 
-    expect(listRolesOfService.mock.calls).toHaveLength(1);
-    expect(listRolesOfService.mock.calls[0][0]).toBe("service1");
-    expect(listRolesOfService.mock.calls[0][1]).toBe("correlationId");
+    expect(getServiceRolesRaw.mock.calls).toHaveLength(1);
+    expect(getServiceRolesRaw).toHaveBeenCalledWith({ serviceId: "service1" });
   });
 
   it("then it should return the confirm add service view", async () => {

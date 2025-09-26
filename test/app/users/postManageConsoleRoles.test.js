@@ -29,8 +29,8 @@ jest.mock("./../../../src/app/users/utils", () => ({
 }));
 jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.api-client/users");
+jest.mock("login.dfe.api-client/services");
 jest.mock("./../../../src/infrastructure/access", () => ({
-  listRolesOfService: jest.fn(),
   updateUserService: jest.fn(),
   addUserService: jest.fn(),
 }));
@@ -47,8 +47,8 @@ const {
 const {
   putUserInOrganisation,
 } = require("./../../../src/infrastructure/organisations");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
-  listRolesOfService,
   updateUserService,
   addUserService,
 } = require("./../../../src/infrastructure/access");
@@ -94,7 +94,7 @@ describe("when changing a user's manage console access", () => {
       redirect: jest.fn(),
     };
 
-    listRolesOfService.mockResolvedValue([
+    getServiceRolesRaw.mockResolvedValue([
       {
         id: "role1",
         name: "test service 1 - Service Access Management",

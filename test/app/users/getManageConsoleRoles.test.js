@@ -34,9 +34,8 @@ jest.mock("login.dfe.api-client/users");
 jest.mock("./../../../src/infrastructure/applications", () => ({
   getServiceById: jest.fn(),
 }));
-
+jest.mock("login.dfe.api-client/services");
 jest.mock("./../../../src/infrastructure/access", () => ({
-  listRolesOfService: jest.fn(),
   updateUserService: jest.fn(),
 }));
 
