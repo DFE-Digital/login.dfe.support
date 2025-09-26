@@ -12,10 +12,9 @@ jest.mock("./../../../src/infrastructure/applications", () => {
     getServiceById: jest.fn(),
   };
 });
-
+jest.mock("login.dfe.api-client/users");
 jest.mock("./../../../src/infrastructure/access", () => {
   return {
-    getSingleUserService: jest.fn(),
     getSingleInvitationService: jest.fn(),
   };
 });
@@ -25,7 +24,6 @@ const {
   getServiceById,
 } = require("./../../../src/infrastructure/applications");
 const {
-  getSingleUserService,
   getSingleInvitationService,
 } = require("./../../../src/infrastructure/access");
 const {
@@ -33,7 +31,7 @@ const {
   getInvitationOrganisations,
 } = require("./../../../src/infrastructure/organisations");
 const PolicyEngine = require("login.dfe.policy-engine");
-
+const { getUserServiceRaw } = require("login.dfe.api-client/users");
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
 };
@@ -98,8 +96,8 @@ describe("when displaying the associate roles view", () => {
       },
     ]);
 
-    getSingleUserService.mockReset();
-    getSingleUserService.mockReturnValue({
+    getUserServiceRaw.mockReset();
+    getUserServiceRaw.mockReturnValue({
       id: "service1",
       name: "service name",
       roles: [],
@@ -200,13 +198,12 @@ describe("when displaying the associate roles view", () => {
   it("then it should get current users roles if editing service", async () => {
     req.session.user.isAddService = false;
     await getAssociateRoles(req, res);
-    expect(getSingleUserService.mock.calls).toHaveLength(1);
-    expect(getSingleUserService.mock.calls[0][0]).toBe("user1");
-    expect(getSingleUserService.mock.calls[0][1]).toBe("service1");
-    expect(getSingleUserService.mock.calls[0][2]).toBe(
-      "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-    );
-    expect(getSingleUserService.mock.calls[0][3]).toBe("correlationId");
+    expect(getUserServiceRaw.mock.calls).toHaveLength(1);
+    expect(getUserServiceRaw).toHaveBeenCalledWith({
+      organisationId: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+      serviceId: "service1",
+      userId: "user1",
+    });
   });
 
   it("then it should get current invitations roles if editing service", async () => {

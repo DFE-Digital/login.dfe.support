@@ -27,9 +27,9 @@ jest.mock("./../../../src/app/users/utils", () => ({
   getUserDetails: jest.fn(),
   getUserDetailsById: jest.fn(),
 }));
+jest.mock("login.dfe.api-client/users");
 jest.mock("./../../../src/infrastructure/access", () => ({
   listRolesOfService: jest.fn(),
-  getSingleUserService: jest.fn(),
   getSingleInvitationService: jest.fn(),
   updateUserService: jest.fn(),
   addUserService: jest.fn(),
@@ -48,7 +48,6 @@ const {
   putUserInOrganisation,
 } = require("./../../../src/infrastructure/organisations");
 const {
-  getSingleUserService,
   listRolesOfService,
   updateUserService,
   addUserService,
@@ -58,6 +57,7 @@ const {
   getSingleServiceForUser,
   checkIfRolesChanged,
 } = require("./../../../src/app/users/getManageConsoleRoles");
+const { getUserServiceRaw } = require("login.dfe.api-client/users");
 
 describe("when changing a user's manage console access", () => {
   let req, res;
@@ -129,7 +129,7 @@ describe("when changing a user's manage console access", () => {
       name: "Test Service",
       id: "testService1",
     });
-    getSingleUserService.mockResolvedValue({
+    getUserServiceRaw.mockResolvedValue({
       serviceId: "service-id",
       roles: [{ id: "role1" }],
     });

@@ -2,9 +2,9 @@ const config = require("../../infrastructure/config");
 const { sendResult } = require("../../infrastructure/utils");
 const { getUserDetails } = require("./utils");
 const { getServiceById } = require("../../infrastructure/applications");
+const { getUserServiceRaw } = require("login.dfe.api-client/users");
 const {
   listRolesOfService,
-  getSingleUserService,
   getSingleInvitationService,
 } = require("../../infrastructure/access");
 
@@ -24,12 +24,7 @@ const getSingleServiceForUser = async (
         organisationId,
         correlationId,
       )
-    : await getSingleUserService(
-        userId,
-        serviceId,
-        organisationId,
-        correlationId,
-      );
+    : await getUserServiceRaw({ userId, serviceId, organisationId });
   const application = await getServiceById(serviceId, correlationId);
 
   return {
