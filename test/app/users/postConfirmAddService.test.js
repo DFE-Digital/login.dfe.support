@@ -13,19 +13,15 @@ jest.mock("./../../../src/infrastructure/applications", () => {
   };
 });
 jest.mock("login.dfe.api-client/services");
-jest.mock("./../../../src/infrastructure/access", () => {
-  return {
-    addUserService: jest.fn(),
-    updateUserService: jest.fn(),
-  };
-});
+jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
-  addUserService,
-  updateUserService,
-} = require("./../../../src/infrastructure/access");
+  addServiceToUser,
+  updateUserServiceRoles,
+} = require("login.dfe.api-client/users");
+
 const {
   addServiceToInvitation,
   updateInvitationServiceRoles,
@@ -87,7 +83,7 @@ describe("when adding new services to a user", () => {
     });
     res.mockResetAll();
     addServiceToInvitation.mockReset();
-    addUserService.mockReset();
+    addServiceToUser.mockReset();
     postConfirmAddService =
       require("./../../../src/app/users/confirmAddService").post;
 
@@ -214,28 +210,26 @@ describe("when adding new services to a user", () => {
     req.params.uid = "user1";
     await postConfirmAddService(req, res);
 
-    expect(addUserService.mock.calls).toHaveLength(1);
-    expect(addUserService.mock.calls[0][0]).toBe("user1");
-    expect(addUserService.mock.calls[0][1]).toBe("service1");
-    expect(addUserService.mock.calls[0][2]).toBe(
-      "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-    );
-    expect(addUserService.mock.calls[0][3]).toEqual([]);
-    expect(addUserService.mock.calls[0][4]).toBe("correlationId");
+    expect(addServiceToUser.mock.calls).toHaveLength(1);
+    expect(addServiceToUser).toHaveBeenCalledWith({
+      organisationId: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+      serviceId: "service1",
+      serviceRoleIds: [],
+      userId: "user1",
+    });
   });
 
   it("then it should update services for user if req for user", async () => {
     req.params.uid = "user1";
     await postConfirmAddService(req, res);
 
-    expect(updateUserService.mock.calls).toHaveLength(1);
-    expect(updateUserService.mock.calls[0][0]).toBe("user1");
-    expect(updateUserService.mock.calls[0][1]).toBe("service1");
-    expect(updateUserService.mock.calls[0][2]).toBe(
-      "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-    );
-    expect(updateUserService.mock.calls[0][3]).toEqual([]);
-    expect(updateUserService.mock.calls[0][4]).toBe("correlationId");
+    expect(updateUserServiceRoles.mock.calls).toHaveLength(1);
+    expect(updateUserServiceRoles).toHaveBeenCalledWith({
+      organisationId: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+      serviceId: "service1",
+      serviceRoleIds: [],
+      userId: "user1",
+    });
   });
 
   it("then it should update services for invitation for organisation if req for invitation", async () => {

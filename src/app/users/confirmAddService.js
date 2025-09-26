@@ -1,5 +1,6 @@
 const { NotificationClient } = require("login.dfe.jobs-client");
 const { get: getSafePath } = require("lodash");
+const { callServiceToUserFunc } = require("./utils");
 const {
   getAllServices,
   isSupportEmailNotificationAllowed,
@@ -7,9 +8,9 @@ const {
 const config = require("../../infrastructure/config");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
-  addUserService,
-  updateUserService,
-} = require("../../infrastructure/access");
+  addServiceToUser,
+  updateUserServiceRoles,
+} = require("login.dfe.api-client/users");
 const {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -135,20 +136,18 @@ const post = async (req, res) => {
             });
       } else {
         req.session.user.isAddService
-          ? await addUserService(
-              uid,
-              service.serviceId,
+          ? await callServiceToUserFunc(addServiceToUser, {
+              userId: uid,
+              serviceId: service.serviceId,
               organisationId,
-              service.roles,
-              req.id,
-            )
-          : await updateUserService(
-              uid,
-              service.serviceId,
+              serviceRoleIds: service.roles,
+            })
+          : await callServiceToUserFunc(updateUserServiceRoles, {
+              userId: uid,
+              serviceId: service.serviceId,
               organisationId,
-              service.roles,
-              req.id,
-            );
+              serviceRoleIds: service.roles,
+            });
       }
 
       if (isEmailAllowed && (invitationId === undefined || !invitationId)) {

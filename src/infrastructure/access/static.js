@@ -1,12 +1,4 @@
-const addUserService = async () => {
-  return Promise.resolve(null);
-};
-
 const putSingleServiceIdentifierForUser = async () => {
-  return Promise.resolve(null);
-};
-
-const updateUserService = async () => {
   return Promise.resolve(null);
 };
 
@@ -28,8 +20,6 @@ const updateUserServiceRequest = async () => {
 
 module.exports = {
   putSingleServiceIdentifierForUser,
-  addUserService,
-  updateUserService,
   removeServiceFromInvitation,
   removeServiceFromUser,
   getUserServiceRequestsByUserId,
