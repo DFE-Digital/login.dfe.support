@@ -167,7 +167,7 @@ describe("When retrieving manage console services for a user", () => {
     await getManageConsoleServices(req, res);
 
     expect(getPaginatedServicesRaw).toHaveBeenCalled();
-    expect(getPaginatedServicesRaw).toReturnWith({
+    expect(getPaginatedServicesRaw).toHaveReturnedWith({
       services: [
         {
           description: "Service for testing purposes",

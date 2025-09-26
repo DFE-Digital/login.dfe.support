@@ -2,10 +2,9 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/utils");
-jest.mock("./../../../src/infrastructure/applications");
-
+jest.mock("login.dfe.api-client/services");
 const { getRequestMock, getResponseMock } = require("../../utils");
-const { createService } = require("../../../src/infrastructure/applications");
+const { createServiceRaw } = require("login.dfe.api-client/services");
 const postConfirmNewService = require("../../../src/app/services/postConfirmNewService");
 
 const res = getResponseMock();
@@ -40,14 +39,14 @@ describe("when displaying the post create new service", () => {
     });
     res.mockResetAll();
 
-    createService.mockReset().mockReturnValue({});
+    createServiceRaw.mockReset().mockReturnValue({});
   });
 
   it("should redirect to /users on success", async () => {
     await postConfirmNewService(req, res);
 
-    expect(createService.mock.calls).toHaveLength(1);
-    expect(createService.mock.calls[0][0]).toStrictEqual({
+    expect(createServiceRaw).toHaveBeenCalledTimes(1);
+    expect(createServiceRaw.mock.calls[0][0]).toStrictEqual({
       description: "newServiceDescription blah",
       isChildService: false,
       isIdOnlyService: true,
@@ -56,21 +55,21 @@ describe("when displaying the post create new service", () => {
       name: "newServiceName",
       parentId: undefined,
       relyingParty: {
-        api_secret: "this.is.an.api.secret",
-        client_id: "TestClientId",
-        client_secret: "this.is.a.client.secret",
-        grant_types: ["authorization_code", "implicit", "refresh_token"],
+        apiSecret: "this.is.an.api.secret",
+        clientId: "TestClientId",
+        clientSecret: "this.is.a.client.secret",
+        grantTypes: ["authorization_code", "implicit", "refresh_token"],
         params: {
           helpHidden: false,
           hideApprover: true,
           hideSupport: true,
         },
         postResetUrl: "https://postPasswordReseturl.com",
-        post_logout_redirect_uris: ["https://logout-uri.com"],
-        redirect_uris: ["https://redirect-uri.com"],
-        response_types: ["code", "id_token", "token"],
-        service_home: "https://homeUrl.com",
-        token_endpoint_auth_method: "client_secret_post",
+        postLogoutRedirectUris: ["https://logout-uri.com"],
+        redirectUris: ["https://redirect-uri.com"],
+        responseTypes: ["code", "id_token", "token"],
+        serviceHome: "https://homeUrl.com",
+        tokenEndpointAuthMethod: "client_secret_post",
       },
     });
     expect(res.redirect.mock.calls).toHaveLength(1);
@@ -83,9 +82,9 @@ describe("when displaying the post create new service", () => {
     req.session.createServiceData.responseTypesCode = undefined;
     await postConfirmNewService(req, res);
 
-    expect(createService.mock.calls).toHaveLength(1);
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
     expect(
-      createService.mock.calls[0][0].relyingParty.grant_types,
+      createServiceRaw.mock.calls[0][0].relyingParty.grantTypes,
     ).toStrictEqual(["implicit", "refresh_token"]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/users");
@@ -96,9 +95,9 @@ describe("when displaying the post create new service", () => {
     req.session.createServiceData.responseTypesToken = undefined;
     await postConfirmNewService(req, res);
 
-    expect(createService.mock.calls).toHaveLength(1);
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
     expect(
-      createService.mock.calls[0][0].relyingParty.grant_types,
+      createServiceRaw.mock.calls[0][0].relyingParty.grantTypes,
     ).toStrictEqual(["authorization_code", "refresh_token"]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/users");
@@ -108,9 +107,9 @@ describe("when displaying the post create new service", () => {
     req.session.createServiceData.refreshToken = "";
     await postConfirmNewService(req, res);
 
-    expect(createService.mock.calls).toHaveLength(1);
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
     expect(
-      createService.mock.calls[0][0].relyingParty.grant_types,
+      createServiceRaw.mock.calls[0][0].relyingParty.grantTypes,
     ).toStrictEqual(["authorization_code", "implicit"]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/users");
@@ -120,10 +119,10 @@ describe("when displaying the post create new service", () => {
     req.session.createServiceData.hideFromContactUs = "hideFromContactUs";
     await postConfirmNewService(req, res);
 
-    expect(createService.mock.calls).toHaveLength(1);
-    expect(createService.mock.calls[0][0].relyingParty.params.helpHidden).toBe(
-      true,
-    );
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
+    expect(
+      createServiceRaw.mock.calls[0][0].relyingParty.params.helpHidden,
+    ).toBe(true);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/users");
   });
@@ -132,8 +131,8 @@ describe("when displaying the post create new service", () => {
     req.session.createServiceData.hideFromUserServices = "hideFromUserServices";
     await postConfirmNewService(req, res);
 
-    expect(createService.mock.calls).toHaveLength(1);
-    expect(createService.mock.calls[0][0].isHiddenService).toBe(true);
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
+    expect(createServiceRaw.mock.calls[0][0].isHiddenService).toBe(true);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/users");
   });
@@ -143,9 +142,9 @@ describe("when displaying the post create new service", () => {
       "client_secret_basic";
     await postConfirmNewService(req, res);
 
-    expect(createService.mock.calls).toHaveLength(1);
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
     expect(
-      createService.mock.calls[0][0].relyingParty.token_endpoint_auth_method,
+      createServiceRaw.mock.calls[0][0].relyingParty.tokenEndpointAuthMethod,
     ).toBe(undefined);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/users");
@@ -156,9 +155,9 @@ describe("when displaying the post create new service", () => {
       "client_secret_post";
     await postConfirmNewService(req, res);
 
-    expect(createService.mock.calls).toHaveLength(1);
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
     expect(
-      createService.mock.calls[0][0].relyingParty.token_endpoint_auth_method,
+      createServiceRaw.mock.calls[0][0].relyingParty.tokenEndpointAuthMethod,
     ).toBe("client_secret_post");
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/users");
@@ -168,9 +167,9 @@ describe("when displaying the post create new service", () => {
     req.session.createServiceData.responseTypesCode = "";
     await postConfirmNewService(req, res);
 
-    expect(createService.mock.calls).toHaveLength(1);
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
     expect(
-      createService.mock.calls[0][0].relyingParty.response_types,
+      createServiceRaw.mock.calls[0][0].relyingParty.responseTypes,
     ).toStrictEqual(["id_token", "token"]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/users");
@@ -180,9 +179,9 @@ describe("when displaying the post create new service", () => {
     req.session.createServiceData.responseTypesIdToken = "";
     await postConfirmNewService(req, res);
 
-    expect(createService.mock.calls).toHaveLength(1);
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
     expect(
-      createService.mock.calls[0][0].relyingParty.response_types,
+      createServiceRaw.mock.calls[0][0].relyingParty.responseTypes,
     ).toStrictEqual(["code", "token"]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/users");
@@ -192,9 +191,9 @@ describe("when displaying the post create new service", () => {
     req.session.createServiceData.responseTypesToken = "";
     await postConfirmNewService(req, res);
 
-    expect(createService.mock.calls).toHaveLength(1);
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
     expect(
-      createService.mock.calls[0][0].relyingParty.response_types,
+      createServiceRaw.mock.calls[0][0].relyingParty.responseTypes,
     ).toStrictEqual(["code", "id_token"]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/users");
