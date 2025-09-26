@@ -85,6 +85,8 @@ const post = async (req, res) => {
   const isEmailAllowed = await isSupportEmailNotificationAllowed();
   const organisationId = req.params.orgId;
 
+  // A function to call either addServiceToInvitation or updateInvitationServiceRoles (passed as a delegate).
+  // This handles the 403 and 409 errors that can be returned from these functions.
   const callServiceToInvitationFunc = async (
     apiFn,
     { invitationId, serviceId, organisationId, serviceRoleIds },
