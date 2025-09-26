@@ -4,7 +4,7 @@ jest.mock("./../../../src/infrastructure/config", () =>
 jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
-
+jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.policy-engine");
 jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/applications", () => {
@@ -13,19 +13,12 @@ jest.mock("./../../../src/infrastructure/applications", () => {
   };
 });
 jest.mock("login.dfe.api-client/users");
-jest.mock("./../../../src/infrastructure/access", () => {
-  return {
-    getSingleInvitationService: jest.fn(),
-  };
-});
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const {
   getServiceById,
 } = require("./../../../src/infrastructure/applications");
-const {
-  getSingleInvitationService,
-} = require("./../../../src/infrastructure/access");
+const { getInvitationServiceRaw } = require("login.dfe.api-client/invitations");
 const {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -103,8 +96,8 @@ describe("when displaying the associate roles view", () => {
       roles: [],
     });
 
-    getSingleInvitationService.mockReset();
-    getSingleInvitationService.mockReturnValue({
+    getInvitationServiceRaw.mockReset();
+    getInvitationServiceRaw.mockReturnValue({
       id: "service1",
       name: "service name",
       roles: [],
@@ -210,12 +203,10 @@ describe("when displaying the associate roles view", () => {
     req.session.user.isAddService = false;
     req.params.uid = "inv-invitation1";
     await getAssociateRoles(req, res);
-    expect(getSingleInvitationService.mock.calls).toHaveLength(1);
-    expect(getSingleInvitationService.mock.calls[0][0]).toBe("invitation1");
-    expect(getSingleInvitationService.mock.calls[0][1]).toBe("service1");
-    expect(getSingleInvitationService.mock.calls[0][2]).toBe(
-      "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-    );
-    expect(getSingleInvitationService.mock.calls[0][3]).toBe("correlationId");
+    expect(getInvitationServiceRaw).toHaveBeenCalledWith({
+      invitationId: "invitation1",
+      organisationId: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+      serviceId: "service1",
+    });
   });
 });

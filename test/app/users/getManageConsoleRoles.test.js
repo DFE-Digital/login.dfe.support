@@ -28,7 +28,7 @@ jest.mock("./../../../src/infrastructure/utils", () => ({
 jest.mock("./../../../src/app/users/utils", () => ({
   getUserDetails: jest.fn(),
 }));
-
+jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.policy-engine");
 jest.mock("login.dfe.api-client/users");
 jest.mock("./../../../src/infrastructure/applications", () => ({
@@ -37,7 +37,6 @@ jest.mock("./../../../src/infrastructure/applications", () => ({
 
 jest.mock("./../../../src/infrastructure/access", () => ({
   listRolesOfService: jest.fn(),
-  getSingleInvitationService: jest.fn(),
   updateUserService: jest.fn(),
 }));
 
@@ -74,11 +73,11 @@ describe("when manage a users manage console roles", () => {
         getServiceById,
       } = require("./../../../src/infrastructure/applications");
       const {
-        getSingleInvitationService,
-      } = require("./../../../src/infrastructure/access");
+        getInvitationServiceRaw,
+      } = require("login.dfe.api-client/invitations");
 
       getServiceById.mockResolvedValue({ name: "Test Service" });
-      getSingleInvitationService.mockResolvedValue({
+      getInvitationServiceRaw.mockResolvedValue({
         serviceId: "service-id",
         roles: ["role1"],
       });

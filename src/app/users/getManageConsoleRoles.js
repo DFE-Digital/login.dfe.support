@@ -3,10 +3,8 @@ const { sendResult } = require("../../infrastructure/utils");
 const { getUserDetails } = require("./utils");
 const { getServiceById } = require("../../infrastructure/applications");
 const { getUserServiceRaw } = require("login.dfe.api-client/users");
-const {
-  listRolesOfService,
-  getSingleInvitationService,
-} = require("../../infrastructure/access");
+const { getInvitationServiceRaw } = require("login.dfe.api-client/invitations");
+const { listRolesOfService } = require("../../infrastructure/access");
 
 const manageServiceId = config.access.identifiers.manageService;
 const dfeId = config.access.identifiers.departmentForEducation;
@@ -18,12 +16,11 @@ const getSingleServiceForUser = async (
   correlationId,
 ) => {
   const userService = userId.startsWith("inv-")
-    ? await getSingleInvitationService(
-        userId.substr(4),
+    ? await getInvitationServiceRaw({
+        invitationId: userId.substr(4),
         serviceId,
         organisationId,
-        correlationId,
-      )
+      })
     : await getUserServiceRaw({ userId, serviceId, organisationId });
   const application = await getServiceById(serviceId, correlationId);
 
