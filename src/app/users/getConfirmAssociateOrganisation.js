@@ -13,9 +13,7 @@ const {
   updateIndex,
 } = require("../../infrastructure/search");
 const { waitForIndexToUpdate } = require("./utils");
-const {
-  isSupportEmailNotificationAllowed,
-} = require("../../infrastructure/applications");
+const { isSupportEmailNotificationAllowed } = require("../services/utils");
 
 const addOrganisationToInvitation = async (uid, req) => {
   const invitationId = uid.substr(4);

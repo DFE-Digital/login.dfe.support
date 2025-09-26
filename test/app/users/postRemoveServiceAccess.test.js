@@ -7,7 +7,7 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 
 jest.mock("./../../../src/infrastructure/organisations");
 
-jest.mock("./../../../src/infrastructure/applications", () => {
+jest.mock("../../../src/app/services/utils", () => {
   return {
     isSupportEmailNotificationAllowed: jest.fn(),
   };
@@ -29,7 +29,7 @@ const logger = require("./../../../src/infrastructure/logger");
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const {
   isSupportEmailNotificationAllowed,
-} = require("./../../../src/infrastructure/applications");
+} = require("./../../../src/app/services/utils");
 const { getServiceRaw } = require("login.dfe.api-client/services");
 const {
   getUserOrganisations,

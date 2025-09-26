@@ -9,9 +9,7 @@ const {
   getUserOrganisations,
   getInvitationOrganisations,
 } = require("../../infrastructure/organisations");
-const {
-  isSupportEmailNotificationAllowed,
-} = require("../../infrastructure/applications");
+const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const { getServiceRaw } = require("login.dfe.api-client/services");
 
 const get = async (req, res) => {

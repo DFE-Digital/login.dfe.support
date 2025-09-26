@@ -3,7 +3,6 @@ const logger = require("../logger");
 
 const { fetchApi } = require("login.dfe.async-retry");
 const jwtStrategy = require("login.dfe.jwt-strategies");
-const { getServiceToggleFlagsRaw } = require("login.dfe.api-client/services");
 
 const createService = async (body, correlationId) => {
   if (!body) {
@@ -40,21 +39,6 @@ const createService = async (body, correlationId) => {
   }
 };
 
-const retrieveToggleFlag = async (fliters) => {
-  const emailToggleFlag = await getServiceToggleFlagsRaw(fliters);
-  if (emailToggleFlag && emailToggleFlag.length === 1) {
-    return emailToggleFlag[0].flag;
-  }
-  return true;
-};
-
-const isSupportEmailNotificationAllowed = async () => {
-  return await retrieveToggleFlag({
-    filters: { serviceToggleType: "email", serviceName: "support" },
-  });
-};
-
 module.exports = {
   createService,
-  isSupportEmailNotificationAllowed,
 };

@@ -10,9 +10,7 @@ const {
   getSearchDetailsForUserById,
   updateIndex,
 } = require("../../infrastructure/search");
-const {
-  isSupportEmailNotificationAllowed,
-} = require("../../infrastructure/applications");
+const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const { mapRole } = require("./utils");
 
 const validatePermissions = (req) => {

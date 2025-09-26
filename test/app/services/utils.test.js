@@ -1,9 +1,16 @@
 jest.mock("login.dfe.api-client/services", () => ({
   getPaginatedServicesRaw: jest.fn(),
+  getServiceToggleFlagsRaw: jest.fn(),
 }));
 
-const { getAllServices } = require("../../../src/app/services/utils");
-const { getPaginatedServicesRaw } = require("login.dfe.api-client/services");
+const {
+  getAllServices,
+  isSupportEmailNotificationAllowed,
+} = require("../../../src/app/services/utils");
+const {
+  getPaginatedServicesRaw,
+  getServiceToggleFlagsRaw,
+} = require("login.dfe.api-client/services");
 
 describe("getAllServices", () => {
   beforeEach(() => {
@@ -79,5 +86,53 @@ describe("getAllServices", () => {
 
     await expect(getAllServices()).rejects.toThrow("API failure");
     expect(getPaginatedServicesRaw).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("isSupportEmailNotificationAllowed", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it("should return true if the flag is set to true", async () => {
+    getServiceToggleFlagsRaw.mockResolvedValue([{ flag: true }]);
+
+    const result = await isSupportEmailNotificationAllowed();
+
+    expect(result).toBe(true);
+    expect(getServiceToggleFlagsRaw).toHaveBeenCalledWith({
+      filters: { serviceToggleType: "email", serviceName: "support" },
+    });
+  });
+
+  it("should return false if the flag is set to false", async () => {
+    getServiceToggleFlagsRaw.mockResolvedValue([{ flag: false }]);
+
+    const result = await isSupportEmailNotificationAllowed();
+
+    expect(result).toBe(false);
+  });
+
+  it("should return true if the toggle flag array is empty", async () => {
+    getServiceToggleFlagsRaw.mockResolvedValue([]);
+
+    const result = await isSupportEmailNotificationAllowed();
+
+    expect(result).toBe(true);
+  });
+
+  it("should raise an exception on any failure status code that is not 404", async () => {
+    getServiceToggleFlagsRaw.mockImplementation(() => {
+      const error = new Error("Server Error");
+      error.statusCode = 500;
+      throw error;
+    });
+
+    await expect(isSupportEmailNotificationAllowed()).rejects.toThrow(
+      expect.objectContaining({
+        message: "Server Error",
+        statusCode: 500,
+      }),
+    );
   });
 });

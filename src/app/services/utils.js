@@ -1,4 +1,7 @@
-const { getPaginatedServicesRaw } = require("login.dfe.api-client/services");
+const {
+  getPaginatedServicesRaw,
+  getServiceToggleFlagsRaw,
+} = require("login.dfe.api-client/services");
 
 const getAllServices = async () => {
   const services = [];
@@ -19,6 +22,22 @@ const getAllServices = async () => {
 
   return { services };
 };
+
+const retrieveToggleFlag = async (fliters) => {
+  const emailToggleFlag = await getServiceToggleFlagsRaw(fliters);
+  if (emailToggleFlag && emailToggleFlag.length === 1) {
+    return emailToggleFlag[0].flag;
+  }
+  return true;
+};
+
+const isSupportEmailNotificationAllowed = async () => {
+  return await retrieveToggleFlag({
+    filters: { serviceToggleType: "email", serviceName: "support" },
+  });
+};
+
 module.exports = {
   getAllServices,
+  isSupportEmailNotificationAllowed,
 };
