@@ -12,20 +12,16 @@ jest.mock("./../../../src/infrastructure/applications", () => {
     isSupportEmailNotificationAllowed: jest.fn(),
   };
 });
-jest.mock("./../../../src/infrastructure/access", () => {
-  return {
-    listRolesOfService: jest.fn(),
-    addUserService: jest.fn(),
-    updateUserService: jest.fn(),
-  };
-});
+jest.mock("login.dfe.api-client/services");
+jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
-  listRolesOfService,
-  addUserService,
-  updateUserService,
-} = require("./../../../src/infrastructure/access");
+  addServiceToUser,
+  updateUserServiceRoles,
+} = require("login.dfe.api-client/users");
+
 const {
   addServiceToInvitation,
   updateInvitationServiceRoles,
@@ -87,7 +83,7 @@ describe("when adding new services to a user", () => {
     });
     res.mockResetAll();
     addServiceToInvitation.mockReset();
-    addUserService.mockReset();
+    addServiceToUser.mockReset();
     postConfirmAddService =
       require("./../../../src/app/users/confirmAddService").post;
 
@@ -164,8 +160,8 @@ describe("when adding new services to a user", () => {
       },
     ]);
 
-    listRolesOfService.mockReset();
-    listRolesOfService.mockReturnValue([
+    getServiceRolesRaw.mockReset();
+    getServiceRolesRaw.mockReturnValue([
       {
         code: "role_code",
         id: "role_id",
@@ -214,28 +210,26 @@ describe("when adding new services to a user", () => {
     req.params.uid = "user1";
     await postConfirmAddService(req, res);
 
-    expect(addUserService.mock.calls).toHaveLength(1);
-    expect(addUserService.mock.calls[0][0]).toBe("user1");
-    expect(addUserService.mock.calls[0][1]).toBe("service1");
-    expect(addUserService.mock.calls[0][2]).toBe(
-      "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-    );
-    expect(addUserService.mock.calls[0][3]).toEqual([]);
-    expect(addUserService.mock.calls[0][4]).toBe("correlationId");
+    expect(addServiceToUser.mock.calls).toHaveLength(1);
+    expect(addServiceToUser).toHaveBeenCalledWith({
+      organisationId: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+      serviceId: "service1",
+      serviceRoleIds: [],
+      userId: "user1",
+    });
   });
 
   it("then it should update services for user if req for user", async () => {
     req.params.uid = "user1";
     await postConfirmAddService(req, res);
 
-    expect(updateUserService.mock.calls).toHaveLength(1);
-    expect(updateUserService.mock.calls[0][0]).toBe("user1");
-    expect(updateUserService.mock.calls[0][1]).toBe("service1");
-    expect(updateUserService.mock.calls[0][2]).toBe(
-      "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-    );
-    expect(updateUserService.mock.calls[0][3]).toEqual([]);
-    expect(updateUserService.mock.calls[0][4]).toBe("correlationId");
+    expect(updateUserServiceRoles.mock.calls).toHaveLength(1);
+    expect(updateUserServiceRoles).toHaveBeenCalledWith({
+      organisationId: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+      serviceId: "service1",
+      serviceRoleIds: [],
+      userId: "user1",
+    });
   });
 
   it("then it should update services for invitation for organisation if req for invitation", async () => {
@@ -329,9 +323,8 @@ describe("when adding new services to a user", () => {
   it("then it should send an email notification to user", async () => {
     await postConfirmAddService(req, res);
 
-    expect(listRolesOfService.mock.calls).toHaveLength(1);
-    expect(listRolesOfService.mock.calls[0][0]).toBe("service1");
-    expect(listRolesOfService.mock.calls[0][1]).toBe("correlationId");
+    expect(getServiceRolesRaw.mock.calls).toHaveLength(1);
+    expect(getServiceRolesRaw).toHaveBeenCalledWith({ serviceId: "service1" });
 
     expect(sendServiceRequestApprovedStub.mock.calls).toHaveLength(1);
     expect(sendServiceRequestApprovedStub.mock.calls[0][0]).toBe(

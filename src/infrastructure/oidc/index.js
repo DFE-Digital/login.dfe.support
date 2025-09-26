@@ -3,7 +3,7 @@ const { Strategy, Issuer, custom } = require("openid-client");
 const asyncRetry = require("login.dfe.async-retry");
 const logger = require("../logger");
 const config = require("../config");
-const { getSingleUserService } = require("../access");
+const { getUserServiceRaw } = require("login.dfe.api-client/users");
 
 custom.setHttpOptionsDefaults({
   timeout: 10000,
@@ -115,12 +115,11 @@ const init = async (app) => {
 
       let allUserServices;
       try {
-        allUserServices = await getSingleUserService(
-          user.sub,
-          config.access.identifiers.service,
-          config.access.identifiers.organisation,
-          req.id,
-        );
+        allUserServices = await getUserServiceRaw({
+          userId: user.sub,
+          serviceId: config.access.identifiers.service,
+          organisationId: config.access.identifiers.organisation,
+        });
       } catch (error) {
         logger.error("Login error in auth callback-allUserServices", {
           correlationId,
