@@ -2,11 +2,10 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/access");
+jest.mock("login.dfe.api-client/users");
 
-const {
-  getServicesByUserId,
-  removeServiceFromUser,
-} = require("../../../src/infrastructure/access");
+const { removeServiceFromUser } = require("../../../src/infrastructure/access");
+const { getUserServicesRaw } = require("login.dfe.api-client/users");
 const { removeAllServicesForUser } = require("../../../src/app/users/utils");
 
 describe("When removing all services for a user", () => {
@@ -14,7 +13,7 @@ describe("When removing all services for a user", () => {
   let req;
 
   beforeEach(() => {
-    getServicesByUserId.mockReset().mockReturnValue([
+    getUserServicesRaw.mockReset().mockReturnValue([
       {
         userId: "user-1",
         serviceId: "service1Id",
@@ -39,17 +38,17 @@ describe("When removing all services for a user", () => {
   it("then it should get user from users index", async () => {
     await removeAllServicesForUser(userId, req);
 
-    expect(getServicesByUserId.mock.calls).toHaveLength(1);
-    expect(getServicesByUserId.mock.calls[0][0]).toBe("user-1");
+    expect(getUserServicesRaw.mock.calls).toHaveLength(1);
+    expect(getUserServicesRaw).toHaveBeenCalledWith({ userId: "user-1" });
     expect(removeServiceFromUser.mock.calls).toHaveLength(2);
   });
 
   it("should continue to work when getServicesByInvitationId returns undefined on a 404", async () => {
-    getServicesByUserId.mockReset().mockReturnValue(undefined);
+    getUserServicesRaw.mockReset().mockReturnValue(undefined);
     await removeAllServicesForUser(userId, req);
 
-    expect(getServicesByUserId.mock.calls).toHaveLength(1);
-    expect(getServicesByUserId.mock.calls[0][0]).toBe("user-1");
+    expect(getUserServicesRaw.mock.calls).toHaveLength(1);
+    expect(getUserServicesRaw).toHaveBeenCalledWith({ userId: "user-1" });
     expect(removeServiceFromUser.mock.calls).toHaveLength(0);
   });
 });

@@ -2,43 +2,6 @@ const config = require("./../config");
 const jwtStrategy = require("login.dfe.jwt-strategies");
 const { fetchApi } = require("login.dfe.async-retry");
 
-const addInvitationService = async (
-  invitationId,
-  serviceId,
-  organisationId,
-  externalIdentifiers = [],
-  roles = [],
-  correlationId,
-) => {
-  const token = await jwtStrategy(config.access.service).getBearerToken();
-
-  try {
-    return await fetchApi(
-      `${config.access.service.url}/invitations/${invitationId}/services/${serviceId}/organisations/${organisationId}`,
-      {
-        method: "PUT",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-        body: {
-          identifiers: externalIdentifiers,
-          roles,
-        },
-      },
-    );
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 403) {
-      return false;
-    }
-    if (status === 409) {
-      return false;
-    }
-    throw e;
-  }
-};
-
 const addUserService = async (
   userId,
   serviceId,
@@ -109,82 +72,6 @@ const updateUserService = async (
   }
 };
 
-const updateInvitationService = async (
-  invitationId,
-  serviceId,
-  organisationId,
-  roles,
-  correlationId,
-) => {
-  const token = await jwtStrategy(config.access.service).getBearerToken();
-
-  try {
-    return await fetchApi(
-      `${config.access.service.url}/invitations/${invitationId}/services/${serviceId}/organisations/${organisationId}`,
-      {
-        method: "PATCH",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-        body: {
-          roles,
-        },
-      },
-    );
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 403) {
-      return false;
-    }
-    if (status === 409) {
-      return false;
-    }
-    throw e;
-  }
-};
-
-const getServicesByUserId = async (id, correlationId) => {
-  const token = await jwtStrategy(config.access.service).getBearerToken();
-
-  try {
-    return await fetchApi(`${config.access.service.url}/users/${id}/services`, {
-      method: "GET",
-      headers: {
-        authorization: `bearer ${token}`,
-        "x-correlation-id": correlationId,
-      },
-    });
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return undefined;
-    }
-    throw e;
-  }
-};
-
-const getServicesByInvitationId = async (iid, correlationId) => {
-  const token = await jwtStrategy(config.access.service).getBearerToken();
-
-  try {
-    return await fetchApi(
-      `${config.access.service.url}/invitations/${iid}/services`,
-      {
-        method: "GET",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-      },
-    );
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return undefined;
-    }
-    throw e;
-  }
-};
-
 const putSingleServiceIdentifierForUser = async (
   userId,
   serviceId,
@@ -215,33 +102,6 @@ const putSingleServiceIdentifierForUser = async (
       return undefined;
     }
     if (e.statusCode === 409) {
-      return undefined;
-    }
-    throw e;
-  }
-};
-
-const getServiceIdentifierDetails = async (
-  serviceId,
-  identifierKey,
-  identifierValue,
-  correlationId,
-) => {
-  const token = await jwtStrategy(config.access.service).getBearerToken();
-
-  try {
-    return await fetchApi(
-      `${config.access.service.url}/services/${serviceId}/users?filteridkey=${identifierKey}&filteridvalue=${identifierValue}`,
-      {
-        method: "GET",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-      },
-    );
-  } catch (e) {
-    if (e.statusCode === 404) {
       return undefined;
     }
     throw e;
@@ -403,16 +263,11 @@ const updateUserServiceRequest = async (id, requestBody, correlationId) => {
 };
 
 module.exports = {
-  addInvitationService,
-  getServicesByUserId,
-  getServicesByInvitationId,
   putSingleServiceIdentifierForUser,
-  getServiceIdentifierDetails,
   getSingleUserService,
   getSingleInvitationService,
   listRolesOfService,
   addUserService,
-  updateInvitationService,
   updateUserService,
   removeServiceFromUser,
   removeServiceFromInvitation,

@@ -5,6 +5,7 @@ jest.mock("./../../../src/infrastructure/directories");
 jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/search");
 jest.mock("./../../../src/infrastructure/applications");
+jest.mock("login.dfe.api-client/users");
 
 const { getUser } = require("./../../../src/infrastructure/directories");
 const {

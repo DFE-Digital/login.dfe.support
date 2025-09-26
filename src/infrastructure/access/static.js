@@ -1,24 +1,8 @@
-const addInvitationService = async () => {
-  return Promise.resolve(null);
-};
-
 const addUserService = async () => {
   return Promise.resolve(null);
 };
 
-const getServicesByUserId = async () => {
-  return Promise.resolve(null);
-};
-
 const putSingleServiceIdentifierForUser = async () => {
-  return Promise.resolve(null);
-};
-
-const getServiceIdentifierDetails = async () => {
-  return Promise.resolve(null);
-};
-
-const getServicesByInvitationId = async () => {
   return Promise.resolve(null);
 };
 
@@ -35,10 +19,6 @@ const listRolesOfService = async () => {
 };
 
 const updateUserService = async () => {
-  return Promise.resolve(null);
-};
-
-const updateInvitationService = async () => {
   return Promise.resolve(null);
 };
 
@@ -59,17 +39,12 @@ const updateUserServiceRequest = async () => {
 };
 
 module.exports = {
-  addInvitationService,
-  getServicesByUserId,
   putSingleServiceIdentifierForUser,
-  getServiceIdentifierDetails,
-  getServicesByInvitationId,
   getSingleInvitationService,
   getSingleUserService,
   listRolesOfService,
   addUserService,
   updateUserService,
-  updateInvitationService,
   removeServiceFromInvitation,
   removeServiceFromUser,
   getUserServiceRequestsByUserId,

@@ -16,7 +16,6 @@ const getDeleteOrganisation = async (req, res) => {
   const servicesForUser = await getAllServicesForUserInOrg(
     userId,
     req.params.id,
-    req.id,
   );
 
   return res.render("users/views/removeOrganisation", {

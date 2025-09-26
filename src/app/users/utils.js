@@ -1,4 +1,8 @@
 const logger = require("./../../infrastructure/logger");
+const { getUserServicesRaw } = require("login.dfe.api-client/users");
+const {
+  getInvitationServicesRaw,
+} = require("login.dfe.api-client/invitations");
 const {
   searchForUsers,
   getSearchDetailsForUserById,
@@ -9,8 +13,6 @@ const {
   getUser,
 } = require("./../../infrastructure/directories");
 const {
-  getServicesByUserId,
-  getServicesByInvitationId,
   getUserServiceRequestsByUserId,
   removeServiceFromUser,
   removeServiceFromInvitation,
@@ -284,7 +286,7 @@ const getUserDetailsById = async (uid, correlationId) => {
     const userSearch = await getSearchDetailsForUserById(uid);
     const rawUser = await getUser(uid, correlationId);
     const user = mapUserToSupportModel(rawUser, userSearch);
-    const serviceDetails = await getServicesByUserId(uid, correlationId);
+    const serviceDetails = await getUserServicesRaw({ userId: uid });
     const hasManageAccess = await checkManageAccess(serviceDetails ?? []);
 
     const ktsDetails = serviceDetails
@@ -330,14 +332,10 @@ const updateUserDetails = async (user, correlationId) => {
   await updateUserInSearch(user, correlationId);
 };
 
-const getAllServicesForUserInOrg = async (
-  userId,
-  organisationId,
-  correlationId,
-) => {
+const getAllServicesForUserInOrg = async (userId, organisationId) => {
   const allUserServices = userId.startsWith("inv-")
-    ? await getServicesByInvitationId(userId.substr(4), correlationId)
-    : await getServicesByUserId(userId, correlationId);
+    ? await getInvitationServicesRaw({ userInvitationId: userId.substr(4) })
+    : await getUserServicesRaw({ userId: userId });
   if (!allUserServices) {
     return [];
   }
@@ -449,7 +447,7 @@ const rejectOpenOrganisationRequestsForUser = async (userId, req) => {
 
 const removeAllServicesForUser = async (userId, req) => {
   const correlationId = req.id;
-  const userServices = (await getServicesByUserId(userId)) || [];
+  const userServices = (await getUserServicesRaw({ userId: userId })) || [];
   logger.info(
     `Removing ${userServices.length} service(s) from user ${userId}`,
     { correlationId },
@@ -470,11 +468,12 @@ const removeAllServicesForUser = async (userId, req) => {
 
 const removeAllServicesForInvitedUser = async (userId, req) => {
   const correlationId = req.id;
-  logger.info(`Attemping to remove services from invite with id: ${userId}`, {
+  logger.info(`Attempting to remove services from invite with id: ${userId}`, {
     correlationId,
   });
   const invitationServiceRecords =
-    (await getServicesByInvitationId(userId.substr(4))) || [];
+    (await getInvitationServicesRaw({ userInvitationId: userId.substr(4) })) ||
+    [];
   for (const serviceRecord of invitationServiceRecords) {
     logger.info(
       `Deleting invitation service record for invitationId: ${serviceRecord.invitationId}, serviceId: ${serviceRecord.serviceId} and organisationId: ${serviceRecord.organisationIdId}`,
