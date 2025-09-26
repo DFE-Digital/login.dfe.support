@@ -2,10 +2,6 @@ const putSingleServiceIdentifierForUser = async () => {
   return Promise.resolve(null);
 };
 
-const removeServiceFromUser = async () => {
-  return Promise.resolve();
-};
-
 const removeServiceFromInvitation = async () => {
   return Promise.resolve();
 };
@@ -21,7 +17,6 @@ const updateUserServiceRequest = async () => {
 module.exports = {
   putSingleServiceIdentifierForUser,
   removeServiceFromInvitation,
-  removeServiceFromUser,
   getUserServiceRequestsByUserId,
   updateUserServiceRequest,
 };

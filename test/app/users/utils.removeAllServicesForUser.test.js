@@ -1,10 +1,9 @@
 jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
-jest.mock("./../../../src/infrastructure/access");
 jest.mock("login.dfe.api-client/users");
 
-const { removeServiceFromUser } = require("../../../src/infrastructure/access");
+const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
 const { getUserServicesRaw } = require("login.dfe.api-client/users");
 const { removeAllServicesForUser } = require("../../../src/app/users/utils");
 
@@ -28,7 +27,7 @@ describe("When removing all services for a user", () => {
       },
     ]);
     // Returns 204 on success
-    removeServiceFromUser.mockReset().mockReturnValue(undefined);
+    deleteUserServiceAccess.mockReset().mockReturnValue(undefined);
 
     req = {
       id: "correlation-id",
@@ -40,7 +39,7 @@ describe("When removing all services for a user", () => {
 
     expect(getUserServicesRaw.mock.calls).toHaveLength(1);
     expect(getUserServicesRaw).toHaveBeenCalledWith({ userId: "user-1" });
-    expect(removeServiceFromUser.mock.calls).toHaveLength(2);
+    expect(deleteUserServiceAccess.mock.calls).toHaveLength(2);
   });
 
   it("should continue to work when getServicesByInvitationId returns undefined on a 404", async () => {
@@ -49,6 +48,6 @@ describe("When removing all services for a user", () => {
 
     expect(getUserServicesRaw.mock.calls).toHaveLength(1);
     expect(getUserServicesRaw).toHaveBeenCalledWith({ userId: "user-1" });
-    expect(removeServiceFromUser.mock.calls).toHaveLength(0);
+    expect(deleteUserServiceAccess.mock.calls).toHaveLength(0);
   });
 });

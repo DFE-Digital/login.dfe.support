@@ -24,9 +24,12 @@ const { deactivate } = require("../../../src/infrastructure/directories");
 const {
   getUserServiceRequestsByUserId,
   updateUserServiceRequest,
-  removeServiceFromUser,
 } = require("../../../src/infrastructure/access");
-const { getUserServicesRaw } = require("login.dfe.api-client/users");
+
+const {
+  getUserServicesRaw,
+  deleteUserServiceAccess,
+} = require("login.dfe.api-client/users");
 const {
   getPendingRequestsAssociatedWithUser,
   updateRequestById,
@@ -465,16 +468,16 @@ describe("When the remove all services and requests checkbox is ticked", () => {
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });
 
-  it("should not call removeServiceFromUser when getServicesByUserId returns an empty array", async () => {
+  it("should not call deleteUserServiceAccess when getServicesByUserId returns an empty array", async () => {
     getUserServicesRaw.mockReset().mockReturnValue([]);
     await postConfirmDeactivate(req, res);
-    expect(removeServiceFromUser.mock.calls).toMatchObject([]);
+    expect(deleteUserServiceAccess.mock.calls).toMatchObject([]);
   });
 
   it("should continue to work getServicesByUserId returns undefined on a 404", async () => {
     getUserServicesRaw.mockReset().mockReturnValue(undefined);
     await postConfirmDeactivate(req, res);
-    expect(removeServiceFromUser.mock.calls).toMatchObject([]);
+    expect(deleteUserServiceAccess.mock.calls).toMatchObject([]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });

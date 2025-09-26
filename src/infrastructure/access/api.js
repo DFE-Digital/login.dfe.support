@@ -38,26 +38,6 @@ const putSingleServiceIdentifierForUser = async (
   }
 };
 
-const removeServiceFromUser = async (
-  userId,
-  serviceId,
-  organisationId,
-  correlationId,
-) => {
-  const token = await jwtStrategy(config.access.service).getBearerToken();
-
-  return await fetchApi(
-    `${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${organisationId}`,
-    {
-      method: "DELETE",
-      headers: {
-        authorization: `bearer ${token}`,
-        "x-correlation-id": correlationId,
-      },
-    },
-  );
-};
-
 const removeServiceFromInvitation = async (
   invitationId,
   serviceId,
@@ -118,7 +98,6 @@ const updateUserServiceRequest = async (id, requestBody, correlationId) => {
 
 module.exports = {
   putSingleServiceIdentifierForUser,
-  removeServiceFromUser,
   removeServiceFromInvitation,
   getUserServiceRequestsByUserId,
   updateUserServiceRequest,

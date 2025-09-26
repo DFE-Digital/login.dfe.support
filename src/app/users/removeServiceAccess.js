@@ -1,10 +1,8 @@
 const { NotificationClient } = require("login.dfe.jobs-client");
+const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
-const {
-  removeServiceFromUser,
-  removeServiceFromInvitation,
-} = require("../../infrastructure/access");
+const { removeServiceFromInvitation } = require("../../infrastructure/access");
 const {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -67,7 +65,7 @@ const post = async (req, res) => {
       req.id,
     );
   } else {
-    await removeServiceFromUser(uid, serviceId, organisationId, req.id);
+    await deleteUserServiceAccess({ userId: uid, serviceId, organisationId });
     if (isEmailAllowed) {
       const notificationClient = new NotificationClient({
         connectionString: config.notifications.connectionString,

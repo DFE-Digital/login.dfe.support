@@ -1,5 +1,8 @@
 const logger = require("./../../infrastructure/logger");
-const { getUserServicesRaw } = require("login.dfe.api-client/users");
+const {
+  getUserServicesRaw,
+  deleteUserServiceAccess,
+} = require("login.dfe.api-client/users");
 const {
   getInvitationServicesRaw,
 } = require("login.dfe.api-client/invitations");
@@ -14,7 +17,6 @@ const {
 } = require("./../../infrastructure/directories");
 const {
   getUserServiceRequestsByUserId,
-  removeServiceFromUser,
   removeServiceFromInvitation,
   updateUserServiceRequest,
 } = require("./../../infrastructure/access");
@@ -457,12 +459,11 @@ const removeAllServicesForUser = async (userId, req) => {
       `Removing service from user: ${service.userId} with serviceId: ${service.serviceId} and organisationId: ${service.organisationId}`,
       { correlationId },
     );
-    removeServiceFromUser(
-      service.userId,
-      service.serviceId,
-      service.organisationId,
-      req.id,
-    );
+    deleteUserServiceAccess({
+      userId: service.userId,
+      serviceId: service.serviceId,
+      organisationId: service.organisationId,
+    });
   }
 };
 
