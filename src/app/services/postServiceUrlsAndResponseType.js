@@ -1,7 +1,7 @@
 const { sendResult } = require("../../infrastructure/utils");
 const { URL } = require("url");
 const logger = require("../../infrastructure/logger");
-const { getAllServices } = require("../../infrastructure/applications/api");
+const { getAllServices } = require("../services/utils");
 
 /**
  * Determines if the url has an http: or https: protocol

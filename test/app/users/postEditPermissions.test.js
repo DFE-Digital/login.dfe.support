@@ -19,6 +19,7 @@ const {
 } = require("./../../../src/infrastructure/search");
 
 jest.mock("login.dfe.jobs-client");
+jest.mock("login.dfe.api-client/services");
 const { NotificationClient } = require("login.dfe.jobs-client");
 
 const res = getResponseMock();

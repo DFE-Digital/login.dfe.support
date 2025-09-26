@@ -1,12 +1,12 @@
 const config = require("../../infrastructure/config");
 const { sendResult } = require("../../infrastructure/utils");
 const { getUserDetails } = require("./utils");
-const { getServiceById } = require("../../infrastructure/applications");
 const {
   listRolesOfService,
   getSingleUserService,
   getSingleInvitationService,
 } = require("../../infrastructure/access");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 
 const manageServiceId = config.access.identifiers.manageService;
 const dfeId = config.access.identifiers.departmentForEducation;
@@ -30,7 +30,7 @@ const getSingleServiceForUser = async (
         organisationId,
         correlationId,
       );
-  const application = await getServiceById(serviceId, correlationId);
+  const application = await getServiceRaw({ by: { serviceId } });
 
   return {
     id: serviceId,
@@ -56,7 +56,9 @@ const checkIfRolesChanged = (rolesSelectedBeforeSession, newRolesSelected) => {
 };
 
 const getManageConsoleRoles = async (req, res) => {
-  const serviceSelectedByUser = await getServiceById(req.params.sid);
+  const serviceSelectedByUser = await getServiceRaw({
+    by: { serviceId: req.params.sid },
+  });
   const user = await getUserDetails(req);
   const userManageRoles = await getSingleServiceForUser(
     req.params.uid,

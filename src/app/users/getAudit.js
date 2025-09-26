@@ -10,7 +10,7 @@ const logger = require("./../../infrastructure/logger");
 const {
   getServiceIdForClientId,
 } = require("./../../infrastructure/serviceMapping");
-const { getServiceById } = require("./../../infrastructure/applications");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 const { getUserStatus } = require("../../infrastructure/directories");
 const {
   getOrganisationById,
@@ -202,7 +202,7 @@ const getCachedServiceIdForClientId = async (client) => {
 const getCachedServiceById = async (serviceId, reqId) => {
   let key = `${serviceId}:${reqId}`;
   if (!(key in cachedServices)) {
-    const service = await getServiceById(serviceId);
+    const service = await getServiceRaw({ by: { serviceId } });
     cachedServices[key] = service;
   }
   return cachedServices[key];

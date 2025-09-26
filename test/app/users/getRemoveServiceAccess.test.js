@@ -7,16 +7,14 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 
 jest.mock("./../../../src/infrastructure/organisations");
 
-jest.mock("./../../../src/infrastructure/applications", () => {
+jest.mock("login.dfe.api-client/services", () => {
   return {
-    getServiceById: jest.fn(),
+    getServiceRaw: jest.fn(),
   };
 });
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
-const {
-  getServiceById,
-} = require("./../../../src/infrastructure/applications");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 const {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -81,8 +79,8 @@ describe("when displaying the remove service access view", () => {
       },
     ]);
 
-    getServiceById.mockReset();
-    getServiceById.mockReturnValue({
+    getServiceRaw.mockReset();
+    getServiceRaw.mockReturnValue({
       id: "service1",
       dateActivated: "10/10/2018",
       name: "service name",
@@ -97,9 +95,10 @@ describe("when displaying the remove service access view", () => {
   it("then it should get the selected service details", async () => {
     await getRemoveService(req, res);
 
-    expect(getServiceById.mock.calls).toHaveLength(1);
-    expect(getServiceById.mock.calls[0][0]).toBe("service1");
-    expect(getServiceById.mock.calls[0][1]).toBe("correlationId");
+    expect(getServiceRaw).toHaveBeenCalledTimes(1);
+    expect(getServiceRaw).toHaveBeenCalledWith({
+      by: { serviceId: "service1" },
+    });
   });
 
   it("then it should return the confirm remove service view", async () => {

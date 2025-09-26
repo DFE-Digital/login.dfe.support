@@ -4,7 +4,7 @@ const {
   getInvitationOrganisations,
 } = require("./../../infrastructure/organisations");
 const { getAllServicesForUserInOrg } = require("./utils");
-const { getAllServices } = require("./../../infrastructure/applications");
+const { getAllServices } = require("../services/utils");
 const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = new PolicyEngine(config);
 

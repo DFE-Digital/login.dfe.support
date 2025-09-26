@@ -6,7 +6,7 @@ const config = require("./../../infrastructure/config");
 const {
   getOrganisationCategories,
 } = require("./../../infrastructure/organisations");
-const { getAllServices } = require("./../../infrastructure/applications");
+const { getAllServices } = require("../services/utils");
 
 const clearNewUserSessionData = (req) => {
   if (req.session.user) {

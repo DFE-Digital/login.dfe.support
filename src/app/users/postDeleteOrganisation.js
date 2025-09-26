@@ -16,9 +16,7 @@ const {
   updateIndex,
   getById,
 } = require("./../../infrastructure/search");
-const {
-  isSupportEmailNotificationAllowed,
-} = require("./../../infrastructure/applications");
+const { isSupportEmailNotificationAllowed } = require("../services/utils");
 
 const deleteInvitationOrg = async (uid, req) => {
   const invitationId = uid.substr(4);

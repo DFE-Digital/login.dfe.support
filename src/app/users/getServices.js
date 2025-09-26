@@ -8,7 +8,7 @@ const {
   getUserOrganisations,
   getInvitationOrganisations,
 } = require("../../infrastructure/organisations");
-const { getAllServices } = require("../../infrastructure/applications");
+const { getAllServices } = require("../services/utils");
 const { getUserStatus } = require("../../infrastructure/directories");
 const logger = require("../../infrastructure/logger");
 
