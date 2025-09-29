@@ -4,7 +4,6 @@ jest.mock("./../../../src/infrastructure/config", () =>
 jest.mock("./../../../src/infrastructure/logger", () =>
   require("../../utils").loggerMockFactory(),
 );
-jest.mock("./../../../src/infrastructure/access");
 jest.mock("./../../../src/infrastructure/organisations", () => ({
   deleteInvitationOrganisation: jest.fn(),
   deleteUserOrganisation: jest.fn(),

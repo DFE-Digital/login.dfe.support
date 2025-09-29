@@ -8,9 +8,6 @@ jest.mock("./../../../src/infrastructure/applications", () => ({
   getAllServices: jest.fn(),
   getPageOfService: jest.fn(),
 }));
-jest.mock("./../../../src/infrastructure/access", () => ({
-  getServicesByUserId: jest.fn(),
-}));
 jest.mock("./../../../src/app/users/utils", () => ({
   getUserDetails: jest.fn(),
 }));
@@ -21,7 +18,6 @@ const {
   getAllServices,
   getPageOfService,
 } = require("./../../../src/infrastructure/applications");
-const { getServicesByUserId } = require("./../../../src/infrastructure/access");
 const { getUserDetails } = require("./../../../src/app/users/utils");
 
 describe("When retrieving manage console services for a user", () => {
@@ -53,34 +49,6 @@ describe("When retrieving manage console services for a user", () => {
     getUserDetails.mockReturnValue({
       id: "user1",
     });
-
-    getServicesByUserId.mockReset();
-    getServicesByUserId.mockReturnValue([
-      {
-        userId: "user-1",
-        serviceId: "service1Id",
-        organisationId: "organisation-1",
-        roles: [],
-      },
-      {
-        userId: "user-1",
-        serviceId: "service2Id",
-        organisationId: "organisation-1",
-        roles: [],
-      },
-      {
-        userId: "user-1",
-        serviceId: "service3Id",
-        organisationId: "organisation-1",
-        roles: [],
-      },
-      {
-        userId: "user-1",
-        serviceId: "service4Id",
-        organisationId: "organisation-1",
-        roles: [],
-      },
-    ]);
 
     const allServices = {
       services: [

@@ -35,9 +35,6 @@ jest.mock("./../../../src/infrastructure/applications", () => ({
   getServiceById: jest.fn(),
 }));
 jest.mock("login.dfe.api-client/services");
-jest.mock("./../../../src/infrastructure/access", () => ({
-  updateUserService: jest.fn(),
-}));
 
 describe("when manage a users manage console roles", () => {
   describe("when displaying manage console role assignment options", () => {
