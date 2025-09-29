@@ -2,9 +2,9 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/access");
-
+jest.mock("login.dfe.api-client/users");
+const { getUserServiceRequestsRaw } = require("login.dfe.api-client/users");
 const {
-  getUserServiceRequestsByUserId,
   updateUserServiceRequest,
 } = require("../../../src/infrastructure/access");
 const {
@@ -16,7 +16,7 @@ describe("When rejecting all open service requests for a user", () => {
   let req;
 
   beforeEach(() => {
-    getUserServiceRequestsByUserId.mockReset().mockReturnValue([
+    getUserServiceRequestsRaw.mockReset().mockReturnValue([
       {
         id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
         userId: "01A52B72-AE88-47BC-800B-E7DFFCE54344",
@@ -38,28 +38,29 @@ describe("When rejecting all open service requests for a user", () => {
     };
   });
 
-  it("should remove one if one is returned by getUserServiceRequestsByUserId", async () => {
+  it("should remove one if one is returned by getUserServiceRequestsRaw", async () => {
     await rejectOpenUserServiceRequestsForUser(userId, req);
 
-    expect(getUserServiceRequestsByUserId.mock.calls).toHaveLength(1);
-    expect(getUserServiceRequestsByUserId.mock.calls[0][0]).toBe("user-1");
+    expect(getUserServiceRequestsRaw.mock.calls).toHaveLength(1);
+    expect(getUserServiceRequestsRaw).toHaveBeenCalledWith({
+      userId: "user-1",
+    });
     expect(updateUserServiceRequest.mock.calls).toHaveLength(1);
-    expect(updateUserServiceRequest.mock.calls[0][0]).toBe(
-      "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-    );
   });
 
-  it("should continue to work when getUserServiceRequestsByUserId returns undefined on a 404", async () => {
-    getUserServiceRequestsByUserId.mockReset().mockReturnValue(undefined);
+  it("should continue to work when getUserServiceRequestsRaw returns undefined on a 404", async () => {
+    getUserServiceRequestsRaw.mockReset().mockReturnValue(undefined);
     await rejectOpenUserServiceRequestsForUser(userId, req);
 
-    expect(getUserServiceRequestsByUserId.mock.calls).toHaveLength(1);
-    expect(getUserServiceRequestsByUserId.mock.calls[0][0]).toBe("user-1");
+    expect(getUserServiceRequestsRaw.mock.calls).toHaveLength(1);
+    expect(getUserServiceRequestsRaw).toHaveBeenCalledWith({
+      userId: "user-1",
+    });
     expect(updateUserServiceRequest.mock.calls).toHaveLength(0);
   });
 
   it("should call updateUserServiceRequest when the returned request has a status of 0, 2 or 3 only", async () => {
-    getUserServiceRequestsByUserId.mockReset().mockReturnValue([
+    getUserServiceRequestsRaw.mockReset().mockReturnValue([
       {
         id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
         userId: "01A52B72-AE88-47BC-800B-E7DFFCE54344",

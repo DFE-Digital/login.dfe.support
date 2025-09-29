@@ -22,13 +22,13 @@ const {
 } = require("../../../src/app/users/utils");
 const { deactivate } = require("../../../src/infrastructure/directories");
 const {
-  getUserServiceRequestsByUserId,
   updateUserServiceRequest,
 } = require("../../../src/infrastructure/access");
 
 const {
   getUserServicesRaw,
   deleteUserServiceAccess,
+  getUserServiceRequestsRaw,
 } = require("login.dfe.api-client/users");
 const {
   getPendingRequestsAssociatedWithUser,
@@ -101,7 +101,7 @@ beforeEach(() => {
 
   updateUserDetails.mockReset();
 
-  getUserServiceRequestsByUserId.mockReset().mockReturnValue([
+  getUserServiceRequestsRaw.mockReset().mockReturnValue([
     {
       id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
       userId: "01A52B72-AE88-47BC-800B-E7DFFCE54344",
@@ -439,15 +439,15 @@ describe("When the remove all services and requests checkbox is ticked", () => {
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });
 
-  it("should not call updateUserServiceRequest when getUserServiceRequestsByUserId returns an empty array", async () => {
-    getUserServiceRequestsByUserId.mockReset().mockReturnValue([]);
+  it("should not call updateUserServiceRequest when getUserServiceRequestsRaw returns an empty array", async () => {
+    getUserServiceRequestsRaw.mockReset().mockReturnValue([]);
     await postConfirmDeactivate(req, res);
     expect(updateUserServiceRequest.mock.calls).toMatchObject([]);
   });
 
-  it("should continue to work when getUserServiceRequestsByUserId returns undefined on a 404", async () => {
+  it("should continue to work when getUserServiceRequestsRaw returns undefined on a 404", async () => {
     // Returns undefined if the api call returns 404
-    getUserServiceRequestsByUserId.mockReset().mockReturnValue(undefined);
+    getUserServiceRequestsRaw.mockReset().mockReturnValue(undefined);
     await postConfirmDeactivate(req, res);
     expect(updateUserServiceRequest.mock.calls).toMatchObject([]);
     expect(res.redirect.mock.calls).toHaveLength(1);

@@ -2,6 +2,7 @@ const logger = require("./../../infrastructure/logger");
 const {
   getUserServicesRaw,
   deleteUserServiceAccess,
+  getUserServiceRequestsRaw,
 } = require("login.dfe.api-client/users");
 const {
   getInvitationServicesRaw,
@@ -16,10 +17,7 @@ const {
   getInvitation,
   getUser,
 } = require("./../../infrastructure/directories");
-const {
-  getUserServiceRequestsByUserId,
-  updateUserServiceRequest,
-} = require("./../../infrastructure/access");
+const { updateUserServiceRequest } = require("./../../infrastructure/access");
 const { getServiceById } = require("./../../infrastructure/applications");
 const {
   getPendingRequestsAssociatedWithUser,
@@ -386,7 +384,7 @@ const mapRole = (roleId) => {
 const rejectOpenUserServiceRequestsForUser = async (userId, req) => {
   const correlationId = req.id;
   const userServiceRequests =
-    (await getUserServiceRequestsByUserId(userId)) || [];
+    (await getUserServiceRequestsRaw({ userId })) || [];
   logger.info(
     `Found ${userServiceRequests.length} service request(s) for user ${userId}. Rejecting any outstanding requests.`,
     { correlationId },
