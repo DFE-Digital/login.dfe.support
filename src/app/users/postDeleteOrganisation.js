@@ -3,14 +3,14 @@ const config = require("./../../infrastructure/config");
 const { NotificationClient } = require("login.dfe.jobs-client");
 const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
 const {
+  deleteServiceAccessFromInvitation,
+} = require("login.dfe.api-client/invitations");
+const {
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   getUserOrganisations,
 } = require("./../../infrastructure/organisations");
 const { getAllServicesForUserInOrg } = require("./utils");
-const {
-  removeServiceFromInvitation,
-} = require("./../../infrastructure/access");
 const {
   getSearchDetailsForUserById,
   updateIndex,
@@ -48,12 +48,11 @@ const postDeleteOrganisation = async (req, res) => {
   if (uid.startsWith("inv-")) {
     for (let i = 0; i < servicesForUserInOrg.length; i++) {
       const service = servicesForUserInOrg[i];
-      await removeServiceFromInvitation(
-        uid.substr(4),
-        service.id,
+      await deleteServiceAccessFromInvitation({
+        invitationId: uid.substr(4),
+        serviceId: service.id,
         organisationId,
-        req.id,
-      );
+      });
     }
     await deleteInvitationOrg(uid, req);
   } else {

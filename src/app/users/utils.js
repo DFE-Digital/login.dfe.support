@@ -5,6 +5,7 @@ const {
 } = require("login.dfe.api-client/users");
 const {
   getInvitationServicesRaw,
+  deleteServiceAccessFromInvitation,
 } = require("login.dfe.api-client/invitations");
 const {
   searchForUsers,
@@ -17,7 +18,6 @@ const {
 } = require("./../../infrastructure/directories");
 const {
   getUserServiceRequestsByUserId,
-  removeServiceFromInvitation,
   updateUserServiceRequest,
 } = require("./../../infrastructure/access");
 const { getServiceById } = require("./../../infrastructure/applications");
@@ -480,12 +480,11 @@ const removeAllServicesForInvitedUser = async (userId, req) => {
       `Deleting invitation service record for invitationId: ${serviceRecord.invitationId}, serviceId: ${serviceRecord.serviceId} and organisationId: ${serviceRecord.organisationIdId}`,
       { correlationId },
     );
-    removeServiceFromInvitation(
-      serviceRecord.invitationId,
-      serviceRecord.serviceId,
-      serviceRecord.organisationId,
-      correlationId,
-    );
+    deleteServiceAccessFromInvitation({
+      invitationId: serviceRecord.invitationId,
+      serviceId: serviceRecord.serviceId,
+      organisationId: serviceRecord.organisationId,
+    });
   }
 };
 

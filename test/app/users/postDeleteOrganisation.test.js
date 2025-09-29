@@ -20,6 +20,7 @@ jest.mock("./../../../src/infrastructure/search", () => {
 
 jest.mock("./../../../src/app/users/utils");
 jest.mock("login.dfe.api-client/users");
+jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.jobs-client");
 const { NotificationClient } = require("login.dfe.jobs-client");
 const { getRequestMock, getResponseMock } = require("../../utils");
@@ -35,8 +36,8 @@ const {
   getById,
 } = require("../../../src/infrastructure/search");
 const {
-  removeServiceFromInvitation,
-} = require("../../../src/infrastructure/access");
+  deleteServiceAccessFromInvitation,
+} = require("login.dfe.api-client/invitations");
 
 const res = getResponseMock();
 
@@ -100,7 +101,7 @@ describe("when removing a users access to an organisation", () => {
       },
     ]);
 
-    removeServiceFromInvitation.mockReset();
+    deleteServiceAccessFromInvitation.mockReset();
 
     getAllServicesForUserInOrg.mockReset().mockReturnValue([
       {

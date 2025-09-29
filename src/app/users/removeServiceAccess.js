@@ -2,7 +2,9 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
-const { removeServiceFromInvitation } = require("../../infrastructure/access");
+const {
+  deleteServiceAccessFromInvitation,
+} = require("login.dfe.api-client/invitations");
 const {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -58,12 +60,11 @@ const post = async (req, res) => {
   const isEmailAllowed = await isSupportEmailNotificationAllowed();
 
   if (uid.startsWith("inv-")) {
-    await removeServiceFromInvitation(
-      uid.substr(4),
+    await deleteServiceAccessFromInvitation({
+      invitationId: uid.substr(4),
       serviceId,
       organisationId,
-      req.id,
-    );
+    });
   } else {
     await deleteUserServiceAccess({ userId: uid, serviceId, organisationId });
     if (isEmailAllowed) {

@@ -5,8 +5,8 @@ jest.mock("./../../../src/infrastructure/access");
 jest.mock("login.dfe.api-client/invitations");
 
 const {
-  removeServiceFromInvitation,
-} = require("../../../src/infrastructure/access");
+  deleteServiceAccessFromInvitation,
+} = require("login.dfe.api-client/invitations");
 const {
   removeAllServicesForInvitedUser,
 } = require("../../../src/app/users/utils");
@@ -30,21 +30,21 @@ describe("When removing all services for an invited user", () => {
       },
     ]);
     // Returns 204 on success
-    removeServiceFromInvitation.mockReset().mockReturnValue(undefined);
+    deleteServiceAccessFromInvitation.mockReset().mockReturnValue(undefined);
 
     req = {
       id: "correlation-id",
     };
   });
 
-  it("then it should call removeServiceFromInvitation when a service is returned", async () => {
+  it("then it should call deleteServiceAccessFromInvitation when a service is returned", async () => {
     await removeAllServicesForInvitedUser(userId, req);
 
     expect(getInvitationServicesRaw.mock.calls).toHaveLength(1);
     expect(getInvitationServicesRaw).toHaveBeenCalledWith({
       userInvitationId: "user-id",
     });
-    expect(removeServiceFromInvitation.mock.calls).toHaveLength(1);
+    expect(deleteServiceAccessFromInvitation.mock.calls).toHaveLength(1);
   });
 
   it("should continue to work when getInvitationServicesRaw returns undefined on a 404", async () => {
@@ -55,6 +55,6 @@ describe("When removing all services for an invited user", () => {
     expect(getInvitationServicesRaw).toHaveBeenCalledWith({
       userInvitationId: "user-id",
     });
-    expect(removeServiceFromInvitation.mock.calls).toHaveLength(0);
+    expect(deleteServiceAccessFromInvitation.mock.calls).toHaveLength(0);
   });
 });

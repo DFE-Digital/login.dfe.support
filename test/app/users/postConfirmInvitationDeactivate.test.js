@@ -19,12 +19,10 @@ const {
 } = require("../../../src/app/users/utils");
 const { sendResult } = require("../../../src/infrastructure/utils");
 const logger = require("../../../src/infrastructure/logger");
-const {
-  removeServiceFromInvitation,
-} = require("../../../src/infrastructure/access");
 const { deactivateInvite } = require("../../../src/infrastructure/directories");
 const {
   getInvitationServicesRaw,
+  deleteServiceAccessFromInvitation,
 } = require("login.dfe.api-client/invitations");
 
 describe("When processing a post for a user invitation deactivate request", () => {
@@ -194,7 +192,7 @@ describe("When the remove services checkbox is ticked for a deactivated invite",
       },
     ]);
     // Returns 204 on success
-    removeServiceFromInvitation.mockReset().mockReturnValue(undefined);
+    deleteServiceAccessFromInvitation.mockReset().mockReturnValue(undefined);
   });
 
   it("redirects to the services page when following the happy path", async () => {
@@ -216,7 +214,7 @@ describe("When the remove services checkbox is ticked for a deactivated invite",
 
     await post(req, res);
     expect(getInvitationServicesRaw.mock.calls).toMatchObject([]);
-    expect(removeServiceFromInvitation.mock.calls).toMatchObject([]);
+    expect(deleteServiceAccessFromInvitation.mock.calls).toMatchObject([]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });
@@ -224,7 +222,7 @@ describe("When the remove services checkbox is ticked for a deactivated invite",
   it("should continue to work when getServicesByInvitationId returns undefined on a 404", async () => {
     getInvitationServicesRaw.mockReset().mockReturnValue(undefined);
     await post(req, res);
-    expect(removeServiceFromInvitation.mock.calls).toMatchObject([]);
+    expect(deleteServiceAccessFromInvitation.mock.calls).toMatchObject([]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });
