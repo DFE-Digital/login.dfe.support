@@ -1,24 +1,4 @@
-const addUserService = async () => {
-  return Promise.resolve(null);
-};
-
 const putSingleServiceIdentifierForUser = async () => {
-  return Promise.resolve(null);
-};
-
-const getSingleUserService = async () => {
-  return Promise.resolve(null);
-};
-
-const getSingleInvitationService = async () => {
-  return Promise.resolve(null);
-};
-
-const listRolesOfService = async () => {
-  return Promise.resolve(null);
-};
-
-const updateUserService = async () => {
   return Promise.resolve(null);
 };
 
@@ -40,11 +20,6 @@ const updateUserServiceRequest = async () => {
 
 module.exports = {
   putSingleServiceIdentifierForUser,
-  getSingleInvitationService,
-  getSingleUserService,
-  listRolesOfService,
-  addUserService,
-  updateUserService,
   removeServiceFromInvitation,
   removeServiceFromUser,
   getUserServiceRequestsByUserId,

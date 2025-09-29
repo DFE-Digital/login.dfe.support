@@ -1,12 +1,12 @@
 const config = require("../../infrastructure/config");
 const { sendResult } = require("../../infrastructure/utils");
-const { getUserDetails } = require("./utils");
+const { getUserDetails, callServiceToUserFunc } = require("./utils");
 const { getServiceById } = require("../../infrastructure/applications");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
-  listRolesOfService,
-  updateUserService,
-  addUserService,
-} = require("../../infrastructure/access");
+  addServiceToUser,
+  updateUserServiceRoles,
+} = require("login.dfe.api-client/users");
 const {
   getSingleServiceForUser,
   addOrChangeManageConsoleServiceTitle,
@@ -33,8 +33,9 @@ const postManageConsoleRoles = async (req, res) => {
     manageServiceId,
     req.id,
   );
-  const manageConsoleRolesForAllServices =
-    await listRolesOfService(manageServiceId);
+  const manageConsoleRolesForAllServices = await getServiceRolesRaw({
+    serviceId: manageServiceId,
+  });
   const manageConsoleRolesForSelectedService =
     manageConsoleRolesForAllServices.filter(
       (service) => service.code.split("_")[0] === req.params.sid,
@@ -80,7 +81,12 @@ const postManageConsoleRoles = async (req, res) => {
   if (!checkIfRolesChanged(currentRoles, newRoles)) {
     return res.redirect(`/users/${req.params.uid}/manage-console-services`);
   } else if (user.hasManageAccess) {
-    updateUserService(req.params.uid, manageServiceId, dfeId, newRoles, req.id);
+    await callServiceToUserFunc(updateUserServiceRoles, {
+      userId: req.params.uid,
+      serviceId: manageServiceId,
+      organisationId: dfeId,
+      serviceRoleIds: newRoles,
+    });
 
     res.flash("info", [
       `Roles updated`,
@@ -89,7 +95,14 @@ const postManageConsoleRoles = async (req, res) => {
     return res.redirect(`/users/${req.params.uid}/manage-console-services`);
   } else {
     await putUserInOrganisation(req.params.uid, dfeId, 1, 0, req.id);
-    addUserService(req.params.uid, manageServiceId, dfeId, newRoles, req.id);
+
+    await callServiceToUserFunc(addServiceToUser, {
+      userId: req.params.uid,
+      serviceId: manageServiceId,
+      organisationId: dfeId,
+      serviceRoleIds: newRoles,
+    });
+
     res.flash("info", [
       `Roles updated`,
       `The selected roles have been updated for ${serviceSelectedByUser.name}`,
