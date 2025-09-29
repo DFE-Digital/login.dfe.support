@@ -7,7 +7,7 @@ jest.mock("./../../../src/infrastructure/search");
 jest.mock("./../../../src/infrastructure/applications");
 jest.mock("login.dfe.api-client/users");
 
-const { getUser } = require("./../../../src/infrastructure/directories");
+const { getUserRaw } = require("login.dfe.api-client/users");
 const {
   getServiceById,
 } = require("./../../../src/infrastructure/applications");
@@ -46,7 +46,7 @@ describe("When getting user details", () => {
       },
     });
 
-    getUser.mockReset().mockReturnValue({
+    getUserRaw.mockReset().mockReturnValue({
       sub: "user1",
       name: "Albus Dumbledore",
       given_name: "Albus",

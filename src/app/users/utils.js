@@ -1,5 +1,8 @@
 const logger = require("./../../infrastructure/logger");
-const { getUserServicesRaw } = require("login.dfe.api-client/users");
+const {
+  getUserServicesRaw,
+  getUserRaw,
+} = require("login.dfe.api-client/users");
 const {
   getInvitationServicesRaw,
 } = require("login.dfe.api-client/invitations");
@@ -8,10 +11,7 @@ const {
   getSearchDetailsForUserById,
   updateUserInSearch,
 } = require("./../../infrastructure/search");
-const {
-  getInvitation,
-  getUser,
-} = require("./../../infrastructure/directories");
+const { getInvitation } = require("./../../infrastructure/directories");
 const {
   getUserServiceRequestsByUserId,
   removeServiceFromUser,
@@ -284,7 +284,7 @@ const getUserDetailsById = async (uid, correlationId) => {
     };
   } else {
     const userSearch = await getSearchDetailsForUserById(uid);
-    const rawUser = await getUser(uid, correlationId);
+    const rawUser = await getUserRaw({ by: { id: uid } });
     const user = mapUserToSupportModel(rawUser, userSearch);
     const serviceDetails = await getUserServicesRaw({ userId: uid });
     const hasManageAccess = await checkManageAccess(serviceDetails ?? []);

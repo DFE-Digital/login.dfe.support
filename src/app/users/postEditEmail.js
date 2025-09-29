@@ -8,12 +8,12 @@ const {
   waitForIndexToUpdate,
 } = require("./utils");
 const {
-  getUser,
   createChangeEmailCode,
   updateInvite,
   getChangeEmailCode,
   deleteChangeEmailCode,
 } = require("../../infrastructure/directories");
+const { getUserRaw } = require("login.dfe.api-client/users");
 
 const validate = async (req) => {
   const model = {
@@ -27,7 +27,7 @@ const validate = async (req) => {
     model.validationMessages.email = "Please enter email address";
   } else if (!emailPolicy.doesEmailMeetPolicy(model.email)) {
     model.validationMessages.email = "Please enter a valid email address";
-  } else if (await getUser(model.email, req.id)) {
+  } else if (await getUserRaw({ by: { email: model.email } })) {
     model.validationMessages.email =
       "A DfE Sign-in user already exists with that email address";
   }

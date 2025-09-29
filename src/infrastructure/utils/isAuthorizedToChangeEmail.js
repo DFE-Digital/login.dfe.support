@@ -1,5 +1,5 @@
 const isInternalEntraUser = require("./isInternalEntraUser");
-const Account = require("./../../infrastructure/directories");
+const { getUserRaw } = require("login.dfe.api-client/users");
 
 // Middleware to check if a user's email is authorized to be changed
 const isAuthorizedToChangeEmail = async (req, res, next) => {
@@ -8,7 +8,7 @@ const isAuthorizedToChangeEmail = async (req, res, next) => {
     if (!userId) {
       return res.status(401).render("errors/views/notAuthorised");
     }
-    const user = await Account.getUser(userId);
+    const user = await getUserRaw({ by: { id: userId } });
 
     // If the user is an internal DSI user who has been migrated to Entra,
     // their email address should not be authorized for change

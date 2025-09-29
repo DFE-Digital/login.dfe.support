@@ -1,10 +1,12 @@
 jest.mock("./../../../src/infrastructure/config", () =>
   require("./../../utils").configMockFactory(),
 );
-jest.mock("./../../../src/infrastructure/directories");
+jest.mock("login.dfe.api-client/users", () => ({
+  getUserRaw: jest.fn(),
+}));
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
-const { getUser } = require("./../../../src/infrastructure/directories");
+const { getUserRaw } = require("login.dfe.api-client/users");
 const postNewUser = require("./../../../src/app/users/postNewUser");
 
 const res = getResponseMock();
@@ -13,7 +15,7 @@ describe("When adding new users personal details", () => {
   let req;
 
   beforeEach(() => {
-    getUser.mockReset().mockReturnValue(null);
+    getUserRaw.mockReset().mockReturnValue(null);
 
     req = getRequestMock({
       body: {
@@ -140,7 +142,7 @@ describe("When adding new users personal details", () => {
   });
 
   it("then it should render view if email already associated to a user", async () => {
-    getUser.mockReturnValue({});
+    getUserRaw.mockReturnValue({});
 
     await postNewUser(req, res);
 
