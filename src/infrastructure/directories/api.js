@@ -3,39 +3,6 @@ const jwtStrategy = require("login.dfe.jwt-strategies");
 
 const { fetchApi } = require("login.dfe.async-retry");
 
-const getPageOfInvitations = async (
-  pageNumber,
-  pageSize,
-  changedAfter,
-  correlationId,
-) => {
-  const token = await jwtStrategy(config.directories.service).getBearerToken();
-
-  try {
-    let uri = `${config.directories.service.url}/invitations?page=${pageNumber}&pageSize=${pageSize}`;
-
-    if (changedAfter) {
-      uri += `&changedAfter=${changedAfter.toISOString()}`;
-    }
-
-    const pageOfInvitations = await fetchApi(uri, {
-      method: "GET",
-      headers: {
-        authorization: `bearer ${token}`,
-        "x-correlation-id": correlationId,
-      },
-    });
-
-    return pageOfInvitations;
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 404) {
-      return null;
-    }
-    throw e;
-  }
-};
-
 const getInvitation = async (invitationId, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
@@ -403,7 +370,6 @@ const getLegacyUsernames = async (userIds, correlationId) => {
 };
 
 module.exports = {
-  getPageOfInvitations,
   getInvitation,
   updateUser,
   deactivate,

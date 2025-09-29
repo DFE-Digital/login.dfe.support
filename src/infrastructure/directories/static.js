@@ -1,13 +1,5 @@
 const { v4: uuid } = require("uuid");
 
-const getPageOfInvitations = async (pageNumber) => {
-  return {
-    invitations: [],
-    numberOfPages: 1,
-    page: pageNumber,
-  };
-};
-
 const getInvitation = async (invitationId) => {
   return {
     firstName: "Some",
@@ -76,7 +68,6 @@ const getLegacyUsernames = async () => {
 };
 
 module.exports = {
-  getPageOfInvitations,
   getInvitation,
   updateUser,
   deactivate,
