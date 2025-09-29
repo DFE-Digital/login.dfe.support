@@ -4,6 +4,7 @@ const {
   deleteUserServiceAccess,
   getUserServiceRequestsRaw,
 } = require("login.dfe.api-client/users");
+const { updateServiceRequest } = require("login.dfe.api-client/services");
 const {
   getInvitationServicesRaw,
   deleteServiceAccessFromInvitation,
@@ -17,7 +18,6 @@ const {
   getInvitation,
   getUser,
 } = require("./../../infrastructure/directories");
-const { updateUserServiceRequest } = require("./../../infrastructure/access");
 const { getServiceById } = require("./../../infrastructure/applications");
 const {
   getPendingRequestsAssociatedWithUser,
@@ -399,13 +399,13 @@ const rejectOpenUserServiceRequestsForUser = async (userId, req) => {
       logger.info(`Rejecting service request with id: ${serviceRequest.id}`, {
         correlationId,
       });
-      const requestBody = {
+      updateServiceRequest({
+        serviceRequestId: serviceRequest.id,
         status: -1,
-        actioned_reason: "User deactivation",
-        actioned_by: req.user.sub,
-        actioned_at: new Date(),
-      };
-      updateUserServiceRequest(serviceRequest.id, requestBody, req.id);
+        actionedByUserId: req.user.sub,
+        actionedAt: new Date(),
+        reason: "User deactivation",
+      });
     }
   }
 };

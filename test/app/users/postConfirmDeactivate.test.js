@@ -7,9 +7,9 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 jest.mock("./../../../src/app/users/utils");
 jest.mock("./../../../src/infrastructure/utils");
 jest.mock("./../../../src/infrastructure/directories");
-jest.mock("./../../../src/infrastructure/access");
 jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("login.dfe.api-client/users");
+jest.mock("login.dfe.api-client/services");
 
 const logger = require("../../../src/infrastructure/logger");
 const {
@@ -21,9 +21,7 @@ const {
   updateUserDetails,
 } = require("../../../src/app/users/utils");
 const { deactivate } = require("../../../src/infrastructure/directories");
-const {
-  updateUserServiceRequest,
-} = require("../../../src/infrastructure/access");
+const { updateServiceRequest } = require("login.dfe.api-client/services");
 
 const {
   getUserServicesRaw,
@@ -439,17 +437,17 @@ describe("When the remove all services and requests checkbox is ticked", () => {
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });
 
-  it("should not call updateUserServiceRequest when getUserServiceRequestsRaw returns an empty array", async () => {
+  it("should not call updateServiceRequest when getUserServiceRequestsRaw returns an empty array", async () => {
     getUserServiceRequestsRaw.mockReset().mockReturnValue([]);
     await postConfirmDeactivate(req, res);
-    expect(updateUserServiceRequest.mock.calls).toMatchObject([]);
+    expect(updateServiceRequest.mock.calls).toMatchObject([]);
   });
 
   it("should continue to work when getUserServiceRequestsRaw returns undefined on a 404", async () => {
     // Returns undefined if the api call returns 404
     getUserServiceRequestsRaw.mockReset().mockReturnValue(undefined);
     await postConfirmDeactivate(req, res);
-    expect(updateUserServiceRequest.mock.calls).toMatchObject([]);
+    expect(updateServiceRequest.mock.calls).toMatchObject([]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });

@@ -1,12 +1,10 @@
 jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
-jest.mock("./../../../src/infrastructure/access");
 jest.mock("login.dfe.api-client/users");
+jest.mock("login.dfe.api-client/services");
 const { getUserServiceRequestsRaw } = require("login.dfe.api-client/users");
-const {
-  updateUserServiceRequest,
-} = require("../../../src/infrastructure/access");
+const { updateServiceRequest } = require("login.dfe.api-client/services");
 const {
   rejectOpenUserServiceRequestsForUser,
 } = require("../../../src/app/users/utils");
@@ -45,7 +43,7 @@ describe("When rejecting all open service requests for a user", () => {
     expect(getUserServiceRequestsRaw).toHaveBeenCalledWith({
       userId: "user-1",
     });
-    expect(updateUserServiceRequest.mock.calls).toHaveLength(1);
+    expect(updateServiceRequest.mock.calls).toHaveLength(1);
   });
 
   it("should continue to work when getUserServiceRequestsRaw returns undefined on a 404", async () => {
@@ -56,10 +54,10 @@ describe("When rejecting all open service requests for a user", () => {
     expect(getUserServiceRequestsRaw).toHaveBeenCalledWith({
       userId: "user-1",
     });
-    expect(updateUserServiceRequest.mock.calls).toHaveLength(0);
+    expect(updateServiceRequest.mock.calls).toHaveLength(0);
   });
 
-  it("should call updateUserServiceRequest when the returned request has a status of 0, 2 or 3 only", async () => {
+  it("should call updateServiceRequest when the returned request has a status of 0, 2 or 3 only", async () => {
     getUserServiceRequestsRaw.mockReset().mockReturnValue([
       {
         id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
@@ -104,15 +102,33 @@ describe("When rejecting all open service requests for a user", () => {
     ]);
     await rejectOpenUserServiceRequestsForUser(userId, req);
 
-    expect(updateUserServiceRequest.mock.calls).toHaveLength(3);
-    expect(updateUserServiceRequest.mock.calls[0][0]).toEqual(
-      "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+    expect(updateServiceRequest.mock.calls).toHaveLength(3);
+
+    expect(updateServiceRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        serviceRequestId: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+        actionedByUserId: "suser1",
+        reason: "User deactivation",
+        status: -1,
+      }),
     );
-    expect(updateUserServiceRequest.mock.calls[1][0]).toEqual(
-      "dd657fbb-65b6-4b08-bab8-6d85069b59fa",
+
+    expect(updateServiceRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        serviceRequestId: "dd657fbb-65b6-4b08-bab8-6d85069b59fa",
+        actionedByUserId: "suser1",
+        reason: "User deactivation",
+        status: -1,
+      }),
     );
-    expect(updateUserServiceRequest.mock.calls[2][0]).toEqual(
-      "e3a843d1-0866-4e9f-904f-391bfb769c2d",
+
+    expect(updateServiceRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        serviceRequestId: "e3a843d1-0866-4e9f-904f-391bfb769c2d",
+        actionedByUserId: "suser1",
+        reason: "User deactivation",
+        status: -1,
+      }),
     );
   });
 });
