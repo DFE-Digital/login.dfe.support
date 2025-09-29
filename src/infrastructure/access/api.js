@@ -2,42 +2,6 @@ const config = require("./../config");
 const jwtStrategy = require("login.dfe.jwt-strategies");
 const { fetchApi } = require("login.dfe.async-retry");
 
-const putSingleServiceIdentifierForUser = async (
-  userId,
-  serviceId,
-  orgId,
-  key,
-  value,
-  correlationId,
-) => {
-  const token = await jwtStrategy(config.access.service).getBearerToken();
-
-  try {
-    await fetchApi(
-      `${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${orgId}/identifiers/${key}`,
-      {
-        method: "PUT",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-        body: {
-          value: value,
-        },
-      },
-    );
-    return true;
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return undefined;
-    }
-    if (e.statusCode === 409) {
-      return undefined;
-    }
-    throw e;
-  }
-};
-
 const updateUserServiceRequest = async (id, requestBody, correlationId) => {
   const token = await jwtStrategy(config.access.service).getBearerToken();
 
@@ -55,6 +19,5 @@ const updateUserServiceRequest = async (id, requestBody, correlationId) => {
 };
 
 module.exports = {
-  putSingleServiceIdentifierForUser,
   updateUserServiceRequest,
 };
