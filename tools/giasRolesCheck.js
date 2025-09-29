@@ -2,13 +2,12 @@ const config = require("./../src/infrastructure/config");
 const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = new PolicyEngine(config);
 const { Connection, Request } = require("tedious");
-const {
-  updateUserService,
-  removeServiceFromUser,
-} = require("./../src/infrastructure/access");
+const { removeServiceFromUser } = require("./../src/infrastructure/access");
+const { updateUserServiceRoles } = require("login.dfe.api-client/users");
 const { ServiceNotificationsClient } = require("login.dfe.jobs-client");
 const { createWriteStream } = require("fs");
 const homeDirectory = require("os").homedir();
+const { callServiceToUserFunc } = require("./../src/app/users/utils");
 
 const service = {
   requiredRolesForService: 2,
@@ -119,13 +118,12 @@ const updateUserRoles = async () => {
       const roles = currentPolicy.policyResult.map((x) => x.id);
       console.log(roles);
       // update roles
-      await updateUserService(
-        currentPolicy.userId,
-        currentPolicy.serviceId,
-        currentPolicy.organisationId,
-        roles,
-        `${service.name}-dev-script`,
-      );
+      await callServiceToUserFunc(updateUserServiceRoles, {
+        userId: currentPolicy.userId,
+        serviceId: currentPolicy.serviceId,
+        organisationId: currentPolicy.organisationId,
+        serviceRoleIds: roles,
+      });
 
       // send ws sync
       const serviceNotificationsClient = new ServiceNotificationsClient(

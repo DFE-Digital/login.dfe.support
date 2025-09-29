@@ -5,11 +5,9 @@ const {
   getUserOrganisations,
   getInvitationOrganisations,
 } = require("./../../infrastructure/organisations");
-const {
-  getSingleUserService,
-  getSingleInvitationService,
-} = require("./../../infrastructure/access");
 const PolicyEngine = require("login.dfe.policy-engine");
+const { getUserServiceRaw } = require("login.dfe.api-client/users");
+const { getInvitationServiceRaw } = require("login.dfe.api-client/invitations");
 const policyEngine = new PolicyEngine(config);
 
 const getSingleServiceForUser = async (
@@ -19,18 +17,12 @@ const getSingleServiceForUser = async (
   correlationId,
 ) => {
   const userService = userId.startsWith("inv-")
-    ? await getSingleInvitationService(
-        userId.substr(4),
+    ? await getInvitationServiceRaw({
+        invitationId: userId.substr(4),
         serviceId,
         organisationId,
-        correlationId,
-      )
-    : await getSingleUserService(
-        userId,
-        serviceId,
-        organisationId,
-        correlationId,
-      );
+      })
+    : await getUserServiceRaw({ userId, serviceId, organisationId });
   const application = await getServiceById(serviceId, correlationId);
   return {
     id: userService.serviceId,

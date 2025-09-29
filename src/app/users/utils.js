@@ -488,6 +488,29 @@ const removeAllServicesForInvitedUser = async (userId, req) => {
   }
 };
 
+const callServiceToUserFunc = async (
+  apiFn,
+  { userId, serviceId, organisationId, serviceRoleIds },
+) => {
+  try {
+    return await apiFn({
+      userId,
+      serviceId,
+      organisationId,
+      serviceRoleIds,
+    });
+  } catch (e) {
+    const status = e.statusCode ? e.statusCode : 500;
+    if (status === 403) {
+      return false;
+    }
+    if (status === 409) {
+      return false;
+    }
+    throw e;
+  }
+};
+
 module.exports = {
   search,
   searchForBulkUsersPage,
@@ -501,4 +524,5 @@ module.exports = {
   rejectOpenOrganisationRequestsForUser,
   removeAllServicesForUser,
   removeAllServicesForInvitedUser,
+  callServiceToUserFunc,
 };
