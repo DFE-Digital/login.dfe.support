@@ -23,7 +23,7 @@ const getSingleServiceForUser = async (userId, organisationId, serviceId) => {
 
   return {
     id: serviceId,
-    roles: userService === undefined ? [] : userService.roles,
+    roles: userService?.roles ?? [],
     name: application.name,
   };
 };
