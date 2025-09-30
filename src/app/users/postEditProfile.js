@@ -6,13 +6,11 @@ const {
   updateUserDetails,
   waitForIndexToUpdate,
 } = require("./utils");
-const {
-  updateUser,
-  updateInvite,
-} = require("../../infrastructure/directories");
+const { updateInvite } = require("../../infrastructure/directories");
 const {
   putSingleServiceIdentifierForUser,
 } = require("../../infrastructure/access");
+const { updateUser } = require("login.dfe.api-client/users");
 
 const validate = (req) => {
   const validationMessages = {};
@@ -141,7 +139,13 @@ const postEditProfile = async (req, res) => {
       req.id,
     );
   } else {
-    await updateUser(uid, req.body.firstName, req.body.lastName, req.id);
+    updateUser({
+      userId: uid,
+      update: {
+        givenName: req.body.firstName,
+        familyName: req.body.lastName,
+      },
+    });
     await updateUserIndex(uid, req.body.firstName, req.body.lastName, req.id);
   }
 
