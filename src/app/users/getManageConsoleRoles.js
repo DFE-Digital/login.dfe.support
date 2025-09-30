@@ -1,12 +1,12 @@
 const config = require("../../infrastructure/config");
 const { sendResult } = require("../../infrastructure/utils");
 const { getUserDetails } = require("./utils");
+const { getUserServiceRaw } = require("login.dfe.api-client/users");
+const { getInvitationServiceRaw } = require("login.dfe.api-client/invitations");
 const {
-  listRolesOfService,
-  getSingleUserService,
-  getSingleInvitationService,
-} = require("../../infrastructure/access");
-const { getServiceRaw } = require("login.dfe.api-client/services");
+  getServiceRolesRaw,
+  getServiceRaw,
+} = require("login.dfe.api-client/services");
 
 const manageServiceId = config.access.identifiers.manageService;
 const dfeId = config.access.identifiers.departmentForEducation;
@@ -18,18 +18,12 @@ const getSingleServiceForUser = async (
   correlationId,
 ) => {
   const userService = userId.startsWith("inv-")
-    ? await getSingleInvitationService(
-        userId.substr(4),
+    ? await getInvitationServiceRaw({
+        invitationId: userId.substr(4),
         serviceId,
         organisationId,
-        correlationId,
-      )
-    : await getSingleUserService(
-        userId,
-        serviceId,
-        organisationId,
-        correlationId,
-      );
+      })
+    : await getUserServiceRaw({ userId, serviceId, organisationId });
   const application = await getServiceRaw({ by: { serviceId } });
 
   return {
@@ -66,8 +60,9 @@ const getManageConsoleRoles = async (req, res) => {
     manageServiceId,
     req.id,
   );
-  const manageConsoleRolesForAllServices =
-    await listRolesOfService(manageServiceId);
+  const manageConsoleRolesForAllServices = await getServiceRolesRaw({
+    serviceId: manageServiceId,
+  });
   const manageConsoleRolesForSelectedService =
     manageConsoleRolesForAllServices.filter(
       (service) => service.code.split("_")[0] === req.params.sid,

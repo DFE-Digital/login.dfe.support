@@ -1,15 +1,16 @@
 const { NotificationClient } = require("login.dfe.jobs-client");
 const { get: getSafePath } = require("lodash");
+const { callServiceToUserFunc } = require("./utils");
 const {
   getAllServices,
   isSupportEmailNotificationAllowed,
 } = require("../services/utils");
 const config = require("../../infrastructure/config");
+const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
-  listRolesOfService,
-  addUserService,
-  updateUserService,
-} = require("../../infrastructure/access");
+  addServiceToUser,
+  updateUserServiceRoles,
+} = require("login.dfe.api-client/users");
 const {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -47,7 +48,9 @@ const get = async (req, res) => {
       const serviceDetails = allServices.services.find(
         (x) => x.id === service.id,
       );
-      const allRolesOfService = await listRolesOfService(service.id, req.id);
+      const allRolesOfService = await getServiceRolesRaw({
+        serviceId: service.id,
+      });
       const roleDetails = allRolesOfService.filter((x) =>
         service.roles.find((y) => y.toLowerCase() === x.id.toLowerCase()),
       );
@@ -85,6 +88,8 @@ const post = async (req, res) => {
   const isEmailAllowed = await isSupportEmailNotificationAllowed();
   const organisationId = req.params.orgId;
 
+  // A function to call either addServiceToInvitation or updateInvitationServiceRoles (passed as a delegate).
+  // This handles the 403 and 409 errors that can be returned from these functions.
   const callServiceToInvitationFunc = async (
     apiFn,
     { invitationId, serviceId, organisationId, serviceRoleIds },
@@ -131,20 +136,18 @@ const post = async (req, res) => {
             });
       } else {
         req.session.user.isAddService
-          ? await addUserService(
-              uid,
-              service.serviceId,
+          ? await callServiceToUserFunc(addServiceToUser, {
+              userId: uid,
+              serviceId: service.serviceId,
               organisationId,
-              service.roles,
-              req.id,
-            )
-          : await updateUserService(
-              uid,
-              service.serviceId,
+              serviceRoleIds: service.roles,
+            })
+          : await callServiceToUserFunc(updateUserServiceRoles, {
+              userId: uid,
+              serviceId: service.serviceId,
               organisationId,
-              service.roles,
-              req.id,
-            );
+              serviceRoleIds: service.roles,
+            });
       }
 
       if (isEmailAllowed && (invitationId === undefined || !invitationId)) {
@@ -161,10 +164,9 @@ const post = async (req, res) => {
         const serviceDetails = allServices.services.find(
           (x) => x.id === service.serviceId,
         );
-        const allRolesOfService = await listRolesOfService(
-          service.serviceId,
-          req.id,
-        );
+        const allRolesOfService = await getServiceRolesRaw({
+          serviceId: service.serviceId,
+        });
         const roleDetails = allRolesOfService.filter((x) =>
           service.roles.find((y) => y.toLowerCase() === x.id.toLowerCase()),
         );

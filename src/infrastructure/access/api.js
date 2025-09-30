@@ -2,76 +2,6 @@ const config = require("./../config");
 const jwtStrategy = require("login.dfe.jwt-strategies");
 const { fetchApi } = require("login.dfe.async-retry");
 
-const addUserService = async (
-  userId,
-  serviceId,
-  organisationId,
-  roles = [],
-  correlationId,
-) => {
-  const token = await jwtStrategy(config.access.service).getBearerToken();
-
-  try {
-    return await fetchApi(
-      `${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${organisationId}`,
-      {
-        method: "PUT",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-        body: {
-          roles,
-        },
-      },
-    );
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 403) {
-      return false;
-    }
-    if (status === 409) {
-      return false;
-    }
-    throw e;
-  }
-};
-
-const updateUserService = async (
-  userId,
-  serviceId,
-  organisationId,
-  roles,
-  correlationId,
-) => {
-  const token = await jwtStrategy(config.access.service).getBearerToken();
-
-  try {
-    return await fetchApi(
-      `${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${organisationId}`,
-      {
-        method: "PATCH",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-        body: {
-          roles,
-        },
-      },
-    );
-  } catch (e) {
-    const status = e.statusCode ? e.statusCode : 500;
-    if (status === 403) {
-      return false;
-    }
-    if (status === 409) {
-      return false;
-    }
-    throw e;
-  }
-};
-
 const putSingleServiceIdentifierForUser = async (
   userId,
   serviceId,
@@ -102,82 +32,6 @@ const putSingleServiceIdentifierForUser = async (
       return undefined;
     }
     if (e.statusCode === 409) {
-      return undefined;
-    }
-    throw e;
-  }
-};
-
-const getSingleUserService = async (
-  userId,
-  serviceId,
-  organisationId,
-  correlationId,
-) => {
-  const token = await jwtStrategy(config.access.service).getBearerToken();
-
-  try {
-    return await fetchApi(
-      `${config.access.service.url}/users/${userId}/services/${serviceId}/organisations/${organisationId}`,
-      {
-        method: "GET",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-      },
-    );
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return undefined;
-    }
-    throw e;
-  }
-};
-
-const getSingleInvitationService = async (
-  invitationId,
-  serviceId,
-  organisationId,
-  correlationId,
-) => {
-  const token = await jwtStrategy(config.access.service).getBearerToken();
-
-  try {
-    return await fetchApi(
-      `${config.access.service.url}/invitations/${invitationId}/services/${serviceId}/organisations/${organisationId}`,
-      {
-        method: "GET",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-      },
-    );
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return undefined;
-    }
-    throw e;
-  }
-};
-
-const listRolesOfService = async (serviceId, correlationId) => {
-  const token = await jwtStrategy(config.access.service).getBearerToken();
-
-  try {
-    return await fetchApi(
-      `${config.access.service.url}/services/${serviceId}/roles`,
-      {
-        method: "GET",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-      },
-    );
-  } catch (e) {
-    if (e.statusCode === 404) {
       return undefined;
     }
     throw e;
@@ -264,11 +118,6 @@ const updateUserServiceRequest = async (id, requestBody, correlationId) => {
 
 module.exports = {
   putSingleServiceIdentifierForUser,
-  getSingleUserService,
-  getSingleInvitationService,
-  listRolesOfService,
-  addUserService,
-  updateUserService,
   removeServiceFromUser,
   removeServiceFromInvitation,
   getUserServiceRequestsByUserId,

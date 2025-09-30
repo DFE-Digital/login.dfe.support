@@ -28,30 +28,24 @@ jest.mock("./../../../src/infrastructure/utils", () => ({
 jest.mock("./../../../src/app/users/utils", () => ({
   getUserDetails: jest.fn(),
 }));
-
+jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.policy-engine");
-
+jest.mock("login.dfe.api-client/users");
 jest.mock("login.dfe.api-client/services", () => ({
   getServiceRaw: jest.fn(),
 }));
-
 jest.mock("./../../../src/infrastructure/access", () => ({
-  listRolesOfService: jest.fn(),
-  getSingleUserService: jest.fn(),
-  getSingleInvitationService: jest.fn(),
   updateUserService: jest.fn(),
 }));
+const { getServiceRaw } = require("login.dfe.api-client/services");
 
 describe("when manage a users manage console roles", () => {
   describe("when displaying manage console role assignment options", () => {
     it("should return service details for a user", async () => {
-      const { getServiceRaw } = require("login.dfe.api-client/services");
-      const {
-        getSingleUserService,
-      } = require("./../../../src/infrastructure/access");
+      const { getUserServiceRaw } = require("login.dfe.api-client/users");
 
       getServiceRaw.mockResolvedValue({ name: "Test Service" });
-      getSingleUserService.mockResolvedValue({
+      getUserServiceRaw.mockResolvedValue({
         serviceId: "service-id",
         roles: ["role1"],
       });
@@ -71,13 +65,12 @@ describe("when manage a users manage console roles", () => {
     });
 
     it("should return service details for an invitation user", async () => {
-      const { getServiceRaw } = require("login.dfe.api-client/services");
       const {
-        getSingleInvitationService,
-      } = require("./../../../src/infrastructure/access");
+        getInvitationServiceRaw,
+      } = require("login.dfe.api-client/invitations");
 
       getServiceRaw.mockResolvedValue({ name: "Test Service" });
-      getSingleInvitationService.mockResolvedValue({
+      getInvitationServiceRaw.mockResolvedValue({
         serviceId: "service-id",
         roles: ["role1"],
       });

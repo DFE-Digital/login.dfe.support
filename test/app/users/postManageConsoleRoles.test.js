@@ -1,4 +1,3 @@
-// Mock dependencies
 jest.mock("login.dfe.jwt-strategies");
 jest.mock("./../../../src/infrastructure/config", () =>
   require("./../../utils").configMockFactory({
@@ -9,6 +8,7 @@ jest.mock("./../../../src/infrastructure/config", () =>
       },
     },
     access: {
+      type: "static",
       identifiers: {
         service: "service1",
         organisation: "organisation1",
@@ -21,19 +21,21 @@ jest.mock("./../../../src/infrastructure/config", () =>
 jest.mock("login.dfe.policy-engine");
 jest.mock("./../../../src/app/users/getManageConsoleRoles");
 jest.mock("login.dfe.api-client/services", () => ({
+  getServiceRolesRaw: jest.fn(),
   getServiceRaw: jest.fn(),
 }));
-jest.mock("./../../../src/app/users/utils", () => ({
-  getUserDetails: jest.fn(),
-  getUserDetailsById: jest.fn(),
-}));
-jest.mock("./../../../src/infrastructure/access", () => ({
-  listRolesOfService: jest.fn(),
-  getSingleUserService: jest.fn(),
-  getSingleInvitationService: jest.fn(),
-  updateUserService: jest.fn(),
-  addUserService: jest.fn(),
-}));
+jest.mock("./../../../src/app/users/utils", () => {
+  const actual = jest.requireActual("./../../../src/app/users/utils");
+
+  return {
+    callServiceToUserFunc: actual.callServiceToUserFunc,
+    getUserDetails: jest.fn(),
+    getUserDetailsById: jest.fn(),
+  };
+});
+
+jest.mock("login.dfe.api-client/invitations");
+jest.mock("login.dfe.api-client/users");
 jest.mock("./../../../src/infrastructure/organisations", () => ({
   putUserInOrganisation: jest.fn(),
 }));
@@ -41,21 +43,23 @@ jest.mock("./../../../src/infrastructure/organisations", () => ({
 // Import dependencies
 const jwtStrategy = require("login.dfe.jwt-strategies");
 const postManageConsoleRoles = require("./../../../src/app/users/postManageConsoleRoles");
-const { getServiceRaw } = require("login.dfe.api-client/services");
 const {
   putUserInOrganisation,
 } = require("./../../../src/infrastructure/organisations");
 const {
-  getSingleUserService,
-  listRolesOfService,
-  updateUserService,
-  addUserService,
-} = require("./../../../src/infrastructure/access");
+  getServiceRolesRaw,
+  getServiceRaw,
+} = require("login.dfe.api-client/services");
+const {
+  addServiceToUser,
+  updateUserServiceRoles,
+} = require("login.dfe.api-client/users");
 const { getUserDetails } = require("./../../../src/app/users/utils");
 const {
   getSingleServiceForUser,
   checkIfRolesChanged,
 } = require("./../../../src/app/users/getManageConsoleRoles");
+const { getUserServiceRaw } = require("login.dfe.api-client/users");
 
 describe("when changing a user's manage console access", () => {
   let req, res;
@@ -92,7 +96,7 @@ describe("when changing a user's manage console access", () => {
       redirect: jest.fn(),
     };
 
-    listRolesOfService.mockResolvedValue([
+    getServiceRolesRaw.mockResolvedValue([
       {
         id: "role1",
         name: "test service 1 - Service Access Management",
@@ -127,7 +131,7 @@ describe("when changing a user's manage console access", () => {
       name: "Test Service",
       id: "testService1",
     });
-    getSingleUserService.mockResolvedValue({
+    getUserServiceRaw.mockResolvedValue({
       serviceId: "service-id",
       roles: [{ id: "role1" }],
     });
@@ -150,14 +154,13 @@ describe("when changing a user's manage console access", () => {
 
     await postManageConsoleRoles(req, res);
 
-    expect(updateUserService).toHaveBeenCalledTimes(1);
-    expect(updateUserService).toHaveBeenCalledWith(
-      "userId",
-      "manageService1",
-      "departmentForEducation1",
-      ["role1", "role2"],
-      "correlationId",
-    );
+    expect(updateUserServiceRoles).toHaveBeenCalledTimes(1);
+    expect(updateUserServiceRoles).toHaveBeenCalledWith({
+      organisationId: "departmentForEducation1",
+      serviceId: "manageService1",
+      serviceRoleIds: ["role1", "role2"],
+      userId: "userId",
+    });
   });
 
   it("should redirect the user to the manage console services endpoint with a flash message if updating the service", async () => {
@@ -167,7 +170,7 @@ describe("when changing a user's manage console access", () => {
 
     await postManageConsoleRoles(req, res);
 
-    expect(updateUserService).toHaveBeenCalledTimes(1);
+    expect(updateUserServiceRoles).toHaveBeenCalledTimes(1);
     expect(res.flash).toHaveBeenCalledWith("info", [
       "Roles updated",
       "The selected roles have been updated for Test Service",
@@ -185,7 +188,7 @@ describe("when changing a user's manage console access", () => {
 
     await postManageConsoleRoles(req, res);
 
-    expect(addUserService).toHaveBeenCalledTimes(1);
+    expect(addServiceToUser).toHaveBeenCalledTimes(1);
     expect(res.flash).toHaveBeenCalledWith("info", [
       "Roles updated",
       "The selected roles have been updated for Test Service",
@@ -196,7 +199,7 @@ describe("when changing a user's manage console access", () => {
     );
   });
 
-  it("should call addUserService if hasManageAccess is false", async () => {
+  it("should call addServiceToUser if hasManageAccess is false", async () => {
     checkIfRolesChanged.mockResolvedValue(false);
     getUserDetails.mockResolvedValue({
       hasManageAccess: false,
@@ -205,14 +208,13 @@ describe("when changing a user's manage console access", () => {
     await postManageConsoleRoles(req, res);
 
     expect(putUserInOrganisation).toHaveBeenCalledTimes(1);
-    expect(addUserService).toHaveBeenCalledTimes(1);
-    expect(updateUserService).not.toHaveBeenCalled();
-    expect(addUserService).toHaveBeenCalledWith(
-      "userId",
-      "manageService1",
-      "departmentForEducation1",
-      ["role1", "role2"],
-      "correlationId",
-    );
+    expect(addServiceToUser).toHaveBeenCalledTimes(1);
+    expect(updateUserServiceRoles).not.toHaveBeenCalled();
+    expect(addServiceToUser).toHaveBeenCalledWith({
+      organisationId: "departmentForEducation1",
+      serviceId: "manageService1",
+      serviceRoleIds: ["role1", "role2"],
+      userId: "userId",
+    });
   });
 });
