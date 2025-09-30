@@ -26,7 +26,7 @@ const getSingleServiceForUser = async (
 
   return {
     id: serviceId,
-    roles: userService === undefined ? [] : userService.roles,
+    roles: userService?.roles ?? [],
     name: application.name,
   };
 };
