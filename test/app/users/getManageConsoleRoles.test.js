@@ -43,12 +43,9 @@ describe("when manage a users manage console roles", () => {
   describe("when displaying manage console role assignment options", () => {
     it("should assign roles as an empty array when getInvitationServiceRaw returns 'undefined'", async () => {
       const {
-        getServiceById,
-      } = require("./../../../src/infrastructure/applications");
-      const {
         getInvitationServiceRaw,
       } = require("login.dfe.api-client/invitations");
-      getServiceById.mockResolvedValue({ name: "Test Service" });
+      getServiceRaw.mockResolvedValue({ name: "Test Service" });
       getInvitationServiceRaw.mockResolvedValue(undefined);
       const result = await getSingleServiceForUser(
         "inv-user-id",
@@ -64,11 +61,8 @@ describe("when manage a users manage console roles", () => {
     });
 
     it("should assign roles as an empty array when getUserServiceRaw returns 'null'", async () => {
-      const {
-        getServiceById,
-      } = require("./../../../src/infrastructure/applications");
       const { getUserServiceRaw } = require("login.dfe.api-client/users");
-      getServiceById.mockResolvedValue({ name: "Test Service" });
+      getServiceRaw.mockResolvedValue({ name: "Test Service" });
       getUserServiceRaw.mockResolvedValue(null);
       const result = await getSingleServiceForUser(
         "user-id",
