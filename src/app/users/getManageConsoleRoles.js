@@ -11,12 +11,7 @@ const {
 const manageServiceId = config.access.identifiers.manageService;
 const dfeId = config.access.identifiers.departmentForEducation;
 
-const getSingleServiceForUser = async (
-  userId,
-  organisationId,
-  serviceId,
-  correlationId,
-) => {
+const getSingleServiceForUser = async (userId, organisationId, serviceId) => {
   const userService = userId.startsWith("inv-")
     ? await getInvitationServiceRaw({
         invitationId: userId.substr(4),
@@ -58,7 +53,6 @@ const getManageConsoleRoles = async (req, res) => {
     req.params.uid,
     dfeId,
     manageServiceId,
-    req.id,
   );
   const manageConsoleRolesForAllServices = await getServiceRolesRaw({
     serviceId: manageServiceId,

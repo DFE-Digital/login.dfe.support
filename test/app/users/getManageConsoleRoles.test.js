@@ -54,7 +54,6 @@ describe("when manage a users manage console roles", () => {
         "user-id",
         "org-id",
         "service-id",
-        "correlation-id",
       );
 
       expect(result).toEqual({
@@ -79,7 +78,6 @@ describe("when manage a users manage console roles", () => {
         "inv-user-id",
         "org-id",
         "service-id",
-        "correlation-id",
       );
 
       expect(result).toEqual({

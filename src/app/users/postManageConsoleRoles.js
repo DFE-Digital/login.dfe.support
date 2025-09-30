@@ -35,7 +35,6 @@ const postManageConsoleRoles = async (req, res) => {
     req.params.uid,
     dfeId,
     manageServiceId,
-    req.id,
   );
   const manageConsoleRolesForAllServices = await getServiceRolesRaw({
     serviceId: manageServiceId,
