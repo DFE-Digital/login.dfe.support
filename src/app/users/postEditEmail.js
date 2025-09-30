@@ -42,7 +42,7 @@ const codeExpiry = (updatedAt) => {
 };
 
 const updateUserIndex = async (uid, pendingEmail, correlationId) => {
-  const user = await getUserDetailsById(uid, correlationId);
+  const user = await getUserDetailsById(uid);
   user.pendingEmail = pendingEmail;
 
   await updateUserDetails(user, correlationId);
@@ -81,8 +81,8 @@ const updateUserEmail = async (req, model, user) => {
   );
 };
 
-const updateInvitationIndex = async (uid, newEmail, correlationId) => {
-  const user = await getUserDetailsById(uid, correlationId);
+const updateInvitationIndex = async (uid, newEmail) => {
+  const user = await getUserDetailsById(uid);
 
   user.email = newEmail;
 
@@ -100,7 +100,7 @@ const updateInvitationEmail = async (req, model, user) => {
   };
 
   await updateInvite(invitationId, newEmail);
-  await updateInvitationIndex(user.id, model.email, req.id);
+  await updateInvitationIndex(user.id, model.email);
 
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) changed email on invitation for ${user.email} (id: ${user.id}) to ${model.email}`,

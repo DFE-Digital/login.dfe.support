@@ -1,16 +1,5 @@
 const { v4: uuid } = require("uuid");
 
-const getInvitation = async (invitationId) => {
-  return {
-    firstName: "Some",
-    lastName: "User",
-    email: "some.user@test.local",
-    keyToSuccessId: "1234567",
-    tokenSerialNumber: "12345678901",
-    id: invitationId,
-  };
-};
-
 const updateUser = async () => {
   return Promise.resolve();
 };
@@ -68,7 +57,6 @@ const getLegacyUsernames = async () => {
 };
 
 module.exports = {
-  getInvitation,
   updateUser,
   deactivate,
   reactivate,

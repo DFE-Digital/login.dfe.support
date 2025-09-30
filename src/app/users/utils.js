@@ -5,13 +5,13 @@ const {
 } = require("login.dfe.api-client/users");
 const {
   getInvitationServicesRaw,
+  getInvitationRaw,
 } = require("login.dfe.api-client/invitations");
 const {
   searchForUsers,
   getSearchDetailsForUserById,
   updateUserInSearch,
 } = require("./../../infrastructure/search");
-const { getInvitation } = require("./../../infrastructure/directories");
 const {
   getUserServiceRequestsByUserId,
   removeServiceFromUser,
@@ -266,9 +266,11 @@ const checkManageAccess = async (arr) => {
   );
 };
 
-const getUserDetailsById = async (uid, correlationId) => {
+const getUserDetailsById = async (uid) => {
   if (uid.startsWith("inv-")) {
-    const invitation = await getInvitation(uid.substr(4), correlationId);
+    const invitation = await getInvitationRaw({ by: { id: uid.substr(4) } });
+
+    console.log(JSON.stringify(invitation) === JSON.stringify(invitation));
     return {
       id: uid,
       name: `${invitation.firstName} ${invitation.lastName}`,

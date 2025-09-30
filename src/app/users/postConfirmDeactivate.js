@@ -13,7 +13,7 @@ const { deactivate } = require("../../infrastructure/directories");
 const { sendResult } = require("../../infrastructure/utils");
 
 const updateUserIndex = async (uid, correlationId) => {
-  const user = await getUserDetailsById(uid, correlationId);
+  const user = await getUserDetailsById(uid);
   user.status = {
     id: 0,
     description: "Deactivated",

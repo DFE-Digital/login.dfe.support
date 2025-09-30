@@ -35,7 +35,7 @@ const validate = (req) => {
 };
 
 const updateUserIndex = async (uid, firstName, lastName, correlationId) => {
-  const user = await getUserDetailsById(uid, correlationId);
+  const user = await getUserDetailsById(uid);
   user.name = `${firstName} ${lastName}`;
   user.firstName = firstName;
   user.lastName = lastName;

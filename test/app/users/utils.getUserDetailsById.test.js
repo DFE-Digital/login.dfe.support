@@ -1,9 +1,9 @@
 jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
-jest.mock("./../../../src/infrastructure/directories");
+jest.mock("login.dfe.api-client/invitations");
 
-const { getInvitation } = require("../../../src/infrastructure/directories");
+const { getInvitationRaw } = require("login.dfe.api-client/invitations");
 const { getUserDetails } = require("../../../src/app/users/utils");
 
 describe("When getting user details for an invited user", () => {
@@ -11,7 +11,7 @@ describe("When getting user details for an invited user", () => {
   const correlationId = "correlation-id";
 
   beforeEach(() => {
-    getInvitation.mockReset().mockReturnValue({
+    getInvitationRaw.mockReset().mockReturnValue({
       id: "inv-user1",
       name: "Albus Dumbledore",
       firstName: "Albus",
@@ -30,7 +30,7 @@ describe("When getting user details for an invited user", () => {
     };
   });
 
-  it("then it should return an object when getInvitation returns a record", async () => {
+  it("then it should return an object when getInvitationRaw returns a record", async () => {
     const result = await getUserDetails(req, correlationId);
 
     expect(result).toMatchObject({
@@ -47,7 +47,7 @@ describe("When getting user details for an invited user", () => {
       deactivated: false,
     });
 
-    expect(getInvitation.mock.calls).toHaveLength(1);
-    expect(getInvitation.mock.calls[0][0]).toBe("user1");
+    expect(getInvitationRaw.mock.calls).toHaveLength(1);
+    expect(getInvitationRaw).toHaveBeenCalledWith({ by: { id: "user1" } });
   });
 });

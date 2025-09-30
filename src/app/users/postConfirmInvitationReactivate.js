@@ -8,7 +8,7 @@ const {
 const { reactivateInvite } = require("../../infrastructure/directories");
 
 const updateUserIndex = async (uid, correlationId) => {
-  const user = await getUserDetailsById(uid, correlationId);
+  const user = await getUserDetailsById(uid);
   user.status.id = 1;
   user.status.description = "Reactivated Invitation";
 

@@ -24,7 +24,7 @@ let cachedUsers = {};
 const getCachedUserById = async (userId, reqId) => {
   let key = `${userId}:${reqId}`;
   if (!(key in cachedUsers)) {
-    const user = await getUserDetailsById(userId, reqId);
+    const user = await getUserDetailsById(userId);
     cachedUsers[key] = user;
   }
   return cachedUsers[key];

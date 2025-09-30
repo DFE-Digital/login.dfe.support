@@ -8,7 +8,7 @@ const {
 } = require("./utils");
 
 const updateUserIndex = async (uid, correlationId) => {
-  const user = await getUserDetailsById(uid, correlationId);
+  const user = await getUserDetailsById(uid);
   user.pendingEmail = null;
 
   await updateUserDetails(user, correlationId);
