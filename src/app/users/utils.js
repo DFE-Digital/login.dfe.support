@@ -18,7 +18,7 @@ const {
   removeServiceFromInvitation,
   updateUserServiceRequest,
 } = require("./../../infrastructure/access");
-const { getServiceById } = require("./../../infrastructure/applications");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 const {
   getPendingRequestsAssociatedWithUser,
   updateRequestById,
@@ -353,7 +353,7 @@ const getAllServicesForUserInOrg = async (userId, organisationId) => {
   }));
   for (let i = 0; i < services.length; i++) {
     const service = services[i];
-    const application = await getServiceById(service.id);
+    const application = await getServiceRaw({ by: { serviceId: service.id } });
     service.name = application.name;
     service.status = mapUserStatus(service.status);
   }

@@ -1,4 +1,4 @@
-const { getAllServices } = require("./../../infrastructure/applications");
+const { getAllServices } = require("../services/utils");
 
 const getRoleName = (id) => {
   switch (id) {

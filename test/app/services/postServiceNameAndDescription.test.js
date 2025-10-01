@@ -2,14 +2,14 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/utils");
-jest.mock("./../../../src/infrastructure/applications/api");
+jest.mock("../../../src/app/services/utils", () => ({
+  getAllServices: jest.fn(),
+}));
 
 const { getRequestMock, getResponseMock } = require("../../utils");
 const { sendResult } = require("../../../src/infrastructure/utils");
 
-const {
-  getAllServices,
-} = require("../../../src/infrastructure/applications/api");
+const { getAllServices } = require("../../../src/app/services/utils");
 const postServiceNameAndDescription = require("../../../src/app/services/postServiceNameAndDescription");
 
 const res = getResponseMock();
