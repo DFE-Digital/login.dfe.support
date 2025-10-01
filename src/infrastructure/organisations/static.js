@@ -88,10 +88,6 @@ const getOrganisationByIdV2 = async () => {
   return Promise.resolve(undefined);
 };
 
-const getServiceIdentifierDetails = async () => {
-  return Promise.resolve(null);
-};
-
 const addInvitationService = async () => {
   return Promise.resolve(null);
 };
@@ -168,7 +164,6 @@ module.exports = {
   getAllServices,
   getOrganisationById,
   getOrganisationByIdV2,
-  getServiceIdentifierDetails,
   addInvitationService,
   addInvitationOrganisation,
   getServicesByUserId,

@@ -91,20 +91,6 @@ const getOrganisationByIdV2 = async (id, correlationId) => {
   );
 };
 
-const getServiceIdentifierDetails = async (
-  serviceId,
-  identifierKey,
-  identifierValue,
-  correlationId,
-) => {
-  return await callOrganisationsApi(
-    `services/${serviceId}/identifiers/${identifierKey}/${identifierValue}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
 const addInvitationService = async (
   invitationId,
   organisationId,
@@ -383,7 +369,6 @@ module.exports = {
   getAllServices,
   getOrganisationById,
   getOrganisationByIdV2,
-  getServiceIdentifierDetails,
   addInvitationService,
   addInvitationOrganisation,
   getServicesByUserId,
