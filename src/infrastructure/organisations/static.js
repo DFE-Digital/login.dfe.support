@@ -20,14 +20,6 @@ const getUserOrganisationsV2 = async () => {
   ]);
 };
 
-const getServiceById = async () => {
-  return Promise.resolve({
-    id: "83f00ace-f1a0-4338-8784-fa14f5943e5a",
-    name: "Some service",
-    description: "Some service that does some stuff",
-  });
-};
-
 const getPageOfOrganisations = async (pageNumber) => {
   return Promise.resolve({
     organisations: [
@@ -136,7 +128,6 @@ const getCategories = async () => {
 };
 
 module.exports = {
-  getServiceById,
   getPageOfOrganisations,
   getAllOrganisations,
   getAllServices,
