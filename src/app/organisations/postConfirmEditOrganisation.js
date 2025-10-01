@@ -1,16 +1,15 @@
 const { editOrganisation } = require("../../infrastructure/organisations");
 const logger = require("../../infrastructure/logger");
-
-const {
-  getOrganisationByIdV2,
-} = require("./../../infrastructure/organisations");
+const { getOrganisationRaw } = require("login.dfe.api-client/organisations");
 
 const postConfirmEditOrganisation = async (req, res) => {
   if (!req.session.editOrgFormData) {
     return res.redirect(`/organisations/${req.params.id}/users`);
   }
   const correlationId = req.id;
-  const organisation = await getOrganisationByIdV2(req.params.id, req.id);
+  const organisation = await getOrganisationRaw({
+    by: { organisationId: req.params.id },
+  });
   const { name, address } = req.session.editOrgFormData;
 
   const body = {

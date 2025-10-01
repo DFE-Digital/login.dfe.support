@@ -1,10 +1,10 @@
 const { sendResult } = require("../../infrastructure/utils");
-const {
-  getOrganisationByIdV2,
-} = require("./../../infrastructure/organisations");
+const { getOrganisationRaw } = require("login.dfe.api-client/organisations");
 
 const getConfirmEditOrganisation = async (req, res) => {
-  const organisation = await getOrganisationByIdV2(req.params.id, req.id);
+  const organisation = await getOrganisationRaw({
+    by: { organisationId: req.params.id },
+  });
 
   if (!req.session.editOrgFormData) {
     return res.redirect(`/organisations/${organisation.id}/users`);

@@ -2,15 +2,13 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("./../../utils").configMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/utils");
-jest.mock("./../../../src/infrastructure/organisations");
+jest.mock("login.dfe.api-client/organisations");
 jest.mock("login.dfe.jobs-client");
 jest.mock("../../../src/app/organisations/wsSynchFunCall");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const { sendResult } = require("./../../../src/infrastructure/utils");
-const {
-  getOrganisationByIdV2,
-} = require("./../../../src/infrastructure/organisations");
+const { getOrganisationRaw } = require("login.dfe.api-client/organisations");
 const { ServiceNotificationsClient } = require("login.dfe.jobs-client");
 const webServiceSync = require("./../../../src/app/organisations/webServiceSync");
 
@@ -24,7 +22,7 @@ describe("when syncing organisation for sync", function () {
   let req;
 
   beforeEach(() => {
-    getOrganisationByIdV2.mockReset().mockReturnValue(orgResult);
+    getOrganisationRaw.mockReset().mockReturnValue(orgResult);
 
     serviceNotificationsClient.notifyOrganisationUpdated.mockReset();
     ServiceNotificationsClient.mockReset().mockImplementation(

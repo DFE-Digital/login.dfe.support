@@ -84,10 +84,6 @@ const getOrganisationById = async () => {
   return Promise.resolve(undefined);
 };
 
-const getOrganisationByIdV2 = async () => {
-  return Promise.resolve(undefined);
-};
-
 const addInvitationService = async () => {
   return Promise.resolve(null);
 };
@@ -163,7 +159,6 @@ module.exports = {
   getServiceById,
   getAllServices,
   getOrganisationById,
-  getOrganisationByIdV2,
   addInvitationService,
   addInvitationOrganisation,
   getServicesByUserId,
