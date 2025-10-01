@@ -24,6 +24,7 @@ jest.mock("./../../../src/infrastructure/access", () => {
     removeServiceFromInvitation: jest.fn(),
   };
 });
+jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.api-client/users");
 jest.mock("login.dfe.jobs-client");
 
@@ -34,12 +35,12 @@ const {
 } = require("./../../../src/app/services/utils");
 const { getServiceRaw } = require("login.dfe.api-client/services");
 const {
-  getInvitationOrganisations,
-} = require("./../../../src/infrastructure/organisations");
-const {
   removeServiceFromInvitation,
   removeServiceFromUser,
 } = require("./../../../src/infrastructure/access");
+const {
+  getInvitationOrganisationsRaw,
+} = require("login.dfe.api-client/invitations");
 const {
   getUserOrganisationsWithServicesRaw,
 } = require("login.dfe.api-client/users");
@@ -97,8 +98,8 @@ describe("when removing access to a service", () => {
         },
       },
     ]);
-    getInvitationOrganisations.mockReset();
-    getInvitationOrganisations.mockReturnValue([
+    getInvitationOrganisationsRaw.mockReset();
+    getInvitationOrganisationsRaw.mockReturnValue([
       {
         organisation: {
           id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",

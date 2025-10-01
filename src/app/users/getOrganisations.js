@@ -8,10 +8,12 @@ const {
 const { getUserDetails } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const {
+  getInvitationOrganisationsRaw,
+} = require("login.dfe.api-client/invitations");
+const {
   getUserOrganisationsWithServicesRaw,
 } = require("login.dfe.api-client/users");
 const {
-  getInvitationOrganisations,
   getPendingRequestsAssociatedWithUser,
 } = require("../../infrastructure/organisations");
 const {
@@ -31,7 +33,7 @@ const getApproverDetails = async (organisations, correlationId) => {
 
 const getOrganisations = async (userId, correlationId) => {
   const orgMapping = userId.startsWith("inv-")
-    ? await getInvitationOrganisations(userId.substr(4), correlationId)
+    ? await getInvitationOrganisationsRaw({ invitationId: userId.substr(4) })
     : await getUserOrganisationsWithServicesRaw({ userId });
   if (!orgMapping) {
     return [];

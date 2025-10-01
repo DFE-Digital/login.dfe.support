@@ -1,14 +1,13 @@
-const {
-  getOrganisationById,
-  getInvitationOrganisations,
-} = require("./../../infrastructure/organisations");
+const { getOrganisationById } = require("./../../infrastructure/organisations");
 const {
   getUserOrganisationsWithServicesRaw,
 } = require("login.dfe.api-client/users");
-
-const getOrganisations = async (userId, correlationId) => {
+const {
+  getInvitationOrganisationsRaw,
+} = require("login.dfe.api-client/invitations");
+const getOrganisations = async (userId) => {
   const orgMapping = userId.startsWith("inv-")
-    ? await getInvitationOrganisations(userId.substr(4), correlationId)
+    ? await getInvitationOrganisationsRaw({ invitationId: userId.substr(4) })
     : await getUserOrganisationsWithServicesRaw({ userId });
   if (!orgMapping) {
     return [];

@@ -1,7 +1,7 @@
 const { getAllServicesForUserInOrg } = require("./utils");
 const {
-  getInvitationOrganisations,
-} = require("./../../infrastructure/organisations");
+  getInvitationOrganisationsRaw,
+} = require("login.dfe.api-client/invitations");
 const {
   getUserOrganisationsWithServicesRaw,
 } = require("login.dfe.api-client/users");
@@ -9,7 +9,7 @@ const {
 const getDeleteOrganisation = async (req, res) => {
   const userId = req.params.uid;
   const userOrganisations = userId.startsWith("inv-")
-    ? await getInvitationOrganisations(userId.substr(4), req.id)
+    ? await getInvitationOrganisationsRaw({ invitationId: userId.substr(4) })
     : await getUserOrganisationsWithServicesRaw({ userId });
   const organisationDetails = userOrganisations.find(
     (x) => x.organisation.id === req.params.id,
