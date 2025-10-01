@@ -64,33 +64,6 @@ const getServiceById = async (serviceId, correlationId) => {
   );
 };
 
-const getPageOfOrganisations = async (pageNumber, correlationId) => {
-  return await callOrganisationsApi(
-    `organisations?page=${pageNumber}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
-const getAllOrganisations = async () => {
-  const all = [];
-
-  let pageNumber = 1;
-  let hasMorePages = true;
-  while (hasMorePages) {
-    const page = await getPageOfOrganisations(pageNumber);
-    page.organisations.forEach((org) => {
-      all.push(org);
-    });
-
-    pageNumber++;
-    hasMorePages = pageNumber <= page.totalNumberOfPages;
-  }
-
-  return all;
-};
-
 const getAllServices = async (correlationId) => {
   return await callOrganisationsApi(
     "services",
@@ -407,8 +380,6 @@ module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
-  getPageOfOrganisations,
-  getAllOrganisations,
   getAllServices,
   getOrganisationById,
   getOrganisationByIdV2,
