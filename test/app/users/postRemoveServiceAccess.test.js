@@ -4,23 +4,17 @@ jest.mock("./../../../src/infrastructure/config", () =>
 jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
-
-jest.mock("./../../../src/infrastructure/organisations");
-jest.mock("login.dfe.api-client/invitations");
-jest.mock("./../../../src/infrastructure/applications", () => {
+jest.mock("login.dfe.api-client/users", () => {
   return {
-    isSupportEmailNotificationAllowed: jest.fn(),
+    deleteUserServiceAccess: jest.fn(),
   };
 });
+jest.mock("./../../../src/infrastructure/organisations");
+jest.mock("login.dfe.api-client/invitations");
+jest.mock("../../../src/app/services/utils");
 jest.mock("login.dfe.api-client/services", () => {
   return {
     getServiceRaw: jest.fn(),
-  };
-});
-jest.mock("./../../../src/infrastructure/access", () => {
-  return {
-    removeServiceFromUser: jest.fn(),
-    removeServiceFromInvitation: jest.fn(),
   };
 });
 
@@ -37,7 +31,7 @@ const {
 const {
   deleteServiceAccessFromInvitation,
 } = require("login.dfe.api-client/invitations");
-
+const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
 jest.mock("login.dfe.jobs-client");
 const { NotificationClient } = require("login.dfe.jobs-client");
 

@@ -7,13 +7,12 @@ jest.mock("./../../../src/infrastructure/utils", () => ({
 jest.mock("../../../src/app/services/utils", () => ({
   getAllServices: jest.fn(),
 }));
-jest.mock("./../../../src/infrastructure/access", () => ({
-  getServicesByUserId: jest.fn(),
-}));
 jest.mock("./../../../src/app/users/utils", () => ({
   getUserDetails: jest.fn(),
 }));
-
+jest.mock("login.dfe.api-client/services", () => ({
+  getPaginatedServicesRaw: jest.fn(),
+}));
 const getManageConsoleServices = require("./../../../src/app/users/getManageConsoleServices");
 const { sendResult } = require("./../../../src/infrastructure/utils");
 const { getAllServices } = require("../../../src/app/services/utils");

@@ -1,8 +1,12 @@
 jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
-jest.mock("login.dfe.api-client/users");
-jest.mock("login.dfe.api-client/services");
+jest.mock("login.dfe.api-client/users", () => ({
+  getUserServiceRequestsRaw: jest.fn(),
+}));
+jest.mock("login.dfe.api-client/services", () => ({
+  updateServiceRequest: jest.fn(),
+}));
 const { getUserServiceRequestsRaw } = require("login.dfe.api-client/users");
 const { updateServiceRequest } = require("login.dfe.api-client/services");
 const {

@@ -8,8 +8,14 @@ jest.mock("./../../../src/app/users/utils");
 jest.mock("./../../../src/infrastructure/utils");
 jest.mock("./../../../src/infrastructure/directories");
 jest.mock("./../../../src/infrastructure/organisations");
-jest.mock("login.dfe.api-client/users");
-jest.mock("login.dfe.api-client/services");
+jest.mock("login.dfe.api-client/users", () => ({
+  getUserServicesRaw: jest.fn(),
+  deleteUserServiceAccess: jest.fn(),
+  getUserServiceRequestsRaw: jest.fn(),
+}));
+jest.mock("login.dfe.api-client/services", () => ({
+  updateServiceRequest: jest.fn(),
+}));
 
 const logger = require("../../../src/infrastructure/logger");
 const {
