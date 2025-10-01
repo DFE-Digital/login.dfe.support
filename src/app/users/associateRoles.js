@@ -5,8 +5,8 @@ const {
   getUserOrganisationsWithServicesRaw,
 } = require("login.dfe.api-client/users");
 const {
-  getInvitationOrganisations,
-} = require("./../../infrastructure/organisations");
+  getInvitationOrganisationsRaw,
+} = require("login.dfe.api-client/invitations");
 const PolicyEngine = require("login.dfe.policy-engine");
 const { getUserServiceRaw } = require("login.dfe.api-client/users");
 const { getInvitationServiceRaw } = require("login.dfe.api-client/invitations");
@@ -42,7 +42,7 @@ const getViewModel = async (req) => {
     by: { serviceId: req.params.sid },
   });
   const userOrganisations = userId.startsWith("inv-")
-    ? await getInvitationOrganisations(userId.substr(4), req.id)
+    ? await getInvitationOrganisationsRaw({ invitationId: userId.substr(4) })
     : await getUserOrganisationsWithServicesRaw({ userId });
   const organisationDetails = userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,

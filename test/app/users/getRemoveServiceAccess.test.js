@@ -12,14 +12,14 @@ jest.mock("login.dfe.api-client/services", () => {
     getServiceRaw: jest.fn(),
   };
 });
-
+jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const { getServiceRaw } = require("login.dfe.api-client/services");
 const {
-  getInvitationOrganisations,
-} = require("./../../../src/infrastructure/organisations");
+  getInvitationOrganisationsRaw,
+} = require("login.dfe.api-client/invitations");
 const {
   getUserOrganisationsWithServicesRaw,
 } = require("login.dfe.api-client/users");
@@ -67,8 +67,8 @@ describe("when displaying the remove service access view", () => {
         },
       },
     ]);
-    getInvitationOrganisations.mockReset();
-    getInvitationOrganisations.mockReturnValue([
+    getInvitationOrganisationsRaw.mockReset();
+    getInvitationOrganisationsRaw.mockReturnValue([
       {
         organisation: {
           id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
@@ -131,9 +131,10 @@ describe("when displaying the remove service access view", () => {
   it("then it should include the organisation details for a invitation if request of invitation", async () => {
     req.params.uid = "inv-invitation1";
     await getRemoveService(req, res);
-    expect(getInvitationOrganisations.mock.calls).toHaveLength(1);
-    expect(getInvitationOrganisations.mock.calls[0][0]).toBe("invitation1");
-    expect(getInvitationOrganisations.mock.calls[0][1]).toBe("correlationId");
+    expect(getInvitationOrganisationsRaw.mock.calls).toHaveLength(1);
+    expect(getInvitationOrganisationsRaw).toHaveBeenCalledWith({
+      invitationId: "invitation1",
+    });
     expect(res.render.mock.calls[0][1]).toMatchObject({
       organisationDetails: {
         organisation: {

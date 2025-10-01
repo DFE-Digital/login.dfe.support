@@ -37,15 +37,6 @@ const getUserOrganisationsV2 = async (userId, correlationId) => {
   );
 };
 
-const getInvitationOrganisations = async (invitationId, correlationId) => {
-  return await callOrganisationsApi(
-    `invitations/v2/${invitationId}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
 const getServiceById = async (serviceId, correlationId) => {
   return await callOrganisationsApi(
     `services/${serviceId}`,
@@ -175,7 +166,6 @@ const getCategories = async () => {
 };
 
 module.exports = {
-  getInvitationOrganisations,
   getServiceById,
   deleteUserOrganisation,
   deleteInvitationOrganisation,

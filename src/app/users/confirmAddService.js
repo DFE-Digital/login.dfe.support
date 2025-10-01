@@ -12,8 +12,8 @@ const {
   updateUserServiceRoles,
 } = require("login.dfe.api-client/users");
 const {
-  getInvitationOrganisations,
-} = require("../../infrastructure/organisations");
+  getInvitationOrganisationsRaw,
+} = require("login.dfe.api-client/invitations");
 const {
   addServiceToInvitation,
   updateInvitationServiceRoles,
@@ -29,7 +29,7 @@ const get = async (req, res) => {
     return res.redirect(`/users/${userId}/organisations`);
   }
   const userOrganisations = userId.startsWith("inv-")
-    ? await getInvitationOrganisations(userId.substr(4), req.id)
+    ? await getInvitationOrganisationsRaw({ invitationId: userId.substr(4) })
     : await getUserOrganisationsWithServicesRaw({ userId });
   const organisationDetails = userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,
@@ -154,7 +154,7 @@ const post = async (req, res) => {
 
       if (isEmailAllowed && (invitationId === undefined || !invitationId)) {
         const userOrganisations = invitationId
-          ? await getInvitationOrganisations(invitationId, req.id)
+          ? await getInvitationOrganisationsRaw({ userId: invitationId })
           : await getUserOrganisationsWithServicesRaw({ userId: uid });
         const organisationDetails = userOrganisations.find(
           (x) => x.organisation.id === organisationId,
