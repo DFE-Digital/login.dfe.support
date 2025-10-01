@@ -5,9 +5,11 @@ const {
 const { getUserDetails } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const {
-  getUserOrganisations,
   getInvitationOrganisations,
 } = require("../../infrastructure/organisations");
+const {
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 const { getAllServices } = require("../services/utils");
 const { getUserStatus } = require("../../infrastructure/directories");
 const logger = require("../../infrastructure/logger");
@@ -15,7 +17,7 @@ const logger = require("../../infrastructure/logger");
 const getOrganisations = async (userId, correlationId) => {
   const orgServiceMapping = userId.startsWith("inv-")
     ? await getInvitationOrganisations(userId.substr(4), correlationId)
-    : await getUserOrganisations(userId, correlationId);
+    : await getUserOrganisationsWithServicesRaw({ userId });
   if (!orgServiceMapping) {
     return [];
   }

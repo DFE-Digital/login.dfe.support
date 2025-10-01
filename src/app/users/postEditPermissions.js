@@ -1,10 +1,12 @@
 const { NotificationClient } = require("login.dfe.jobs-client");
+const {
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const {
   setUserAccessToOrganisation,
   addInvitationOrganisation,
-  getUserOrganisations,
 } = require("../../infrastructure/organisations");
 const {
   getSearchDetailsForUserById,
@@ -64,7 +66,9 @@ const postEditPermissions = async (req, res) => {
   if (uid.startsWith("inv-")) {
     await editInvitationPermissions(uid, req, model);
   } else {
-    const mngUserOrganisations = await getUserOrganisations(uid, req.id);
+    const mngUserOrganisations = await getUserOrganisationsWithServicesRaw({
+      userId: uid,
+    });
 
     await editUserPermissions(uid, req, model);
     if (isEmailAllowed) {
