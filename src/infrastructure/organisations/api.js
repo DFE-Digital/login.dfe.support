@@ -99,10 +99,6 @@ const listOrganisationStatus = async (correlationId) => {
   );
 };
 
-const createOrganisation = async (body, correlationId) => {
-  return callOrganisationsApi(`organisations/`, "POST", body, correlationId);
-};
-
 const editOrganisation = async (orgId, body, correlationId) => {
   return callOrganisationsApi(
     `organisations/${orgId}`,
@@ -197,7 +193,6 @@ const getCategories = async () => {
 };
 
 module.exports = {
-  createOrganisation,
   editOrganisation,
   getUserOrganisations,
   getInvitationOrganisations,

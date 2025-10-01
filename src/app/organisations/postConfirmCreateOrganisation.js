@@ -1,4 +1,4 @@
-const { createOrganisation } = require("../../infrastructure/organisations");
+const { createOrganisation } = require("login.dfe.api-client/organisations");
 const logger = require("../../infrastructure/logger");
 
 const postCreateOrganisation = async (req, res) => {
@@ -22,7 +22,7 @@ const postCreateOrganisation = async (req, res) => {
   logger.info(`About to create organisation with name ${model.name}`, {
     correlationId,
   });
-  await createOrganisation(body, correlationId);
+  await createOrganisation(body);
   logger.info(`Organisation with name ${model.name} successfully created`, {
     correlationId,
   });
