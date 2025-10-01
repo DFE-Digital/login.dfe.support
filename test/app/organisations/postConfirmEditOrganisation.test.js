@@ -2,14 +2,15 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/utils");
+jest.mock("login.dfe.api-client/organisations");
 jest.mock("../../../src/infrastructure/organisations", () => ({
-  editOrganisation: jest.fn(),
   getOrganisationByIdV2: jest.fn(),
 }));
 
+const { updateOrganisation } = require("login.dfe.api-client/organisations");
+
 const { getRequestMock, getResponseMock } = require("../../utils");
 const {
-  editOrganisation,
   getOrganisationByIdV2,
 } = require("../../../src/infrastructure/organisations");
 const postConfirmEditOrganisation = require("../../../src/app/organisations/postConfirmEditOrganisation");
@@ -36,7 +37,7 @@ describe("when postConfirmEditOrganisation is called", () => {
     res.mockResetAll();
 
     getOrganisationByIdV2.mockReset().mockReturnValue(orgResult);
-    editOrganisation.mockReset().mockReturnValue({});
+    updateOrganisation.mockReset().mockReturnValue({});
   });
 
   it("should redirect to the confirm page on success", async () => {
@@ -45,7 +46,7 @@ describe("when postConfirmEditOrganisation is called", () => {
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/organisations/org-1/users");
     expect(res.flash.mock.calls).toHaveLength(1);
-    expect(editOrganisation).toHaveBeenCalledTimes(1);
+    expect(updateOrganisation).toHaveBeenCalledTimes(1);
   });
 
   it("should redirect back to /organisations if nothing is in the session", async () => {
@@ -55,6 +56,6 @@ describe("when postConfirmEditOrganisation is called", () => {
 
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/organisations/org-1/users");
-    expect(editOrganisation).toHaveBeenCalledTimes(0);
+    expect(updateOrganisation).toHaveBeenCalledTimes(0);
   });
 });
