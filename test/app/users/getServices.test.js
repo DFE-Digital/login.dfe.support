@@ -9,11 +9,10 @@ jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/directories");
 jest.mock("./../../../src/infrastructure/serviceMapping");
 jest.mock("./../../../src/infrastructure/audit");
-jest.mock("./../../../src/infrastructure/applications", () => {
-  return {
-    getAllServices: jest.fn(),
-  };
-});
+jest.mock("../../../src/app/services/utils", () => ({
+  getAllServices: jest.fn(),
+}));
+
 jest.mock("ioredis");
 
 const { getUserDetails } = require("./../../../src/app/users/utils");
@@ -23,9 +22,7 @@ const {
 const {
   getClientIdForServiceId,
 } = require("./../../../src/infrastructure/serviceMapping");
-const {
-  getAllServices,
-} = require("./../../../src/infrastructure/applications");
+const { getAllServices } = require("../../../src/app/services/utils");
 const { getUserStatus } = require("./../../../src/infrastructure/directories");
 
 const getServices = require("./../../../src/app/users/getServices");

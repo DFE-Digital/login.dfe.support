@@ -20,6 +20,8 @@ jest.mock("./../../../src/infrastructure/search", () => {
 jest.mock("./../../../src/app/users/utils");
 jest.mock("login.dfe.api-client/users");
 jest.mock("login.dfe.api-client/invitations");
+jest.mock("login.dfe.api-client/services");
+
 jest.mock("login.dfe.jobs-client");
 const { NotificationClient } = require("login.dfe.jobs-client");
 const { getRequestMock, getResponseMock } = require("../../utils");

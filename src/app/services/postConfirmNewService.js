@@ -1,5 +1,5 @@
 const logger = require("../../infrastructure/logger");
-const { createService } = require("./../../infrastructure/applications");
+const { createServiceRaw } = require("login.dfe.api-client/services");
 
 const postConfirmNewService = async (req, res) => {
   if (!req.session.createServiceData) {
@@ -59,21 +59,21 @@ const postConfirmNewService = async (req, res) => {
     isChildService: false,
     parentId: undefined,
     relyingParty: {
-      client_id: model.clientId,
-      client_secret: model.clientSecret,
-      api_secret: model.apiSecret,
-      token_endpoint_auth_method: tokenEndpointAuthenticationMethod,
-      service_home: model.homeUrl,
+      clientId: model.clientId,
+      clientSecret: model.clientSecret,
+      apiSecret: model.apiSecret,
+      tokenEndpointAuthMethod: tokenEndpointAuthenticationMethod,
+      serviceHome: model.homeUrl,
       postResetUrl: model.postPasswordResetUrl,
-      redirect_uris: model.service.redirectUris,
-      post_logout_redirect_uris: model.service.postLogoutRedirectUris,
-      grant_types: grantTypes,
-      response_types: responseTypes,
+      redirectUris: model.service.redirectUris,
+      postLogoutRedirectUris: model.service.postLogoutRedirectUris,
+      grantTypes: grantTypes,
+      responseTypes: responseTypes,
       params: params,
     },
   };
 
-  await createService(body, req.id);
+  await createServiceRaw(body);
 
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) created ${model.name} service`,

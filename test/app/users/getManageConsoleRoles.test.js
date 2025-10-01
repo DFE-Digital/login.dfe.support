@@ -31,20 +31,53 @@ jest.mock("./../../../src/app/users/utils", () => ({
 jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.policy-engine");
 jest.mock("login.dfe.api-client/users");
-jest.mock("./../../../src/infrastructure/applications", () => ({
-  getServiceById: jest.fn(),
+jest.mock("login.dfe.api-client/services", () => ({
+  getServiceRaw: jest.fn(),
 }));
-jest.mock("login.dfe.api-client/services");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 
 describe("when manage a users manage console roles", () => {
   describe("when displaying manage console role assignment options", () => {
-    it("should return service details for a user", async () => {
+    it("should assign roles as an empty array when getInvitationServiceRaw returns 'undefined'", async () => {
       const {
-        getServiceById,
-      } = require("./../../../src/infrastructure/applications");
+        getInvitationServiceRaw,
+      } = require("login.dfe.api-client/invitations");
+      getServiceRaw.mockResolvedValue({ name: "Test Service" });
+      getInvitationServiceRaw.mockResolvedValue(undefined);
+      const result = await getSingleServiceForUser(
+        "inv-user-id",
+        "org-id",
+        "service-id",
+        "correlation-id",
+      );
+      expect(result).toEqual({
+        id: "service-id",
+        roles: [],
+        name: "Test Service",
+      });
+    });
+
+    it("should assign roles as an empty array when getUserServiceRaw returns 'null'", async () => {
+      const { getUserServiceRaw } = require("login.dfe.api-client/users");
+      getServiceRaw.mockResolvedValue({ name: "Test Service" });
+      getUserServiceRaw.mockResolvedValue(null);
+      const result = await getSingleServiceForUser(
+        "user-id",
+        "org-id",
+        "service-id",
+        "correlation-id",
+      );
+      expect(result).toEqual({
+        id: "service-id",
+        roles: [],
+        name: "Test Service",
+      });
+    });
+
+    it("should return service details for a user", async () => {
       const { getUserServiceRaw } = require("login.dfe.api-client/users");
 
-      getServiceById.mockResolvedValue({ name: "Test Service" });
+      getServiceRaw.mockResolvedValue({ name: "Test Service" });
       getUserServiceRaw.mockResolvedValue({
         serviceId: "service-id",
         roles: ["role1"],
@@ -54,7 +87,6 @@ describe("when manage a users manage console roles", () => {
         "user-id",
         "org-id",
         "service-id",
-        "correlation-id",
       );
 
       expect(result).toEqual({
@@ -66,13 +98,10 @@ describe("when manage a users manage console roles", () => {
 
     it("should return service details for an invitation user", async () => {
       const {
-        getServiceById,
-      } = require("./../../../src/infrastructure/applications");
-      const {
         getInvitationServiceRaw,
       } = require("login.dfe.api-client/invitations");
 
-      getServiceById.mockResolvedValue({ name: "Test Service" });
+      getServiceRaw.mockResolvedValue({ name: "Test Service" });
       getInvitationServiceRaw.mockResolvedValue({
         serviceId: "service-id",
         roles: ["role1"],
@@ -82,7 +111,6 @@ describe("when manage a users manage console roles", () => {
         "inv-user-id",
         "org-id",
         "service-id",
-        "correlation-id",
       );
 
       expect(result).toEqual({

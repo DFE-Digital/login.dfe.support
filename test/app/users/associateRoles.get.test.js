@@ -7,17 +7,15 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.policy-engine");
 jest.mock("./../../../src/infrastructure/organisations");
-jest.mock("./../../../src/infrastructure/applications", () => {
+jest.mock("login.dfe.api-client/services", () => {
   return {
-    getServiceById: jest.fn(),
+    getServiceRaw: jest.fn(),
   };
 });
 jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
-const {
-  getServiceById,
-} = require("./../../../src/infrastructure/applications");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 const { getInvitationServiceRaw } = require("login.dfe.api-client/invitations");
 const {
   getUserOrganisations,
@@ -103,8 +101,8 @@ describe("when displaying the associate roles view", () => {
       roles: [],
     });
 
-    getServiceById.mockReset();
-    getServiceById.mockReturnValue({
+    getServiceRaw.mockReset();
+    getServiceRaw.mockReturnValue({
       id: "service1",
       name: "service name",
     });
@@ -184,8 +182,10 @@ describe("when displaying the associate roles view", () => {
 
   it("then it should get the service details", async () => {
     await getAssociateRoles(req, res);
-    expect(getServiceById.mock.calls).toHaveLength(1);
-    expect(getServiceById.mock.calls[0][0]).toBe("service1");
+    expect(getServiceRaw).toHaveBeenCalledTimes(1);
+    expect(getServiceRaw).toHaveBeenCalledWith({
+      by: { serviceId: "service1" },
+    });
   });
 
   it("then it should get current users roles if editing service", async () => {

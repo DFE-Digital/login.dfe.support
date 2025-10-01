@@ -12,15 +12,15 @@ jest.mock("./../../../src/app/users/utils", () => {
   };
 });
 jest.mock("./../../../src/infrastructure/organisations");
-jest.mock("./../../../src/infrastructure/applications");
+jest.mock("../../../src/app/services/utils", () => ({
+  getAllServices: jest.fn(),
+}));
 
 const utils = require("./../../../src/app/users/utils");
 const {
   getOrganisationCategories,
 } = require("./../../../src/infrastructure/organisations");
-const {
-  getAllServices,
-} = require("./../../../src/infrastructure/applications");
+const { getAllServices } = require("../../../src/app/services/utils");
 const { post } = require("./../../../src/app/users/search");
 
 describe("When processing a post to search for users", () => {

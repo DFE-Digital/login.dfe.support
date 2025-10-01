@@ -1,20 +1,17 @@
 const config = require("../../infrastructure/config");
 const { sendResult } = require("../../infrastructure/utils");
 const { getUserDetails } = require("./utils");
-const { getServiceById } = require("../../infrastructure/applications");
 const { getUserServiceRaw } = require("login.dfe.api-client/users");
 const { getInvitationServiceRaw } = require("login.dfe.api-client/invitations");
-const { getServiceRolesRaw } = require("login.dfe.api-client/services");
+const {
+  getServiceRolesRaw,
+  getServiceRaw,
+} = require("login.dfe.api-client/services");
 
 const manageServiceId = config.access.identifiers.manageService;
 const dfeId = config.access.identifiers.departmentForEducation;
 
-const getSingleServiceForUser = async (
-  userId,
-  organisationId,
-  serviceId,
-  correlationId,
-) => {
+const getSingleServiceForUser = async (userId, organisationId, serviceId) => {
   const userService = userId.startsWith("inv-")
     ? await getInvitationServiceRaw({
         invitationId: userId.substr(4),
@@ -22,11 +19,11 @@ const getSingleServiceForUser = async (
         organisationId,
       })
     : await getUserServiceRaw({ userId, serviceId, organisationId });
-  const application = await getServiceById(serviceId, correlationId);
+  const application = await getServiceRaw({ by: { serviceId } });
 
   return {
     id: serviceId,
-    roles: userService === undefined ? [] : userService.roles,
+    roles: userService?.roles ?? [],
     name: application.name,
   };
 };
@@ -48,13 +45,14 @@ const checkIfRolesChanged = (rolesSelectedBeforeSession, newRolesSelected) => {
 };
 
 const getManageConsoleRoles = async (req, res) => {
-  const serviceSelectedByUser = await getServiceById(req.params.sid);
+  const serviceSelectedByUser = await getServiceRaw({
+    by: { serviceId: req.params.sid },
+  });
   const user = await getUserDetails(req);
   const userManageRoles = await getSingleServiceForUser(
     req.params.uid,
     dfeId,
     manageServiceId,
-    req.id,
   );
   const manageConsoleRolesForAllServices = await getServiceRolesRaw({
     serviceId: manageServiceId,

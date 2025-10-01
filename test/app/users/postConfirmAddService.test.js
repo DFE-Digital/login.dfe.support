@@ -6,12 +6,10 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 );
 jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("login.dfe.api-client/invitations");
-jest.mock("./../../../src/infrastructure/applications", () => {
-  return {
-    getAllServices: jest.fn(),
-    isSupportEmailNotificationAllowed: jest.fn(),
-  };
-});
+jest.mock("../../../src/app/services/utils", () => ({
+  getAllServices: jest.fn(),
+  isSupportEmailNotificationAllowed: jest.fn(),
+}));
 jest.mock("login.dfe.api-client/services");
 jest.mock("login.dfe.api-client/users");
 
@@ -27,9 +25,9 @@ const {
   updateInvitationServiceRoles,
 } = require("login.dfe.api-client/invitations");
 const {
-  getAllServices,
   isSupportEmailNotificationAllowed,
-} = require("./../../../src/infrastructure/applications");
+} = require("../../../src/app/services/utils");
+const { getAllServices } = require("../../../src/app/services/utils");
 const {
   getUserOrganisations,
   getInvitationOrganisations,

@@ -1,7 +1,7 @@
 const config = require("./../src/infrastructure/config");
 const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = new PolicyEngine(config);
-const { getAllServices } = require("./../src/infrastructure/applications");
+const { getAllServices } = require("./../src/app/services/utils");
 
 const getPolicyApplicationResult = async (
   userId,

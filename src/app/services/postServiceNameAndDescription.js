@@ -1,6 +1,6 @@
 const { sendResult } = require("../../infrastructure/utils");
 const logger = require("../../infrastructure/logger");
-const { getAllServices } = require("../../infrastructure/applications/api");
+const { getAllServices } = require("../services/utils");
 
 const validateInput = async (req) => {
   const model = {
