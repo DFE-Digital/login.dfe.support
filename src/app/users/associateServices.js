@@ -1,6 +1,8 @@
 const config = require("./../../infrastructure/config");
 const {
-  getUserOrganisations,
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
+const {
   getInvitationOrganisations,
 } = require("./../../infrastructure/organisations");
 const { getAllServicesForUserInOrg } = require("./utils");
@@ -54,7 +56,7 @@ const get = async (req, res) => {
   const userId = req.params.uid;
   const userOrganisations = userId.startsWith("inv-")
     ? await getInvitationOrganisations(userId.substr(4), req.id)
-    : await getUserOrganisations(userId, req.id);
+    : await getUserOrganisationsWithServicesRaw({ userId });
   const organisationDetails = userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,
   );
@@ -86,7 +88,7 @@ const validate = async (req) => {
   const userId = req.params.uid;
   const userOrganisations = userId.startsWith("inv-")
     ? await getInvitationOrganisations(userId.substr(4), req.id)
-    : await getUserOrganisations(userId, req.id);
+    : await getUserOrganisationsWithServicesRaw({ userId });
   const organisationDetails = userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,
   );

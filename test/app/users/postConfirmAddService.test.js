@@ -12,6 +12,7 @@ jest.mock("../../../src/app/services/utils", () => ({
 }));
 jest.mock("login.dfe.api-client/services");
 jest.mock("login.dfe.api-client/users");
+jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
@@ -29,9 +30,11 @@ const {
 } = require("../../../src/app/services/utils");
 const { getAllServices } = require("../../../src/app/services/utils");
 const {
-  getUserOrganisations,
   getInvitationOrganisations,
 } = require("./../../../src/infrastructure/organisations");
+const {
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 
 const logger = require("./../../../src/infrastructure/logger");
 
@@ -108,8 +111,8 @@ describe("when adding new services to a user", () => {
       flag: 1,
     });
 
-    getUserOrganisations.mockReset();
-    getUserOrganisations.mockReturnValue([
+    getUserOrganisationsWithServicesRaw.mockReset();
+    getUserOrganisationsWithServicesRaw.mockReturnValue([
       {
         organisation: {
           id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",

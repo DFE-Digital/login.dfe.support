@@ -9,12 +9,15 @@ jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/directories");
 jest.mock("./../../../src/infrastructure/serviceMapping");
 jest.mock("./../../../src/infrastructure/audit");
+jest.mock("login.dfe.api-client/users");
 jest.mock("ioredis");
 const { getUserDetails } = require("../../../src/app/users/utils");
 const {
-  getUserOrganisations,
   getPendingRequestsAssociatedWithUser,
 } = require("../../../src/infrastructure/organisations");
+const {
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 const {
   getUsersByIdV2,
   getUserStatus,
@@ -73,8 +76,8 @@ describe("when getting users organisation details", () => {
       ],
     });
 
-    getUserOrganisations.mockReset();
-    getUserOrganisations.mockReturnValue([
+    getUserOrganisationsWithServicesRaw.mockReset();
+    getUserOrganisationsWithServicesRaw.mockReturnValue([
       {
         organisation: {
           id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
@@ -173,9 +176,10 @@ describe("when getting users organisation details", () => {
   it("then it should get organisations and requests mapping for user", async () => {
     await getOrganisations(req, res);
 
-    expect(getUserOrganisations.mock.calls).toHaveLength(1);
-    expect(getUserOrganisations.mock.calls[0][0]).toBe("user1");
-    expect(getUserOrganisations.mock.calls[0][1]).toBe("correlationId");
+    expect(getUserOrganisationsWithServicesRaw.mock.calls).toHaveLength(1);
+    expect(getUserOrganisationsWithServicesRaw).toHaveBeenCalledWith({
+      userId: "user1",
+    });
 
     expect(getPendingRequestsAssociatedWithUser.mock.calls).toHaveLength(1);
     expect(getPendingRequestsAssociatedWithUser.mock.calls[0][0]).toBe("user1");
@@ -225,7 +229,7 @@ describe("when getting users organisation details", () => {
       },
     ]);
 
-    getUserOrganisations.mockReturnValue([
+    getUserOrganisationsWithServicesRaw.mockReturnValue([
       {
         organisation: {
           id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
@@ -286,7 +290,7 @@ describe("when getting users organisation details", () => {
     // so we need a unit test to verify it's working as intended
 
     // Given
-    getUserOrganisations.mockReturnValue([
+    getUserOrganisationsWithServicesRaw.mockReturnValue([
       {
         organisation: {
           id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",

@@ -4,6 +4,7 @@ jest.mock("./../../../src/infrastructure/config", () =>
 jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
+jest.mock("login.dfe.api-client/users");
 jest.mock("login.dfe.policy-engine");
 jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("../../../src/app/services/utils", () => {
@@ -16,9 +17,11 @@ jest.mock("./../../../src/app/users/utils");
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const PolicyEngine = require("login.dfe.policy-engine");
 const {
-  getUserOrganisations,
   getInvitationOrganisations,
 } = require("./../../../src/infrastructure/organisations");
+const {
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 const { getAllServices } = require("../../../src/app/services/utils");
 const {
   getAllServicesForUserInOrg,
@@ -85,8 +88,8 @@ describe("when displaying the associate service view", () => {
       },
     ]);
 
-    getUserOrganisations.mockReset();
-    getUserOrganisations.mockReturnValue([
+    getUserOrganisationsWithServicesRaw.mockReset();
+    getUserOrganisationsWithServicesRaw.mockReturnValue([
       {
         organisation: {
           id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
@@ -136,9 +139,10 @@ describe("when displaying the associate service view", () => {
 
   it("then it should include the organisation details for a user if request for user", async () => {
     await getAssociateServices(req, res);
-    expect(getUserOrganisations.mock.calls).toHaveLength(1);
-    expect(getUserOrganisations.mock.calls[0][0]).toBe("user1");
-    expect(getUserOrganisations.mock.calls[0][1]).toBe("correlationId");
+    expect(getUserOrganisationsWithServicesRaw.mock.calls).toHaveLength(1);
+    expect(getUserOrganisationsWithServicesRaw).toHaveBeenCalledWith({
+      userId: "user1",
+    });
     expect(res.render.mock.calls[0][1]).toMatchObject({
       organisationDetails: {
         organisation: {

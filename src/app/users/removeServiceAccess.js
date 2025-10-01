@@ -6,11 +6,13 @@ const {
   deleteServiceAccessFromInvitation,
 } = require("login.dfe.api-client/invitations");
 const {
-  getUserOrganisations,
   getInvitationOrganisations,
 } = require("../../infrastructure/organisations");
 const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const { getServiceRaw } = require("login.dfe.api-client/services");
+const {
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 
 const get = async (req, res) => {
   const userId = req.params.uid;
@@ -20,7 +22,7 @@ const get = async (req, res) => {
 
   const userOrganisations = userId.startsWith("inv-")
     ? await getInvitationOrganisations(userId.substr(4), req.id)
-    : await getUserOrganisations(userId, req.id);
+    : await getUserOrganisationsWithServicesRaw({ userId });
   const organisationDetails = userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,
   );
@@ -51,7 +53,7 @@ const post = async (req, res) => {
   const service = await getServiceRaw({ by: { serviceId: req.params.sid } });
   const userOrganisations = uid.startsWith("inv-")
     ? await getInvitationOrganisations(uid.substr(4), req.id)
-    : await getUserOrganisations(uid, req.id);
+    : await getUserOrganisationsWithServicesRaw({ userId: uid });
   const organisationDetails = userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,
   );

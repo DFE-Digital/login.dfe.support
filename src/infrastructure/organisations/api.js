@@ -28,15 +28,6 @@ const callOrganisationsApi = async (endpoint, method, body, correlationId) => {
   }
 };
 
-const getUserOrganisations = async (userId, correlationId) => {
-  return await callOrganisationsApi(
-    `organisations/associated-with-user/${userId}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
 const getUserOrganisationsV2 = async (userId, correlationId) => {
   return await callOrganisationsApi(
     `organisations/v2/associated-with-user/${userId}`,
@@ -184,7 +175,6 @@ const getCategories = async () => {
 };
 
 module.exports = {
-  getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
   deleteUserOrganisation,

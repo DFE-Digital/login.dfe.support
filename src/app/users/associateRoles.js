@@ -2,7 +2,9 @@ const _ = require("lodash");
 const config = require("./../../infrastructure/config");
 const { getServiceRaw } = require("login.dfe.api-client/services");
 const {
-  getUserOrganisations,
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
+const {
   getInvitationOrganisations,
 } = require("./../../infrastructure/organisations");
 const PolicyEngine = require("login.dfe.policy-engine");
@@ -41,7 +43,7 @@ const getViewModel = async (req) => {
   });
   const userOrganisations = userId.startsWith("inv-")
     ? await getInvitationOrganisations(userId.substr(4), req.id)
-    : await getUserOrganisations(userId, req.id);
+    : await getUserOrganisationsWithServicesRaw({ userId });
   const organisationDetails = userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,
   );
