@@ -20,14 +20,6 @@ const getUserOrganisationsV2 = async () => {
   ]);
 };
 
-const getServiceById = async () => {
-  return Promise.resolve({
-    id: "83f00ace-f1a0-4338-8784-fa14f5943e5a",
-    name: "Some service",
-    description: "Some service that does some stuff",
-  });
-};
-
 const getAllRequestsForSupport = async () => {
   return Promise.resolve();
 };
@@ -53,7 +45,6 @@ const getCategories = async () => {
 };
 
 module.exports = {
-  getServiceById,
   getUserOrganisationsV2,
   getAllRequestsForSupport,
   getRequestById,
