@@ -9,7 +9,7 @@ const {
   waitForIndexToUpdate,
 } = require("./utils");
 
-const { deactivate } = require("../../infrastructure/directories");
+const { deactivateUser } = require("login.dfe.api-client/users");
 const { sendResult } = require("../../infrastructure/utils");
 
 const updateUserIndex = async (uid, correlationId) => {
@@ -82,7 +82,7 @@ const postConfirmDeactivate = async (req, res) => {
     }
   }
 
-  await deactivate(user.id, reason, req.id);
+  await deactivateUser({ userId: user.id, reason });
   await updateUserIndex(user.id, req.id);
 
   if (req.body["remove-services-and-requests"]) {

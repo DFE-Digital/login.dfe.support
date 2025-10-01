@@ -20,13 +20,15 @@ const {
   removeAllServicesForUser,
   updateUserDetails,
 } = require("../../../src/app/users/utils");
-const { deactivate } = require("../../../src/infrastructure/directories");
 const {
   getUserServiceRequestsByUserId,
   updateUserServiceRequest,
   removeServiceFromUser,
 } = require("../../../src/infrastructure/access");
-const { getUserServicesRaw } = require("login.dfe.api-client/users");
+const {
+  getUserServicesRaw,
+  deactivateUser,
+} = require("login.dfe.api-client/users");
 const {
   getPendingRequestsAssociatedWithUser,
   updateRequestById,
@@ -162,12 +164,11 @@ describe("When confirming deactivation of user", () => {
   it("then it should deactivate user record in directories", async () => {
     await postConfirmDeactivate(req, res);
 
-    expect(deactivate.mock.calls).toHaveLength(1);
-    expect(deactivate.mock.calls[0][0]).toBe(
-      "915a7382-576b-4699-ad07-a9fd329d3867",
-    );
-    expect(deactivate.mock.calls[0][1]).toBe("some reason for deactivation");
-    expect(deactivate.mock.calls[0][2]).toBe("correlationId");
+    expect(deactivateUser).toHaveBeenCalledTimes(1);
+    expect(deactivateUser).toHaveBeenCalledWith({
+      reason: "some reason for deactivation",
+      userId: "915a7382-576b-4699-ad07-a9fd329d3867",
+    });
   });
 
   it("then it should update user in search index", async () => {
@@ -230,14 +231,11 @@ describe("When confirming deactivation of user given a reason from the select me
   it("then it should deactivate user record in directories", async () => {
     await postConfirmDeactivate(req, res);
 
-    expect(deactivate.mock.calls).toHaveLength(1);
-    expect(deactivate.mock.calls[0][0]).toBe(
-      "915a7382-576b-4699-ad07-a9fd329d3867",
-    );
-    expect(deactivate.mock.calls[0][1]).toBe(
-      "some selected reason for deactivation",
-    );
-    expect(deactivate.mock.calls[0][2]).toBe("correlationId");
+    expect(deactivateUser).toHaveBeenCalledTimes(1);
+    expect(deactivateUser).toHaveBeenCalledWith({
+      reason: "some selected reason for deactivation",
+      userId: "915a7382-576b-4699-ad07-a9fd329d3867",
+    });
   });
 
   it("then it should update user in search index", async () => {
@@ -300,14 +298,12 @@ describe("When confirming deactivation of user given a reason from the select me
   it("then it should deactivate user record in directories", async () => {
     await postConfirmDeactivate(req, res);
 
-    expect(deactivate.mock.calls).toHaveLength(1);
-    expect(deactivate.mock.calls[0][0]).toBe(
-      "915a7382-576b-4699-ad07-a9fd329d3867",
-    );
-    expect(deactivate.mock.calls[0][1]).toBe(
-      "some selected reason for deactivation - some text reason for deactivation",
-    );
-    expect(deactivate.mock.calls[0][2]).toBe("correlationId");
+    expect(deactivateUser).toHaveBeenCalledTimes(1);
+    expect(deactivateUser).toHaveBeenCalledWith({
+      reason:
+        "some selected reason for deactivation - some text reason for deactivation",
+      userId: "915a7382-576b-4699-ad07-a9fd329d3867",
+    });
   });
 
   it("then it should update user in search index", async () => {

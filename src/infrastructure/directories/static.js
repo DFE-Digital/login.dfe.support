@@ -1,9 +1,5 @@
 const { v4: uuid } = require("uuid");
 
-const deactivate = async () => {
-  return Promise.resolve();
-};
-
 const reactivate = async () => {
   return Promise.resolve();
 };
@@ -53,7 +49,6 @@ const getLegacyUsernames = async () => {
 };
 
 module.exports = {
-  deactivate,
   reactivate,
   createInvite,
   updateInvite,
