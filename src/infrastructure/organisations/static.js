@@ -173,16 +173,11 @@ const getPendingRequestsAssociatedWithUser = async () => {
   return Promise.resolve();
 };
 
-const createOrganisation = async () => {
-  return Promise.resolve();
-};
-
 const getCategories = async () => {
   return await getCategories();
 };
 
 module.exports = {
-  createOrganisation,
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
