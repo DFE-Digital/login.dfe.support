@@ -4,7 +4,9 @@ jest.mock("./../../../src/infrastructure/config", () =>
 jest.mock("./../../../src/infrastructure/utils");
 jest.mock("./../../../src/app/users/utils");
 jest.mock("./../../../src/infrastructure/organisations");
-jest.mock("./../../../src/infrastructure/applications");
+jest.mock("login.dfe.api-client/services", () => ({
+  getServiceRaw: jest.fn(),
+}));
 jest.mock("./../../../src/infrastructure/directories");
 jest.mock("./../../../src/infrastructure/serviceMapping");
 jest.mock("./../../../src/infrastructure/audit");
@@ -19,9 +21,7 @@ const { getPageOfUserAudits } = require("./../../../src/infrastructure/audit");
 const {
   getServiceIdForClientId,
 } = require("./../../../src/infrastructure/serviceMapping");
-const {
-  getServiceById,
-} = require("./../../../src/infrastructure/applications");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 const { getUserStatus } = require("./../../../src/infrastructure/directories");
 const getAudit = require("./../../../src/app/users/getAudit");
 
@@ -148,8 +148,8 @@ describe("when getting users audit details", () => {
       return null;
     });
 
-    getServiceById.mockReset();
-    getServiceById.mockImplementation((serviceId) => {
+    getServiceRaw.mockReset();
+    getServiceRaw.mockImplementation(({ by: { serviceId } }) => {
       return {
         id: serviceId,
         name: serviceId,
@@ -345,8 +345,10 @@ describe("when getting users audit details", () => {
     expect(getServiceIdForClientId.mock.calls).toHaveLength(1);
     expect(getServiceIdForClientId.mock.calls[0][0]).toBe("client-1");
 
-    expect(getServiceById.mock.calls).toHaveLength(1);
-    expect(getServiceById.mock.calls[0][0]).toBe("service-1");
+    expect(getServiceRaw).toHaveBeenCalledTimes(1);
+    expect(getServiceRaw).toHaveBeenCalledWith({
+      by: { serviceId: "service-1" },
+    });
   });
 
   it("should include statusChangeReasons in the user model if the status is 0", async () => {

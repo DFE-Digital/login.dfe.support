@@ -4,7 +4,7 @@ const { callServiceToUserFunc } = require("./utils");
 const {
   getAllServices,
   isSupportEmailNotificationAllowed,
-} = require("../../infrastructure/applications");
+} = require("../services/utils");
 const config = require("../../infrastructure/config");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {

@@ -1,8 +1,6 @@
 const { sendResult } = require("../../infrastructure/utils");
-const {
-  getAllServices,
-  getPageOfService,
-} = require("../../infrastructure/applications");
+const { getAllServices } = require("../services/utils");
+const { getPaginatedServicesRaw } = require("login.dfe.api-client/services");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { getUserDetails } = require("./utils");
 
@@ -28,10 +26,10 @@ const buildModel = async (req) => {
     page = 1;
   }
 
-  const pageOfServices = (await getPageOfService(
-    page,
-    numberOfResultsOnPage,
-  )) ?? { services: [] };
+  const pageOfServices = (await getPaginatedServicesRaw({
+    pageSize: numberOfResultsOnPage,
+    pageNumber: page,
+  })) ?? { services: [] };
 
   const model = {
     csrfToken: req.csrfToken(),

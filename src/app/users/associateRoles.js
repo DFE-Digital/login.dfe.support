@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const config = require("./../../infrastructure/config");
-const { getServiceById } = require("./../../infrastructure/applications");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 const {
   getUserOrganisations,
   getInvitationOrganisations,
@@ -10,12 +10,7 @@ const { getUserServiceRaw } = require("login.dfe.api-client/users");
 const { getInvitationServiceRaw } = require("login.dfe.api-client/invitations");
 const policyEngine = new PolicyEngine(config);
 
-const getSingleServiceForUser = async (
-  userId,
-  organisationId,
-  serviceId,
-  correlationId,
-) => {
+const getSingleServiceForUser = async (userId, organisationId, serviceId) => {
   const userService = userId.startsWith("inv-")
     ? await getInvitationServiceRaw({
         invitationId: userId.substr(4),
@@ -23,7 +18,7 @@ const getSingleServiceForUser = async (
         organisationId,
       })
     : await getUserServiceRaw({ userId, serviceId, organisationId });
-  const application = await getServiceById(serviceId, correlationId);
+  const application = await getServiceRaw({ by: { serviceId } });
   return {
     id: userService.serviceId,
     roles: userService.roles,
@@ -41,7 +36,9 @@ const getViewModel = async (req) => {
         (x) => x.serviceId === req.params.sid,
       ) + 1
     : 1;
-  const serviceDetails = await getServiceById(req.params.sid, req.id);
+  const serviceDetails = await getServiceRaw({
+    by: { serviceId: req.params.sid },
+  });
   const userOrganisations = userId.startsWith("inv-")
     ? await getInvitationOrganisations(userId.substr(4), req.id)
     : await getUserOrganisations(userId, req.id);
@@ -92,7 +89,6 @@ const get = async (req, res) => {
       req.params.uid,
       req.params.orgId,
       req.params.sid,
-      req.id,
     );
     req.session.user.services = [
       {

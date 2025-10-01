@@ -6,7 +6,7 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 );
 jest.mock("login.dfe.policy-engine");
 jest.mock("./../../../src/infrastructure/organisations");
-jest.mock("./../../../src/infrastructure/applications", () => {
+jest.mock("../../../src/app/services/utils", () => {
   return {
     getAllServices: jest.fn(),
   };
@@ -19,9 +19,7 @@ const {
   getUserOrganisations,
   getInvitationOrganisations,
 } = require("./../../../src/infrastructure/organisations");
-const {
-  getAllServices,
-} = require("./../../../src/infrastructure/applications");
+const { getAllServices } = require("../../../src/app/services/utils");
 const {
   getAllServicesForUserInOrg,
 } = require("./../../../src/app/users/utils");

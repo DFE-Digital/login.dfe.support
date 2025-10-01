@@ -9,17 +9,13 @@ jest.mock("login.dfe.api-client/services");
 jest.mock("login.dfe.api-client/users");
 
 jest.mock("./../../../src/infrastructure/organisations");
-jest.mock("./../../../src/infrastructure/applications", () => {
-  return {
-    getAllServices: jest.fn(),
-  };
-});
+jest.mock("../../../src/app/services/utils", () => ({
+  getAllServices: jest.fn(),
+}));
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
-const {
-  getAllServices,
-} = require("./../../../src/infrastructure/applications");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
+const { getAllServices } = require("../../../src/app/services/utils");
 const {
   getUserOrganisations,
   getInvitationOrganisations,
