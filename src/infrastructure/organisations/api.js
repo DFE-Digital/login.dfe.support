@@ -64,15 +64,6 @@ const getServiceById = async (serviceId, correlationId) => {
   );
 };
 
-const getAllServices = async (correlationId) => {
-  return await callOrganisationsApi(
-    "services",
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
 const addInvitationService = async (
   invitationId,
   organisationId,
@@ -348,7 +339,6 @@ module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
-  getAllServices,
   addInvitationService,
   addInvitationOrganisation,
   getServicesByUserId,

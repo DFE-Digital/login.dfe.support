@@ -70,16 +70,6 @@ const getServiceById = async () => {
   });
 };
 
-const getAllServices = async () => {
-  return Promise.resolve([
-    {
-      id: "83f00ace-f1a0-4338-8784-fa14f5943e5a",
-      name: "Some service",
-      description: "Some service that does some stuff",
-    },
-  ]);
-};
-
 const addInvitationService = async () => {
   return Promise.resolve(null);
 };
@@ -153,7 +143,6 @@ module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
-  getAllServices,
   addInvitationService,
   addInvitationOrganisation,
   getServicesByUserId,
