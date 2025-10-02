@@ -117,10 +117,6 @@ const addInvitationOrganisation = async () => {
   return Promise.resolve(null);
 };
 
-const getServicesByUserId = async () => {
-  return Promise.resolve(null);
-};
-
 const putSingleServiceIdentifierForUser = async () => {
   return Promise.resolve(null);
 };
@@ -189,7 +185,6 @@ module.exports = {
   getOrganisationByIdV2,
   getServiceIdentifierDetails,
   addInvitationOrganisation,
-  getServicesByUserId,
   putSingleServiceIdentifierForUser,
   searchOrganisations,
   setUserAccessToOrganisation,
