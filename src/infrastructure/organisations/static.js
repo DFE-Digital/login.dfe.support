@@ -113,10 +113,6 @@ const getServiceIdentifierDetails = async () => {
   return Promise.resolve(null);
 };
 
-const addInvitationService = async () => {
-  return Promise.resolve(null);
-};
-
 const addInvitationOrganisation = async () => {
   return Promise.resolve(null);
 };
@@ -192,7 +188,6 @@ module.exports = {
   getOrganisationById,
   getOrganisationByIdV2,
   getServiceIdentifierDetails,
-  addInvitationService,
   addInvitationOrganisation,
   getServicesByUserId,
   putSingleServiceIdentifierForUser,
