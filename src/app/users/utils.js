@@ -1,7 +1,13 @@
 const logger = require("./../../infrastructure/logger");
-const { getUserServicesRaw } = require("login.dfe.api-client/users");
+const {
+  getUserServicesRaw,
+  deleteUserServiceAccess,
+  getUserServiceRequestsRaw,
+} = require("login.dfe.api-client/users");
+const { updateServiceRequest } = require("login.dfe.api-client/services");
 const {
   getInvitationServicesRaw,
+  deleteServiceAccessFromInvitation,
 } = require("login.dfe.api-client/invitations");
 const {
   searchForUsers,
@@ -12,12 +18,6 @@ const {
   getInvitation,
   getUser,
 } = require("./../../infrastructure/directories");
-const {
-  getUserServiceRequestsByUserId,
-  removeServiceFromUser,
-  removeServiceFromInvitation,
-  updateUserServiceRequest,
-} = require("./../../infrastructure/access");
 const { getServiceRaw } = require("login.dfe.api-client/services");
 const {
   getPendingRequestsAssociatedWithUser,
@@ -384,7 +384,7 @@ const mapRole = (roleId) => {
 const rejectOpenUserServiceRequestsForUser = async (userId, req) => {
   const correlationId = req.id;
   const userServiceRequests =
-    (await getUserServiceRequestsByUserId(userId)) || [];
+    (await getUserServiceRequestsRaw({ userId })) || [];
   logger.info(
     `Found ${userServiceRequests.length} service request(s) for user ${userId}. Rejecting any outstanding requests.`,
     { correlationId },
@@ -399,13 +399,13 @@ const rejectOpenUserServiceRequestsForUser = async (userId, req) => {
       logger.info(`Rejecting service request with id: ${serviceRequest.id}`, {
         correlationId,
       });
-      const requestBody = {
+      updateServiceRequest({
+        serviceRequestId: serviceRequest.id,
         status: -1,
-        actioned_reason: "User deactivation",
-        actioned_by: req.user.sub,
-        actioned_at: new Date(),
-      };
-      updateUserServiceRequest(serviceRequest.id, requestBody, req.id);
+        actionedByUserId: req.user.sub,
+        actionedAt: new Date(),
+        reason: "User deactivation",
+      });
     }
   }
 };
@@ -457,12 +457,11 @@ const removeAllServicesForUser = async (userId, req) => {
       `Removing service from user: ${service.userId} with serviceId: ${service.serviceId} and organisationId: ${service.organisationId}`,
       { correlationId },
     );
-    removeServiceFromUser(
-      service.userId,
-      service.serviceId,
-      service.organisationId,
-      req.id,
-    );
+    deleteUserServiceAccess({
+      userId: service.userId,
+      serviceId: service.serviceId,
+      organisationId: service.organisationId,
+    });
   }
 };
 
@@ -479,12 +478,11 @@ const removeAllServicesForInvitedUser = async (userId, req) => {
       `Deleting invitation service record for invitationId: ${serviceRecord.invitationId}, serviceId: ${serviceRecord.serviceId} and organisationId: ${serviceRecord.organisationIdId}`,
       { correlationId },
     );
-    removeServiceFromInvitation(
-      serviceRecord.invitationId,
-      serviceRecord.serviceId,
-      serviceRecord.organisationId,
-      correlationId,
-    );
+    deleteServiceAccessFromInvitation({
+      invitationId: serviceRecord.invitationId,
+      serviceId: serviceRecord.serviceId,
+      organisationId: serviceRecord.organisationId,
+    });
   }
 };
 

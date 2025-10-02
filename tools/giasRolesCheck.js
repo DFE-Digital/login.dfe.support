@@ -2,7 +2,7 @@ const config = require("./../src/infrastructure/config");
 const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = new PolicyEngine(config);
 const { Connection, Request } = require("tedious");
-const { removeServiceFromUser } = require("./../src/infrastructure/access");
+const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
 const { updateUserServiceRoles } = require("login.dfe.api-client/users");
 const { ServiceNotificationsClient } = require("login.dfe.jobs-client");
 const { createWriteStream } = require("fs");
@@ -141,12 +141,11 @@ const updateUserRoles = async () => {
       const currentPolicy = policy.noRolesAvailable[i];
 
       // remove user with no roles from service
-      await removeServiceFromUser(
-        currentPolicy.userId,
-        currentPolicy.serviceId,
-        currentPolicy.organisationId,
-        `${service.name}-dev-script`,
-      );
+      await deleteUserServiceAccess({
+        userId: currentPolicy.userId,
+        serviceId: currentPolicy.serviceId,
+        organisationId: currentPolicy.organisationId,
+      });
       console.log(
         `removed ${currentPolicy.userId} from ${currentPolicy.serviceId} for org ${currentPolicy.organisationId} as they had no available roles`,
       );

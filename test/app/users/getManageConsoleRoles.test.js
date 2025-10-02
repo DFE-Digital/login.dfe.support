@@ -34,9 +34,6 @@ jest.mock("login.dfe.api-client/users");
 jest.mock("login.dfe.api-client/services", () => ({
   getServiceRaw: jest.fn(),
 }));
-jest.mock("./../../../src/infrastructure/access", () => ({
-  updateUserService: jest.fn(),
-}));
 const { getServiceRaw } = require("login.dfe.api-client/services");
 
 describe("when manage a users manage console roles", () => {

@@ -10,9 +10,6 @@ const {
   updateUser,
   updateInvite,
 } = require("../../infrastructure/directories");
-const {
-  putSingleServiceIdentifierForUser,
-} = require("../../infrastructure/access");
 
 const validate = (req) => {
   const validationMessages = {};
@@ -96,36 +93,7 @@ const postEditProfile = async (req, res) => {
     return;
   }
 
-  // k2s isn't used anymore so this section should be removed in the future
   const uid = req.params.uid;
-  const idKey = "k2s-id";
-  //todo k2s-id set id
-  if (req.body.orgId && req.body.serviceId) {
-    const identifierResult = await putSingleServiceIdentifierForUser(
-      uid,
-      req.body.serviceId,
-      req.body.orgId,
-      idKey,
-      req.body.ktsId,
-      req.id,
-    );
-
-    if (!identifierResult) {
-      sendResult(req, res, "users/views/editProfile", {
-        csrfToken: req.csrfToken(),
-        user,
-        backLink: "services",
-        layout: "sharedViews/layout.ejs",
-        currentPage: "users",
-        isValid: false,
-        validationMessages: {
-          ktsId: "Key to Success ID is already in use",
-        },
-      });
-      return;
-    }
-  }
-
   if (uid.startsWith("inv-")) {
     const invitationId = uid.substr(4);
     const newName = {

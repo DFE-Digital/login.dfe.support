@@ -4,7 +4,6 @@ jest.mock("./../../../src/infrastructure/config", () =>
 jest.mock("./../../../src/infrastructure/logger", () =>
   require("../../utils").loggerMockFactory(),
 );
-jest.mock("./../../../src/infrastructure/access");
 jest.mock("./../../../src/infrastructure/organisations", () => ({
   deleteInvitationOrganisation: jest.fn(),
   deleteUserOrganisation: jest.fn(),
@@ -19,6 +18,8 @@ jest.mock("./../../../src/infrastructure/search", () => {
 });
 
 jest.mock("./../../../src/app/users/utils");
+jest.mock("login.dfe.api-client/users");
+jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.api-client/services");
 
 jest.mock("login.dfe.jobs-client");
@@ -36,8 +37,8 @@ const {
   getById,
 } = require("../../../src/infrastructure/search");
 const {
-  removeServiceFromInvitation,
-} = require("../../../src/infrastructure/access");
+  deleteServiceAccessFromInvitation,
+} = require("login.dfe.api-client/invitations");
 
 const res = getResponseMock();
 
@@ -101,7 +102,7 @@ describe("when removing a users access to an organisation", () => {
       },
     ]);
 
-    removeServiceFromInvitation.mockReset();
+    deleteServiceAccessFromInvitation.mockReset();
 
     getAllServicesForUserInOrg.mockReset().mockReturnValue([
       {
