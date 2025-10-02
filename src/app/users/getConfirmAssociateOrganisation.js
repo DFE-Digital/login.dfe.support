@@ -2,7 +2,6 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const {
-  addInvitationOrganisation,
   setUserAccessToOrganisation,
   getOrganisationById,
   getPendingRequestsAssociatedWithUser,
@@ -14,6 +13,9 @@ const {
 } = require("../../infrastructure/search");
 const { waitForIndexToUpdate } = require("./utils");
 const { isSupportEmailNotificationAllowed } = require("../services/utils");
+const {
+  addOrganisationToInvitation: apiClientAddOrganisationToInvitation,
+} = require("login.dfe.api-client/invitations");
 
 const addOrganisationToInvitation = async (uid, req) => {
   const invitationId = uid.substr(4);
@@ -21,12 +23,11 @@ const addOrganisationToInvitation = async (uid, req) => {
   const { organisationName } = req.session.user;
   const permissionId = req.session.user.permission;
 
-  await addInvitationOrganisation(
+  await apiClientAddOrganisationToInvitation({
     invitationId,
     organisationId,
-    permissionId,
-    req.id,
-  );
+    roleId: permissionId,
+  });
 
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) added organisation ${organisationName} (id: ${organisationId}) to invitation for ${req.session.user.email} (id: ${invitationId})`,

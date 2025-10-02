@@ -6,11 +6,11 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 );
 jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/search");
+jest.mock("login.dfe.api-client/invitations");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const postEditPermissions = require("./../../../src/app/users/postEditPermissions");
 const {
-  addInvitationOrganisation,
   setUserAccessToOrganisation,
   getUserOrganisations,
 } = require("./../../../src/infrastructure/organisations");
@@ -21,6 +21,9 @@ const {
 jest.mock("login.dfe.jobs-client");
 jest.mock("login.dfe.api-client/services");
 const { NotificationClient } = require("login.dfe.jobs-client");
+const {
+  addOrganisationToInvitation,
+} = require("login.dfe.api-client/invitations");
 
 const res = getResponseMock();
 
@@ -102,11 +105,12 @@ describe("when editing a users permission level", () => {
 
     await postEditPermissions(req, res);
 
-    expect(addInvitationOrganisation.mock.calls).toHaveLength(1);
-    expect(addInvitationOrganisation.mock.calls[0][0]).toBe("user1");
-    expect(addInvitationOrganisation.mock.calls[0][1]).toBe("org1");
-    expect(addInvitationOrganisation.mock.calls[0][2]).toBe(0);
-    expect(addInvitationOrganisation.mock.calls[0][3]).toBe("correlationId");
+    expect(addOrganisationToInvitation.mock.calls).toHaveLength(1);
+    expect(addOrganisationToInvitation).toHaveBeenCalledWith({
+      invitationId: "user1",
+      organisationId: "org1",
+      roleId: 0,
+    });
   });
 
   it("then it should edit org permission for user", async () => {

@@ -113,10 +113,6 @@ const getServiceIdentifierDetails = async () => {
   return Promise.resolve(null);
 };
 
-const addInvitationOrganisation = async () => {
-  return Promise.resolve(null);
-};
-
 const searchOrganisations = async (criteria, pageNumber, correlationId) => {
   return getPageOfOrganisations(pageNumber, correlationId);
 };
@@ -180,7 +176,6 @@ module.exports = {
   getOrganisationById,
   getOrganisationByIdV2,
   getServiceIdentifierDetails,
-  addInvitationOrganisation,
   searchOrganisations,
   setUserAccessToOrganisation,
   getOrganisationCategories,

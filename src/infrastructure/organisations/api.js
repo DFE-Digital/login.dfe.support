@@ -132,23 +132,6 @@ const getServiceIdentifierDetails = async (
   );
 };
 
-const addInvitationOrganisation = async (
-  invitationId,
-  organisationId,
-  roleId,
-  correlationId,
-) => {
-  const body = {
-    roleId,
-  };
-  return await callOrganisationsApi(
-    `organisations/${organisationId}/invitations/${invitationId}`,
-    "PUT",
-    body,
-    correlationId,
-  );
-};
-
 const deleteInvitationOrganisation = async (
   invitationId,
   organisationId,
@@ -363,7 +346,6 @@ module.exports = {
   getOrganisationById,
   getOrganisationByIdV2,
   getServiceIdentifierDetails,
-  addInvitationOrganisation,
   searchOrganisations,
   setUserAccessToOrganisation,
   getOrganisationCategories,
