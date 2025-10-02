@@ -1,10 +1,12 @@
 const { sendResult } = require("../../infrastructure/utils");
 const {
-  searchOrganisations,
   getOrganisationCategories,
   listOrganisationStatus,
 } = require("../../infrastructure/organisations");
 const { organisation } = require("login.dfe.dao");
+const {
+  searchOrganisationsRaw,
+} = require("login.dfe.api-client/organisations");
 
 const getFiltersModel = async (req) => {
   const fromRedirect = req.session.params ? req.session.params : null;
@@ -131,13 +133,13 @@ const search = async (req) => {
     pageNumber = 1;
   }
 
-  const pageOfOrganisations = await searchOrganisations(
-    criteria,
-    orgTypes,
-    orgStatuses,
+  const pageOfOrganisations = await searchOrganisationsRaw({
+    organisationName: criteria,
     pageNumber,
-    req.id,
-  );
+    categories: orgTypes,
+    status: orgStatuses,
+  });
+
   const result = {
     criteria,
     page: pageNumber,

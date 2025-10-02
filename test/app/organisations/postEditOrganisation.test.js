@@ -3,14 +3,17 @@ jest.mock("./../../../src/infrastructure/config", () =>
 );
 jest.mock("./../../../src/infrastructure/utils");
 jest.mock("./../../../src/infrastructure/organisations");
+jest.mock("login.dfe.api-client/organisations");
 
 const { getRequestMock, getResponseMock } = require("../../utils");
 const { sendResult } = require("../../../src/infrastructure/utils");
 const postEditOrganisation = require("../../../src/app/organisations/postEditOrganisation");
 const {
   getOrganisationByIdV2,
-  searchOrganisations,
 } = require("./../../../src/infrastructure/organisations");
+const {
+  searchOrganisationsRaw,
+} = require("login.dfe.api-client/organisations");
 
 const res = getResponseMock();
 const orgResult = {
@@ -68,7 +71,7 @@ describe("when postEditOrganisation is called", () => {
 
     res.mockResetAll();
 
-    searchOrganisations.mockReset().mockReturnValue(orgsResultWithNoResults);
+    searchOrganisationsRaw.mockReset().mockReturnValue(orgsResultWithNoResults);
     getOrganisationByIdV2.mockReset().mockReturnValue(orgResult);
 
     exampleErrorResponse = {
@@ -114,7 +117,7 @@ describe("when postEditOrganisation is called", () => {
   });
 
   it("should render an the page with an error in validationMessages if an organisation with a matching name exists", async () => {
-    searchOrganisations.mockReset().mockReturnValue(orgsResultWithResults);
+    searchOrganisationsRaw.mockReset().mockReturnValue(orgsResultWithResults);
     exampleErrorResponse.validationMessages.name =
       "An organisation with this name already exists";
 

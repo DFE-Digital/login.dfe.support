@@ -1,5 +1,7 @@
 const { sendResult } = require("../../infrastructure/utils");
-const { searchOrganisations } = require("../../infrastructure/organisations");
+const {
+  searchOrganisationsRaw,
+} = require("login.dfe.api-client/organisations");
 const logger = require("../../infrastructure/logger");
 const { unescape } = require("lodash");
 
@@ -79,13 +81,10 @@ const postCreateOrganisation = async (req, res) => {
     // We MUST do some validation because the create org endpoint will update an organisation with the
     // provided information if it already exists, so a false positive is the preferred result.
     if (model.ukprn) {
-      const ukprnResult = await searchOrganisations(
-        model.ukprn,
-        undefined,
-        undefined,
-        1,
-        req.id,
-      );
+      const ukprnResult = await searchOrganisationsRaw({
+        organisationName: model.ukprn,
+        pageNumber: 1,
+      });
       if (ukprnResult.totalNumberOfRecords > 0) {
         model.validationMessages.ukprn =
           "An organisation with this UKPRN already exists";
@@ -93,13 +92,10 @@ const postCreateOrganisation = async (req, res) => {
     }
 
     if (model.urn) {
-      const urnResult = await searchOrganisations(
-        model.urn,
-        undefined,
-        undefined,
-        1,
-        req.id,
-      );
+      const urnResult = await searchOrganisationsRaw({
+        organisationName: model.urn,
+        pageNumber: 1,
+      });
       if (urnResult.totalNumberOfRecords > 0) {
         model.validationMessages.urn =
           "An organisation with this URN already exists";
