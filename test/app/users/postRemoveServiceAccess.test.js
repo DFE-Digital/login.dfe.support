@@ -4,24 +4,17 @@ jest.mock("./../../../src/infrastructure/config", () =>
 jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
-
-jest.mock("./../../../src/infrastructure/organisations");
-
-jest.mock("../../../src/app/services/utils", () => {
+jest.mock("login.dfe.api-client/users", () => {
   return {
-    isSupportEmailNotificationAllowed: jest.fn(),
+    deleteUserServiceAccess: jest.fn(),
   };
 });
+jest.mock("./../../../src/infrastructure/organisations");
+jest.mock("login.dfe.api-client/invitations");
+jest.mock("../../../src/app/services/utils");
 jest.mock("login.dfe.api-client/services", () => {
   return {
     getServiceRaw: jest.fn(),
-  };
-});
-
-jest.mock("./../../../src/infrastructure/access", () => {
-  return {
-    removeServiceFromUser: jest.fn(),
-    removeServiceFromInvitation: jest.fn(),
   };
 });
 
@@ -36,10 +29,9 @@ const {
   getInvitationOrganisations,
 } = require("./../../../src/infrastructure/organisations");
 const {
-  removeServiceFromInvitation,
-  removeServiceFromUser,
-} = require("./../../../src/infrastructure/access");
-
+  deleteServiceAccessFromInvitation,
+} = require("login.dfe.api-client/invitations");
+const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
 jest.mock("login.dfe.jobs-client");
 const { NotificationClient } = require("login.dfe.jobs-client");
 
@@ -150,25 +142,23 @@ describe("when removing access to a service", () => {
 
     await postRemoveService(req, res);
 
-    expect(removeServiceFromInvitation.mock.calls).toHaveLength(1);
-    expect(removeServiceFromInvitation.mock.calls[0][0]).toBe("invite1");
-    expect(removeServiceFromInvitation.mock.calls[0][1]).toBe("service1");
-    expect(removeServiceFromInvitation.mock.calls[0][2]).toBe(
-      "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-    );
-    expect(removeServiceFromInvitation.mock.calls[0][3]).toBe("correlationId");
+    expect(deleteServiceAccessFromInvitation.mock.calls).toHaveLength(1);
+    expect(deleteServiceAccessFromInvitation).toHaveBeenCalledWith({
+      invitationId: "invite1",
+      organisationId: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+      serviceId: "service1",
+    });
   });
 
   it("then it should delete org for user if request for user", async () => {
     await postRemoveService(req, res);
 
-    expect(removeServiceFromUser.mock.calls).toHaveLength(1);
-    expect(removeServiceFromUser.mock.calls[0][0]).toBe("user1");
-    expect(removeServiceFromUser.mock.calls[0][1]).toBe("service1");
-    expect(removeServiceFromUser.mock.calls[0][2]).toBe(
-      "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-    );
-    expect(removeServiceFromUser.mock.calls[0][3]).toBe("correlationId");
+    expect(deleteUserServiceAccess.mock.calls).toHaveLength(1);
+    expect(deleteUserServiceAccess).toHaveBeenCalledWith({
+      organisationId: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+      serviceId: "service1",
+      userId: "user1",
+    });
   });
 
   it("then it should should audit service being removed", async () => {

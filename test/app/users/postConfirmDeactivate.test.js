@@ -7,9 +7,15 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 jest.mock("./../../../src/app/users/utils");
 jest.mock("./../../../src/infrastructure/utils");
 jest.mock("./../../../src/infrastructure/directories");
-jest.mock("./../../../src/infrastructure/access");
 jest.mock("./../../../src/infrastructure/organisations");
-jest.mock("login.dfe.api-client/users");
+jest.mock("login.dfe.api-client/users", () => ({
+  getUserServicesRaw: jest.fn(),
+  deleteUserServiceAccess: jest.fn(),
+  getUserServiceRequestsRaw: jest.fn(),
+}));
+jest.mock("login.dfe.api-client/services", () => ({
+  updateServiceRequest: jest.fn(),
+}));
 
 const logger = require("../../../src/infrastructure/logger");
 const {
@@ -21,12 +27,13 @@ const {
   updateUserDetails,
 } = require("../../../src/app/users/utils");
 const { deactivate } = require("../../../src/infrastructure/directories");
+const { updateServiceRequest } = require("login.dfe.api-client/services");
+
 const {
-  getUserServiceRequestsByUserId,
-  updateUserServiceRequest,
-  removeServiceFromUser,
-} = require("../../../src/infrastructure/access");
-const { getUserServicesRaw } = require("login.dfe.api-client/users");
+  getUserServicesRaw,
+  deleteUserServiceAccess,
+  getUserServiceRequestsRaw,
+} = require("login.dfe.api-client/users");
 const {
   getPendingRequestsAssociatedWithUser,
   updateRequestById,
@@ -98,7 +105,7 @@ beforeEach(() => {
 
   updateUserDetails.mockReset();
 
-  getUserServiceRequestsByUserId.mockReset().mockReturnValue([
+  getUserServiceRequestsRaw.mockReset().mockReturnValue([
     {
       id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
       userId: "01A52B72-AE88-47BC-800B-E7DFFCE54344",
@@ -436,17 +443,17 @@ describe("When the remove all services and requests checkbox is ticked", () => {
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });
 
-  it("should not call updateUserServiceRequest when getUserServiceRequestsByUserId returns an empty array", async () => {
-    getUserServiceRequestsByUserId.mockReset().mockReturnValue([]);
+  it("should not call updateServiceRequest when getUserServiceRequestsRaw returns an empty array", async () => {
+    getUserServiceRequestsRaw.mockReset().mockReturnValue([]);
     await postConfirmDeactivate(req, res);
-    expect(updateUserServiceRequest.mock.calls).toMatchObject([]);
+    expect(updateServiceRequest.mock.calls).toMatchObject([]);
   });
 
-  it("should continue to work when getUserServiceRequestsByUserId returns undefined on a 404", async () => {
+  it("should continue to work when getUserServiceRequestsRaw returns undefined on a 404", async () => {
     // Returns undefined if the api call returns 404
-    getUserServiceRequestsByUserId.mockReset().mockReturnValue(undefined);
+    getUserServiceRequestsRaw.mockReset().mockReturnValue(undefined);
     await postConfirmDeactivate(req, res);
-    expect(updateUserServiceRequest.mock.calls).toMatchObject([]);
+    expect(updateServiceRequest.mock.calls).toMatchObject([]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });
@@ -465,16 +472,16 @@ describe("When the remove all services and requests checkbox is ticked", () => {
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });
 
-  it("should not call removeServiceFromUser when getServicesByUserId returns an empty array", async () => {
+  it("should not call deleteUserServiceAccess when getServicesByUserId returns an empty array", async () => {
     getUserServicesRaw.mockReset().mockReturnValue([]);
     await postConfirmDeactivate(req, res);
-    expect(removeServiceFromUser.mock.calls).toMatchObject([]);
+    expect(deleteUserServiceAccess.mock.calls).toMatchObject([]);
   });
 
   it("should continue to work getServicesByUserId returns undefined on a 404", async () => {
     getUserServicesRaw.mockReset().mockReturnValue(undefined);
     await postConfirmDeactivate(req, res);
-    expect(removeServiceFromUser.mock.calls).toMatchObject([]);
+    expect(deleteUserServiceAccess.mock.calls).toMatchObject([]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });

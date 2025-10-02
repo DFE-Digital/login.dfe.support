@@ -7,21 +7,16 @@ jest.mock("./../../../src/infrastructure/utils", () => ({
 jest.mock("../../../src/app/services/utils", () => ({
   getAllServices: jest.fn(),
 }));
-jest.mock("login.dfe.api-client/services", () => ({
-  getPaginatedServicesRaw: jest.fn(),
-}));
-jest.mock("./../../../src/infrastructure/access", () => ({
-  getServicesByUserId: jest.fn(),
-}));
 jest.mock("./../../../src/app/users/utils", () => ({
   getUserDetails: jest.fn(),
 }));
-
+jest.mock("login.dfe.api-client/services", () => ({
+  getPaginatedServicesRaw: jest.fn(),
+}));
 const getManageConsoleServices = require("./../../../src/app/users/getManageConsoleServices");
 const { sendResult } = require("./../../../src/infrastructure/utils");
 const { getAllServices } = require("../../../src/app/services/utils");
 const { getPaginatedServicesRaw } = require("login.dfe.api-client/services");
-const { getServicesByUserId } = require("./../../../src/infrastructure/access");
 const { getUserDetails } = require("./../../../src/app/users/utils");
 
 describe("When retrieving manage console services for a user", () => {
@@ -53,34 +48,6 @@ describe("When retrieving manage console services for a user", () => {
     getUserDetails.mockReturnValue({
       id: "user1",
     });
-
-    getServicesByUserId.mockReset();
-    getServicesByUserId.mockReturnValue([
-      {
-        userId: "user-1",
-        serviceId: "service1Id",
-        organisationId: "organisation-1",
-        roles: [],
-      },
-      {
-        userId: "user-1",
-        serviceId: "service2Id",
-        organisationId: "organisation-1",
-        roles: [],
-      },
-      {
-        userId: "user-1",
-        serviceId: "service3Id",
-        organisationId: "organisation-1",
-        roles: [],
-      },
-      {
-        userId: "user-1",
-        serviceId: "service4Id",
-        organisationId: "organisation-1",
-        roles: [],
-      },
-    ]);
 
     const allServices = {
       services: [
