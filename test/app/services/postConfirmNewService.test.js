@@ -2,7 +2,9 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/utils");
-jest.mock("login.dfe.api-client/services");
+jest.mock("login.dfe.api-client/services", () => ({
+  createServiceRaw: jest.fn(),
+}));
 const { getRequestMock, getResponseMock } = require("../../utils");
 const { createServiceRaw } = require("login.dfe.api-client/services");
 const postConfirmNewService = require("../../../src/app/services/postConfirmNewService");
