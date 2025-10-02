@@ -117,10 +117,6 @@ const addInvitationOrganisation = async () => {
   return Promise.resolve(null);
 };
 
-const putSingleServiceIdentifierForUser = async () => {
-  return Promise.resolve(null);
-};
-
 const searchOrganisations = async (criteria, pageNumber, correlationId) => {
   return getPageOfOrganisations(pageNumber, correlationId);
 };
@@ -185,7 +181,6 @@ module.exports = {
   getOrganisationByIdV2,
   getServiceIdentifierDetails,
   addInvitationOrganisation,
-  putSingleServiceIdentifierForUser,
   searchOrganisations,
   setUserAccessToOrganisation,
   getOrganisationCategories,
