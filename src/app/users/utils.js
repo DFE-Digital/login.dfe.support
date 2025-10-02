@@ -271,7 +271,6 @@ const getUserDetailsById = async (uid) => {
   if (uid.startsWith("inv-")) {
     const invitation = await getInvitationRaw({ by: { id: uid.substr(4) } });
 
-    console.log(JSON.stringify(invitation) === JSON.stringify(invitation));
     return {
       id: uid,
       name: `${invitation.firstName} ${invitation.lastName}`,
