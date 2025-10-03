@@ -94,15 +94,6 @@ const deleteInvitationOrganisation = async (
   );
 };
 
-const getServicesByUserId = async (id, reqId) => {
-  return await callOrganisationsApi(
-    `services/associated-with-user/${id}`,
-    "GET",
-    undefined,
-    reqId,
-  );
-};
-
 const putSingleServiceIdentifierForUser = async (
   userId,
   serviceId,
@@ -319,7 +310,6 @@ module.exports = {
   getInvitationOrganisations,
   getServiceById,
   addInvitationOrganisation,
-  getServicesByUserId,
   putSingleServiceIdentifierForUser,
   searchOrganisations,
   setUserAccessToOrganisation,

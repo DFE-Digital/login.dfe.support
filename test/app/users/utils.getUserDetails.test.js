@@ -2,16 +2,12 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("./../../utils").configMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/directories");
-jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/search");
 jest.mock("login.dfe.api-client/users");
 jest.mock("login.dfe.api-client/services");
 
 const { getUser } = require("./../../../src/infrastructure/directories");
 const { getServiceRaw } = require("login.dfe.api-client/services");
-const {
-  getServicesByUserId,
-} = require("./../../../src/infrastructure/organisations");
 const {
   getSearchDetailsForUserById,
 } = require("./../../../src/infrastructure/search");
@@ -21,8 +17,6 @@ describe("When getting user details", () => {
   let req;
 
   beforeEach(() => {
-    getServicesByUserId.mockReset();
-
     getServiceRaw.mockResolvedValue({
       name: "Test Service",
       id: "testService1",
