@@ -6,16 +6,12 @@ jest.mock("./../../../src/app/accessRequests/utils", () => {
     putUserInOrganisation: jest.fn().mockReturnValue({}),
   };
 });
-jest.mock("./../../../src/infrastructure/organisations", () => {
-  return {
-    setUserAccessToOrganisation: jest.fn().mockReturnValue(),
-  };
-});
+jest.mock("login.dfe.api-client/users");
 
 const utils = require("./../../../src/app/accessRequests/utils");
-const organisations = require("./../../../src/infrastructure/organisations");
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const { post } = require("./../../../src/app/accessRequests/accessRequest");
+const { addOrganisationToUser } = require("login.dfe.api-client/users");
 
 describe("When processing a post for access requests", () => {
   let req;
@@ -44,8 +40,8 @@ describe("When processing a post for access requests", () => {
     utils.putUserInOrganisation.mockReset();
     utils.putUserInOrganisation.mockReturnValue();
 
-    organisations.setUserAccessToOrganisation.mockReset();
-    organisations.setUserAccessToOrganisation.mockReturnValue();
+    addOrganisationToUser.mockReset();
+    addOrganisationToUser.mockReturnValue();
   });
 
   test("then it should call putUserIngOrg", async () => {
