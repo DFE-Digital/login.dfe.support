@@ -64,27 +64,6 @@ const getServiceById = async (serviceId, correlationId) => {
   );
 };
 
-const addInvitationService = async (
-  invitationId,
-  organisationId,
-  serviceId,
-  roleId,
-  externalIdentifiers,
-  correlationId,
-) => {
-  const body = {
-    roleId,
-    externalIdentifiers,
-  };
-
-  return await callOrganisationsApi(
-    `organisations/${organisationId}/services/${serviceId}/invitations/${invitationId}`,
-    "PUT",
-    body,
-    correlationId,
-  );
-};
-
 const addInvitationOrganisation = async (
   invitationId,
   organisationId,
@@ -339,7 +318,6 @@ module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
-  addInvitationService,
   addInvitationOrganisation,
   getServicesByUserId,
   putSingleServiceIdentifierForUser,
