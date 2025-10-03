@@ -2,14 +2,14 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/utils");
-jest.mock("./../../../src/infrastructure/organisations");
+jest.mock("login.dfe.api-client/organisations");
 
 const { getRequestMock, getResponseMock } = require("../../utils");
 const { sendResult } = require("../../../src/infrastructure/utils");
-const {
-  searchOrganisations,
-} = require("../../../src/infrastructure/organisations");
 const postCreateOrganisation = require("../../../src/app/organisations/postCreateOrganisation");
+const {
+  searchOrganisationsRaw,
+} = require("login.dfe.api-client/organisations");
 
 const res = getResponseMock();
 
@@ -50,7 +50,7 @@ describe("when displaying the get create organisations", () => {
     });
     res.mockResetAll();
 
-    searchOrganisations.mockReset().mockReturnValue(orgsResultWithNoResults);
+    searchOrganisationsRaw.mockReset().mockReturnValue(orgsResultWithNoResults);
     sendResult.mockReset();
 
     // Example data that each error test can modify so it doens't need to be copied
@@ -232,7 +232,7 @@ describe("when displaying the get create organisations", () => {
   });
 
   it("should render an the page with an error in validationMessages if an organisation with a matching ukprn and/or exists", async () => {
-    searchOrganisations.mockReset().mockReturnValue(orgsResultWithResults);
+    searchOrganisationsRaw.mockReset().mockReturnValue(orgsResultWithResults);
     exampleErrorResponse.validationMessages.ukprn =
       "An organisation with this UKPRN already exists";
     exampleErrorResponse.validationMessages.urn =

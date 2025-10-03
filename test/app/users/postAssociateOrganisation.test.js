@@ -6,12 +6,12 @@ jest.mock("login.dfe.api-client/organisations");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const {
-  searchOrganisations,
   getCategories,
 } = require("./../../../src/infrastructure/organisations");
 const postAssociateOrganisation = require("./../../../src/app/users/postAssociateOrganisation");
 const {
   getOrganisationLegacyRaw,
+  searchOrganisationsRaw,
 } = require("login.dfe.api-client/organisations");
 
 const res = getResponseMock();
@@ -37,7 +37,7 @@ describe("when associating user to organisations", () => {
 
     res.mockResetAll();
 
-    searchOrganisations.mockReset().mockReturnValue({
+    searchOrganisationsRaw.mockReset().mockReturnValue({
       organisations: [{ id: "org1" }],
       totalNumberOfPages: 2,
       totalNumberOfRecords: 49,
@@ -58,11 +58,12 @@ describe("when associating user to organisations", () => {
   it("then it should return search results for organisations", async () => {
     await postAssociateOrganisation(req, res);
 
-    expect(searchOrganisations.mock.calls).toHaveLength(1);
-    expect(searchOrganisations.mock.calls[0][0]).toBe("something");
-    expect(searchOrganisations.mock.calls[0][2]).toBeUndefined();
-    expect(searchOrganisations.mock.calls[0][3]).toBe(1);
-    expect(searchOrganisations.mock.calls[0][4]).toBe("correlationId");
+    expect(searchOrganisationsRaw.mock.calls).toHaveLength(1);
+    expect(searchOrganisationsRaw).toHaveBeenCalledWith({
+      categories: ["001"],
+      organisationName: "something",
+      pageNumber: 1,
+    });
 
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe(
@@ -102,7 +103,7 @@ describe("when associating user to organisations", () => {
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("organisation-permissions");
 
-    expect(searchOrganisations.mock.calls).toHaveLength(0);
+    expect(searchOrganisationsRaw.mock.calls).toHaveLength(0);
     expect(res.render.mock.calls).toHaveLength(0);
   });
 });
