@@ -1,11 +1,11 @@
 const { sendResult } = require("../../infrastructure/utils");
 const {
-  getOrganisationCategories,
   listOrganisationStatus,
 } = require("../../infrastructure/organisations");
 const { organisation } = require("login.dfe.dao");
 const {
   searchOrganisationsRaw,
+  getOrganisationCategories,
 } = require("login.dfe.api-client/organisations");
 
 const getFiltersModel = async (req) => {
@@ -34,18 +34,16 @@ const getFiltersModel = async (req) => {
     const selectedOrganisationStatus = unpackMultiSelect(
       paramsSource.organisationStatus,
     );
-    organisationTypes = (await getOrganisationCategories(req.id)).map(
-      (category) => {
-        return {
-          id: category.id,
-          name: category.name,
-          isSelected:
-            selectedOrganisationTypes.find(
-              (x) => x.toLowerCase() === category.id.toLowerCase(),
-            ) !== undefined,
-        };
-      },
-    );
+    organisationTypes = (await getOrganisationCategories()).map((category) => {
+      return {
+        id: category.id,
+        name: category.name,
+        isSelected:
+          selectedOrganisationTypes.find(
+            (x) => x.toLowerCase() === category.id.toLowerCase(),
+          ) !== undefined,
+      };
+    });
 
     organisationStatuses = (await listOrganisationStatus(req.id)).map(
       (status) => {

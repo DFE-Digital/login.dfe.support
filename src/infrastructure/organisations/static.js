@@ -74,10 +74,6 @@ const setUserAccessToOrganisation = async () => {
   return Promise.resolve(null);
 };
 
-const getOrganisationCategories = async () => {
-  return Promise.resolve([]);
-};
-
 const getAllRequestsForSupport = async () => {
   return Promise.resolve();
 };
@@ -112,7 +108,6 @@ module.exports = {
   getInvitationOrganisations,
   getServiceById,
   setUserAccessToOrganisation,
-  getOrganisationCategories,
   getUserOrganisationsV2,
   getAllRequestsForSupport,
   getRequestById,
