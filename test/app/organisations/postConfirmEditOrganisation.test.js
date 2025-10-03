@@ -4,14 +4,14 @@ jest.mock("./../../../src/infrastructure/config", () =>
 jest.mock("./../../../src/infrastructure/utils");
 jest.mock("../../../src/infrastructure/organisations", () => ({
   editOrganisation: jest.fn(),
-  getOrganisationByIdV2: jest.fn(),
 }));
+jest.mock("login.dfe.api-client/organisations");
 
 const { getRequestMock, getResponseMock } = require("../../utils");
 const {
   editOrganisation,
-  getOrganisationByIdV2,
 } = require("../../../src/infrastructure/organisations");
+const { getOrganisationRaw } = require("login.dfe.api-client/organisations");
 const postConfirmEditOrganisation = require("../../../src/app/organisations/postConfirmEditOrganisation");
 
 const res = getResponseMock();
@@ -35,7 +35,7 @@ describe("when postConfirmEditOrganisation is called", () => {
 
     res.mockResetAll();
 
-    getOrganisationByIdV2.mockReset().mockReturnValue(orgResult);
+    getOrganisationRaw.mockReset().mockReturnValue(orgResult);
     editOrganisation.mockReset().mockReturnValue({});
   });
 

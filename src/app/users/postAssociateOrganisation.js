@@ -1,14 +1,16 @@
 const {
   searchOrganisations,
-  getOrganisationById,
   getCategories,
 } = require("../../infrastructure/organisations");
 const { sendResult } = require("../../infrastructure/utils");
+const {
+  getOrganisationLegacyRaw,
+} = require("login.dfe.api-client/organisations");
 
 const postAssociateOrganisation = async (req, res) => {
   const selectedOrganisationId = req.body.selectedOrganisation;
   const selectedOrganisation = selectedOrganisationId
-    ? await getOrganisationById(selectedOrganisationId, req.id)
+    ? await getOrganisationLegacyRaw({ organisationId: selectedOrganisationId })
     : undefined;
   if (selectedOrganisation) {
     req.session.user.organisationId = selectedOrganisation.id;

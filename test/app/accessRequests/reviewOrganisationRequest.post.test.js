@@ -9,6 +9,7 @@ jest.mock("./../../../src/app/users/utils");
 jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/search");
 jest.mock("login.dfe.jobs-client");
+jest.mock("login.dfe.api-client/organisations");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const {
@@ -19,7 +20,6 @@ const res = getResponseMock();
 const {
   putUserInOrganisation,
   updateRequestById,
-  getOrganisationById,
 } = require("./../../../src/infrastructure/organisations");
 const {
   getSearchDetailsForUserById,
@@ -29,6 +29,9 @@ const {
 } = require("./../../../src/app/accessRequests/utils");
 const logger = require("./../../../src/infrastructure/logger");
 const { NotificationClient } = require("login.dfe.jobs-client");
+const {
+  getOrganisationLegacyRaw,
+} = require("login.dfe.api-client/organisations");
 
 const sendAccessRequest = jest.fn();
 NotificationClient.mockImplementation(() => ({
@@ -63,8 +66,8 @@ describe("when reviewing an organisation request", () => {
       sendAccessRequest,
     }));
 
-    getOrganisationById.mockReset();
-    getOrganisationById.mockReturnValue({
+    getOrganisationLegacyRaw.mockReset();
+    getOrganisationLegacyRaw.mockReturnValue({
       id: "org1",
       name: "organisation two",
       category: {

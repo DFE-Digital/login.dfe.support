@@ -2,14 +2,17 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("./../../utils").configMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/organisations");
+jest.mock("login.dfe.api-client/organisations");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const {
   searchOrganisations,
-  getOrganisationById,
   getCategories,
 } = require("./../../../src/infrastructure/organisations");
 const postAssociateOrganisation = require("./../../../src/app/users/postAssociateOrganisation");
+const {
+  getOrganisationLegacyRaw,
+} = require("login.dfe.api-client/organisations");
 
 const res = getResponseMock();
 
@@ -40,7 +43,7 @@ describe("when associating user to organisations", () => {
       totalNumberOfRecords: 49,
     });
 
-    getOrganisationById.mockReset().mockReturnValue({
+    getOrganisationLegacyRaw.mockReset().mockReturnValue({
       id: "org1",
       name: "Organisation One",
     });

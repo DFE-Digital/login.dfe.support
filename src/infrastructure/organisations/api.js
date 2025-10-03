@@ -64,74 +64,6 @@ const getServiceById = async (serviceId, correlationId) => {
   );
 };
 
-const getPageOfOrganisations = async (pageNumber, correlationId) => {
-  return await callOrganisationsApi(
-    `organisations?page=${pageNumber}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
-const getAllOrganisations = async () => {
-  const all = [];
-
-  let pageNumber = 1;
-  let hasMorePages = true;
-  while (hasMorePages) {
-    const page = await getPageOfOrganisations(pageNumber);
-    page.organisations.forEach((org) => {
-      all.push(org);
-    });
-
-    pageNumber++;
-    hasMorePages = pageNumber <= page.totalNumberOfPages;
-  }
-
-  return all;
-};
-
-const getAllServices = async (correlationId) => {
-  return await callOrganisationsApi(
-    "services",
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
-const getOrganisationById = async (id, correlationId) => {
-  return await callOrganisationsApi(
-    `organisations/${id}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
-const getOrganisationByIdV2 = async (id, correlationId) => {
-  return await callOrganisationsApi(
-    `organisations/v2/${id}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
-const getServiceIdentifierDetails = async (
-  serviceId,
-  identifierKey,
-  identifierValue,
-  correlationId,
-) => {
-  return await callOrganisationsApi(
-    `services/${serviceId}/identifiers/${identifierKey}/${identifierValue}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
 const addInvitationService = async (
   invitationId,
   organisationId,
@@ -407,12 +339,6 @@ module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
-  getPageOfOrganisations,
-  getAllOrganisations,
-  getAllServices,
-  getOrganisationById,
-  getOrganisationByIdV2,
-  getServiceIdentifierDetails,
   addInvitationService,
   addInvitationOrganisation,
   getServicesByUserId,

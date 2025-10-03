@@ -10,8 +10,10 @@ const { waitForIndexToUpdate } = require("../users/utils");
 const {
   putUserInOrganisation,
   updateRequestById,
-  getOrganisationById,
 } = require("../../infrastructure/organisations");
+const {
+  getOrganisationLegacyRaw,
+} = require("login.dfe.api-client/organisations");
 
 const get = async (req, res) => {
   const request = await getAndMapOrgRequest(req);
@@ -77,10 +79,10 @@ const post = async (req, res) => {
     const getAllUserDetails = await getSearchDetailsForUserById(
       model.request.user_id,
     );
-    const organisation = await getOrganisationById(
-      model.request.org_id,
-      req.id,
-    );
+
+    const organisation = await getOrganisationLegacyRaw({
+      organisationId: model.request.org_id,
+    });
 
     if (!getAllUserDetails) {
       logger.error(

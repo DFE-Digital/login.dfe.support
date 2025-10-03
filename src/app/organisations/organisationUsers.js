@@ -1,13 +1,13 @@
 const { sendResult } = require("./../../infrastructure/utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
-const {
-  getOrganisationByIdV2,
-} = require("./../../infrastructure/organisations");
+const { getOrganisationRaw } = require("login.dfe.api-client/organisations");
 const { searchForUsers } = require("./../../infrastructure/search");
 const { mapRole } = require("./../users/utils");
 
 const render = async (req, res, dataSource) => {
-  const organisation = await getOrganisationByIdV2(req.params.id, req.id);
+  const organisation = await getOrganisationRaw({
+    by: { organisationId: req.params.id },
+  });
   let pageNumber = dataSource.page ? parseInt(dataSource.page) : 1;
   if (isNaN(pageNumber)) {
     pageNumber = 1;

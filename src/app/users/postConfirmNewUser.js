@@ -1,12 +1,14 @@
 const { createInvite } = require("../../infrastructure/directories");
 const {
   addInvitationOrganisation,
-  getOrganisationById,
 } = require("../../infrastructure/organisations");
 const { createIndex } = require("../../infrastructure/search");
 const { waitForIndexToUpdate } = require("./utils");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
+const {
+  getOrganisationLegacyRaw,
+} = require("login.dfe.api-client/organisations");
 
 const postConfirmNewUser = async (req, res) => {
   let emailOverrides = {};
@@ -28,10 +30,9 @@ const postConfirmNewUser = async (req, res) => {
   }
   let organisation = null;
   if (req.session.user.organisationId) {
-    organisation = await getOrganisationById(
-      req.session.user.organisationId,
-      req.id,
-    );
+    organisation = await getOrganisationLegacyRaw({
+      organisationId: req.session.user.organisationId,
+    });
   }
 
   const invitationId = await createInvite(

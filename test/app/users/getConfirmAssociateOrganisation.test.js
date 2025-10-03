@@ -6,11 +6,11 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 );
 jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/search");
+jest.mock("login.dfe.api-client/organisations");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const {
   addInvitationOrganisation,
-  getOrganisationById,
   getPendingRequestsAssociatedWithUser,
 } = require("./../../../src/infrastructure/organisations");
 const getConfirmAssociateOrganisation = require("./../../../src/app/users/getConfirmAssociateOrganisation");
@@ -21,6 +21,10 @@ const {
 jest.mock("login.dfe.jobs-client");
 jest.mock("login.dfe.api-client/services");
 const { NotificationClient } = require("login.dfe.jobs-client");
+
+const {
+  getOrganisationLegacyRaw,
+} = require("login.dfe.api-client/organisations");
 
 const res = getResponseMock();
 
@@ -48,8 +52,8 @@ describe("when confirming new organisation association", () => {
         },
       },
     });
-    getOrganisationById.mockReset();
-    getOrganisationById.mockReturnValue({
+    getOrganisationLegacyRaw.mockReset();
+    getOrganisationLegacyRaw.mockReturnValue({
       id: "orgid",
       name: "orgname",
       Category: "010",

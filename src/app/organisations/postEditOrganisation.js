@@ -1,12 +1,12 @@
 const { sendResult } = require("../../infrastructure/utils");
 const logger = require("../../infrastructure/logger");
-const {
-  getOrganisationByIdV2,
-  searchOrganisations,
-} = require("./../../infrastructure/organisations");
+const { searchOrganisations } = require("./../../infrastructure/organisations");
+const { getOrganisationRaw } = require("login.dfe.api-client/organisations");
 
 const validateInput = async (req) => {
-  const organisation = await getOrganisationByIdV2(req.params.id, req.id);
+  const organisation = await getOrganisationRaw({
+    by: { organisationId: req.params.id },
+  });
   const { name, address } = req.body;
   const regex = /[±!@£$%^*_+§¡€#¢§¶•ªº«\\/<>:;|=.~"]/;
   const model = {

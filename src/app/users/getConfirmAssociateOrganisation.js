@@ -4,7 +4,6 @@ const config = require("../../infrastructure/config");
 const {
   addInvitationOrganisation,
   setUserAccessToOrganisation,
-  getOrganisationById,
   getPendingRequestsAssociatedWithUser,
   updateRequestById,
 } = require("../../infrastructure/organisations");
@@ -14,6 +13,9 @@ const {
 } = require("../../infrastructure/search");
 const { waitForIndexToUpdate } = require("./utils");
 const { isSupportEmailNotificationAllowed } = require("../services/utils");
+const {
+  getOrganisationLegacyRaw,
+} = require("login.dfe.api-client/organisations");
 
 const addOrganisationToInvitation = async (uid, req) => {
   const invitationId = uid.substr(4);
@@ -112,10 +114,9 @@ const getConfirmAssociateOrganisation = async (req, res) => {
   const searchDetails = await getSearchDetailsForUserById(uid);
   if (searchDetails) {
     const { organisations } = searchDetails;
-    const newOrgById = await getOrganisationById(
-      req.session.user.organisationId,
-      req.id,
-    );
+    const newOrgById = await getOrganisationLegacyRaw({
+      organisationId: req.session.user.organisationId,
+    });
     const newOrgForSearch = {
       id: newOrgById.id,
       name: newOrgById.name,

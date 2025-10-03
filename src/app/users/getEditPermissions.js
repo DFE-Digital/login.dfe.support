@@ -1,8 +1,10 @@
 const {
-  getOrganisationById,
   getUserOrganisations,
   getInvitationOrganisations,
 } = require("./../../infrastructure/organisations");
+const {
+  getOrganisationLegacyRaw,
+} = require("login.dfe.api-client/organisations");
 
 const getOrganisations = async (userId, correlationId) => {
   const orgMapping = userId.startsWith("inv-")
@@ -25,7 +27,9 @@ const getOrganisations = async (userId, correlationId) => {
 const getEditPermissions = async (req, res) => {
   const selectedOrganisationId = req.params.id;
   const organisation = selectedOrganisationId
-    ? await getOrganisationById(selectedOrganisationId, req.id)
+    ? await getOrganisationLegacyRaw({
+        organisationId: selectedOrganisationId,
+      })
     : undefined;
   req.session.org = organisation;
   const organisationDetails = await getOrganisations(req.params.uid, req.id);
