@@ -94,26 +94,6 @@ const deleteInvitationOrganisation = async (
   );
 };
 
-const putSingleServiceIdentifierForUser = async (
-  userId,
-  serviceId,
-  orgId,
-  value,
-  reqId,
-) => {
-  const body = {
-    id_key: "k2s-id",
-    id_value: value,
-  };
-  const result = await callOrganisationsApi(
-    `organisations/${orgId}/services/${serviceId}/identifiers/${userId}`,
-    "PUT",
-    body,
-    reqId,
-  );
-  return result === undefined;
-};
-
 const searchOrganisations = async (
   criteria,
   filterByCategories,
@@ -310,7 +290,6 @@ module.exports = {
   getInvitationOrganisations,
   getServiceById,
   addInvitationOrganisation,
-  putSingleServiceIdentifierForUser,
   searchOrganisations,
   setUserAccessToOrganisation,
   getOrganisationCategories,
