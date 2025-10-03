@@ -3,7 +3,6 @@ const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const {
   setUserAccessToOrganisation,
-  addInvitationOrganisation,
   getUserOrganisations,
 } = require("../../infrastructure/organisations");
 const {
@@ -12,6 +11,9 @@ const {
 } = require("../../infrastructure/search");
 const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const { mapRole } = require("./utils");
+const {
+  addOrganisationToInvitation,
+} = require("login.dfe.api-client/invitations");
 
 const validatePermissions = (req) => {
   const validPermissions = [0, 10000];
@@ -36,12 +38,11 @@ const editInvitationPermissions = async (uid, req, model) => {
   const invitationId = uid.substr(4);
   const organisationId = req.params.id;
   const permissionId = model.selectedLevel;
-  await addInvitationOrganisation(
+  await addOrganisationToInvitation({
     invitationId,
     organisationId,
-    permissionId,
-    req.id,
-  );
+    roleId: permissionId,
+  });
 };
 
 const editUserPermissions = async (uid, req, model) => {

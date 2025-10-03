@@ -64,23 +64,6 @@ const getServiceById = async (serviceId, correlationId) => {
   );
 };
 
-const addInvitationOrganisation = async (
-  invitationId,
-  organisationId,
-  roleId,
-  correlationId,
-) => {
-  const body = {
-    roleId,
-  };
-  return await callOrganisationsApi(
-    `organisations/${organisationId}/invitations/${invitationId}`,
-    "PUT",
-    body,
-    correlationId,
-  );
-};
-
 const deleteInvitationOrganisation = async (
   invitationId,
   organisationId,
@@ -289,7 +272,6 @@ module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
-  addInvitationOrganisation,
   searchOrganisations,
   setUserAccessToOrganisation,
   getOrganisationCategories,
