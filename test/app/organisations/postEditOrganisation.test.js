@@ -2,15 +2,16 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/utils");
-jest.mock("./../../../src/infrastructure/organisations");
+jest.mock("../../../src/infrastructure/organisations");
+jest.mock("login.dfe.api-client/organisations");
 
 const { getRequestMock, getResponseMock } = require("../../utils");
 const { sendResult } = require("../../../src/infrastructure/utils");
 const postEditOrganisation = require("../../../src/app/organisations/postEditOrganisation");
 const {
-  getOrganisationByIdV2,
   searchOrganisations,
 } = require("./../../../src/infrastructure/organisations");
+const { getOrganisationRaw } = require("login.dfe.api-client/organisations");
 
 const res = getResponseMock();
 const orgResult = {
@@ -69,7 +70,7 @@ describe("when postEditOrganisation is called", () => {
     res.mockResetAll();
 
     searchOrganisations.mockReset().mockReturnValue(orgsResultWithNoResults);
-    getOrganisationByIdV2.mockReset().mockReturnValue(orgResult);
+    getOrganisationRaw.mockReset().mockReturnValue(orgResult);
 
     exampleErrorResponse = {
       organisation: orgResult,
@@ -133,7 +134,7 @@ describe("when postEditOrganisation is called", () => {
       backLink: "users",
       csrfToken: "token",
     };
-    getOrganisationByIdV2.mockReset().mockReturnValue(orgResultInvalidCategory);
+    getOrganisationRaw.mockReset().mockReturnValue(orgResultInvalidCategory);
 
     await postEditOrganisation(req, res);
 

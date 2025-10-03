@@ -9,6 +9,7 @@ jest.mock("./../../../src/app/users/utils");
 jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/search");
 jest.mock("login.dfe.jobs-client");
+jest.mock("login.dfe.api-client/organisations");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const {
@@ -19,7 +20,6 @@ const res = getResponseMock();
 const {
   putUserInOrganisation,
   updateRequestById,
-  getOrganisationById,
 } = require("./../../../src/infrastructure/organisations");
 const {
   getSearchDetailsForUserById,
@@ -35,6 +35,10 @@ const sendAccessRequest = jest.fn();
 NotificationClient.mockImplementation(() => ({
   sendAccessRequest,
 }));
+
+const {
+  getOrganisationLegacyRaw,
+} = require("login.dfe.api-client/organisations");
 
 Date.now = jest.fn(() => "2019-01-02");
 
@@ -65,8 +69,8 @@ describe("when selecting a permission level", () => {
       sendAccessRequest,
     }));
 
-    getOrganisationById.mockReset();
-    getOrganisationById.mockReturnValue({
+    getOrganisationLegacyRaw.mockReset();
+    getOrganisationLegacyRaw.mockReturnValue({
       id: "org1",
       name: "organisation two",
       Category: "001",
