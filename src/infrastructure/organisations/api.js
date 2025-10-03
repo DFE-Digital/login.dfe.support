@@ -134,15 +134,6 @@ const listUserServices = async (page, pageSize, correlationId) => {
   );
 };
 
-const listInvitationServices = async (page, pageSize, correlationId) => {
-  return callOrganisationsApi(
-    `/invitations?page=${page}&pageSize=${pageSize}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
 const listOrganisationStatus = async (correlationId) => {
   return callOrganisationsApi(
     "organisations/states",
@@ -259,7 +250,6 @@ module.exports = {
   getOrganisationCategories,
   getOrganisationUsersForApproval,
   listUserServices,
-  listInvitationServices,
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   getUserOrganisationsV2,
