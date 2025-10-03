@@ -1,9 +1,7 @@
-const {
-  searchOrganisations,
-  getCategories,
-} = require("../../infrastructure/organisations");
+const { getCategories } = require("../../infrastructure/organisations");
 const { sendResult } = require("../../infrastructure/utils");
 const {
+  searchOrganisationsRaw,
   getOrganisationLegacyRaw,
 } = require("login.dfe.api-client/organisations");
 
@@ -32,13 +30,11 @@ const postAssociateOrganisation = async (req, res) => {
   };
 
   const searchCategories = await retrieveOrganisationCategories();
-  const searchResult = await searchOrganisations(
-    criteria,
-    searchCategories,
-    undefined,
+  const searchResult = await searchOrganisationsRaw({
+    organisationName: criteria,
     pageNumber,
-    req.id,
-  );
+    categories: searchCategories,
+  });
   const results = searchResult.organisations;
   const numberOfPages = searchResult.totalNumberOfPages;
   const numberOfResults = searchResult.totalNumberOfRecords;

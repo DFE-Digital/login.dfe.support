@@ -70,26 +70,6 @@ const getServiceById = async () => {
   });
 };
 
-const addInvitationService = async () => {
-  return Promise.resolve(null);
-};
-
-const addInvitationOrganisation = async () => {
-  return Promise.resolve(null);
-};
-
-const getServicesByUserId = async () => {
-  return Promise.resolve(null);
-};
-
-const putSingleServiceIdentifierForUser = async () => {
-  return Promise.resolve(null);
-};
-
-const searchOrganisations = async () => {
-  return Promise.resolve(null);
-};
-
 const setUserAccessToOrganisation = async () => {
   return Promise.resolve(null);
 };
@@ -143,11 +123,6 @@ module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
-  addInvitationService,
-  addInvitationOrganisation,
-  getServicesByUserId,
-  putSingleServiceIdentifierForUser,
-  searchOrganisations,
   setUserAccessToOrganisation,
   getOrganisationCategories,
   getOrganisationUsersForApproval,
