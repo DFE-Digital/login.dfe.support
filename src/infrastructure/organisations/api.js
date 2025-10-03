@@ -116,15 +116,6 @@ const getOrganisationCategories = async (correlationId) => {
   );
 };
 
-const getOrganisationUsersForApproval = async (pageNumber, correlationId) => {
-  return callOrganisationsApi(
-    `organisations/users-for-approval?page=2`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
 const listOrganisationStatus = async (correlationId) => {
   return callOrganisationsApi(
     "organisations/states",
@@ -239,7 +230,6 @@ module.exports = {
   getServiceById,
   setUserAccessToOrganisation,
   getOrganisationCategories,
-  getOrganisationUsersForApproval,
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   getUserOrganisationsV2,
