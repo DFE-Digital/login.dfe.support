@@ -77,23 +77,6 @@ const deleteInvitationOrganisation = async (
   );
 };
 
-const searchOrganisations = async (
-  criteria,
-  filterByCategories,
-  filterByStatus,
-  pageNumber,
-  correlationId,
-) => {
-  let uri = `organisations?search=${criteria}&page=${pageNumber}`;
-  if (filterByCategories) {
-    uri += filterByCategories.map((f) => `&filtercategory=${f}`).join("");
-  }
-  if (filterByStatus) {
-    uri += filterByStatus.map((f) => `&filterstatus=${f}`).join("");
-  }
-  return await callOrganisationsApi(uri, "GET", undefined, correlationId);
-};
-
 const setUserAccessToOrganisation = async (
   userId,
   organisationId,
@@ -272,7 +255,6 @@ module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
-  searchOrganisations,
   setUserAccessToOrganisation,
   getOrganisationCategories,
   getOrganisationUsersForApproval,
