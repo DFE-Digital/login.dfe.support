@@ -2,18 +2,18 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("./../../utils").configMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/directories");
-jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/accessRequests");
 jest.mock("./../../../src/infrastructure/logger");
 jest.mock("login.dfe.jobs-client");
+jest.mock("login.dfe.api-client/users");
 
-const organisations = require("./../../../src/infrastructure/organisations");
 const accessRequest = require("./../../../src/infrastructure/accessRequests");
 const logger = require("./../../../src/infrastructure/logger");
 const { NotificationClient } = require("login.dfe.jobs-client");
 const {
   putUserInOrganisation,
 } = require("./../../../src/app/accessRequests/utils");
+const { addOrganisationToUser } = require("login.dfe.api-client/users");
 
 describe("When putting a user in an organisation", () => {
   let req;
@@ -23,7 +23,7 @@ describe("When putting a user in an organisation", () => {
     logger.audit.mockReset();
 
     accessRequest.deleteAccessRequest.mockReset();
-    organisations.setUserAccessToOrganisation.mockReset();
+    addOrganisationToUser.mockReset();
 
     sendAccessRequestStub = jest.fn();
 
@@ -63,20 +63,14 @@ describe("When putting a user in an organisation", () => {
   it("then it calls set user access to organisation", async () => {
     await putUserInOrganisation(req);
 
-    expect(organisations.setUserAccessToOrganisation.mock.calls).toHaveLength(
-      1,
-    );
-    expect(organisations.setUserAccessToOrganisation.mock.calls[0][0]).toBe(
-      "user1",
-    );
-    expect(organisations.setUserAccessToOrganisation.mock.calls[0][1]).toBe(
-      "org1",
-    );
-    expect(organisations.setUserAccessToOrganisation.mock.calls[0][2]).toBe(1);
-    expect(organisations.setUserAccessToOrganisation.mock.calls[0][3]).toBe(
-      "reqid",
-    );
-    expect(organisations.setUserAccessToOrganisation.mock.calls[0][4]).toBe(1);
+    expect(addOrganisationToUser.mock.calls).toHaveLength(1);
+    expect(addOrganisationToUser).toHaveBeenCalledWith({
+      organisationId: "org1",
+      reason: "",
+      roleId: 1,
+      status: 1,
+      userId: "user1",
+    });
   });
 
   it("then it calls set user access to organisation and sets the role to approver if the request role is approver", async () => {
@@ -84,22 +78,14 @@ describe("When putting a user in an organisation", () => {
 
     await putUserInOrganisation(req);
 
-    expect(organisations.setUserAccessToOrganisation.mock.calls).toHaveLength(
-      1,
-    );
-    expect(organisations.setUserAccessToOrganisation.mock.calls[0][0]).toBe(
-      "user1",
-    );
-    expect(organisations.setUserAccessToOrganisation.mock.calls[0][1]).toBe(
-      "org1",
-    );
-    expect(organisations.setUserAccessToOrganisation.mock.calls[0][2]).toBe(
-      10000,
-    );
-    expect(organisations.setUserAccessToOrganisation.mock.calls[0][3]).toBe(
-      "reqid",
-    );
-    expect(organisations.setUserAccessToOrganisation.mock.calls[0][4]).toBe(1);
+    expect(addOrganisationToUser.mock.calls).toHaveLength(1);
+    expect(addOrganisationToUser).toHaveBeenCalledWith({
+      organisationId: "org1",
+      reason: "",
+      roleId: 10000,
+      status: 1,
+      userId: "user1",
+    });
   });
 
   it("then it sets the user to rejected role and status if the access request is rejected", async () => {
@@ -107,20 +93,14 @@ describe("When putting a user in an organisation", () => {
 
     await putUserInOrganisation(req);
 
-    expect(organisations.setUserAccessToOrganisation.mock.calls).toHaveLength(
-      1,
-    );
-    expect(organisations.setUserAccessToOrganisation.mock.calls[0][0]).toBe(
-      "user1",
-    );
-    expect(organisations.setUserAccessToOrganisation.mock.calls[0][1]).toBe(
-      "org1",
-    );
-    expect(organisations.setUserAccessToOrganisation.mock.calls[0][2]).toBe(0);
-    expect(organisations.setUserAccessToOrganisation.mock.calls[0][3]).toBe(
-      "reqid",
-    );
-    expect(organisations.setUserAccessToOrganisation.mock.calls[0][4]).toBe(-1);
+    expect(addOrganisationToUser.mock.calls).toHaveLength(1);
+    expect(addOrganisationToUser).toHaveBeenCalledWith({
+      organisationId: "org1",
+      reason: "test message",
+      roleId: 0,
+      status: -1,
+      userId: "user1",
+    });
   });
 
   it("then an email is sent if approved", async () => {
