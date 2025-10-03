@@ -3,6 +3,7 @@ jest.mock("./../../../src/infrastructure/config", () =>
 );
 jest.mock("./../../../src/app/users/utils");
 jest.mock("./../../../src/infrastructure/directories");
+jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock } = require("../../utils");
 const {

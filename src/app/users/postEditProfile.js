@@ -6,11 +6,9 @@ const {
   updateUserDetails,
   waitForIndexToUpdate,
 } = require("./utils");
-const {
-  updateUser,
-  updateInvite,
-} = require("../../infrastructure/directories");
+const { updateInvite } = require("../../infrastructure/directories");
 
+const { updateUser } = require("login.dfe.api-client/users");
 const validate = (req) => {
   const validationMessages = {};
   let isValid = true;
@@ -32,7 +30,7 @@ const validate = (req) => {
 };
 
 const updateUserIndex = async (uid, firstName, lastName, correlationId) => {
-  const user = await getUserDetailsById(uid, correlationId);
+  const user = await getUserDetailsById(uid);
   user.name = `${firstName} ${lastName}`;
   user.firstName = firstName;
   user.lastName = lastName;
@@ -109,7 +107,13 @@ const postEditProfile = async (req, res) => {
       req.id,
     );
   } else {
-    await updateUser(uid, req.body.firstName, req.body.lastName, req.id);
+    updateUser({
+      userId: uid,
+      update: {
+        givenName: req.body.firstName,
+        familyName: req.body.lastName,
+      },
+    });
     await updateUserIndex(uid, req.body.firstName, req.body.lastName, req.id);
   }
 

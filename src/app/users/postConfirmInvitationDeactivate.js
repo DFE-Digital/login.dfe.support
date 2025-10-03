@@ -10,7 +10,7 @@ const { deactivateInvite } = require("../../infrastructure/directories");
 const { sendResult } = require("../../infrastructure/utils");
 
 const updateUserIndex = async (uid, correlationId) => {
-  const user = await getUserDetailsById(uid, correlationId);
+  const user = await getUserDetailsById(uid);
   user.status.id = -2;
   user.status.description = "Deactivated Invitation";
 

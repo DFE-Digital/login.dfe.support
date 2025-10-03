@@ -3,22 +3,23 @@ const {
   getUserServicesRaw,
   deleteUserServiceAccess,
   getUserServiceRequestsRaw,
+  getUserRaw,
 } = require("login.dfe.api-client/users");
-const { updateServiceRequest } = require("login.dfe.api-client/services");
+const {
+  updateServiceRequest,
+  getServiceRaw,
+} = require("login.dfe.api-client/services");
 const {
   getInvitationServicesRaw,
   deleteServiceAccessFromInvitation,
+  getInvitationRaw,
 } = require("login.dfe.api-client/invitations");
 const {
   searchForUsers,
   getSearchDetailsForUserById,
   updateUserInSearch,
 } = require("./../../infrastructure/search");
-const {
-  getInvitation,
-  getUser,
-} = require("./../../infrastructure/directories");
-const { getServiceRaw } = require("login.dfe.api-client/services");
+
 const {
   getPendingRequestsAssociatedWithUser,
   updateRequestById,
@@ -266,9 +267,10 @@ const checkManageAccess = async (arr) => {
   );
 };
 
-const getUserDetailsById = async (uid, correlationId) => {
+const getUserDetailsById = async (uid) => {
   if (uid.startsWith("inv-")) {
-    const invitation = await getInvitation(uid.substr(4), correlationId);
+    const invitation = await getInvitationRaw({ by: { id: uid.substr(4) } });
+
     return {
       id: uid,
       name: `${invitation.firstName} ${invitation.lastName}`,
@@ -284,7 +286,7 @@ const getUserDetailsById = async (uid, correlationId) => {
     };
   } else {
     const userSearch = await getSearchDetailsForUserById(uid);
-    const rawUser = await getUser(uid, correlationId);
+    const rawUser = await getUserRaw({ by: { id: uid } });
     const user = mapUserToSupportModel(rawUser, userSearch);
     const serviceDetails = await getUserServicesRaw({ userId: uid });
     const hasManageAccess = await checkManageAccess(serviceDetails ?? []);

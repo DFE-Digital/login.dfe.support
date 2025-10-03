@@ -6,6 +6,7 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 );
 jest.mock("./../../../src/app/users/utils");
 jest.mock("./../../../src/infrastructure/directories");
+jest.mock("login.dfe.api-client/users");
 
 const logger = require("./../../../src/infrastructure/logger");
 const {
@@ -14,12 +15,12 @@ const {
   updateUserDetails,
 } = require("./../../../src/app/users/utils");
 const {
-  getUser,
   createChangeEmailCode,
   updateInvite,
   getChangeEmailCode,
   deleteChangeEmailCode,
 } = require("./../../../src/infrastructure/directories");
+const { getUserRaw } = require("login.dfe.api-client/users");
 const postEditEmail = require("./../../../src/app/users/postEditEmail");
 
 const userDetails = {
@@ -99,7 +100,7 @@ describe("when changing email address", () => {
 
     updateUserDetails.mockReset();
 
-    getUser.mockReset();
+    getUserRaw.mockReset();
 
     createChangeEmailCode.mockReset();
 
@@ -149,7 +150,7 @@ describe("when changing email address", () => {
   });
 
   it("then it should render view if email already associated to a user", async () => {
-    getUser.mockReturnValue({});
+    getUserRaw.mockReturnValue({});
 
     await postEditEmail(req, res);
 

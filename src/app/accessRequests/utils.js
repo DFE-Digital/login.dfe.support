@@ -3,7 +3,7 @@ const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const accessRequests = require("../../infrastructure/accessRequests");
 const organisations = require("../../infrastructure/organisations");
-const directories = require("../../infrastructure/directories");
+const { getUserRaw } = require("login.dfe.api-client/users");
 const { getOrganisationRaw } = require("login.dfe.api-client/organisations");
 
 const unpackMultiSelect = (parameter) => {
@@ -102,12 +102,13 @@ const getAndMapOrgRequest = async (req) => {
   const organisation = await getOrganisationRaw({
     by: { organisationId: request.org_id },
   });
-  const user = await directories.getUser(request.user_id);
+  const user = await getUserRaw({ by: { id: request.user_id } });
+
   let mappedRequest;
   if (request) {
     const approver =
       request.actioned_by != null
-        ? await directories.getUser(request.actioned_by)
+        ? await getUserRaw({ by: { id: request.actioned_by } })
         : null;
     const usersName = user ? `${user.given_name} ${user.family_name}` : "";
     const usersEmail = user ? user.email : "";

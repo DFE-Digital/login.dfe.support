@@ -7,6 +7,9 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 jest.mock("./../../../src/app/users/utils");
 jest.mock("./../../../src/infrastructure/directories");
 jest.mock("./../../../src/infrastructure/users");
+jest.mock("login.dfe.api-client/users", () => ({
+  updateUser: jest.fn(),
+}));
 
 const logger = require("./../../../src/infrastructure/logger");
 const {
@@ -14,11 +17,9 @@ const {
   getUserDetailsById,
   updateUserDetails,
 } = require("./../../../src/app/users/utils");
-const {
-  updateUser,
-  updateInvite,
-} = require("./../../../src/infrastructure/directories");
+const { updateInvite } = require("./../../../src/infrastructure/directories");
 const postEditProfile = require("./../../../src/app/users/postEditProfile");
+const { updateUser } = require("login.dfe.api-client/users");
 
 describe("when updating users profile details", () => {
   let req;
@@ -120,13 +121,11 @@ describe("when updating users profile details", () => {
   it("then it should update user in directories", async () => {
     await postEditProfile(req, res);
 
-    expect(updateUser.mock.calls).toHaveLength(1);
-    expect(updateUser.mock.calls[0][0]).toBe(
-      "915a7382-576b-4699-ad07-a9fd329d3867",
-    );
-    expect(updateUser.mock.calls[0][1]).toBe("Rupert");
-    expect(updateUser.mock.calls[0][2]).toBe("Grint");
-    expect(updateUser.mock.calls[0][3]).toBe("correlationId");
+    expect(updateUser).toHaveBeenCalledTimes(1);
+    expect(updateUser).toHaveBeenCalledWith({
+      update: { familyName: "Grint", givenName: "Rupert" },
+      userId: "915a7382-576b-4699-ad07-a9fd329d3867",
+    });
   });
 
   it("then it should update user in search index", async () => {

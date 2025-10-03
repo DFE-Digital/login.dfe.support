@@ -1,9 +1,6 @@
 const logger = require("../../infrastructure/logger");
 const { sendResult } = require("../../infrastructure/utils");
-const {
-  deactivate,
-  deactivateInvite,
-} = require("../../infrastructure/directories");
+const { deactivateInvite } = require("../../infrastructure/directories");
 const {
   getUserDetailsById,
   updateUserDetails,
@@ -14,6 +11,9 @@ const {
   removeAllServicesForInvitedUser,
   searchForBulkUsersPage,
 } = require("./utils");
+const {
+  deactivateUser: apiClientDeactivateUser,
+} = require("login.dfe.api-client/users");
 
 const validateInput = async (req) => {
   const model = {
@@ -59,7 +59,7 @@ const updateInvitedUserIndex = async (user, correlationId) => {
 };
 
 const deactivateUser = async (req, user, reason) => {
-  await deactivate(user.id, reason, req.id);
+  await apiClientDeactivateUser({ userId: user.id, reason });
   await updateUserIndex(user, req.id);
 };
 
@@ -107,7 +107,7 @@ const postBulkUserActionsEmails = async (req, res) => {
 
   for (const tickedUser of tickedUsers) {
     const userId = reqBody[tickedUser];
-    const user = await getUserDetailsById(userId, req.id);
+    const user = await getUserDetailsById(userId);
     if (isDeactivateTicked) {
       if (userId.startsWith("inv-")) {
         await deactivateInvitedUser(req, user);
