@@ -9,7 +9,10 @@ jest.mock("./../../../src/infrastructure/directories");
 jest.mock("login.dfe.api-client/users");
 
 const logger = require("./../../../src/infrastructure/logger");
-const { getUserVerificationCodeRaw } = require("login.dfe.api-client/users");
+const {
+  getUserVerificationCodeRaw,
+  deleteUserVerificationCode,
+} = require("login.dfe.api-client/users");
 const {
   getUserDetails,
   getUserDetailsById,
@@ -18,7 +21,6 @@ const {
 const {
   createChangeEmailCode,
   updateInvite,
-  deleteChangeEmailCode,
 } = require("./../../../src/infrastructure/directories");
 const { getUserRaw } = require("login.dfe.api-client/users");
 const postEditEmail = require("./../../../src/app/users/postEditEmail");
@@ -106,7 +108,7 @@ describe("when changing email address", () => {
 
     getUserVerificationCodeRaw.mockReset().mockReturnValue(codeDetails);
 
-    deleteChangeEmailCode.mockReset();
+    deleteUserVerificationCode.mockReset();
 
     updateInvite.mockReset();
   });
@@ -194,7 +196,7 @@ describe("when changing email address", () => {
     it("then it should re-generate a new change email code for user if old one is expired", async () => {
       await postEditEmail(req, res);
 
-      expect(deleteChangeEmailCode.mock.calls).toHaveLength(1);
+      expect(deleteUserVerificationCode.mock.calls).toHaveLength(1);
       expect(createChangeEmailCode.mock.calls).toHaveLength(1);
       expect(createChangeEmailCode.mock.calls[0][0]).toBe(
         "915a7382-576b-4699-ad07-a9fd329d3867",

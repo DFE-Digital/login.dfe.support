@@ -1,7 +1,10 @@
 const { emailPolicy } = require("login.dfe.validation");
 const logger = require("../../infrastructure/logger");
 const { sendResult } = require("../../infrastructure/utils");
-const { getUserVerificationCodeRaw } = require("login.dfe.api-client/users");
+const {
+  getUserVerificationCodeRaw,
+  deleteUserVerificationCode,
+} = require("login.dfe.api-client/users");
 
 const {
   getUserDetails,
@@ -12,7 +15,6 @@ const {
 const {
   createChangeEmailCode,
   updateInvite,
-  deleteChangeEmailCode,
 } = require("../../infrastructure/directories");
 const { getUserRaw } = require("login.dfe.api-client/users");
 
@@ -60,7 +62,10 @@ const updateUserEmail = async (req, model, user) => {
   });
 
   if (user_code && !codeExpiry(user_code.updatedAt)) {
-    await deleteChangeEmailCode(user.id, req.id);
+    await deleteUserVerificationCode({
+      userId: user.id,
+      verificationCodeType: "changeemail",
+    });
   }
   await createChangeEmailCode(user.id, model.email, "support", "na", req.id);
 

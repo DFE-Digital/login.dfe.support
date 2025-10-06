@@ -5,7 +5,7 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
 jest.mock("./../../../src/app/users/utils");
-jest.mock("./../../../src/infrastructure/directories");
+jest.mock("login.dfe.api-client/users");
 
 const logger = require("./../../../src/infrastructure/logger");
 const {
@@ -13,9 +13,7 @@ const {
   getUserDetailsById,
   updateUserDetails,
 } = require("./../../../src/app/users/utils");
-const {
-  deleteChangeEmailCode,
-} = require("./../../../src/infrastructure/directories");
+const { deleteUserVerificationCode } = require("login.dfe.api-client/users");
 const postCancelChangeEmail = require("./../../../src/app/users/postCancelChangeEmail");
 
 describe("when cancelling the change of email for a user", () => {
@@ -84,10 +82,11 @@ describe("when cancelling the change of email for a user", () => {
   it("then it should delete the users change email code", async () => {
     await postCancelChangeEmail(req, res);
 
-    expect(deleteChangeEmailCode.mock.calls).toHaveLength(1);
-    expect(deleteChangeEmailCode.mock.calls[0][0]).toBe(
-      "915a7382-576b-4699-ad07-a9fd329d3867",
-    );
+    expect(deleteUserVerificationCode.mock.calls).toHaveLength(1);
+    expect(deleteUserVerificationCode).toHaveBeenCalledWith({
+      userId: "915a7382-576b-4699-ad07-a9fd329d3867",
+      verificationCodeType: "changeemail",
+    });
   });
 
   it("then it should update user in index", async () => {
