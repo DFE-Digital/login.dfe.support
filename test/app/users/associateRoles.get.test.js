@@ -5,7 +5,6 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
 jest.mock("login.dfe.api-client/invitations");
-jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.api-client/users");
 jest.mock("login.dfe.policy-engine");
 jest.mock("./../../../src/infrastructure/organisations");
@@ -14,19 +13,18 @@ jest.mock("login.dfe.api-client/services", () => {
     getServiceRaw: jest.fn(),
   };
 });
-jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const { getServiceRaw } = require("login.dfe.api-client/services");
-const { getInvitationServiceRaw } = require("login.dfe.api-client/invitations");
 const {
-  getUserOrganisationsWithServicesRaw,
-} = require("login.dfe.api-client/users");
-const {
+  getInvitationServiceRaw,
   getInvitationOrganisationsRaw,
 } = require("login.dfe.api-client/invitations");
 const PolicyEngine = require("login.dfe.policy-engine");
-const { getUserServiceRaw } = require("login.dfe.api-client/users");
+const {
+  getUserServiceRaw,
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
 };

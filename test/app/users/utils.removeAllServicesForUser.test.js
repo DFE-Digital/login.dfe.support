@@ -3,8 +3,10 @@ jest.mock("./../../../src/infrastructure/config", () =>
 );
 jest.mock("login.dfe.api-client/users");
 
-const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
-const { getUserServicesRaw } = require("login.dfe.api-client/users");
+const {
+  deleteUserServiceAccess,
+  getUserServicesRaw,
+} = require("login.dfe.api-client/users");
 const { removeAllServicesForUser } = require("../../../src/app/users/utils");
 
 describe("When removing all services for a user", () => {

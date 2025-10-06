@@ -1,16 +1,16 @@
 const { NotificationClient } = require("login.dfe.jobs-client");
-const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
+const {
+  deleteUserServiceAccess,
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
-const { 
+const {
   deleteServiceAccessFromInvitation,
-  getInvitationOrganisationsRaw
+  getInvitationOrganisationsRaw,
 } = require("login.dfe.api-client/invitations");
 const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const { getServiceRaw } = require("login.dfe.api-client/services");
-const {
-  getUserOrganisationsWithServicesRaw,
-} = require("login.dfe.api-client/users");
 
 const get = async (req, res) => {
   const userId = req.params.uid;

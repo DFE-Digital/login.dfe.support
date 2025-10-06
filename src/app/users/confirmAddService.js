@@ -10,17 +10,13 @@ const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   addServiceToUser,
   updateUserServiceRoles,
+  getUserOrganisationsWithServicesRaw,
 } = require("login.dfe.api-client/users");
-const {
-  getInvitationOrganisationsRaw,
-} = require("login.dfe.api-client/invitations");
 const {
   addServiceToInvitation,
   updateInvitationServiceRoles,
+  getInvitationOrganisationsRaw,
 } = require("login.dfe.api-client/invitations");
-const {
-  getUserOrganisationsWithServicesRaw,
-} = require("login.dfe.api-client/users");
 const logger = require("../../infrastructure/logger");
 
 const get = async (req, res) => {

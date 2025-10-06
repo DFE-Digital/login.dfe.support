@@ -12,13 +12,13 @@ jest.mock("../../../src/app/services/utils", () => ({
 jest.mock("login.dfe.api-client/services");
 jest.mock("login.dfe.api-client/users");
 jest.mock("login.dfe.api-client/invitations");
-jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   addServiceToUser,
   updateUserServiceRoles,
+  getUserOrganisationsWithServicesRaw,
 } = require("login.dfe.api-client/users");
 
 const {
@@ -30,9 +30,6 @@ const {
   isSupportEmailNotificationAllowed,
 } = require("../../../src/app/services/utils");
 const { getAllServices } = require("../../../src/app/services/utils");
-const {
-  getUserOrganisationsWithServicesRaw,
-} = require("login.dfe.api-client/users");
 
 const logger = require("./../../../src/infrastructure/logger");
 

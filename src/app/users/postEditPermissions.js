@@ -1,7 +1,4 @@
 const { NotificationClient } = require("login.dfe.jobs-client");
-const {
-  getUserOrganisationsWithServicesRaw,
-} = require("login.dfe.api-client/users");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const {
@@ -13,7 +10,7 @@ const { mapRole } = require("./utils");
 const {
   addOrganisationToInvitation,
 } = require("login.dfe.api-client/invitations");
-const { addOrganisationToUser } = require("login.dfe.api-client/users");
+const { addOrganisationToUser, getUserOrganisationsWithServicesRaw } = require("login.dfe.api-client/users");
 
 const validatePermissions = (req) => {
   const validPermissions = [0, 10000];

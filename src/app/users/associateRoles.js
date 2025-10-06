@@ -2,14 +2,14 @@ const _ = require("lodash");
 const config = require("./../../infrastructure/config");
 const { getServiceRaw } = require("login.dfe.api-client/services");
 const {
-  getUserOrganisationsWithServicesRaw,
-} = require("login.dfe.api-client/users");
-const {
   getInvitationOrganisationsRaw,
+  getInvitationServiceRaw,
 } = require("login.dfe.api-client/invitations");
 const PolicyEngine = require("login.dfe.policy-engine");
-const { getUserServiceRaw } = require("login.dfe.api-client/users");
-const { getInvitationServiceRaw } = require("login.dfe.api-client/invitations");
+const {
+  getUserServiceRaw,
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 const policyEngine = new PolicyEngine(config);
 
 const getSingleServiceForUser = async (userId, organisationId, serviceId) => {
