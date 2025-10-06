@@ -4,6 +4,7 @@ const { sendResult } = require("../../infrastructure/utils");
 const {
   getUserVerificationCodeRaw,
   deleteUserVerificationCode,
+  createUserVerificationCodeRaw,
 } = require("login.dfe.api-client/users");
 
 const {
@@ -12,10 +13,7 @@ const {
   updateUserDetails,
   waitForIndexToUpdate,
 } = require("./utils");
-const {
-  createChangeEmailCode,
-  updateInvite,
-} = require("../../infrastructure/directories");
+const { updateInvite } = require("../../infrastructure/directories");
 const { getUserRaw } = require("login.dfe.api-client/users");
 
 const validate = async (req) => {
@@ -67,7 +65,14 @@ const updateUserEmail = async (req, model, user) => {
       verificationCodeType: "changeemail",
     });
   }
-  await createChangeEmailCode(user.id, model.email, "support", "na", req.id);
+  await createUserVerificationCodeRaw({
+    userId: user.id,
+    email: model.email,
+    clientId: "support",
+    redirectUri: "na",
+    verificationCodeType: "changeemail",
+    selfInvoked: false,
+  });
 
   await updateUserIndex(user.id, model.email, req.id);
 

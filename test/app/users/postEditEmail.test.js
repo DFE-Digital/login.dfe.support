@@ -12,16 +12,14 @@ const logger = require("./../../../src/infrastructure/logger");
 const {
   getUserVerificationCodeRaw,
   deleteUserVerificationCode,
+  createUserVerificationCodeRaw,
 } = require("login.dfe.api-client/users");
 const {
   getUserDetails,
   getUserDetailsById,
   updateUserDetails,
 } = require("./../../../src/app/users/utils");
-const {
-  createChangeEmailCode,
-  updateInvite,
-} = require("./../../../src/infrastructure/directories");
+const { updateInvite } = require("./../../../src/infrastructure/directories");
 const { getUserRaw } = require("login.dfe.api-client/users");
 const postEditEmail = require("./../../../src/app/users/postEditEmail");
 
@@ -104,7 +102,7 @@ describe("when changing email address", () => {
 
     getUserRaw.mockReset();
 
-    createChangeEmailCode.mockReset();
+    createUserVerificationCodeRaw.mockReset();
 
     getUserVerificationCodeRaw.mockReset().mockReturnValue(codeDetails);
 
@@ -181,32 +179,30 @@ describe("when changing email address", () => {
     it("then it should create a change email code for user", async () => {
       await postEditEmail(req, res);
 
-      expect(createChangeEmailCode.mock.calls).toHaveLength(1);
-      expect(createChangeEmailCode.mock.calls[0][0]).toBe(
-        "915a7382-576b-4699-ad07-a9fd329d3867",
-      );
-      expect(createChangeEmailCode.mock.calls[0][1]).toBe(
-        "rupert.grint@hogwarts.school.test",
-      );
-      expect(createChangeEmailCode.mock.calls[0][2]).toBe("support");
-      expect(createChangeEmailCode.mock.calls[0][3]).toBe("na");
-      expect(createChangeEmailCode.mock.calls[0][4]).toBe("correlationId");
+      expect(createUserVerificationCodeRaw.mock.calls).toHaveLength(1);
+      expect(createUserVerificationCodeRaw).toHaveBeenCalledWith({
+        clientId: "support",
+        verificationCodeType: "changeemail",
+        email: "rupert.grint@hogwarts.school.test",
+        redirectUri: "na",
+        selfInvoked: false,
+        userId: "915a7382-576b-4699-ad07-a9fd329d3867",
+      });
     });
 
     it("then it should re-generate a new change email code for user if old one is expired", async () => {
       await postEditEmail(req, res);
 
       expect(deleteUserVerificationCode.mock.calls).toHaveLength(1);
-      expect(createChangeEmailCode.mock.calls).toHaveLength(1);
-      expect(createChangeEmailCode.mock.calls[0][0]).toBe(
-        "915a7382-576b-4699-ad07-a9fd329d3867",
-      );
-      expect(createChangeEmailCode.mock.calls[0][1]).toBe(
-        "rupert.grint@hogwarts.school.test",
-      );
-      expect(createChangeEmailCode.mock.calls[0][2]).toBe("support");
-      expect(createChangeEmailCode.mock.calls[0][3]).toBe("na");
-      expect(createChangeEmailCode.mock.calls[0][4]).toBe("correlationId");
+      expect(createUserVerificationCodeRaw.mock.calls).toHaveLength(1);
+      expect(createUserVerificationCodeRaw).toHaveBeenCalledWith({
+        clientId: "support",
+        verificationCodeType: "changeemail",
+        email: "rupert.grint@hogwarts.school.test",
+        redirectUri: "na",
+        selfInvoked: false,
+        userId: "915a7382-576b-4699-ad07-a9fd329d3867",
+      });
     });
 
     it("then it should update user in search index", async () => {
