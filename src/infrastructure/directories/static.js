@@ -32,10 +32,6 @@ const deleteChangeEmailCode = async () => {
   return Promise.resolve();
 };
 
-const getUsersById = async () => {
-  return Promise.resolve([]);
-};
-
 const getUsersByIdV2 = async () => {
   return Promise.resolve([]);
 };
@@ -57,7 +53,6 @@ module.exports = {
   createChangeEmailCode,
   getChangeEmailCode,
   deleteChangeEmailCode,
-  getUsersById,
   getUsersByIdV2,
   getUserStatus,
   getLegacyUsernames,
