@@ -152,28 +152,6 @@ const createChangeEmailCode = async (
   });
 };
 
-const getChangeEmailCode = async (userId, correlationId) => {
-  const token = await jwtStrategy(config.directories.service).getBearerToken();
-
-  try {
-    return await fetchApi(
-      `${config.directories.service.url}/usercodes/${userId}/changeemail`,
-      {
-        method: "GET",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-      },
-    );
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return null;
-    }
-    throw e;
-  }
-};
-
 const deleteChangeEmailCode = async (userId, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
@@ -262,7 +240,6 @@ module.exports = {
   deactivateInvite,
   reactivateInvite,
   createChangeEmailCode,
-  getChangeEmailCode,
   deleteChangeEmailCode,
   getUsersByIdV2,
   getUserStatus,

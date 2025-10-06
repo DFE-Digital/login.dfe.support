@@ -24,10 +24,6 @@ const createChangeEmailCode = async () => {
   return Promise.resolve({});
 };
 
-const getChangeEmailCode = async () => {
-  return Promise.resolve(null);
-};
-
 const deleteChangeEmailCode = async () => {
   return Promise.resolve();
 };
@@ -51,7 +47,6 @@ module.exports = {
   deactivateInvite,
   reactivateInvite,
   createChangeEmailCode,
-  getChangeEmailCode,
   deleteChangeEmailCode,
   getUsersByIdV2,
   getUserStatus,

@@ -9,6 +9,7 @@ jest.mock("./../../../src/infrastructure/directories");
 jest.mock("login.dfe.api-client/users");
 
 const logger = require("./../../../src/infrastructure/logger");
+const { getUserVerificationCodeRaw } = require("login.dfe.api-client/users");
 const {
   getUserDetails,
   getUserDetailsById,
@@ -17,7 +18,6 @@ const {
 const {
   createChangeEmailCode,
   updateInvite,
-  getChangeEmailCode,
   deleteChangeEmailCode,
 } = require("./../../../src/infrastructure/directories");
 const { getUserRaw } = require("login.dfe.api-client/users");
@@ -104,7 +104,7 @@ describe("when changing email address", () => {
 
     createChangeEmailCode.mockReset();
 
-    getChangeEmailCode.mockReset().mockReturnValue(codeDetails);
+    getUserVerificationCodeRaw.mockReset().mockReturnValue(codeDetails);
 
     deleteChangeEmailCode.mockReset();
 
