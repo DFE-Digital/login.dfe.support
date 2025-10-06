@@ -126,29 +126,6 @@ const updateInvite = async (id, body, correlationId) => {
   }
 };
 
-const resendInvite = async (id, correlationId) => {
-  try {
-    const token = await jwtStrategy(
-      config.directories.service,
-    ).getBearerToken();
-
-    await fetchApi(
-      `${config.directories.service.url}/invitations/${id}/resend`,
-      {
-        method: "POST",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-      },
-    );
-    return true;
-  } catch (e) {
-    console.log(e);
-    return false;
-  }
-};
-
 const createChangeEmailCode = async (
   userId,
   newEmailAddress,
@@ -287,7 +264,6 @@ module.exports = {
   createChangeEmailCode,
   getChangeEmailCode,
   deleteChangeEmailCode,
-  resendInvite,
   getUsersByIdV2,
   getUserStatus,
   getLegacyUsernames,
