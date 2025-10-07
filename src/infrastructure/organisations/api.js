@@ -107,15 +107,6 @@ const deleteUserOrganisation = async (
   );
 };
 
-const getOrganisationCategories = async (correlationId) => {
-  return callOrganisationsApi(
-    "organisations/categories",
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
 const listOrganisationStatus = async (correlationId) => {
   return callOrganisationsApi(
     "organisations/states",
@@ -229,7 +220,6 @@ module.exports = {
   getInvitationOrganisations,
   getServiceById,
   setUserAccessToOrganisation,
-  getOrganisationCategories,
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   getUserOrganisationsV2,
