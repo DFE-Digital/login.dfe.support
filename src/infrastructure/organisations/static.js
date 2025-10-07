@@ -70,10 +70,6 @@ const getServiceById = async () => {
   });
 };
 
-const setUserAccessToOrganisation = async () => {
-  return Promise.resolve(null);
-};
-
 const getAllRequestsForSupport = async () => {
   return Promise.resolve();
 };
@@ -107,7 +103,6 @@ module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
-  setUserAccessToOrganisation,
   getUserOrganisationsV2,
   getAllRequestsForSupport,
   getRequestById,

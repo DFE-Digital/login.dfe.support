@@ -77,23 +77,6 @@ const deleteInvitationOrganisation = async (
   );
 };
 
-const setUserAccessToOrganisation = async (
-  userId,
-  organisationId,
-  roleId,
-  correlationId,
-  status,
-  reason,
-) => {
-  const body = { roleId, status, reason };
-  return await callOrganisationsApi(
-    `organisations/${organisationId}/users/${userId}`,
-    "PUT",
-    body,
-    correlationId,
-  );
-};
-
 const deleteUserOrganisation = async (
   userId,
   organisationId,
@@ -219,7 +202,6 @@ module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
-  setUserAccessToOrganisation,
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   getUserOrganisationsV2,

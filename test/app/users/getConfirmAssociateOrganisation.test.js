@@ -8,6 +8,7 @@ jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/search");
 jest.mock("login.dfe.api-client/organisations");
 jest.mock("login.dfe.api-client/invitations");
+jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const {

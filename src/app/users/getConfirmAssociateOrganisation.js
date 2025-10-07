@@ -2,7 +2,6 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const {
-  setUserAccessToOrganisation,
   getPendingRequestsAssociatedWithUser,
   updateRequestById,
 } = require("../../infrastructure/organisations");
@@ -18,6 +17,9 @@ const {
 const {
   addOrganisationToInvitation: apiClientAddOrganisationToInvitation,
 } = require("login.dfe.api-client/invitations");
+const {
+  addOrganisationToUser: apiClientAddOrganisationToUser,
+} = require("login.dfe.api-client/users");
 
 const addOrganisationToInvitation = async (uid, req) => {
   const invitationId = uid.substr(4);
@@ -48,7 +50,11 @@ const addOrganisationToUser = async (uid, req) => {
   const { organisationName } = req.session.user;
   const permissionId = req.session.user.permission;
 
-  await setUserAccessToOrganisation(uid, organisationId, permissionId, req.id);
+  await apiClientAddOrganisationToUser({
+    userId: uid,
+    organisationId,
+    roleId: permissionId,
+  });
 
   const pendingOrgRequests = await getPendingRequestsAssociatedWithUser(
     uid,
