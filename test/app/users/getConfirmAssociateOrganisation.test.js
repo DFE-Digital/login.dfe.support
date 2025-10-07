@@ -7,10 +7,10 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/search");
 jest.mock("login.dfe.api-client/organisations");
+jest.mock("login.dfe.api-client/invitations");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const {
-  addInvitationOrganisation,
   getPendingRequestsAssociatedWithUser,
 } = require("./../../../src/infrastructure/organisations");
 const getConfirmAssociateOrganisation = require("./../../../src/app/users/getConfirmAssociateOrganisation");
@@ -25,6 +25,9 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 const {
   getOrganisationLegacyRaw,
 } = require("login.dfe.api-client/organisations");
+const {
+  addOrganisationToInvitation,
+} = require("login.dfe.api-client/invitations");
 
 const res = getResponseMock();
 
@@ -87,7 +90,7 @@ describe("when confirming new organisation association", () => {
     ]);
     res.mockResetAll();
 
-    addInvitationOrganisation.mockReset();
+    addOrganisationToInvitation.mockReset();
 
     sendUserAddedToOrganisationStub = jest.fn();
     NotificationClient.mockReset().mockImplementation(() => ({
@@ -100,11 +103,12 @@ describe("when confirming new organisation association", () => {
 
     await getConfirmAssociateOrganisation(req, res);
 
-    expect(addInvitationOrganisation.mock.calls).toHaveLength(1);
-    expect(addInvitationOrganisation.mock.calls[0][0]).toBe("user1");
-    expect(addInvitationOrganisation.mock.calls[0][1]).toBe("org1");
-    expect(addInvitationOrganisation.mock.calls[0][2]).toBe(10000);
-    expect(addInvitationOrganisation.mock.calls[0][3]).toBe("correlationId");
+    expect(addOrganisationToInvitation.mock.calls).toHaveLength(1);
+    expect(addOrganisationToInvitation).toHaveBeenCalledWith({
+      invitationId: "user1",
+      organisationId: "org1",
+      roleId: 10000,
+    });
   });
 
   it("then it should get the users pending requests", async () => {

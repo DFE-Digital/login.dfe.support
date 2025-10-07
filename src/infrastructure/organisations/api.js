@@ -64,44 +64,6 @@ const getServiceById = async (serviceId, correlationId) => {
   );
 };
 
-const addInvitationService = async (
-  invitationId,
-  organisationId,
-  serviceId,
-  roleId,
-  externalIdentifiers,
-  correlationId,
-) => {
-  const body = {
-    roleId,
-    externalIdentifiers,
-  };
-
-  return await callOrganisationsApi(
-    `organisations/${organisationId}/services/${serviceId}/invitations/${invitationId}`,
-    "PUT",
-    body,
-    correlationId,
-  );
-};
-
-const addInvitationOrganisation = async (
-  invitationId,
-  organisationId,
-  roleId,
-  correlationId,
-) => {
-  const body = {
-    roleId,
-  };
-  return await callOrganisationsApi(
-    `organisations/${organisationId}/invitations/${invitationId}`,
-    "PUT",
-    body,
-    correlationId,
-  );
-};
-
 const deleteInvitationOrganisation = async (
   invitationId,
   organisationId,
@@ -113,52 +75,6 @@ const deleteInvitationOrganisation = async (
     undefined,
     correlationId,
   );
-};
-
-const getServicesByUserId = async (id, reqId) => {
-  return await callOrganisationsApi(
-    `services/associated-with-user/${id}`,
-    "GET",
-    undefined,
-    reqId,
-  );
-};
-
-const putSingleServiceIdentifierForUser = async (
-  userId,
-  serviceId,
-  orgId,
-  value,
-  reqId,
-) => {
-  const body = {
-    id_key: "k2s-id",
-    id_value: value,
-  };
-  const result = await callOrganisationsApi(
-    `organisations/${orgId}/services/${serviceId}/identifiers/${userId}`,
-    "PUT",
-    body,
-    reqId,
-  );
-  return result === undefined;
-};
-
-const searchOrganisations = async (
-  criteria,
-  filterByCategories,
-  filterByStatus,
-  pageNumber,
-  correlationId,
-) => {
-  let uri = `organisations?search=${criteria}&page=${pageNumber}`;
-  if (filterByCategories) {
-    uri += filterByCategories.map((f) => `&filtercategory=${f}`).join("");
-  }
-  if (filterByStatus) {
-    uri += filterByStatus.map((f) => `&filterstatus=${f}`).join("");
-  }
-  return await callOrganisationsApi(uri, "GET", undefined, correlationId);
 };
 
 const setUserAccessToOrganisation = async (
@@ -339,11 +255,6 @@ module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
-  addInvitationService,
-  addInvitationOrganisation,
-  getServicesByUserId,
-  putSingleServiceIdentifierForUser,
-  searchOrganisations,
   setUserAccessToOrganisation,
   getOrganisationCategories,
   getOrganisationUsersForApproval,

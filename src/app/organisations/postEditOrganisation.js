@@ -1,7 +1,9 @@
 const { sendResult } = require("../../infrastructure/utils");
 const logger = require("../../infrastructure/logger");
-const { searchOrganisations } = require("./../../infrastructure/organisations");
-const { getOrganisationRaw } = require("login.dfe.api-client/organisations");
+const {
+  getOrganisationRaw,
+  searchOrganisationsRaw,
+} = require("login.dfe.api-client/organisations");
 
 const validateInput = async (req) => {
   const organisation = await getOrganisationRaw({
@@ -31,13 +33,10 @@ const validateInput = async (req) => {
   }
 
   if (name) {
-    const nameResult = await searchOrganisations(
-      name,
-      undefined,
-      undefined,
-      1,
-      req.id,
-    );
+    const nameResult = await searchOrganisationsRaw({
+      organisationName: name,
+      pageNumber: 1,
+    });
 
     if (nameResult.totalNumberOfRecords > 0) {
       model.validationMessages.name =
