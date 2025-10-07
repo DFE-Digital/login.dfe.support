@@ -1,7 +1,8 @@
 const jwtStrategy = require("login.dfe.jwt-strategies");
 const config = require("./../config");
-const { mapUserStatus } = require("./../../infrastructure/utils");
 const { fetchApi } = require("login.dfe.async-retry");
+const { mapSearchUserToSupportModel } = require("../../app/users/utils");
+
 
 const callApi = async (endpoint, method, body, correlationId) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();
@@ -22,26 +23,6 @@ const callApi = async (endpoint, method, body, correlationId) => {
     }
     throw e;
   }
-};
-
-const mapSearchUserToSupportModel = (user) => {
-  return {
-    id: user.id,
-    name: `${user.firstName} ${user.lastName}`,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-    organisation: user.primaryOrganisation
-      ? {
-          name: user.primaryOrganisation,
-        }
-      : null,
-    organisations: user.organisations,
-    lastLogin: user.lastLogin ? new Date(user.lastLogin) : null,
-    successfulLoginsInPast12Months: user.numberOfSuccessfulLoginsInPast12Months,
-    status: mapUserStatus(user.statusId, user.statusLastChangedOn),
-    pendingEmail: user.pendingEmail,
-  };
 };
 
 const mapSupportUserSortByToSearchApi = (supportSortBy) => {
