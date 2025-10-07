@@ -2,10 +2,7 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const { getAndMapOrgRequest } = require("./utils");
-const {
-  getSearchDetailsForUserById,
-  updateIndex,
-} = require("../../infrastructure/search");
+const { updateIndex } = require("../../infrastructure/search");
 const { waitForIndexToUpdate } = require("../users/utils");
 const {
   putUserInOrganisation,
@@ -14,6 +11,9 @@ const {
 const {
   getOrganisationLegacyRaw,
 } = require("login.dfe.api-client/organisations");
+const {
+  getSearchDetailsForUserById,
+} = require("../users/searchApiHelpers/getSearchDetailsForUserById");
 
 const get = async (req, res) => {
   const request = await getAndMapOrgRequest(req);

@@ -6,10 +6,7 @@ const {
   getPendingRequestsAssociatedWithUser,
   updateRequestById,
 } = require("../../infrastructure/organisations");
-const {
-  getSearchDetailsForUserById,
-  updateIndex,
-} = require("../../infrastructure/search");
+const { updateIndex } = require("../../infrastructure/search");
 const { waitForIndexToUpdate } = require("./utils");
 const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const {
@@ -18,6 +15,9 @@ const {
 const {
   addOrganisationToInvitation: apiClientAddOrganisationToInvitation,
 } = require("login.dfe.api-client/invitations");
+const {
+  getSearchDetailsForUserById,
+} = require("./searchApiHelpers/getSearchDetailsForUserById");
 
 const addOrganisationToInvitation = async (uid, req) => {
   const invitationId = uid.substr(4);

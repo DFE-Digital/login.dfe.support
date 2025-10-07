@@ -11,12 +11,11 @@ const {
   getUserOrganisations,
 } = require("./../../infrastructure/organisations");
 const { getAllServicesForUserInOrg } = require("./utils");
+const { updateIndex, getById } = require("./../../infrastructure/search");
+const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const {
   getSearchDetailsForUserById,
-  updateIndex,
-  getById,
-} = require("./../../infrastructure/search");
-const { isSupportEmailNotificationAllowed } = require("../services/utils");
+} = require("./searchApiHelpers/getSearchDetailsForUserById");
 
 const deleteInvitationOrg = async (uid, req) => {
   const invitationId = uid.substr(4);

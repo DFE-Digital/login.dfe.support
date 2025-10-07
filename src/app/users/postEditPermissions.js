@@ -5,10 +5,10 @@ const {
   setUserAccessToOrganisation,
   getUserOrganisations,
 } = require("../../infrastructure/organisations");
+const { updateIndex } = require("../../infrastructure/search");
 const {
   getSearchDetailsForUserById,
-  updateIndex,
-} = require("../../infrastructure/search");
+} = require("./searchApiHelpers/getSearchDetailsForUserById");
 const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const { mapRole } = require("./utils");
 const {

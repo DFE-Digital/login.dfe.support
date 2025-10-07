@@ -8,15 +8,15 @@ jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/search");
 jest.mock("login.dfe.api-client/organisations");
 jest.mock("login.dfe.api-client/invitations");
+jest.mock(
+  "../../../src/app/users/searchApiHelpers/getSearchDetailsForUserById",
+);
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const {
   getPendingRequestsAssociatedWithUser,
 } = require("./../../../src/infrastructure/organisations");
 const getConfirmAssociateOrganisation = require("./../../../src/app/users/getConfirmAssociateOrganisation");
-const {
-  getSearchDetailsForUserById,
-} = require("./../../../src/infrastructure/search");
 
 jest.mock("login.dfe.jobs-client");
 jest.mock("login.dfe.api-client/services");
@@ -28,6 +28,9 @@ const {
 const {
   addOrganisationToInvitation,
 } = require("login.dfe.api-client/invitations");
+const {
+  getSearchDetailsForUserById,
+} = require("../../../src/app/users/searchApiHelpers/getSearchDetailsForUserById");
 
 const res = getResponseMock();
 

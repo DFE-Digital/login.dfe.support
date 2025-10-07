@@ -16,7 +16,6 @@ const {
 } = require("login.dfe.api-client/invitations");
 const {
   searchForUsers,
-  getSearchDetailsForUserById,
   updateUserInSearch,
 } = require("./../../infrastructure/search");
 
@@ -27,6 +26,9 @@ const {
 const { mapUserStatus } = require("./../../infrastructure/utils");
 const config = require("./../../infrastructure/config");
 const sortBy = require("lodash/sortBy");
+const {
+  getSearchDetailsForUserById,
+} = require("./searchApiHelpers/getSearchDetailsForUserById");
 
 const delay = async (milliseconds) => {
   return new Promise((resolve) => {
@@ -510,7 +512,6 @@ const callServiceToUserFunc = async (
     throw e;
   }
 };
-
 
 const mapSearchUserToSupportModel = (user) => {
   return {

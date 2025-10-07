@@ -5,13 +5,16 @@ jest.mock("./../../../src/infrastructure/directories");
 jest.mock("./../../../src/infrastructure/search");
 jest.mock("login.dfe.api-client/users");
 jest.mock("login.dfe.api-client/services");
+jest.mock(
+  "../../../src/app/users/searchApiHelpers/getSearchDetailsForUserById",
+);
 
 const { getUserRaw } = require("login.dfe.api-client/users");
 const { getServiceRaw } = require("login.dfe.api-client/services");
+const { getUserDetails } = require("./../../../src/app/users/utils");
 const {
   getSearchDetailsForUserById,
-} = require("./../../../src/infrastructure/search");
-const { getUserDetails } = require("./../../../src/app/users/utils");
+} = require("../../../src/app/users/searchApiHelpers/getSearchDetailsForUserById");
 
 describe("When getting user details", () => {
   let req;
