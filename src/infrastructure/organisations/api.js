@@ -125,15 +125,6 @@ const getOrganisationUsersForApproval = async (pageNumber, correlationId) => {
   );
 };
 
-const listUserServices = async (page, pageSize, correlationId) => {
-  return callOrganisationsApi(
-    `/services/associated-with-user?page=${page}&pageSize=${pageSize}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
 const listOrganisationStatus = async (correlationId) => {
   return callOrganisationsApi(
     "organisations/states",
@@ -249,7 +240,6 @@ module.exports = {
   setUserAccessToOrganisation,
   getOrganisationCategories,
   getOrganisationUsersForApproval,
-  listUserServices,
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   getUserOrganisationsV2,
