@@ -10,6 +10,7 @@ jest.mock("login.dfe.api-client/users");
 
 const logger = require("./../../../src/infrastructure/logger");
 const {
+  getUserRaw,
   getUserVerificationCodeRaw,
   deleteUserVerificationCode,
   createUserVerificationCodeRaw,
@@ -20,7 +21,6 @@ const {
   updateUserDetails,
 } = require("./../../../src/app/users/utils");
 const { updateInvite } = require("./../../../src/infrastructure/directories");
-const { getUserRaw } = require("login.dfe.api-client/users");
 const postEditEmail = require("./../../../src/app/users/postEditEmail");
 
 const userDetails = {

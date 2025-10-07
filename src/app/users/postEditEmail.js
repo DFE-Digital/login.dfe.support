@@ -2,6 +2,7 @@ const { emailPolicy } = require("login.dfe.validation");
 const logger = require("../../infrastructure/logger");
 const { sendResult } = require("../../infrastructure/utils");
 const {
+  getUserRaw,
   getUserVerificationCodeRaw,
   deleteUserVerificationCode,
   createUserVerificationCodeRaw,
@@ -14,7 +15,6 @@ const {
   waitForIndexToUpdate,
 } = require("./utils");
 const { updateInvite } = require("../../infrastructure/directories");
-const { getUserRaw } = require("login.dfe.api-client/users");
 
 const validate = async (req) => {
   const model = {
