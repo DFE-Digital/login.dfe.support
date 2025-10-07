@@ -1,143 +1,59 @@
-jest.mock("login.dfe.async-retry");
-jest.mock("login.dfe.jwt-strategies");
-jest.mock("./../../../src/infrastructure/config", () =>
-  require("../../utils").configMockFactory({
-    search: {
-      type: "api",
-      service: {
-        url: "http://search.test",
-      },
-    },
-  }),
-);
-
-const { fetchApi } = require("login.dfe.async-retry");
-const jwtStrategy = require("login.dfe.jwt-strategies");
+const { mapSearchUserToSupportModel } = require("../../../src/app/users/utils");
 const {
   getSearchDetailsForUserById,
 } = require("../../../src/infrastructure/search/api");
+const { searchUserByIdRaw } = require("login.dfe.api-client/users");
 
-const userId = "user-1";
-const apiResponse = {
-  users: [],
-  numberOfPages: 1,
-};
+jest.mock("login.dfe.api-client/users", () => ({
+  searchUserByIdRaw: jest.fn(),
+}));
 
-describe("when getting a users organisations mapping from api", () => {
+jest.mock(
+  "../../../src/app/users/utils",
+  () => ({
+    mapSearchUserToSupportModel: jest.fn(),
+  }),
+);
+
+describe("getSearchDetailsForUserById", () => {
+  const userId = "user-1";
+
   beforeEach(() => {
-    fetchApi.mockReset();
-    fetchApi.mockImplementation(() => {
-      return apiResponse;
-    });
-
-    jwtStrategy.mockReset();
-    jwtStrategy.mockImplementation(() => {
-      return {
-        getBearerToken: jest.fn().mockReturnValue("token"),
-      };
-    });
+    jest.clearAllMocks();
   });
 
-  it("then it should call associated-with-user resource with user id", async () => {
-    await getSearchDetailsForUserById(userId);
-
-    expect(fetchApi.mock.calls).toHaveLength(1);
-    expect(fetchApi.mock.calls[0][0]).toBe("http://search.test/users/user-1");
-    expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      method: "GET",
-    });
-  });
-
-  it("then it should use the token from jwt strategy as bearer token", async () => {
-    await getSearchDetailsForUserById(userId);
-
-    expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      headers: {
-        authorization: "bearer token",
-      },
-    });
-  });
-
-  // This function should be updated to allow a correlationId to be passed in
-  it("should always have an undefined correlationId", async () => {
-    await getSearchDetailsForUserById(userId);
-
-    expect(fetchApi.mock.calls[0][1]).toMatchObject({
-      headers: {
-        "x-correlation-id": undefined,
-      },
-    });
-  });
-
-  it("should return undefined on a 400 response", async () => {
-    fetchApi.mockImplementation(() => {
-      const error = new Error("Client Error");
-      error.statusCode = 400;
-      throw error;
-    });
+  it("should call searchUserByIdRaw with user id", async () => {
+    const apiResponse = { id: userId };
+    searchUserByIdRaw.mockResolvedValue(apiResponse);
+    mapSearchUserToSupportModel.mockReturnValue({ id: userId });
 
     const result = await getSearchDetailsForUserById(userId);
-    expect(result).toEqual(undefined);
+
+    expect(searchUserByIdRaw).toHaveBeenCalledTimes(1);
+    expect(searchUserByIdRaw).toHaveBeenCalledWith({ userId: "user-1" });
+    expect(mapSearchUserToSupportModel).toHaveBeenCalledTimes(1);
+    expect(mapSearchUserToSupportModel).toHaveBeenCalledWith(apiResponse);
+    expect(result).toEqual({ id: userId });
   });
 
-  it("should return undefined on a 403 response", async () => {
-    fetchApi.mockImplementation(() => {
-      const error = new Error("forbidden");
-      error.statusCode = 403;
-      throw error;
-    });
+  it("should return undefined and not call mapSearchUserToSupportModel if searchUserByIdRaw returns undefined", async () => {
+    searchUserByIdRaw.mockResolvedValue(undefined);
 
     const result = await getSearchDetailsForUserById(userId);
-    expect(result).toEqual(undefined);
+
+    expect(searchUserByIdRaw).toHaveBeenCalledWith({ userId: "user-1" });
+    expect(mapSearchUserToSupportModel).not.toHaveBeenCalled();
+    expect(result).toBeUndefined();
   });
 
-  it("should return undefined on a 400 response", async () => {
-    fetchApi.mockImplementation(() => {
-      const error = new Error("Client Error");
-      error.statusCode = 400;
-      throw error;
-    });
+  it("should throw a wrapped error if searchUserByIdRaw throws", async () => {
+    searchUserByIdRaw.mockRejectedValue(new Error("Search failed"));
 
-    const result = await getSearchDetailsForUserById(userId);
-    expect(result).toEqual(undefined);
-  });
-
-  it("should return undefined on a 403 response", async () => {
-    fetchApi.mockImplementation(() => {
-      const error = new Error("Forbidden");
-      error.statusCode = 403;
-      throw error;
-    });
-
-    const result = await getSearchDetailsForUserById(userId);
-    expect(result).toEqual(undefined);
-  });
-
-  it("should return undefined on a 404 response", async () => {
-    fetchApi.mockImplementation(() => {
-      const error = new Error("Not found");
-      error.statusCode = 404;
-      throw error;
-    });
-
-    const result = await getSearchDetailsForUserById(userId);
-    expect(result).toEqual(undefined);
-  });
-
-  it("should raise an exception on any failure status code that is not 400, 403, 404", async () => {
-    fetchApi.mockImplementation(() => {
-      const error = new Error("Server Error");
-      error.statusCode = 500;
-      throw error;
-    });
-
-    const act = () => getSearchDetailsForUserById(userId);
-
-    await expect(act).rejects.toThrow(
-      expect.objectContaining({
-        name: "Error",
-        message: "Error getting user user-1 from search - Server Error",
-      }),
+    await expect(getSearchDetailsForUserById(userId)).rejects.toThrow(
+      `Error getting user ${userId} from search - Search failed`,
     );
+
+    expect(searchUserByIdRaw).toHaveBeenCalledWith({ userId: "user-1" });
+    expect(mapSearchUserToSupportModel).not.toHaveBeenCalled();
   });
 });

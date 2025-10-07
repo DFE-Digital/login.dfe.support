@@ -1,8 +1,8 @@
 const jwtStrategy = require("login.dfe.jwt-strategies");
 const config = require("./../config");
 const { fetchApi } = require("login.dfe.async-retry");
+const { searchUserByIdRaw } = require("login.dfe.api-client/users");
 const { mapSearchUserToSupportModel } = require("../../app/users/utils");
-
 
 const callApi = async (endpoint, method, body, correlationId) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();
@@ -77,10 +77,9 @@ const searchForUsers = async (
   }
 };
 
-// TODO: Add correlation ID
 const getSearchDetailsForUserById = async (id) => {
   try {
-    const user = await callApi(`/users/${id}`, "GET");
+    const user = await searchUserByIdRaw({ userId: id });
     return user ? mapSearchUserToSupportModel(user) : undefined;
   } catch (e) {
     throw new Error(`Error getting user ${id} from search - ${e.message}`);
