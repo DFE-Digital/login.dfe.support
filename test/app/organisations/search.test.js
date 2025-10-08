@@ -2,7 +2,7 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/utils");
-jest.mock("./../../../src/infrastructure/organisations");
+jest.mock("login.dfe.api-client/organisations");
 
 jest.mock("login.dfe.dao", () => ({
   organisation: {
@@ -13,8 +13,8 @@ jest.mock("login.dfe.dao", () => ({
 const { getRequestMock, getResponseMock } = require("../../utils");
 const { sendResult } = require("../../../src/infrastructure/utils");
 const {
-  searchOrganisations,
-} = require("../../../src/infrastructure/organisations");
+  searchOrganisationsRaw,
+} = require("login.dfe.api-client/organisations");
 const search = require("../../../src/app/organisations/search");
 
 const res = getResponseMock();
@@ -34,7 +34,7 @@ let req;
 
 describe("when searching for organisations", () => {
   beforeEach(() => {
-    searchOrganisations.mockReset().mockReturnValue(orgsResult);
+    searchOrganisationsRaw.mockReset().mockReturnValue(orgsResult);
   });
 
   describe("when method is GET", () => {
@@ -49,7 +49,7 @@ describe("when searching for organisations", () => {
 
     it("then it should not search for organisations", async () => {
       await requestConfig.action(req, res);
-      expect(searchOrganisations).not.toHaveBeenCalledTimes(1);
+      expect(searchOrganisationsRaw).not.toHaveBeenCalledTimes(1);
       expect(sendResult).toHaveBeenCalledTimes(1);
       expect(sendResult).toHaveBeenCalledWith(
         req,
@@ -119,14 +119,13 @@ describe("when searching for organisations", () => {
       it("then it should search orgs with criteria specified", async () => {
         await requestConfig.action(req, res);
 
-        expect(searchOrganisations).toHaveBeenCalledTimes(1);
-        expect(searchOrganisations).toHaveBeenCalledWith(
-          "org1",
-          [],
-          [],
-          2,
-          req.id,
-        );
+        expect(searchOrganisationsRaw).toHaveBeenCalledTimes(1);
+        expect(searchOrganisationsRaw).toHaveBeenCalledWith({
+          categories: [],
+          organisationName: "org1",
+          pageNumber: 2,
+          status: [],
+        });
       });
 
       it("then it should request page 1 if no page specified", async () => {
@@ -134,14 +133,13 @@ describe("when searching for organisations", () => {
 
         await requestConfig.action(req, res);
 
-        expect(searchOrganisations).toHaveBeenCalledTimes(1);
-        expect(searchOrganisations).toHaveBeenCalledWith(
-          "org1",
-          [],
-          [],
-          1,
-          req.id,
-        );
+        expect(searchOrganisationsRaw).toHaveBeenCalledTimes(1);
+        expect(searchOrganisationsRaw).toHaveBeenCalledWith({
+          categories: [],
+          organisationName: "org1",
+          pageNumber: 1,
+          status: [],
+        });
       });
     });
 
@@ -181,14 +179,13 @@ describe("when searching for organisations", () => {
       it("then it should search orgs with criteria specified", async () => {
         await requestConfig.action(req, res);
 
-        expect(searchOrganisations).toHaveBeenCalledTimes(1);
-        expect(searchOrganisations).toHaveBeenCalledWith(
-          "org1+",
-          [],
-          [],
-          2,
-          req.id,
-        );
+        expect(searchOrganisationsRaw).toHaveBeenCalledTimes(1);
+        expect(searchOrganisationsRaw).toHaveBeenCalledWith({
+          categories: [],
+          organisationName: "org1+",
+          pageNumber: 2,
+          status: [],
+        });
       });
 
       it("then it should request page 1 if no page specified", async () => {
@@ -196,14 +193,13 @@ describe("when searching for organisations", () => {
 
         await requestConfig.action(req, res);
 
-        expect(searchOrganisations).toHaveBeenCalledTimes(1);
-        expect(searchOrganisations).toHaveBeenCalledWith(
-          "org1+",
-          [],
-          [],
-          1,
-          req.id,
-        );
+        expect(searchOrganisationsRaw).toHaveBeenCalledTimes(1);
+        expect(searchOrganisationsRaw).toHaveBeenCalledWith({
+          categories: [],
+          organisationName: "org1+",
+          pageNumber: 1,
+          status: [],
+        });
       });
     });
 
@@ -217,7 +213,7 @@ describe("when searching for organisations", () => {
       it("then it should not search orgs and return validation error", async () => {
         await requestConfig.action(req, res);
 
-        expect(searchOrganisations).not.toHaveBeenCalledTimes(1);
+        expect(searchOrganisationsRaw).not.toHaveBeenCalledTimes(1);
         expect(sendResult).toHaveBeenCalledWith(
           req,
           res,
@@ -251,7 +247,7 @@ describe("when searching for organisations", () => {
       it("then it should not search orgs and return validation error", async () => {
         await requestConfig.action(req, res);
 
-        expect(searchOrganisations).not.toHaveBeenCalledTimes(1);
+        expect(searchOrganisationsRaw).not.toHaveBeenCalledTimes(1);
         expect(sendResult).toHaveBeenCalledWith(
           req,
           res,
