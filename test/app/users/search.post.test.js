@@ -11,17 +11,17 @@ jest.mock("./../../../src/app/users/utils", () => {
     }),
   };
 });
-jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("../../../src/app/services/utils", () => ({
   getAllServices: jest.fn(),
 }));
+jest.mock("login.dfe.api-client/organisations");
 
 const utils = require("./../../../src/app/users/utils");
-const {
-  getOrganisationCategories,
-} = require("./../../../src/infrastructure/organisations");
 const { getAllServices } = require("../../../src/app/services/utils");
 const { post } = require("./../../../src/app/users/search");
+const {
+  getOrganisationCategories,
+} = require("login.dfe.api-client/organisations");
 
 describe("When processing a post to search for users", () => {
   let req;

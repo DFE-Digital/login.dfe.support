@@ -70,26 +70,6 @@ const getServiceById = async () => {
   });
 };
 
-const setUserAccessToOrganisation = async () => {
-  return Promise.resolve(null);
-};
-
-const getOrganisationCategories = async () => {
-  return Promise.resolve([]);
-};
-
-const getOrganisationUsersForApproval = async () => {
-  return Promise.resolve([]);
-};
-
-const listUserServices = async () => {
-  return Promise.resolve([]);
-};
-
-const listInvitationServices = async () => {
-  return Promise.resolve([]);
-};
-
 const getAllRequestsForSupport = async () => {
   return Promise.resolve();
 };
@@ -123,11 +103,6 @@ module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
-  setUserAccessToOrganisation,
-  getOrganisationCategories,
-  getOrganisationUsersForApproval,
-  listUserServices,
-  listInvitationServices,
   getUserOrganisationsV2,
   getAllRequestsForSupport,
   getRequestById,

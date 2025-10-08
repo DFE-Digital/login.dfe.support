@@ -3,7 +3,10 @@ const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const accessRequests = require("../../infrastructure/accessRequests");
 const organisations = require("../../infrastructure/organisations");
-const { getUserRaw } = require("login.dfe.api-client/users");
+const {
+  getUserRaw,
+  addOrganisationToUser,
+} = require("login.dfe.api-client/users");
 const { getOrganisationRaw } = require("login.dfe.api-client/organisations");
 
 const unpackMultiSelect = (parameter) => {
@@ -61,14 +64,13 @@ const putUserInOrganisation = async (req) => {
     role = req.body.role.toLowerCase() === "approver" ? 10000 : 1;
   }
 
-  await organisations.setUserAccessToOrganisation(
+  await addOrganisationToUser({
     userId,
-    orgId,
-    role,
-    req.id,
+    organisationId: orgId,
+    roleId: role,
     status,
     reason,
-  );
+  });
 
   if (req.body.email) {
     await notificationClient.sendAccessRequest(

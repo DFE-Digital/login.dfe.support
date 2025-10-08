@@ -77,23 +77,6 @@ const deleteInvitationOrganisation = async (
   );
 };
 
-const setUserAccessToOrganisation = async (
-  userId,
-  organisationId,
-  roleId,
-  correlationId,
-  status,
-  reason,
-) => {
-  const body = { roleId, status, reason };
-  return await callOrganisationsApi(
-    `organisations/${organisationId}/users/${userId}`,
-    "PUT",
-    body,
-    correlationId,
-  );
-};
-
 const deleteUserOrganisation = async (
   userId,
   organisationId,
@@ -102,42 +85,6 @@ const deleteUserOrganisation = async (
   return callOrganisationsApi(
     `organisations/${organisationId}/users/${userId}`,
     "DELETE",
-    undefined,
-    correlationId,
-  );
-};
-
-const getOrganisationCategories = async (correlationId) => {
-  return callOrganisationsApi(
-    "organisations/categories",
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
-const getOrganisationUsersForApproval = async (pageNumber, correlationId) => {
-  return callOrganisationsApi(
-    `organisations/users-for-approval?page=2`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
-const listUserServices = async (page, pageSize, correlationId) => {
-  return callOrganisationsApi(
-    `/services/associated-with-user?page=${page}&pageSize=${pageSize}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
-const listInvitationServices = async (page, pageSize, correlationId) => {
-  return callOrganisationsApi(
-    `/invitations?page=${page}&pageSize=${pageSize}`,
-    "GET",
     undefined,
     correlationId,
   );
@@ -255,11 +202,6 @@ module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
-  setUserAccessToOrganisation,
-  getOrganisationCategories,
-  getOrganisationUsersForApproval,
-  listUserServices,
-  listInvitationServices,
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   getUserOrganisationsV2,
