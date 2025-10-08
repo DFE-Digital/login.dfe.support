@@ -2,18 +2,19 @@ const { emailPolicy } = require("login.dfe.validation");
 const logger = require("../../infrastructure/logger");
 const { sendResult } = require("../../infrastructure/utils");
 const {
+  getUserRaw,
+  getUserVerificationCodeRaw,
+  deleteUserVerificationCode,
+  createUserVerificationCodeRaw,
+} = require("login.dfe.api-client/users");
+
+const {
   getUserDetails,
   getUserDetailsById,
   updateUserDetails,
   waitForIndexToUpdate,
 } = require("./utils");
-const {
-  createChangeEmailCode,
-  updateInvite,
-  getChangeEmailCode,
-  deleteChangeEmailCode,
-} = require("../../infrastructure/directories");
-const { getUserRaw } = require("login.dfe.api-client/users");
+const { updateInvite } = require("../../infrastructure/directories");
 
 const validate = async (req) => {
   const model = {
@@ -53,12 +54,25 @@ const updateUserIndex = async (uid, pendingEmail, correlationId) => {
   );
 };
 const updateUserEmail = async (req, model, user) => {
-  const user_code = await getChangeEmailCode(user.id, req.id);
+  const user_code = await getUserVerificationCodeRaw({
+    userId: user.id,
+    verificationCodeType: "changeemail",
+  });
 
   if (user_code && !codeExpiry(user_code.updatedAt)) {
-    await deleteChangeEmailCode(user.id, req.id);
+    await deleteUserVerificationCode({
+      userId: user.id,
+      verificationCodeType: "changeemail",
+    });
   }
-  await createChangeEmailCode(user.id, model.email, "support", "na", req.id);
+  await createUserVerificationCodeRaw({
+    userId: user.id,
+    email: model.email,
+    clientId: "support",
+    redirectUri: "na",
+    verificationCodeType: "changeemail",
+    selfInvoked: false,
+  });
 
   await updateUserIndex(user.id, model.email, req.id);
 

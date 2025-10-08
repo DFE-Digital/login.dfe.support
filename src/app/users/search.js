@@ -5,7 +5,7 @@ const { userStatusMap } = require("./../../infrastructure/utils");
 const config = require("./../../infrastructure/config");
 const {
   getOrganisationCategories,
-} = require("./../../infrastructure/organisations");
+} = require("login.dfe.api-client/organisations");
 const { getAllServices } = require("../services/utils");
 
 const clearNewUserSessionData = (req) => {
@@ -52,18 +52,16 @@ const getFiltersModel = async (req) => {
     const selectedOrganisationTypes = unpackMultiSelect(
       paramsSource.organisationType || paramsSource.organisationCategories,
     );
-    organisationTypes = (await getOrganisationCategories(req.id)).map(
-      (category) => {
-        return {
-          id: category.id,
-          name: category.name,
-          isSelected:
-            selectedOrganisationTypes.find(
-              (x) => x.toLowerCase() === category.id.toLowerCase(),
-            ) !== undefined,
-        };
-      },
-    );
+    organisationTypes = (await getOrganisationCategories()).map((category) => {
+      return {
+        id: category.id,
+        name: category.name,
+        isSelected:
+          selectedOrganisationTypes.find(
+            (x) => x.toLowerCase() === category.id.toLowerCase(),
+          ) !== undefined,
+      };
+    });
 
     const selectedAccountStatuses = unpackMultiSelect(
       paramsSource.accountStatus || paramsSource.statusId,

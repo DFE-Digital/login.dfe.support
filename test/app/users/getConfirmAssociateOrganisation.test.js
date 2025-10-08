@@ -11,6 +11,7 @@ jest.mock("login.dfe.api-client/invitations");
 jest.mock(
   "../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById",
 );
+jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const {
