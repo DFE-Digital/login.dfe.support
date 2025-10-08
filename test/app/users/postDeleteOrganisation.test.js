@@ -11,12 +11,12 @@ jest.mock("./../../../src/infrastructure/organisations", () => ({
 }));
 jest.mock("./../../../src/infrastructure/search", () => {
   return {
-    getSearchDetailsForUserById: jest.fn(),
     updateIndex: jest.fn(),
-    getById: jest.fn(),
   };
 });
-
+jest.mock(
+  "../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById",
+);
 jest.mock("./../../../src/app/users/utils");
 jest.mock("login.dfe.api-client/users");
 jest.mock("login.dfe.api-client/invitations");
@@ -32,10 +32,11 @@ const {
   deleteUserOrganisation,
   getUserOrganisations,
 } = require("../../../src/infrastructure/organisations");
+
 const {
   getSearchDetailsForUserById,
-  getById,
-} = require("../../../src/infrastructure/search");
+} = require("../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById");
+const { searchUserByIdRaw } = require("login.dfe.api-client/users");
 const {
   deleteServiceAccessFromInvitation,
 } = require("login.dfe.api-client/invitations");
@@ -68,8 +69,8 @@ describe("when removing a users access to an organisation", () => {
         },
       },
     });
-    getById.mockReset();
-    getById.mockReturnValue({
+    searchUserByIdRaw.mockReset();
+    searchUserByIdRaw.mockReturnValue({
       organisations: [
         {
           id: "org1",
@@ -167,8 +168,8 @@ describe("when removing a users access to an organisation", () => {
   });
 
   it("then it should not send an email notification to deactivated user", async () => {
-    getById.mockReset();
-    getById.mockReturnValue({
+    searchUserByIdRaw.mockReset();
+    searchUserByIdRaw.mockReturnValue({
       organisations: [
         {
           id: "org1",

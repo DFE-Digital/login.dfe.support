@@ -78,24 +78,6 @@ const searchForUsers = async (
   }
 };
 
-const getById = async (userId, correlationId) => {
-  const token = await jwtStrategy(config.search.service).getBearerToken();
-  try {
-    return await fetchApi(`${config.search.service.url}/users/${userId}`, {
-      method: "GET",
-      headers: {
-        authorization: `bearer ${token}`,
-        "x-correlation-id": correlationId,
-      },
-    });
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return undefined;
-    }
-    throw e;
-  }
-};
-
 const updateUserInSearch = async (user, correlationId) => {
   const body = {
     pendingEmail: user.pendingEmail,
@@ -119,7 +101,6 @@ const createIndex = async (id, correlationId) => {
 
 module.exports = {
   searchForUsers,
-  getById,
   updateUserInSearch,
   updateIndex,
   createIndex,

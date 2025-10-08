@@ -1,7 +1,10 @@
 const logger = require("./../../infrastructure/logger");
 const config = require("./../../infrastructure/config");
 const { NotificationClient } = require("login.dfe.jobs-client");
-const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
+const {
+  deleteUserServiceAccess,
+  searchUserByIdRaw,
+} = require("login.dfe.api-client/users");
 const {
   deleteServiceAccessFromInvitation,
 } = require("login.dfe.api-client/invitations");
@@ -11,7 +14,7 @@ const {
   getUserOrganisations,
 } = require("./../../infrastructure/organisations");
 const { getAllServicesForUserInOrg } = require("./utils");
-const { updateIndex, getById } = require("./../../infrastructure/search");
+const { updateIndex } = require("./../../infrastructure/search");
 const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const {
   getSearchDetailsForUserById,
@@ -63,7 +66,7 @@ const postDeleteOrganisation = async (req, res) => {
     }
     await deleteUserOrg(uid, req);
     if (isEmailAllowed) {
-      const userDetails = await getById(uid, req.id);
+      const userDetails = await searchUserByIdRaw({ userId: uid });
       if (userDetails.statusId === 1) {
         const notificationClient = new NotificationClient({
           connectionString: config.notifications.connectionString,
