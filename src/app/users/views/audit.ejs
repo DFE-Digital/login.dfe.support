@@ -42,11 +42,19 @@
                         <% if (locals.audits.length > 0) { %>
                             <% for(let a = 0; a < locals.audits.length; a++) { %>
                                 <% const audit = locals.audits[a]; %>
+                                <% const org = audit.organisation; %>
                                 <tr class="govuk-table__row">
                                     <td class="govuk-table__cell"><%= audit.formattedTimestamp %></td>
                                     <td class="govuk-table__cell"><%= audit.event.description %></td>
                                     <td class="govuk-table__cell"><%= audit.service ? audit.service.name : '' %></td>
-                                    <td class="govuk-table__cell"><%= audit.organisation ? audit.organisation.name : '' %></td>
+                                    <td class="govuk-table__cell">
+                                        <%= org ? org.UKPRN
+                                            ? `${org.name ?? ''} (UKPRN: ${org.UKPRN})`
+                                            : org.URN
+                                            ? `${org.name ?? ''} (URN: ${org.URN})`
+                                            : `${org.name ?? ''}`
+                                        : '' %>
+                                    </td>
                                     <td class="govuk-table__cell"><%= audit.result ? 'Success' : 'Failure' %></td>
                                     <td class="govuk-table__cell"><%= audit.user ? audit.user.name : '' %></td>
                                 </tr>
