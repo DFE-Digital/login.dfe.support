@@ -1,5 +1,7 @@
 const { searchUserByIdRaw } = require("login.dfe.api-client/users");
-const { mapSearchUserToSupportModel } = require("../utils");
+const {
+  mapSearchUserToSupportModel,
+} = require("./mapSearchUserToSupportModel");
 
 const getSearchDetailsForUserById = async (id) => {
   try {

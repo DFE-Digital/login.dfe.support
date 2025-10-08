@@ -1,7 +1,11 @@
-const { mapSearchUserToSupportModel } = require("../../../src/app/users/utils");
-const { mapUserStatus } = require("../../../src/infrastructure/utils");
+const {
+  mapSearchUserToSupportModel,
+} = require("../../../../src/app/users/userSearchHelpers/mapSearchUserToSupportModel");
+const {
+  mapUserStatus,
+} = require("../../../../src/infrastructure/utils/mapUserStatus");
 
-jest.mock("../../../src/infrastructure/utils/mapUserStatus", () => ({
+jest.mock("../../../../src/infrastructure/utils/mapUserStatus.js", () => ({
   mapUserStatus: jest.fn(),
 }));
 

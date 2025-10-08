@@ -17,7 +17,7 @@ const {
 } = require("login.dfe.api-client/invitations");
 const {
   getSearchDetailsForUserById,
-} = require("./searchApiHelpers/getSearchDetailsForUserById");
+} = require("./userSearchHelpers/getSearchDetailsForUserById");
 
 const addOrganisationToInvitation = async (uid, req) => {
   const invitationId = uid.substr(4);

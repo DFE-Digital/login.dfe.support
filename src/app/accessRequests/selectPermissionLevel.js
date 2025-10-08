@@ -13,7 +13,7 @@ const {
 } = require("login.dfe.api-client/organisations");
 const {
   getSearchDetailsForUserById,
-} = require("../users/searchApiHelpers/getSearchDetailsForUserById");
+} = require("../users/userSearchHelpers/getSearchDetailsForUserById");
 
 const get = async (req, res) => {
   const request = await getAndMapOrgRequest(req);

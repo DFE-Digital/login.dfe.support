@@ -1,7 +1,9 @@
 const jwtStrategy = require("login.dfe.jwt-strategies");
 const config = require("./../config");
 const { fetchApi } = require("login.dfe.async-retry");
-const { mapSearchUserToSupportModel } = require("../../app/users/utils");
+const {
+  mapSearchUserToSupportModel,
+} = require("../../app/users/userSearchHelpers/mapSearchUserToSupportModel");
 
 const callApi = async (endpoint, method, body, correlationId) => {
   const token = await jwtStrategy(config.search.service).getBearerToken();

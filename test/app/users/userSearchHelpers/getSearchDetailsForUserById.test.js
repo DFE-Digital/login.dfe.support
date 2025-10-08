@@ -1,18 +1,21 @@
 const { searchUserByIdRaw } = require("login.dfe.api-client/users");
 const {
-  mapSearchUserToSupportModel,
-} = require("../../../../src/app/users/utils");
-const {
   getSearchDetailsForUserById,
-} = require("../../../../src/app/users/searchApiHelpers/getSearchDetailsForUserById");
+} = require("../../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById");
+const {
+  mapSearchUserToSupportModel,
+} = require("../../../../src/app/users/userSearchHelpers/mapSearchUserToSupportModel");
 
 jest.mock("login.dfe.api-client/users", () => ({
   searchUserByIdRaw: jest.fn(),
 }));
 
-jest.mock("../../../../src/app/users/utils", () => ({
-  mapSearchUserToSupportModel: jest.fn(),
-}));
+jest.mock(
+  "../../../../src/app/users/userSearchHelpers/mapSearchUserToSupportModel",
+  () => ({
+    mapSearchUserToSupportModel: jest.fn(),
+  }),
+);
 
 describe("getSearchDetailsForUserById", () => {
   const userId = "user-1";

@@ -11,7 +11,7 @@ jest.mock("./../../../src/infrastructure/search");
 jest.mock("login.dfe.jobs-client");
 jest.mock("login.dfe.api-client/organisations");
 jest.mock(
-  "../../../src/app/users/searchApiHelpers/getSearchDetailsForUserById",
+  "../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById",
 );
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
@@ -35,7 +35,7 @@ const {
 } = require("login.dfe.api-client/organisations");
 const {
   getSearchDetailsForUserById,
-} = require("../../../src/app/users/searchApiHelpers/getSearchDetailsForUserById");
+} = require("../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById");
 
 const sendAccessRequest = jest.fn();
 NotificationClient.mockImplementation(() => ({

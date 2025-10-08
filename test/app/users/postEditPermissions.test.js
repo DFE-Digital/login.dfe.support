@@ -8,7 +8,7 @@ jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/search");
 jest.mock("login.dfe.api-client/invitations");
 jest.mock(
-  "../../../src/app/users/searchApiHelpers/getSearchDetailsForUserById",
+  "../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById",
 );
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
@@ -26,7 +26,7 @@ const {
 } = require("login.dfe.api-client/invitations");
 const {
   getSearchDetailsForUserById,
-} = require("../../../src/app/users/searchApiHelpers/getSearchDetailsForUserById");
+} = require("../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById");
 
 const res = getResponseMock();
 

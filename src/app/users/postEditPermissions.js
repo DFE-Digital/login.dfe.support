@@ -6,14 +6,15 @@ const {
   getUserOrganisations,
 } = require("../../infrastructure/organisations");
 const { updateIndex } = require("../../infrastructure/search");
-const {
-  getSearchDetailsForUserById,
-} = require("./searchApiHelpers/getSearchDetailsForUserById");
+
 const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const { mapRole } = require("./utils");
 const {
   addOrganisationToInvitation,
 } = require("login.dfe.api-client/invitations");
+const {
+  getSearchDetailsForUserById,
+} = require("./userSearchHelpers/getSearchDetailsForUserById");
 
 const validatePermissions = (req) => {
   const validPermissions = [0, 10000];
