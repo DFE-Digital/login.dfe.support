@@ -37,19 +37,6 @@ const getUserOrganisationsV2 = async (userId, correlationId) => {
   );
 };
 
-const deleteInvitationOrganisation = async (
-  invitationId,
-  organisationId,
-  correlationId,
-) => {
-  return callOrganisationsApi(
-    `organisations/${organisationId}/invitations/${invitationId}`,
-    "DELETE",
-    undefined,
-    correlationId,
-  );
-};
-
 const listRequests = async (page, filterStates, correlationId) => {
   let uri = `organisations/requests?page=${page}`;
   if (filterStates && filterStates.length > 0) {
@@ -72,7 +59,6 @@ const getRequestById = async (requestId, correlationId) => {
 };
 
 module.exports = {
-  deleteInvitationOrganisation,
   getUserOrganisationsV2,
   listRequests,
   getRequestById,
