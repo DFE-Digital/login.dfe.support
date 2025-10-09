@@ -90,15 +90,6 @@ const deleteUserOrganisation = async (
   );
 };
 
-const listOrganisationStatus = async (correlationId) => {
-  return callOrganisationsApi(
-    "organisations/states",
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
 const createOrganisation = async (body, correlationId) => {
   return callOrganisationsApi(`organisations/`, "POST", body, correlationId);
 };
@@ -209,7 +200,6 @@ module.exports = {
   getRequestById,
   updateRequestById,
   putUserInOrganisation,
-  listOrganisationStatus,
   getPendingRequestsAssociatedWithUser,
   getCategories,
 };

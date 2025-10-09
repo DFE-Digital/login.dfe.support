@@ -1,11 +1,9 @@
 const { sendResult } = require("../../infrastructure/utils");
-const {
-  listOrganisationStatus,
-} = require("../../infrastructure/organisations");
 const { organisation } = require("login.dfe.dao");
 const {
   searchOrganisationsRaw,
   getOrganisationCategories,
+  getOrganisationStatuses,
 } = require("login.dfe.api-client/organisations");
 
 const getFiltersModel = async (req) => {
@@ -45,17 +43,15 @@ const getFiltersModel = async (req) => {
       };
     });
 
-    organisationStatuses = (await listOrganisationStatus(req.id)).map(
-      (status) => {
-        return {
-          id: status.id,
-          name: status.name,
-          isSelected:
-            selectedOrganisationStatus.find((x) => Number(x) === status.id) !==
-            undefined,
-        };
-      },
-    );
+    organisationStatuses = (await getOrganisationStatuses()).map((status) => {
+      return {
+        id: status.id,
+        name: status.name,
+        isSelected:
+          selectedOrganisationStatus.find((x) => Number(x) === status.id) !==
+          undefined,
+      };
+    });
   }
   return {
     showFilters,
