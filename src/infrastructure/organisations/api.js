@@ -63,15 +63,6 @@ const deleteUserOrganisation = async (
   );
 };
 
-const listOrganisationStatus = async (correlationId) => {
-  return callOrganisationsApi(
-    "organisations/states",
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
 const listRequests = async (page, filterStates, correlationId) => {
   let uri = `organisations/requests?page=${page}`;
   if (filterStates && filterStates.length > 0) {
@@ -164,7 +155,6 @@ module.exports = {
   getRequestById,
   updateRequestById,
   putUserInOrganisation,
-  listOrganisationStatus,
   getPendingRequestsAssociatedWithUser,
   getCategories,
 };
