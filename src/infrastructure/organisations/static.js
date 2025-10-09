@@ -94,10 +94,6 @@ const createOrganisation = async () => {
   return Promise.resolve();
 };
 
-const getCategories = async () => {
-  return await getCategories();
-};
-
 module.exports = {
   createOrganisation,
   getUserOrganisations,
@@ -109,5 +105,4 @@ module.exports = {
   updateRequestById,
   putUserInOrganisation,
   getPendingRequestsAssociatedWithUser,
-  getCategories,
 };

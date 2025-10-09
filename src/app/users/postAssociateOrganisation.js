@@ -1,8 +1,8 @@
-const { getCategories } = require("../../infrastructure/organisations");
 const { sendResult } = require("../../infrastructure/utils");
 const {
   searchOrganisationsRaw,
   getOrganisationLegacyRaw,
+  getOrganisationCategories,
 } = require("login.dfe.api-client/organisations");
 
 const postAssociateOrganisation = async (req, res) => {
@@ -25,7 +25,7 @@ const postAssociateOrganisation = async (req, res) => {
   }
 
   const retrieveOrganisationCategories = async () => {
-    const orgCategories = await getCategories();
+    const orgCategories = await getOrganisationCategories();
     return orgCategories.map((cat) => cat.id);
   };
 

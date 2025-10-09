@@ -178,15 +178,6 @@ const getPendingRequestsAssociatedWithUser = async (userId, correlationId) => {
   );
 };
 
-const getCategories = async () => {
-  return await callOrganisationsApi(
-    "organisations/categories",
-    "GET",
-    undefined,
-    undefined,
-  );
-};
-
 module.exports = {
   createOrganisation,
   editOrganisation,
@@ -201,5 +192,4 @@ module.exports = {
   updateRequestById,
   putUserInOrganisation,
   getPendingRequestsAssociatedWithUser,
-  getCategories,
 };
