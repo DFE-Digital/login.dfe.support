@@ -77,19 +77,6 @@ const deleteInvitationOrganisation = async (
   );
 };
 
-const deleteUserOrganisation = async (
-  userId,
-  organisationId,
-  correlationId,
-) => {
-  return callOrganisationsApi(
-    `organisations/${organisationId}/users/${userId}`,
-    "DELETE",
-    undefined,
-    correlationId,
-  );
-};
-
 const listOrganisationStatus = async (correlationId) => {
   return callOrganisationsApi(
     "organisations/states",
@@ -202,7 +189,6 @@ module.exports = {
   getUserOrganisations,
   getInvitationOrganisations,
   getServiceById,
-  deleteUserOrganisation,
   deleteInvitationOrganisation,
   getUserOrganisationsV2,
   listRequests,

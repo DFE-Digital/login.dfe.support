@@ -1,12 +1,14 @@
 const logger = require("./../../infrastructure/logger");
 const config = require("./../../infrastructure/config");
 const { NotificationClient } = require("login.dfe.jobs-client");
-const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
+const {
+  deleteUserServiceAccess,
+  deleteUserOrganisationAccess,
+} = require("login.dfe.api-client/users");
 const {
   deleteServiceAccessFromInvitation,
 } = require("login.dfe.api-client/invitations");
 const {
-  deleteUserOrganisation,
   deleteInvitationOrganisation,
   getUserOrganisations,
 } = require("./../../infrastructure/organisations");
@@ -26,7 +28,7 @@ const deleteInvitationOrg = async (uid, req) => {
 
 const deleteUserOrg = async (uid, req) => {
   const organisationId = req.params.id;
-  await deleteUserOrganisation(uid, organisationId);
+  await deleteUserOrganisationAccess({ userId: uid, organisationId });
 };
 
 const postDeleteOrganisation = async (req, res) => {
