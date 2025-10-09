@@ -78,16 +78,6 @@ const searchForUsers = async (
   }
 };
 
-const updateUserInSearch = async (user, correlationId) => {
-  const body = {
-    pendingEmail: user.pendingEmail,
-    statusId: user.status.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-  };
-  await callApi(`/users/${user.id}`, "PATCH", body, correlationId);
-};
-
 const updateIndex = async (userId, body, correlationId) => {
   await callApi(`/users/${userId}`, "PATCH", body, correlationId);
 };
@@ -101,7 +91,6 @@ const createIndex = async (id, correlationId) => {
 
 module.exports = {
   searchForUsers,
-  updateUserInSearch,
   updateIndex,
   createIndex,
 };

@@ -9,12 +9,12 @@ const {
 const { deactivateInvite } = require("../../infrastructure/directories");
 const { sendResult } = require("../../infrastructure/utils");
 
-const updateUserIndex = async (uid, correlationId) => {
+const updateUserIndex = async (uid) => {
   const user = await getUserDetailsById(uid);
   user.status.id = -2;
   user.status.description = "Deactivated Invitation";
 
-  await updateUserDetails(user, correlationId);
+  await updateUserDetails(user);
 
   await waitForIndexToUpdate(uid, (updated) => updated.status.id === -2);
 };
@@ -49,7 +49,7 @@ const postConfirmDeactivate = async (req, res) => {
     });
   } else {
     await deactivateInvite(user.id, req.body.reason, req.id);
-    await updateUserIndex(user.id, req.id);
+    await updateUserIndex(user.id);
     if (req.body["remove-services-and-requests"]) {
       await removeAllServicesForInvitedUser(user.id, req);
     }

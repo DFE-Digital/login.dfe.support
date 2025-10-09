@@ -4,6 +4,7 @@ const {
   deleteUserServiceAccess,
   getUserServiceRequestsRaw,
   getUserRaw,
+  updateUserDetailsInSearchIndex,
 } = require("login.dfe.api-client/users");
 const {
   updateServiceRequest,
@@ -14,10 +15,7 @@ const {
   deleteServiceAccessFromInvitation,
   getInvitationRaw,
 } = require("login.dfe.api-client/invitations");
-const {
-  searchForUsers,
-  updateUserInSearch,
-} = require("./../../infrastructure/search");
+const { searchForUsers } = require("./../../infrastructure/search");
 
 const {
   getPendingRequestsAssociatedWithUser,
@@ -332,8 +330,14 @@ const getUserDetailsById = async (uid) => {
   }
 };
 
-const updateUserDetails = async (user, correlationId) => {
-  await updateUserInSearch(user, correlationId);
+const updateUserDetails = async (user) => {
+  await updateUserDetailsInSearchIndex({
+    userId: user.id,
+    userPendingEmail: user.pendingEmail,
+    userStatusId: user.status.id,
+    userFirstName: user.firstName,
+    userLastName: user.lastName,
+  });
 };
 
 const getAllServicesForUserInOrg = async (userId, organisationId) => {
