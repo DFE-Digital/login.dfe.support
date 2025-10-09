@@ -9,11 +9,6 @@ jest.mock("./../../../src/infrastructure/organisations", () => ({
   deleteUserOrganisation: jest.fn(),
   getUserOrganisations: jest.fn(),
 }));
-jest.mock("./../../../src/infrastructure/search", () => {
-  return {
-    updateIndex: jest.fn(),
-  };
-});
 jest.mock(
   "../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById",
 );

@@ -2,13 +2,15 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const { getUserOrganisations } = require("../../infrastructure/organisations");
-const { updateIndex } = require("../../infrastructure/search");
 const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const { mapRole } = require("./utils");
 const {
   addOrganisationToInvitation,
 } = require("login.dfe.api-client/invitations");
-const { addOrganisationToUser } = require("login.dfe.api-client/users");
+const {
+  addOrganisationToUser,
+  updateUserDetailsInSearchIndex,
+} = require("login.dfe.api-client/users");
 const {
   getSearchDetailsForUserById,
 } = require("./userSearchHelpers/getSearchDetailsForUserById");
@@ -102,10 +104,10 @@ const postEditPermissions = async (req, res) => {
       }
       return org;
     });
-    const patchBody = {
+    await updateUserDetailsInSearchIndex({
+      userId: uid,
       organisations,
-    };
-    await updateIndex(uid, patchBody, req.id);
+    });
   }
 
   const { organisationName } = model;

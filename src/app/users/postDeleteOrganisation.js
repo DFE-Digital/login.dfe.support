@@ -4,6 +4,7 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 const {
   deleteUserServiceAccess,
   searchUserByIdRaw,
+  updateUserDetailsInSearchIndex,
 } = require("login.dfe.api-client/users");
 const {
   deleteServiceAccessFromInvitation,
@@ -14,7 +15,6 @@ const {
   getUserOrganisations,
 } = require("./../../infrastructure/organisations");
 const { getAllServicesForUserInOrg } = require("./utils");
-const { updateIndex } = require("./../../infrastructure/search");
 const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const {
   getSearchDetailsForUserById,
@@ -88,10 +88,10 @@ const postDeleteOrganisation = async (req, res) => {
     const organisations = currentOrgDetails.filter(
       (org) => org.id !== organisationId,
     );
-    const patchBody = {
+    await updateUserDetailsInSearchIndex({
+      userId: uid,
       organisations,
-    };
-    await updateIndex(uid, patchBody, req.id);
+    });
   }
 
   const fullname = `${req.session.user.firstName} ${req.session.user.lastName}`;

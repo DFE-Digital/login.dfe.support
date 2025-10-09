@@ -5,7 +5,6 @@ const {
   getPendingRequestsAssociatedWithUser,
   updateRequestById,
 } = require("../../infrastructure/organisations");
-const { updateIndex } = require("../../infrastructure/search");
 const { waitForIndexToUpdate } = require("./utils");
 const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const {
@@ -16,6 +15,7 @@ const {
 } = require("login.dfe.api-client/invitations");
 const {
   addOrganisationToUser: apiClientAddOrganisationToUser,
+  updateUserDetailsInSearchIndex,
 } = require("login.dfe.api-client/users");
 const {
   getSearchDetailsForUserById,
@@ -132,10 +132,10 @@ const getConfirmAssociateOrganisation = async (req, res) => {
       roleId: req.session.user.permission,
     };
     organisations.push(newOrgForSearch);
-    const patchBody = {
+    await updateUserDetailsInSearchIndex({
+      userId: uid,
       organisations,
-    };
-    await updateIndex(uid, patchBody, req.id);
+    });
     await waitForIndexToUpdate(
       uid,
       (updated) => updated.organisations.length === organisations.length,
