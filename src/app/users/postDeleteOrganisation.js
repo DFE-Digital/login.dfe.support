@@ -5,17 +5,15 @@ const {
   deleteUserServiceAccess,
   searchUserByIdRaw,
   updateUserDetailsInSearchIndex,
+  getUserOrganisationsWithServicesRaw,
+  deleteUserOrganisationAccess,
 } = require("login.dfe.api-client/users");
 const {
   deleteServiceAccessFromInvitation,
 } = require("login.dfe.api-client/invitations");
 const {
-  deleteUserOrganisation,
   deleteInvitationOrganisation,
 } = require("./../../infrastructure/organisations");
-const {
-  getUserOrganisationsWithServicesRaw,
-} = require("login.dfe.api-client/users");
 const { getAllServicesForUserInOrg } = require("./utils");
 const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const {
@@ -30,7 +28,7 @@ const deleteInvitationOrg = async (uid, req) => {
 
 const deleteUserOrg = async (uid, req) => {
   const organisationId = req.params.id;
-  await deleteUserOrganisation(uid, organisationId);
+  await deleteUserOrganisationAccess({ userId: uid, organisationId });
 };
 
 const postDeleteOrganisation = async (req, res) => {

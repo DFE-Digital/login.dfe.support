@@ -6,7 +6,6 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 );
 jest.mock("./../../../src/infrastructure/organisations", () => ({
   deleteInvitationOrganisation: jest.fn(),
-  deleteUserOrganisation: jest.fn(),
 }));
 jest.mock(
   "../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById",
@@ -23,7 +22,6 @@ const { getAllServicesForUserInOrg } = require("../../../src/app/users/utils");
 const postDeleteOrganisation = require("../../../src/app/users/postDeleteOrganisation");
 const {
   deleteInvitationOrganisation,
-  deleteUserOrganisation,
 } = require("../../../src/infrastructure/organisations");
 
 const {
@@ -34,7 +32,7 @@ const {
   deleteServiceAccessFromInvitation,
 } = require("login.dfe.api-client/invitations");
 const {
-  getUserOrganisationsWithServicesRaw,
+  getUserOrganisationsWithServicesRaw, deleteUserOrganisationAccess,
 } = require("login.dfe.api-client/users");
 
 const res = getResponseMock();
@@ -130,9 +128,11 @@ describe("when removing a users access to an organisation", () => {
   it("then it should delete org for user", async () => {
     await postDeleteOrganisation(req, res);
 
-    expect(deleteUserOrganisation.mock.calls).toHaveLength(1);
-    expect(deleteUserOrganisation.mock.calls[0][0]).toBe("user1");
-    expect(deleteUserOrganisation.mock.calls[0][1]).toBe("org1");
+    expect(deleteUserOrganisationAccess.mock.calls).toHaveLength(1);
+    expect(deleteUserOrganisationAccess).toHaveBeenCalledWith({
+      organisationId: "org1",
+      userId: "user1",
+    });
   });
 
   it("then it should redirect to organisations", async () => {
@@ -183,7 +183,7 @@ describe("when removing a users access to an organisation", () => {
     expect(sendUserRemovedFromOrganisationStub.mock.calls).toHaveLength(0);
 
     expect(res.flash.mock.calls).toHaveLength(1);
-    expect(deleteUserOrganisation.mock.calls).toHaveLength(1);
+    expect(deleteUserOrganisationAccess.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls).toHaveLength(1);
   });
 });
