@@ -4,6 +4,7 @@ const {
   deleteUserServiceAccess,
   getUserServiceRequestsRaw,
   getUserRaw,
+  getPendingRequestsRaw,
 } = require("login.dfe.api-client/users");
 const {
   updateServiceRequest,
@@ -20,9 +21,6 @@ const {
   updateUserInSearch,
 } = require("./../../infrastructure/search");
 
-const {
-  getPendingRequestsAssociatedWithUser,
-} = require("../../infrastructure/organisations");
 const { mapUserStatus } = require("./../../infrastructure/utils");
 const config = require("./../../infrastructure/config");
 const sortBy = require("lodash/sortBy");
@@ -416,8 +414,7 @@ const rejectOpenUserServiceRequestsForUser = async (userId, req) => {
 
 const rejectOpenOrganisationRequestsForUser = async (userId, req) => {
   const correlationId = req.id;
-  const organisationRequests =
-    (await getPendingRequestsAssociatedWithUser(userId)) || [];
+  const organisationRequests = (await getPendingRequestsRaw({ userId })) || [];
   logger.info(
     `Found ${organisationRequests.length} organisation request(s) for user ${userId}. Rejecting any outstanding requests.`,
     { correlationId },
