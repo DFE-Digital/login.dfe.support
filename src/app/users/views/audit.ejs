@@ -49,10 +49,10 @@
                                     <td class="govuk-table__cell"><%= audit.service ? audit.service.name : '' %></td>
                                     <td class="govuk-table__cell">
                                         <%= org ? org.UKPRN
-                                            ? `${org.name ?? ''} (UKPRN: ${org.UKPRN})`
+                                            ? `${org.name} (UKPRN: ${org.UKPRN})`
                                             : org.URN
-                                            ? `${org.name ?? ''} (URN: ${org.URN})`
-                                            : `${org.name ?? ''}`
+                                            ? `${org.name} (URN: ${org.URN})`
+                                            : `${org.name}`
                                         : '' %>
                                     </td>
                                     <td class="govuk-table__cell"><%= audit.result ? 'Success' : 'Failure' %></td>
