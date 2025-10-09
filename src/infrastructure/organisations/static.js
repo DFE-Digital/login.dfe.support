@@ -40,10 +40,6 @@ const getPendingRequestsAssociatedWithUser = async () => {
   return Promise.resolve();
 };
 
-const getCategories = async () => {
-  return await getCategories();
-};
-
 module.exports = {
   getUserOrganisationsV2,
   getAllRequestsForSupport,
@@ -51,5 +47,4 @@ module.exports = {
   updateRequestById,
   putUserInOrganisation,
   getPendingRequestsAssociatedWithUser,
-  getCategories,
 };
