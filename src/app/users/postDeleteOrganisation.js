@@ -7,9 +7,9 @@ const {
 } = require("login.dfe.api-client/users");
 const {
   deleteServiceAccessFromInvitation,
+  deleteOrganisationAccessFromInvitation,
 } = require("login.dfe.api-client/invitations");
 const {
-  deleteInvitationOrganisation,
   getUserOrganisations,
 } = require("./../../infrastructure/organisations");
 const { getAllServicesForUserInOrg } = require("./utils");
@@ -23,7 +23,10 @@ const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const deleteInvitationOrg = async (uid, req) => {
   const invitationId = uid.substr(4);
   const organisationId = req.params.id;
-  await deleteInvitationOrganisation(invitationId, organisationId);
+  await deleteOrganisationAccessFromInvitation({
+    invitationId,
+    organisationId,
+  });
 };
 
 const deleteUserOrg = async (uid, req) => {
