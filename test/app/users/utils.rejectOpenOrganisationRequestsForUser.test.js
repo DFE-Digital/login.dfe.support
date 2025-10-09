@@ -1,18 +1,16 @@
 jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
-jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("login.dfe.api-client/organisations");
+jest.mock("login.dfe.api-client/users");
 
-const {
-  getPendingRequestsAssociatedWithUser,
-} = require("../../../src/infrastructure/organisations");
 const {
   rejectOpenOrganisationRequestsForUser,
 } = require("../../../src/app/users/utils");
 const {
   updateRequestForOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
+const { getPendingRequestsRaw } = require("login.dfe.api-client/users");
 
 Date.now = jest.fn(() => "2019-01-02");
 
@@ -21,7 +19,7 @@ describe("When rejecting all organisation requests for a user", () => {
   let req;
 
   beforeEach(() => {
-    getPendingRequestsAssociatedWithUser.mockReset().mockReturnValue([
+    getPendingRequestsRaw.mockReset().mockReturnValue([
       {
         id: "requestId",
         org_id: "org1",
@@ -56,21 +54,19 @@ describe("When rejecting all organisation requests for a user", () => {
   it("then it should call updateRequestForOrganisationRaw when a pending request is found", async () => {
     await rejectOpenOrganisationRequestsForUser(userId, req);
 
-    expect(getPendingRequestsAssociatedWithUser.mock.calls).toHaveLength(1);
-    expect(getPendingRequestsAssociatedWithUser.mock.calls[0][0]).toBe(
-      "user-1",
-    );
+    expect(getPendingRequestsRaw.mock.calls).toHaveLength(1);
+    expect(getPendingRequestsRaw).toHaveBeenCalledWith({ userId: "user-1" });
     expect(updateRequestForOrganisationRaw.mock.calls).toHaveLength(1);
   });
 
-  it("should continue to work when getPendingRequestsAssociatedWithUser returns null on a 404 or 401", async () => {
-    getPendingRequestsAssociatedWithUser.mockReset().mockReturnValue(null);
+  it("should continue to work when getPendingRequestsRaw returns null on a 404 or 401", async () => {
+    getPendingRequestsRaw.mockReset().mockReturnValue(null);
     await rejectOpenOrganisationRequestsForUser(userId, req);
     expect(updateRequestForOrganisationRaw.mock.calls).toMatchObject([]);
   });
 
   it("should call updateRequestForOrganisationRaw when the returned request has a status of 0, 2 or 3", async () => {
-    getPendingRequestsAssociatedWithUser.mockReset().mockReturnValue([
+    getPendingRequestsRaw.mockReset().mockReturnValue([
       {
         id: "0b62b8da-2a6e-4c66-9f32-a7b784ff4f65",
         org_id: "org1",

@@ -7,12 +7,12 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 jest.mock("./../../../src/app/users/utils");
 jest.mock("./../../../src/infrastructure/utils");
 jest.mock("./../../../src/infrastructure/directories");
-jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("login.dfe.api-client/users", () => ({
   getUserServicesRaw: jest.fn(),
   deleteUserServiceAccess: jest.fn(),
   getUserServiceRequestsRaw: jest.fn(),
   deactivateUser: jest.fn(),
+  getPendingRequestsRaw: jest.fn(),
 }));
 jest.mock("login.dfe.api-client/services", () => ({
   updateServiceRequest: jest.fn(),
@@ -36,10 +36,9 @@ const {
   deleteUserServiceAccess,
   getUserServiceRequestsRaw,
   deactivateUser,
+  getPendingRequestsRaw,
 } = require("login.dfe.api-client/users");
-const {
-  getPendingRequestsAssociatedWithUser,
-} = require("../../../src/infrastructure/organisations");
+
 const postConfirmDeactivate = require("../../../src/app/users/postConfirmDeactivate");
 const { sendResult } = require("../../../src/infrastructure/utils");
 const {
@@ -123,7 +122,7 @@ beforeEach(() => {
     },
   ]);
 
-  getPendingRequestsAssociatedWithUser.mockReset().mockReturnValue([
+  getPendingRequestsRaw.mockReset().mockReturnValue([
     {
       id: "requestId",
       org_id: "org1",
@@ -457,14 +456,14 @@ describe("When the remove all services and requests checkbox is ticked", () => {
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });
 
-  it("should not call updateRequestForOrganisationRaw when getPendingRequestsAssociatedWithUser returns an empty array", async () => {
-    getPendingRequestsAssociatedWithUser.mockReset().mockReturnValue([]);
+  it("should not call updateRequestForOrganisationRaw when getPendingRequestsRaw returns an empty array", async () => {
+    getPendingRequestsRaw.mockReset().mockReturnValue([]);
     await postConfirmDeactivate(req, res);
     expect(updateRequestForOrganisationRaw.mock.calls).toMatchObject([]);
   });
 
-  it("should continue to work when getPendingRequestsAssociatedWithUser returns null on a 404 or 401", async () => {
-    getPendingRequestsAssociatedWithUser.mockReset().mockReturnValue(null);
+  it("should continue to work when getPendingRequestsRaw returns null on a 404 or 401", async () => {
+    getPendingRequestsRaw.mockReset().mockReturnValue(null);
     await postConfirmDeactivate(req, res);
     expect(updateRequestForOrganisationRaw.mock.calls).toMatchObject([]);
     expect(res.redirect.mock.calls).toHaveLength(1);

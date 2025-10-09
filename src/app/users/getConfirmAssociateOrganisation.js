@@ -2,9 +2,6 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const {
-  getPendingRequestsAssociatedWithUser,
-} = require("../../infrastructure/organisations");
-const {
   getSearchDetailsForUserById,
   updateIndex,
 } = require("../../infrastructure/search");
@@ -18,6 +15,7 @@ const {
   addOrganisationToInvitation: apiClientAddOrganisationToInvitation,
 } = require("login.dfe.api-client/invitations");
 const {
+  getPendingRequestsRaw,
   addOrganisationToUser: apiClientAddOrganisationToUser,
 } = require("login.dfe.api-client/users");
 
@@ -56,10 +54,8 @@ const addOrganisationToUser = async (uid, req) => {
     roleId: permissionId,
   });
 
-  const pendingOrgRequests = await getPendingRequestsAssociatedWithUser(
-    uid,
-    req.id,
-  );
+  const pendingOrgRequests =
+    (await getPendingRequestsRaw({ userId: uid })) || [];
   const requestForOrg = pendingOrgRequests.find(
     (x) => x.org_id === organisationId,
   );

@@ -11,11 +11,9 @@ const {
   getInvitationOrganisationsRaw,
 } = require("login.dfe.api-client/invitations");
 const {
+  getPendingRequestsRaw,
   getUserOrganisationsWithServicesRaw,
 } = require("login.dfe.api-client/users");
-const {
-  getPendingRequestsAssociatedWithUser,
-} = require("../../infrastructure/organisations");
 const {
   getUsersByIdV2,
   getUserStatus,
@@ -73,9 +71,8 @@ const getOrganisations = async (userId, correlationId) => {
   return organisations;
 };
 
-const getPendingRequests = async (userId, correlationId) => {
-  const pendingUserRequests =
-    (await getPendingRequestsAssociatedWithUser(userId, correlationId)) || [];
+const getPendingRequests = async (userId) => {
+  const pendingUserRequests = (await getPendingRequestsRaw({ userId })) || [];
   return pendingUserRequests.map((request) => ({
     id: request.org_id,
     name: request.org_name,
@@ -101,7 +98,7 @@ const action = async (req, res) => {
   }
   const organisationDetails = await getOrganisations(user.id, req.id);
   const organisationRequests = !user.id.startsWith("inv-")
-    ? await getPendingRequests(user.id, req.id)
+    ? await getPendingRequests(user.id)
     : [];
   const formattedOrganisationRequests = organisationRequests.map(
     (organisation) => ({

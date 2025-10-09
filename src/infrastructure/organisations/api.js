@@ -84,20 +84,10 @@ const getRequestById = async (requestId, correlationId) => {
   );
 };
 
-const getPendingRequestsAssociatedWithUser = async (userId, correlationId) => {
-  return callOrganisationsApi(
-    `organisations/requests-for-user/${userId}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
 module.exports = {
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   getUserOrganisationsV2,
   listRequests,
   getRequestById,
-  getPendingRequestsAssociatedWithUser,
 };
