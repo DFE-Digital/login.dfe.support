@@ -78,10 +78,6 @@ const getRequestById = async () => {
   return Promise.resolve();
 };
 
-const updateRequestById = async () => {
-  return Promise.resolve();
-};
-
 const putUserInOrganisation = async () => {
   return Promise.resolve();
 };
@@ -102,7 +98,6 @@ module.exports = {
   getUserOrganisationsV2,
   getAllRequestsForSupport,
   getRequestById,
-  updateRequestById,
   putUserInOrganisation,
   getPendingRequestsAssociatedWithUser,
 };

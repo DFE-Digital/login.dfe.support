@@ -3,7 +3,6 @@ const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const {
   getPendingRequestsAssociatedWithUser,
-  updateRequestById,
 } = require("../../infrastructure/organisations");
 const {
   getSearchDetailsForUserById,
@@ -13,6 +12,7 @@ const { waitForIndexToUpdate } = require("./utils");
 const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const {
   getOrganisationLegacyRaw,
+  updateRequestForOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
 const {
   addOrganisationToInvitation: apiClientAddOrganisationToInvitation,
@@ -65,14 +65,12 @@ const addOrganisationToUser = async (uid, req) => {
   );
   if (requestForOrg) {
     // mark request as approved if outstanding for same org
-    await updateRequestById(
-      requestForOrg.id,
-      1,
-      req.user.sub,
-      null,
-      Date.now(),
-      req.id,
-    );
+    await updateRequestForOrganisationRaw({
+      requestId: requestForOrg.id,
+      status: 1,
+      actionedByUserId: req.user.sub,
+      actionedAt: Date.now(),
+    });
   }
 
   logger.audit(

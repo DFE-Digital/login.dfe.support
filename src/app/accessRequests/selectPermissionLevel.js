@@ -7,12 +7,10 @@ const {
   updateIndex,
 } = require("../../infrastructure/search");
 const { waitForIndexToUpdate } = require("../users/utils");
-const {
-  putUserInOrganisation,
-  updateRequestById,
-} = require("../../infrastructure/organisations");
+const { putUserInOrganisation } = require("../../infrastructure/organisations");
 const {
   getOrganisationLegacyRaw,
+  updateRequestForOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
 
 const get = async (req, res) => {
@@ -123,7 +121,6 @@ const post = async (req, res) => {
       );
     }
 
-    const actionedDate = Date.now();
     await putUserInOrganisation(
       model.request.user_id,
       model.request.org_id,
@@ -131,14 +128,12 @@ const post = async (req, res) => {
       model.selectedLevel,
       req.id,
     );
-    await updateRequestById(
-      model.request.id,
-      1,
-      req.user.sub,
-      null,
-      actionedDate,
-      req.id,
-    );
+    await updateRequestForOrganisationRaw({
+      requestId: model.request.id,
+      status: 1,
+      actionedByUserId: req.user.sub,
+      actionedAt: Date.now(),
+    });
 
     // send approved email
     const notificationClient = new NotificationClient({
