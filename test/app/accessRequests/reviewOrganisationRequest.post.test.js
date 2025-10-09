@@ -19,7 +19,6 @@ const {
 const res = getResponseMock();
 const {
   putUserInOrganisation,
-  updateRequestById,
 } = require("./../../../src/infrastructure/organisations");
 const {
   getSearchDetailsForUserById,
@@ -31,6 +30,7 @@ const logger = require("./../../../src/infrastructure/logger");
 const { NotificationClient } = require("login.dfe.jobs-client");
 const {
   getOrganisationLegacyRaw,
+  updateRequestForOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
 
 const sendAccessRequest = jest.fn();
@@ -59,7 +59,7 @@ describe("when reviewing an organisation request", () => {
 
     logger.audit.mockReset();
     putUserInOrganisation.mockReset();
-    updateRequestById.mockReset();
+    updateRequestForOrganisationRaw.mockReset();
 
     sendAccessRequest.mockReset();
     NotificationClient.mockImplementation(() => ({
@@ -111,7 +111,7 @@ describe("when reviewing an organisation request", () => {
     await post(req, res);
 
     expect(putUserInOrganisation.mock.calls).toHaveLength(0);
-    expect(updateRequestById.mock.calls).toHaveLength(0);
+    expect(updateRequestForOrganisationRaw.mock.calls).toHaveLength(0);
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe(
       "accessRequests/views/reviewOrganisationRequest",
@@ -172,7 +172,7 @@ describe("when reviewing an organisation request", () => {
     await post(req, res);
 
     expect(putUserInOrganisation.mock.calls).toHaveLength(0);
-    expect(updateRequestById.mock.calls).toHaveLength(0);
+    expect(updateRequestForOrganisationRaw.mock.calls).toHaveLength(0);
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe(
       "accessRequests/views/reviewOrganisationRequest",

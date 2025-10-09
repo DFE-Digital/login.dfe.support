@@ -17,6 +17,7 @@ jest.mock("login.dfe.api-client/users", () => ({
 jest.mock("login.dfe.api-client/services", () => ({
   updateServiceRequest: jest.fn(),
 }));
+jest.mock("login.dfe.api-client/organisations");
 
 const logger = require("../../../src/infrastructure/logger");
 const {
@@ -38,10 +39,12 @@ const {
 } = require("login.dfe.api-client/users");
 const {
   getPendingRequestsAssociatedWithUser,
-  updateRequestById,
 } = require("../../../src/infrastructure/organisations");
 const postConfirmDeactivate = require("../../../src/app/users/postConfirmDeactivate");
 const { sendResult } = require("../../../src/infrastructure/utils");
+const {
+  updateRequestForOrganisationRaw,
+} = require("login.dfe.api-client/organisations");
 
 let req;
 let res;
@@ -454,16 +457,16 @@ describe("When the remove all services and requests checkbox is ticked", () => {
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });
 
-  it("should not call updateRequestById when getPendingRequestsAssociatedWithUser returns an empty array", async () => {
+  it("should not call updateRequestForOrganisationRaw when getPendingRequestsAssociatedWithUser returns an empty array", async () => {
     getPendingRequestsAssociatedWithUser.mockReset().mockReturnValue([]);
     await postConfirmDeactivate(req, res);
-    expect(updateRequestById.mock.calls).toMatchObject([]);
+    expect(updateRequestForOrganisationRaw.mock.calls).toMatchObject([]);
   });
 
   it("should continue to work when getPendingRequestsAssociatedWithUser returns null on a 404 or 401", async () => {
     getPendingRequestsAssociatedWithUser.mockReset().mockReturnValue(null);
     await postConfirmDeactivate(req, res);
-    expect(updateRequestById.mock.calls).toMatchObject([]);
+    expect(updateRequestForOrganisationRaw.mock.calls).toMatchObject([]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("services");
   });

@@ -84,35 +84,6 @@ const getRequestById = async (requestId, correlationId) => {
   );
 };
 
-const updateRequestById = async (
-  requestId,
-  status,
-  actionedBy,
-  actionedReason,
-  actionedAt,
-  correlationId,
-) => {
-  const body = {};
-  if (status) {
-    body.status = status;
-  }
-  if (actionedBy) {
-    body.actioned_by = actionedBy;
-  }
-  if (actionedReason) {
-    body.actioned_reason = actionedReason;
-  }
-  if (actionedAt) {
-    body.actioned_at = actionedAt;
-  }
-  return callOrganisationsApi(
-    `organisations/requests/${requestId}`,
-    "PATCH",
-    body,
-    correlationId,
-  );
-};
-
 const putUserInOrganisation = async (
   userId,
   orgId,
@@ -144,7 +115,6 @@ module.exports = {
   getUserOrganisationsV2,
   listRequests,
   getRequestById,
-  updateRequestById,
   putUserInOrganisation,
   getPendingRequestsAssociatedWithUser,
 };
