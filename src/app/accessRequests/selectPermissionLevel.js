@@ -7,11 +7,11 @@ const {
   updateIndex,
 } = require("../../infrastructure/search");
 const { waitForIndexToUpdate } = require("../users/utils");
-const { putUserInOrganisation } = require("../../infrastructure/organisations");
 const {
   getOrganisationLegacyRaw,
   updateRequestForOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
+const { addOrganisationToUser } = require("login.dfe.api-client/users");
 
 const get = async (req, res) => {
   const request = await getAndMapOrgRequest(req);
@@ -121,13 +121,12 @@ const post = async (req, res) => {
       );
     }
 
-    await putUserInOrganisation(
-      model.request.user_id,
-      model.request.org_id,
-      1,
-      model.selectedLevel,
-      req.id,
-    );
+    await addOrganisationToUser({
+      organisationId: model.request.org_id,
+      userId: model.request.user_id,
+      status: 1,
+      roleId: model.selectedLevel,
+    });
     await updateRequestForOrganisationRaw({
       requestId: model.request.id,
       status: 1,
