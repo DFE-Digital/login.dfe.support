@@ -5,7 +5,6 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/organisations");
-jest.mock("./../../../src/infrastructure/search");
 jest.mock("login.dfe.api-client/invitations");
 jest.mock(
   "../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById",

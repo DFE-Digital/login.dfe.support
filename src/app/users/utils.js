@@ -15,7 +15,6 @@ const {
   deleteServiceAccessFromInvitation,
   getInvitationRaw,
 } = require("login.dfe.api-client/invitations");
-const { searchForUsers } = require("./../../infrastructure/search");
 
 const {
   getPendingRequestsAssociatedWithUser,
@@ -27,6 +26,7 @@ const sortBy = require("lodash/sortBy");
 const {
   getSearchDetailsForUserById,
 } = require("./userSearchHelpers/getSearchDetailsForUserById");
+const { searchAndMapUsers } = require("./userSearchHelpers/searchAndMapUsers");
 
 const delay = async (milliseconds) => {
   return new Promise((resolve) => {
@@ -63,7 +63,7 @@ const buildFilters = (paramsSource) => {
     paramsSource.service || paramsSource.services,
   );
   if (selectedServices) {
-    filter.services = selectedServices;
+    filter.serviceIds = selectedServices;
   }
 
   return Object.keys(filter).length > 0 ? filter : undefined;
@@ -138,14 +138,13 @@ const search = async (req) => {
     "asc";
 
   const filter = buildFilters(paramsSource);
-
-  const results = await searchForUsers(
-    criteria + "*",
-    page,
+  const results = await searchAndMapUsers({
+    criteria: `${criteria}*`,
+    pageNumber: page,
+    sortAsc,
     sortBy,
-    sortAsc ? "asc" : "desc",
-    filter,
-  );
+    filterBy: filter,
+  });
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) searched for users in support using criteria "${criteria}"`,
     {
@@ -212,16 +211,13 @@ const searchForBulkUsersPage = async (email) => {
   const page = 1;
   const sortBy = "name";
   const sortAsc = "asc";
-  const filter = undefined;
 
-  const results = await searchForUsers(
-    criteria + "*",
-    page,
-    sortBy,
+  const results = await searchAndMapUsers({
+    criteria: `${criteria}*`,
+    pageNumber: page,
     sortAsc,
-    filter,
-  );
-
+    sortBy,
+  });
   return {
     users: results.users,
   };
