@@ -1,7 +1,7 @@
 jest.mock("./../../../src/infrastructure/config", () =>
   require("./../../utils").configMockFactory({}),
 );
-jest.mock("./../../../src/infrastructure/directories");
+jest.mock("login.dfe.api-client/invitations");
 jest.mock("./../../../src/app/users/utils");
 jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
@@ -15,9 +15,7 @@ const {
   updateUserDetails,
 } = require("./../../../src/app/users/utils");
 const logger = require("./../../../src/infrastructure/logger");
-const {
-  reactivateInvite,
-} = require("./../../../src/infrastructure/directories");
+const { updateInvitation } = require("login.dfe.api-client/invitations");
 
 describe("When processing a post for a user invitation reactivate request", () => {
   const expectedUserId = "uid-user-1";
@@ -58,10 +56,12 @@ describe("When processing a post for a user invitation reactivate request", () =
   test("then it updates the user setting the status to reactivated", async () => {
     await post(req, res);
 
-    expect(reactivateInvite.mock.calls).toHaveLength(1);
-    expect(reactivateInvite.mock.calls[0][0]).toBe(expectedUserId);
-    expect(reactivateInvite.mock.calls[0][1]).toBe("reactivate the invitation");
-    expect(reactivateInvite.mock.calls[0][2]).toBe(req.id);
+    expect(updateInvitation.mock.calls).toHaveLength(1);
+    expect(updateInvitation).toHaveBeenCalledWith({
+      deactivated: false,
+      invitationId: "uid-user-1",
+      reason: "reactivate the invitation",
+    });
   });
 
   test("then the user index is updated", async () => {

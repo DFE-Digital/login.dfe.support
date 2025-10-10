@@ -28,31 +28,6 @@ const deactivateInvite = async (id, reason, correlationId) => {
   }
 };
 
-const reactivateInvite = async (id, reason, correlationId) => {
-  try {
-    const token = await jwtStrategy(
-      config.directories.service,
-    ).getBearerToken();
-
-    await fetchApi(
-      `${config.directories.service.url}/invitations/${id.replace("inv-", "")}`,
-      {
-        method: "PATCH",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-        body: {
-          reason: reason,
-          deactivated: false,
-        },
-      },
-    );
-  } catch (e) {
-    console.log(e);
-  }
-};
-
 const createInvite = async (
   givenName,
   familyName,
@@ -184,7 +159,6 @@ module.exports = {
   createInvite,
   updateInvite,
   deactivateInvite,
-  reactivateInvite,
   getUsersByIdV2,
   getUserStatus,
   getLegacyUsernames,
