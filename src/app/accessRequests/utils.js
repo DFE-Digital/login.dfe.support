@@ -6,6 +6,7 @@ const organisations = require("../../infrastructure/organisations");
 const {
   getUserRaw,
   addOrganisationToUser,
+  getUserOrganisationRequestRaw,
 } = require("login.dfe.api-client/users");
 const { getOrganisationRaw } = require("login.dfe.api-client/organisations");
 
@@ -100,7 +101,9 @@ const putUserInOrganisation = async (req) => {
 };
 
 const getAndMapOrgRequest = async (req) => {
-  const request = await organisations.getRequestById(req.params.rid, req.id);
+  const request = await getUserOrganisationRequestRaw({
+    by: { userOrganisationRequestId: req.params.rid },
+  });
   const organisation = await getOrganisationRaw({
     by: { organisationId: request.org_id },
   });

@@ -40,16 +40,6 @@ const listRequests = async (page, filterStates, correlationId) => {
   return callOrganisationsApi(uri, "GET", undefined, correlationId);
 };
 
-const getRequestById = async (requestId, correlationId) => {
-  return callOrganisationsApi(
-    `organisations/requests/${requestId}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
 module.exports = {
   listRequests,
-  getRequestById,
 };
