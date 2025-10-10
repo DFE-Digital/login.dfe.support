@@ -13,8 +13,8 @@ const {
 const { getServiceRaw } = require("login.dfe.api-client/services");
 const { getUserStatus } = require("../../infrastructure/directories");
 const {
-  getUserOrganisations,
-} = require("./../../infrastructure/organisations");
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 const {
   getOrganisationLegacyRaw,
 } = require("login.dfe.api-client/organisations");
@@ -224,7 +224,9 @@ const getAudit = async (req, res) => {
     const userStatus = await getUserStatus(user.id);
     user.statusChangeReasons = userStatus ? userStatus.statusChangeReasons : [];
   }
-  const userOrganisations = await getUserOrganisations(req.params.uid, req.id);
+  const userOrganisations = await getUserOrganisationsWithServicesRaw({
+    userId: req.params.ui,
+  });
   req.session.type = "audit";
   const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
   if (isNaN(pageNumber)) {

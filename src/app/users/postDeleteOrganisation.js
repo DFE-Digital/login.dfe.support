@@ -8,8 +8,10 @@ const {
 const {
   deleteUserOrganisation,
   deleteInvitationOrganisation,
-  getUserOrganisations,
 } = require("./../../infrastructure/organisations");
+const {
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 const { getAllServicesForUserInOrg } = require("./utils");
 const {
   getSearchDetailsForUserById,
@@ -41,7 +43,7 @@ const postDeleteOrganisation = async (req, res) => {
   // Invocation has to happen before deleteUserOrg otherwise it will return []
   const userOrgs = uid.startsWith("inv-")
     ? []
-    : await getUserOrganisations(uid, req.id);
+    : await getUserOrganisationsWithServicesRaw({ userId: uid });
 
   if (uid.startsWith("inv-")) {
     for (let i = 0; i < servicesForUserInOrg.length; i++) {

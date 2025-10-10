@@ -1,7 +1,9 @@
 const {
   getUserOrganisationsV2,
-  getInvitationOrganisations,
 } = require("./../../infrastructure/organisations");
+const {
+  getInvitationOrganisationsRaw,
+} = require("login.dfe.api-client/invitations");
 
 const getSelectionPrompt = async () => {
   return "You are associated with more than one organisation. Select the organisation associated with the service you would like to access.";
@@ -10,7 +12,7 @@ const getSelectionPrompt = async () => {
 const getNaturalIdentifiers = async (req) => {
   const userId = req.params.uid;
   const userOrganisations = userId.startsWith("inv-")
-    ? await getInvitationOrganisations(userId.substr(4), req.id)
+    ? await getInvitationOrganisationsRaw({ invitationId: userId.substr(4) })
     : await getUserOrganisationsV2(req.params.uid, req.id);
   for (let i = 0; i < userOrganisations.length; i++) {
     const org = userOrganisations[i];

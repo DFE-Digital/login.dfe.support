@@ -5,6 +5,7 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
 jest.mock("login.dfe.api-client/invitations");
+jest.mock("login.dfe.api-client/users");
 jest.mock("login.dfe.policy-engine");
 jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("login.dfe.api-client/services", () => {
@@ -12,17 +13,18 @@ jest.mock("login.dfe.api-client/services", () => {
     getServiceRaw: jest.fn(),
   };
 });
-jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const { getServiceRaw } = require("login.dfe.api-client/services");
-const { getInvitationServiceRaw } = require("login.dfe.api-client/invitations");
 const {
-  getUserOrganisations,
-  getInvitationOrganisations,
-} = require("./../../../src/infrastructure/organisations");
+  getInvitationServiceRaw,
+  getInvitationOrganisationsRaw,
+} = require("login.dfe.api-client/invitations");
 const PolicyEngine = require("login.dfe.policy-engine");
-const { getUserServiceRaw } = require("login.dfe.api-client/users");
+const {
+  getUserServiceRaw,
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 const policyEngine = {
   getPolicyApplicationResultsForUser: jest.fn(),
 };
@@ -56,8 +58,8 @@ describe("when displaying the associate roles view", () => {
     });
     res.mockResetAll();
 
-    getUserOrganisations.mockReset();
-    getUserOrganisations.mockReturnValue([
+    getUserOrganisationsWithServicesRaw.mockReset();
+    getUserOrganisationsWithServicesRaw.mockReturnValue([
       {
         organisation: {
           id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
@@ -71,8 +73,8 @@ describe("when displaying the associate roles view", () => {
         },
       },
     ]);
-    getInvitationOrganisations.mockReset();
-    getInvitationOrganisations.mockReturnValue([
+    getInvitationOrganisationsRaw.mockReset();
+    getInvitationOrganisationsRaw.mockReturnValue([
       {
         organisation: {
           id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
@@ -134,9 +136,10 @@ describe("when displaying the associate roles view", () => {
 
   it("then it should include the organisation details for a user if request of user", async () => {
     await getAssociateRoles(req, res);
-    expect(getUserOrganisations.mock.calls).toHaveLength(1);
-    expect(getUserOrganisations.mock.calls[0][0]).toBe("user1");
-    expect(getUserOrganisations.mock.calls[0][1]).toBe("correlationId");
+    expect(getUserOrganisationsWithServicesRaw.mock.calls).toHaveLength(1);
+    expect(getUserOrganisationsWithServicesRaw).toHaveBeenCalledWith({
+      userId: "user1",
+    });
     expect(res.render.mock.calls[0][1]).toMatchObject({
       organisationDetails: {
         organisation: {
@@ -151,9 +154,10 @@ describe("when displaying the associate roles view", () => {
     req.params.uid = "inv-invitation1";
 
     await getAssociateRoles(req, res);
-    expect(getInvitationOrganisations.mock.calls).toHaveLength(1);
-    expect(getInvitationOrganisations.mock.calls[0][0]).toBe("invitation1");
-    expect(getInvitationOrganisations.mock.calls[0][1]).toBe("correlationId");
+    expect(getInvitationOrganisationsRaw.mock.calls).toHaveLength(1);
+    expect(getInvitationOrganisationsRaw).toHaveBeenCalledWith({
+      invitationId: "invitation1",
+    });
     expect(res.render.mock.calls[0][1]).toMatchObject({
       organisationDetails: {
         organisation: {

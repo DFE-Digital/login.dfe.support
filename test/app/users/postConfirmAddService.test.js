@@ -5,33 +5,31 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/organisations");
-jest.mock("login.dfe.api-client/invitations");
 jest.mock("../../../src/app/services/utils", () => ({
   getAllServices: jest.fn(),
   isSupportEmailNotificationAllowed: jest.fn(),
 }));
 jest.mock("login.dfe.api-client/services");
 jest.mock("login.dfe.api-client/users");
+jest.mock("login.dfe.api-client/invitations");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const { getServiceRolesRaw } = require("login.dfe.api-client/services");
 const {
   addServiceToUser,
   updateUserServiceRoles,
+  getUserOrganisationsWithServicesRaw,
 } = require("login.dfe.api-client/users");
 
 const {
   addServiceToInvitation,
   updateInvitationServiceRoles,
+  getInvitationOrganisationsRaw,
 } = require("login.dfe.api-client/invitations");
 const {
   isSupportEmailNotificationAllowed,
 } = require("../../../src/app/services/utils");
 const { getAllServices } = require("../../../src/app/services/utils");
-const {
-  getUserOrganisations,
-  getInvitationOrganisations,
-} = require("./../../../src/infrastructure/organisations");
 
 const logger = require("./../../../src/infrastructure/logger");
 
@@ -108,8 +106,8 @@ describe("when adding new services to a user", () => {
       flag: 1,
     });
 
-    getUserOrganisations.mockReset();
-    getUserOrganisations.mockReturnValue([
+    getUserOrganisationsWithServicesRaw.mockReset();
+    getUserOrganisationsWithServicesRaw.mockReturnValue([
       {
         organisation: {
           id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
@@ -132,8 +130,8 @@ describe("when adding new services to a user", () => {
       },
     ]);
 
-    getInvitationOrganisations.mockReset();
-    getInvitationOrganisations.mockReturnValue([
+    getInvitationOrganisationsRaw.mockReset();
+    getInvitationOrganisationsRaw.mockReturnValue([
       {
         invitationId: "E89DF8C6-BED4-480D-9F02-34D177E86DAD",
         organisation: {

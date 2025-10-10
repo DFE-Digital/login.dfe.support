@@ -2,8 +2,10 @@ const config = require("./../src/infrastructure/config");
 const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = new PolicyEngine(config);
 const { Connection, Request } = require("tedious");
-const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
-const { updateUserServiceRoles } = require("login.dfe.api-client/users");
+const {
+  updateUserServiceRoles,
+  deleteUserServiceAccess,
+} = require("login.dfe.api-client/users");
 const { ServiceNotificationsClient } = require("login.dfe.jobs-client");
 const { createWriteStream } = require("fs");
 const homeDirectory = require("os").homedir();

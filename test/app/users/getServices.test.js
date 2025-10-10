@@ -5,7 +5,6 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
 jest.mock("./../../../src/app/users/utils");
-jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/directories");
 jest.mock("./../../../src/infrastructure/serviceMapping");
 jest.mock("./../../../src/infrastructure/audit");
@@ -13,12 +12,13 @@ jest.mock("../../../src/app/services/utils", () => ({
   getAllServices: jest.fn(),
 }));
 
+jest.mock("login.dfe.api-client/users");
 jest.mock("ioredis");
 
 const { getUserDetails } = require("./../../../src/app/users/utils");
 const {
-  getUserOrganisations,
-} = require("./../../../src/infrastructure/organisations");
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 const {
   getClientIdForServiceId,
 } = require("./../../../src/infrastructure/serviceMapping");
@@ -76,8 +76,8 @@ describe("when getting users service details", () => {
       ],
     });
 
-    getUserOrganisations.mockReset();
-    getUserOrganisations.mockReturnValue([
+    getUserOrganisationsWithServicesRaw.mockReset();
+    getUserOrganisationsWithServicesRaw.mockReturnValue([
       {
         organisation: {
           id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
@@ -229,9 +229,10 @@ describe("when getting users service details", () => {
   it("then it should get organisations mapping for user", async () => {
     await getServices(req, res);
 
-    expect(getUserOrganisations.mock.calls).toHaveLength(1);
-    expect(getUserOrganisations.mock.calls[0][0]).toBe("user1");
-    expect(getUserOrganisations.mock.calls[0][1]).toBe("correlationId");
+    expect(getUserOrganisationsWithServicesRaw.mock.calls).toHaveLength(1);
+    expect(getUserOrganisationsWithServicesRaw).toHaveBeenCalledWith({
+      userId: "user1",
+    });
 
     expect(res.render.mock.calls[0][1].organisations).toHaveLength(2);
     // We expect services to be in alphabetical order

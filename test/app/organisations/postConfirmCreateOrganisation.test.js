@@ -2,13 +2,11 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/utils");
-jest.mock("./../../../src/infrastructure/organisations");
+jest.mock("login.dfe.api-client/organisations");
 
 const { getRequestMock, getResponseMock } = require("../../utils");
 const { sendResult } = require("../../../src/infrastructure/utils");
-const {
-  createOrganisation,
-} = require("../../../src/infrastructure/organisations");
+const { createOrganisation } = require("login.dfe.api-client/organisations");
 const postConfirmCreateOrganisation = require("../../../src/app/organisations/postConfirmCreateOrganisation");
 
 const res = getResponseMock();

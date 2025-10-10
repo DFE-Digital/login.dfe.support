@@ -5,13 +5,11 @@ jest.mock("login.dfe.api-client/invitations");
 
 const {
   deleteServiceAccessFromInvitation,
+  getInvitationServicesRaw,
 } = require("login.dfe.api-client/invitations");
 const {
   removeAllServicesForInvitedUser,
 } = require("../../../src/app/users/utils");
-const {
-  getInvitationServicesRaw,
-} = require("login.dfe.api-client/invitations");
 
 describe("When removing all services for an invited user", () => {
   const userId = "inv-user-id";

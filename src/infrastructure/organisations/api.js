@@ -28,36 +28,9 @@ const callOrganisationsApi = async (endpoint, method, body, correlationId) => {
   }
 };
 
-const getUserOrganisations = async (userId, correlationId) => {
-  return await callOrganisationsApi(
-    `organisations/associated-with-user/${userId}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
 const getUserOrganisationsV2 = async (userId, correlationId) => {
   return await callOrganisationsApi(
     `organisations/v2/associated-with-user/${userId}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
-const getInvitationOrganisations = async (invitationId, correlationId) => {
-  return await callOrganisationsApi(
-    `invitations/v2/${invitationId}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
-const getServiceById = async (serviceId, correlationId) => {
-  return await callOrganisationsApi(
-    `services/${serviceId}`,
     "GET",
     undefined,
     correlationId,
@@ -95,19 +68,6 @@ const listOrganisationStatus = async (correlationId) => {
     "organisations/states",
     "GET",
     undefined,
-    correlationId,
-  );
-};
-
-const createOrganisation = async (body, correlationId) => {
-  return callOrganisationsApi(`organisations/`, "POST", body, correlationId);
-};
-
-const editOrganisation = async (orgId, body, correlationId) => {
-  return callOrganisationsApi(
-    `organisations/${orgId}`,
-    "PATCH",
-    body,
     correlationId,
   );
 };
@@ -197,11 +157,6 @@ const getCategories = async () => {
 };
 
 module.exports = {
-  createOrganisation,
-  editOrganisation,
-  getUserOrganisations,
-  getInvitationOrganisations,
-  getServiceById,
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   getUserOrganisationsV2,
