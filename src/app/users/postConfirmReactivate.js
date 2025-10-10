@@ -5,7 +5,7 @@ const {
   updateUserDetails,
   waitForIndexToUpdate,
 } = require("./utils");
-const { reactivate } = require("../../infrastructure/directories");
+const { activateUser } = require("login.dfe.api-client/users");
 
 const updateUserIndex = async (uid, correlationId) => {
   const user = await getUserDetailsById(uid);
@@ -22,7 +22,7 @@ const updateUserIndex = async (uid, correlationId) => {
 const postConfirmReactivate = async (req, res) => {
   const user = await getUserDetails(req);
 
-  await reactivate(req.params.uid, req.id);
+  await activateUser({ userId: req.params.uid });
   await updateUserIndex(req.params.uid, req.id);
 
   // Audit
