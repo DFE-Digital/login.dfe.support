@@ -10,13 +10,13 @@ const { dateFormat } = require("../helpers/dateFormatterHelper");
 const {
   getUserOrganisations,
   getInvitationOrganisations,
-  getPendingRequestsAssociatedWithUser,
 } = require("../../infrastructure/organisations");
 const {
   getUsersByIdV2,
   getUserStatus,
 } = require("../../infrastructure/directories");
 const logger = require("../../infrastructure/logger");
+const { getPendingRequestsRaw } = require("login.dfe.api-client/users");
 
 const getApproverDetails = async (organisations, correlationId) => {
   const allApproverIds = flatten(organisations.map((org) => org.approvers));
@@ -69,9 +69,8 @@ const getOrganisations = async (userId, correlationId) => {
   return organisations;
 };
 
-const getPendingRequests = async (userId, correlationId) => {
-  const pendingUserRequests =
-    (await getPendingRequestsAssociatedWithUser(userId, correlationId)) || [];
+const getPendingRequests = async (userId) => {
+  const pendingUserRequests = (await getPendingRequestsRaw({ userId })) || [];
   return pendingUserRequests.map((request) => ({
     id: request.org_id,
     name: request.org_name,
@@ -97,7 +96,7 @@ const action = async (req, res) => {
   }
   const organisationDetails = await getOrganisations(user.id, req.id);
   const organisationRequests = !user.id.startsWith("inv-")
-    ? await getPendingRequests(user.id, req.id)
+    ? await getPendingRequests(user.id)
     : [];
   const formattedOrganisationRequests = organisationRequests.map(
     (organisation) => ({

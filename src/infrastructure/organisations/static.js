@@ -78,24 +78,8 @@ const getRequestById = async () => {
   return Promise.resolve();
 };
 
-const updateRequestById = async () => {
-  return Promise.resolve();
-};
-
-const putUserInOrganisation = async () => {
-  return Promise.resolve();
-};
-
-const getPendingRequestsAssociatedWithUser = async () => {
-  return Promise.resolve();
-};
-
 const createOrganisation = async () => {
   return Promise.resolve();
-};
-
-const getCategories = async () => {
-  return await getCategories();
 };
 
 module.exports = {
@@ -106,8 +90,4 @@ module.exports = {
   getUserOrganisationsV2,
   getAllRequestsForSupport,
   getRequestById,
-  updateRequestById,
-  putUserInOrganisation,
-  getPendingRequestsAssociatedWithUser,
-  getCategories,
 };

@@ -1,8 +1,10 @@
 const { NotificationClient } = require("login.dfe.jobs-client");
 const { getAndMapOrgRequest } = require("./utils");
-const { updateRequestById } = require("../../infrastructure/organisations");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
+const {
+  updateRequestForOrganisationRaw,
+} = require("login.dfe.api-client/organisations");
 
 const notificationClient = new NotificationClient({
   connectionString: config.notifications.connectionString,
@@ -55,15 +57,13 @@ const post = async (req, res) => {
     return res.render("accessRequests/views/rejectOrganisationRequest", model);
   }
   // patch request with rejection
-  const actionedDate = Date.now();
-  await updateRequestById(
-    model.request.id,
-    -1,
-    req.user.sub,
-    model.reason,
-    actionedDate,
-    req.id,
-  );
+  await updateRequestForOrganisationRaw({
+    requestId: model.request.id,
+    status: -1,
+    actionedByUserId: req.user.sub,
+    actionedAt: Date.now(),
+    reason: model.reason,
+  });
 
   //send rejected email
   await notificationClient.sendAccessRequest(

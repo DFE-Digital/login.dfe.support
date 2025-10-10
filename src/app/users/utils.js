@@ -4,6 +4,7 @@ const {
   deleteUserServiceAccess,
   getUserServiceRequestsRaw,
   getUserRaw,
+  getPendingRequestsRaw,
 } = require("login.dfe.api-client/users");
 const {
   updateServiceRequest,
@@ -20,13 +21,12 @@ const {
   updateUserInSearch,
 } = require("./../../infrastructure/search");
 
-const {
-  getPendingRequestsAssociatedWithUser,
-  updateRequestById,
-} = require("../../infrastructure/organisations");
 const { mapUserStatus } = require("./../../infrastructure/utils");
 const config = require("./../../infrastructure/config");
 const sortBy = require("lodash/sortBy");
+const {
+  updateRequestForOrganisationRaw,
+} = require("login.dfe.api-client/organisations");
 
 const delay = async (milliseconds) => {
   return new Promise((resolve) => {
@@ -414,8 +414,7 @@ const rejectOpenUserServiceRequestsForUser = async (userId, req) => {
 
 const rejectOpenOrganisationRequestsForUser = async (userId, req) => {
   const correlationId = req.id;
-  const organisationRequests =
-    (await getPendingRequestsAssociatedWithUser(userId)) || [];
+  const organisationRequests = (await getPendingRequestsRaw({ userId })) || [];
   logger.info(
     `Found ${organisationRequests.length} organisation request(s) for user ${userId}. Rejecting any outstanding requests.`,
     { correlationId },
@@ -431,18 +430,14 @@ const rejectOpenOrganisationRequestsForUser = async (userId, req) => {
         `Rejecting organisation request with id: ${organisationRequest.id}`,
         { correlationId },
       );
-      const status = -1;
-      const actionedReason = "User deactivation";
-      const actionedBy = req.user.sub;
-      const actionedAt = new Date();
-      updateRequestById(
-        organisationRequest.id,
-        status,
-        actionedBy,
-        actionedReason,
-        actionedAt,
-        req.id,
-      );
+
+      updateRequestForOrganisationRaw({
+        requestId: organisationRequest.id,
+        status: -1,
+        actionedByUserId: req.user.sub,
+        reason: "User deactivation",
+        actionedAt: Date.now(),
+      });
     }
   }
 };
