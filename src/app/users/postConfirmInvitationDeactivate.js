@@ -6,8 +6,8 @@ const {
   waitForIndexToUpdate,
   removeAllServicesForInvitedUser,
 } = require("./utils");
-const { deactivateInvite } = require("../../infrastructure/directories");
 const { sendResult } = require("../../infrastructure/utils");
+const { updateInvitation } = require("login.dfe.api-client/invitations");
 
 const updateUserIndex = async (uid, correlationId) => {
   const user = await getUserDetailsById(uid);
@@ -48,7 +48,11 @@ const postConfirmDeactivate = async (req, res) => {
       },
     });
   } else {
-    await deactivateInvite(user.id, req.body.reason, req.id);
+    await updateInvitation({
+      invitationId: user.id.replace("inv-", ""),
+      reason: req.body.reason,
+      deactivated: true,
+    });
     await updateUserIndex(user.id, req.id);
     if (req.body["remove-services-and-requests"]) {
       await removeAllServicesForInvitedUser(user.id, req);

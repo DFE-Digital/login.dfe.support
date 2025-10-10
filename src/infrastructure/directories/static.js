@@ -8,10 +8,6 @@ const updateInvite = async () => {
   return Promise.resolve(null);
 };
 
-const deactivateInvite = async () => {
-  return Promise.resolve(uuid());
-};
-
 const getUsersByIdV2 = async () => {
   return Promise.resolve([]);
 };
@@ -27,7 +23,6 @@ const getLegacyUsernames = async () => {
 module.exports = {
   createInvite,
   updateInvite,
-  deactivateInvite,
   getUsersByIdV2,
   getUserStatus,
   getLegacyUsernames,
