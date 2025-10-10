@@ -1,4 +1,3 @@
-const { createInvite } = require("../../infrastructure/directories");
 const { createIndex } = require("../../infrastructure/search");
 const { waitForIndexToUpdate } = require("./utils");
 const logger = require("../../infrastructure/logger");
@@ -7,6 +6,7 @@ const {
   getOrganisationLegacyRaw,
 } = require("login.dfe.api-client/organisations");
 const {
+  createInvitation,
   addOrganisationToInvitation,
 } = require("login.dfe.api-client/invitations");
 
@@ -35,17 +35,20 @@ const postConfirmNewUser = async (req, res) => {
     });
   }
 
-  const invitationId = await createInvite(
-    req.session.user.firstName,
-    req.session.user.lastName,
-    req.session.user.email,
+  const invitationId = await createInvitation({
+    firstName: req.session.user.firstName,
+    lastName: req.session.user.lastName,
+    email: req.session.user.email,
     clientId,
     redirectUri,
-    req.id,
-    emailOverrides,
-    req.session.user.permission,
-    organisation ? organisation.name : null,
-  );
+    overrides: emailOverrides,
+    selfStarted: false,
+    organisationName: organisation ? organisation.name : null,
+    isApprover:
+      req.session.user.permission && req.session.user.permission === 10000
+        ? true
+        : false,
+  });
 
   if (invitationId) {
     logger.audit({
