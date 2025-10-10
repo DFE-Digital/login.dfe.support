@@ -3,31 +3,6 @@ const jwtStrategy = require("login.dfe.jwt-strategies");
 
 const { fetchApi } = require("login.dfe.async-retry");
 
-const deactivateInvite = async (id, reason, correlationId) => {
-  try {
-    const token = await jwtStrategy(
-      config.directories.service,
-    ).getBearerToken();
-
-    await fetchApi(
-      `${config.directories.service.url}/invitations/${id.replace("inv-", "")}`,
-      {
-        method: "PATCH",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-        body: {
-          reason: reason,
-          deactivated: true,
-        },
-      },
-    );
-  } catch (e) {
-    console.log(e);
-  }
-};
-
 const createInvite = async (
   givenName,
   familyName,
@@ -158,7 +133,6 @@ const getLegacyUsernames = async (userIds, correlationId) => {
 module.exports = {
   createInvite,
   updateInvite,
-  deactivateInvite,
   getUsersByIdV2,
   getUserStatus,
   getLegacyUsernames,

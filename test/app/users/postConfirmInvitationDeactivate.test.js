@@ -4,7 +4,6 @@ jest.mock("./../../../src/infrastructure/config", () =>
 jest.mock("./../../../src/infrastructure/logger", () =>
   require("../../utils").loggerMockFactory(),
 );
-jest.mock("./../../../src/infrastructure/directories");
 jest.mock("./../../../src/infrastructure/utils");
 jest.mock("./../../../src/app/users/utils");
 jest.mock("login.dfe.api-client/invitations");
@@ -18,7 +17,7 @@ const {
 } = require("../../../src/app/users/utils");
 const { sendResult } = require("../../../src/infrastructure/utils");
 const logger = require("../../../src/infrastructure/logger");
-const { deactivateInvite } = require("../../../src/infrastructure/directories");
+const { updateInvitation } = require("login.dfe.api-client/invitations");
 const {
   getInvitationServicesRaw,
   deleteServiceAccessFromInvitation,
@@ -58,10 +57,12 @@ describe("When processing a post for a user invitation deactivate request", () =
   test("then it updates the user setting the status to deactivated", async () => {
     await post(req, res);
 
-    expect(deactivateInvite.mock.calls).toHaveLength(1);
-    expect(deactivateInvite.mock.calls[0][0]).toBe(expectedUserId);
-    expect(deactivateInvite.mock.calls[0][1]).toBe("deactivate the invitation");
-    expect(deactivateInvite.mock.calls[0][2]).toBe(req.id);
+    expect(updateInvitation.mock.calls).toHaveLength(1);
+    expect(updateInvitation).toHaveBeenCalledWith({
+      deactivated: true,
+      invitationId: "uid-user-1",
+      reason: "deactivate the invitation",
+    });
   });
 
   test("when given a reason from the select menu, it updates the user setting status to deactivated", async () => {
@@ -74,12 +75,12 @@ describe("When processing a post for a user invitation deactivate request", () =
 
     await post(req, res);
 
-    expect(deactivateInvite.mock.calls).toHaveLength(1);
-    expect(deactivateInvite.mock.calls[0][0]).toBe(expectedUserId);
-    expect(deactivateInvite.mock.calls[0][1]).toBe(
-      "some selected reason for deactivation",
-    );
-    expect(deactivateInvite.mock.calls[0][2]).toBe(req.id);
+    expect(updateInvitation.mock.calls).toHaveLength(1);
+    expect(updateInvitation).toHaveBeenCalledWith({
+      deactivated: true,
+      invitationId: "uid-user-1",
+      reason: "some selected reason for deactivation",
+    });
   });
 
   test("when given a reason from the select menu and further information in the textarea, it updates the user setting status to deactivated", async () => {
@@ -92,12 +93,13 @@ describe("When processing a post for a user invitation deactivate request", () =
 
     await post(req, res);
 
-    expect(deactivateInvite.mock.calls).toHaveLength(1);
-    expect(deactivateInvite.mock.calls[0][0]).toBe(expectedUserId);
-    expect(deactivateInvite.mock.calls[0][1]).toBe(
-      "some selected reason for deactivation - some text reason for deactivation",
-    );
-    expect(deactivateInvite.mock.calls[0][2]).toBe(req.id);
+    expect(updateInvitation.mock.calls).toHaveLength(1);
+    expect(updateInvitation).toHaveBeenCalledWith({
+      deactivated: true,
+      invitationId: "uid-user-1",
+      reason:
+        "some selected reason for deactivation - some text reason for deactivation",
+    });
   });
 
   test("then the user index is updated", async () => {
