@@ -4,13 +4,10 @@ jest.mock("./../../../src/infrastructure/config", () =>
 jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
-
-jest.mock("./../../../src/infrastructure/organisations");
+jest.mock("login.dfe.api-client/users");
 jest.mock("login.dfe.api-client/invitations");
 
-const {
-  getUserOrganisationsV2,
-} = require("./../../../src/infrastructure/organisations");
+const { getUserOrganisationsRaw } = require("login.dfe.api-client/users");
 const {
   getInvitationOrganisationsRaw,
 } = require("login.dfe.api-client/invitations");
@@ -42,8 +39,8 @@ describe("when displaying the multiple organisation selection", () => {
     res = {
       render: jest.fn(),
     };
-    getUserOrganisationsV2.mockReset();
-    getUserOrganisationsV2.mockReturnValue([
+    getUserOrganisationsRaw.mockReset();
+    getUserOrganisationsRaw.mockReturnValue([
       {
         organisation: {
           id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
@@ -95,9 +92,10 @@ describe("when displaying the multiple organisation selection", () => {
 
   it("then it should include the users organisations in the model if for user", async () => {
     await getMultipleOrgSelection(req, res);
-    expect(getUserOrganisationsV2.mock.calls).toHaveLength(1);
-    expect(getUserOrganisationsV2.mock.calls[0][0]).toBe("user1");
-    expect(getUserOrganisationsV2.mock.calls[0][1]).toBe("correlationId");
+    expect(getUserOrganisationsRaw.mock.calls).toHaveLength(1);
+    expect(getUserOrganisationsRaw).toHaveBeenCalledWith({
+      userId: "user1",
+    });
     expect(res.render.mock.calls[0][1].organisations[1]).toMatchObject({
       naturalIdentifiers: [],
       organisation: {

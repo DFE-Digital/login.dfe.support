@@ -28,15 +28,6 @@ const callOrganisationsApi = async (endpoint, method, body, correlationId) => {
   }
 };
 
-const getUserOrganisationsV2 = async (userId, correlationId) => {
-  return await callOrganisationsApi(
-    `organisations/v2/associated-with-user/${userId}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
 const listRequests = async (page, filterStates, correlationId) => {
   let uri = `organisations/requests?page=${page}`;
   if (filterStates && filterStates.length > 0) {
@@ -59,7 +50,6 @@ const getRequestById = async (requestId, correlationId) => {
 };
 
 module.exports = {
-  getUserOrganisationsV2,
   listRequests,
   getRequestById,
 };
