@@ -1,5 +1,17 @@
 const logger = require("../../infrastructure/logger");
-const { createServiceRaw } = require("login.dfe.api-client/services");
+const config = require("../../infrastructure/config");
+const {
+  createServiceRaw,
+  createServiceRole,
+} = require("login.dfe.api-client/services");
+
+//! Is this even necessary, or can i just call createServiceRole inside postConfirmNewService?
+// const createRole = async (serviceId, roleName, roleCode) => {
+//   // validation
+
+//   const createdRole = await createServiceRole(serviceId, roleName, roleCode);
+//   return createdRole; // ??
+// };
 
 const postConfirmNewService = async (req, res) => {
   if (!req.session.createServiceData) {
@@ -73,7 +85,25 @@ const postConfirmNewService = async (req, res) => {
     },
   };
 
-  await createServiceRaw(body);
+  const createdService = await createServiceRaw(body);
+  const newServiceId = createdService.id;
+  const manageServiceId = config.access.identifiers.manageService;
+
+  await createServiceRole(
+    manageServiceId,
+    `${model.name} - Service Support`,
+    `${newServiceId}_serviceSup`,
+  );
+  await createServiceRole(
+    manageServiceId,
+    `${model.name} - Service Banner`,
+    `${newServiceId}_serviceBanner`,
+  );
+  await createServiceRole(
+    manageServiceId,
+    `${model.name} - Service Configuration`,
+    `${newServiceId}_serviceconfig`,
+  );
 
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) created ${model.name} service`,
