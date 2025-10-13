@@ -53,13 +53,13 @@ const {
 const {
   addServiceToUser,
   updateUserServiceRoles,
+  getUserServiceRaw,
 } = require("login.dfe.api-client/users");
 const { getUserDetails } = require("./../../../src/app/users/utils");
 const {
   getSingleServiceForUser,
   checkIfRolesChanged,
 } = require("./../../../src/app/users/getManageConsoleRoles");
-const { getUserServiceRaw } = require("login.dfe.api-client/users");
 
 describe("when changing a user's manage console access", () => {
   let req, res;
