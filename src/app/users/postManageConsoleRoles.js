@@ -8,15 +8,13 @@ const {
 const {
   addServiceToUser,
   updateUserServiceRoles,
+  addOrganisationToUser,
 } = require("login.dfe.api-client/users");
 const {
   getSingleServiceForUser,
   addOrChangeManageConsoleServiceTitle,
   checkIfRolesChanged,
 } = require("./getManageConsoleRoles");
-const {
-  putUserInOrganisation,
-} = require("./../../infrastructure/organisations");
 
 const manageServiceId = config.access.identifiers.manageService;
 const dfeId = config.access.identifiers.departmentForEducation;
@@ -97,7 +95,12 @@ const postManageConsoleRoles = async (req, res) => {
     ]);
     return res.redirect(`/users/${req.params.uid}/manage-console-services`);
   } else {
-    await putUserInOrganisation(req.params.uid, dfeId, 1, 0, req.id);
+    await addOrganisationToUser({
+      organisationId: dfeId,
+      userId: req.params.uid,
+      status: 1,
+      roleId: 0,
+    });
 
     await callServiceToUserFunc(addServiceToUser, {
       userId: req.params.uid,

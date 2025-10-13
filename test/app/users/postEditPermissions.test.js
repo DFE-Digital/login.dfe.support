@@ -13,6 +13,7 @@ jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const postEditPermissions = require("./../../../src/app/users/postEditPermissions");
+
 const {
   addOrganisationToUser,
   getUserOrganisationsWithServicesRaw,

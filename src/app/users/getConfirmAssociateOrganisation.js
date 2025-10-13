@@ -1,19 +1,17 @@
 const { NotificationClient } = require("login.dfe.jobs-client");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
-const {
-  getPendingRequestsAssociatedWithUser,
-  updateRequestById,
-} = require("../../infrastructure/organisations");
 const { waitForIndexToUpdate } = require("./utils");
 const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const {
   getOrganisationLegacyRaw,
+  updateRequestForOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
 const {
   addOrganisationToInvitation: apiClientAddOrganisationToInvitation,
 } = require("login.dfe.api-client/invitations");
 const {
+  getPendingRequestsRaw,
   addOrganisationToUser: apiClientAddOrganisationToUser,
   updateUserDetailsInSearchIndex,
 } = require("login.dfe.api-client/users");
@@ -56,23 +54,19 @@ const addOrganisationToUser = async (uid, req) => {
     roleId: permissionId,
   });
 
-  const pendingOrgRequests = await getPendingRequestsAssociatedWithUser(
-    uid,
-    req.id,
-  );
+  const pendingOrgRequests =
+    (await getPendingRequestsRaw({ userId: uid })) || [];
   const requestForOrg = pendingOrgRequests.find(
     (x) => x.org_id === organisationId,
   );
   if (requestForOrg) {
     // mark request as approved if outstanding for same org
-    await updateRequestById(
-      requestForOrg.id,
-      1,
-      req.user.sub,
-      null,
-      Date.now(),
-      req.id,
-    );
+    await updateRequestForOrganisationRaw({
+      requestId: requestForOrg.id,
+      status: 1,
+      actionedByUserId: req.user.sub,
+      actionedAt: Date.now(),
+    });
   }
 
   logger.audit(

@@ -12,6 +12,7 @@ jest.mock("login.dfe.api-client/organisations");
 jest.mock(
   "../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById",
 );
+jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const {
@@ -20,21 +21,18 @@ const {
 
 const res = getResponseMock();
 const {
-  putUserInOrganisation,
-  updateRequestById,
-} = require("./../../../src/infrastructure/organisations");
-
-const {
   getAndMapOrgRequest,
 } = require("./../../../src/app/accessRequests/utils");
 const logger = require("./../../../src/infrastructure/logger");
 const { NotificationClient } = require("login.dfe.jobs-client");
 const {
   getOrganisationLegacyRaw,
+  updateRequestForOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
 const {
   getSearchDetailsForUserById,
 } = require("../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById");
+const { addOrganisationToUser } = require("login.dfe.api-client/users");
 
 const sendAccessRequest = jest.fn();
 NotificationClient.mockImplementation(() => ({
@@ -61,8 +59,8 @@ describe("when reviewing an organisation request", () => {
     });
 
     logger.audit.mockReset();
-    putUserInOrganisation.mockReset();
-    updateRequestById.mockReset();
+    addOrganisationToUser.mockReset();
+    updateRequestForOrganisationRaw.mockReset();
 
     sendAccessRequest.mockReset();
     NotificationClient.mockImplementation(() => ({
@@ -113,8 +111,8 @@ describe("when reviewing an organisation request", () => {
 
     await post(req, res);
 
-    expect(putUserInOrganisation.mock.calls).toHaveLength(0);
-    expect(updateRequestById.mock.calls).toHaveLength(0);
+    expect(addOrganisationToUser.mock.calls).toHaveLength(0);
+    expect(updateRequestForOrganisationRaw.mock.calls).toHaveLength(0);
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe(
       "accessRequests/views/reviewOrganisationRequest",
@@ -174,8 +172,8 @@ describe("when reviewing an organisation request", () => {
 
     await post(req, res);
 
-    expect(putUserInOrganisation.mock.calls).toHaveLength(0);
-    expect(updateRequestById.mock.calls).toHaveLength(0);
+    expect(addOrganisationToUser.mock.calls).toHaveLength(0);
+    expect(updateRequestForOrganisationRaw.mock.calls).toHaveLength(0);
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe(
       "accessRequests/views/reviewOrganisationRequest",
