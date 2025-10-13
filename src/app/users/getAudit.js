@@ -225,7 +225,7 @@ const getAudit = async (req, res) => {
     user.statusChangeReasons = userStatus ? userStatus.statusChangeReasons : [];
   }
   const userOrganisations = await getUserOrganisationsWithServicesRaw({
-    userId: req.params.ui,
+    userId: user.id,
   });
   req.session.type = "audit";
   const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
