@@ -3,7 +3,8 @@ const {
 } = require("login.dfe.api-client/users");
 const {
   getInvitationOrganisationsRaw,
-} = require("login.dfe.api-client/invitations");const {
+} = require("login.dfe.api-client/invitations");
+const {
   getOrganisationLegacyRaw,
 } = require("login.dfe.api-client/organisations");
 

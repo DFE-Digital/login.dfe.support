@@ -1,5 +1,8 @@
 const logger = require("../../infrastructure/logger");
-const { getOrganisationRaw, updateOrganisation } = require("login.dfe.api-client/organisations");
+const {
+  getOrganisationRaw,
+  updateOrganisation,
+} = require("login.dfe.api-client/organisations");
 
 const postConfirmEditOrganisation = async (req, res) => {
   if (!req.session.editOrgFormData) {

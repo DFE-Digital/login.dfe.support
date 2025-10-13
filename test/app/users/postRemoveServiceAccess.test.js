@@ -29,7 +29,10 @@ const {
   deleteServiceAccessFromInvitation,
   getInvitationOrganisationsRaw,
 } = require("login.dfe.api-client/invitations");
-const { deleteUserServiceAccess, getUserOrganisationsWithServicesRaw } = require("login.dfe.api-client/users");
+const {
+  deleteUserServiceAccess,
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 jest.mock("login.dfe.jobs-client");
 const { NotificationClient } = require("login.dfe.jobs-client");
 

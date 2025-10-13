@@ -9,12 +9,12 @@ jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/directories");
 jest.mock("./../../../src/infrastructure/serviceMapping");
 jest.mock("./../../../src/infrastructure/audit");
-jest.mock("login.dfe.api-client/users");
 jest.mock("ioredis");
 jest.mock("login.dfe.api-client/users");
 
 const { getUserDetails } = require("../../../src/app/users/utils");
 const {
+  getPendingRequestsRaw,
   getUserOrganisationsWithServicesRaw,
 } = require("login.dfe.api-client/users");
 const {
@@ -25,7 +25,6 @@ const {
   getClientIdForServiceId,
 } = require("../../../src/infrastructure/serviceMapping");
 const getOrganisations = require("../../../src/app/users/getOrganisations");
-const { getPendingRequestsRaw } = require("login.dfe.api-client/users");
 
 describe("when getting users organisation details", () => {
   let req;
