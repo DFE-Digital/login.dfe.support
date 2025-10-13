@@ -1,12 +1,13 @@
-const { editOrganisation } = require("../../infrastructure/organisations");
 const logger = require("../../infrastructure/logger");
-const { getOrganisationRaw } = require("login.dfe.api-client/organisations");
+const {
+  getOrganisationRaw,
+  updateOrganisation,
+} = require("login.dfe.api-client/organisations");
 
 const postConfirmEditOrganisation = async (req, res) => {
   if (!req.session.editOrgFormData) {
     return res.redirect(`/organisations/${req.params.id}/users`);
   }
-  const correlationId = req.id;
   const organisation = await getOrganisationRaw({
     by: { organisationId: req.params.id },
   });
@@ -17,7 +18,12 @@ const postConfirmEditOrganisation = async (req, res) => {
     address,
   };
 
-  await editOrganisation(organisation.id, body, correlationId);
+  const organisationId = organisation.id;
+
+  await updateOrganisation({
+    organisationId,
+    update: body,
+  });
 
   logger.audit(`${req.user.email} edited organisation data`, {
     type: "support",

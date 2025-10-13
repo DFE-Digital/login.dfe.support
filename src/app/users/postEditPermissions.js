@@ -1,7 +1,7 @@
 const { NotificationClient } = require("login.dfe.jobs-client");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
-const { getUserOrganisations } = require("../../infrastructure/organisations");
+
 const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const { mapRole } = require("./utils");
 const {
@@ -9,6 +9,7 @@ const {
 } = require("login.dfe.api-client/invitations");
 const {
   addOrganisationToUser,
+  getUserOrganisationsWithServicesRaw,
   updateUserDetailsInSearchIndex,
 } = require("login.dfe.api-client/users");
 const {
@@ -69,7 +70,9 @@ const postEditPermissions = async (req, res) => {
   if (uid.startsWith("inv-")) {
     await editInvitationPermissions(uid, req, model);
   } else {
-    const mngUserOrganisations = await getUserOrganisations(uid, req.id);
+    const mngUserOrganisations = await getUserOrganisationsWithServicesRaw({
+      userId: uid,
+    });
 
     await editUserPermissions(uid, req, model);
     if (isEmailAllowed) {

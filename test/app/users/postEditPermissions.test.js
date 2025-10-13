@@ -14,9 +14,9 @@ jest.mock("login.dfe.api-client/users");
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const postEditPermissions = require("./../../../src/app/users/postEditPermissions");
 const {
-  getUserOrganisations,
-} = require("./../../../src/infrastructure/organisations");
-const { addOrganisationToUser } = require("login.dfe.api-client/users");
+  addOrganisationToUser,
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 
 jest.mock("login.dfe.jobs-client");
 jest.mock("login.dfe.api-client/services");
@@ -85,7 +85,7 @@ describe("when editing a users permission level", () => {
         },
       ],
     });
-    getUserOrganisations.mockReset().mockReturnValue([
+    getUserOrganisationsWithServicesRaw.mockReset().mockReturnValue([
       {
         organisation: {
           id: "org1",
@@ -197,7 +197,7 @@ describe("when editing a users permission level", () => {
 
   it("then it should send an email notification if user permissions are modified to end user", async () => {
     req.body.selectedLevel = 0;
-    getUserOrganisations.mockReset().mockReturnValue([
+    getUserOrganisationsWithServicesRaw.mockReset().mockReturnValue([
       {
         organisation: {
           id: "org1",

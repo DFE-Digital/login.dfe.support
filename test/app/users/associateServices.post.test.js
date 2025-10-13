@@ -4,8 +4,8 @@ jest.mock("./../../../src/infrastructure/config", () =>
 jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
+jest.mock("login.dfe.api-client/users");
 jest.mock("login.dfe.policy-engine");
-jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("../../../src/app/services/utils", () => ({
   getAllServices: jest.fn(),
 }));
@@ -15,8 +15,8 @@ jest.mock("./../../../src/app/users/utils");
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const PolicyEngine = require("login.dfe.policy-engine");
 const {
-  getUserOrganisations,
-} = require("./../../../src/infrastructure/organisations");
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 const { getAllServices } = require("../../../src/app/services/utils");
 const {
   getAllServicesForUserInOrg,
@@ -84,8 +84,8 @@ describe("when adding services to a user", () => {
       },
     ]);
 
-    getUserOrganisations.mockReset();
-    getUserOrganisations.mockReturnValue([
+    getUserOrganisationsWithServicesRaw.mockReset();
+    getUserOrganisationsWithServicesRaw.mockReturnValue([
       {
         organisation: {
           id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
