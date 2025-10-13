@@ -9,13 +9,12 @@ jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/directories");
 jest.mock("./../../../src/infrastructure/serviceMapping");
 jest.mock("./../../../src/infrastructure/audit");
-jest.mock("login.dfe.api-client/users");
 jest.mock("ioredis");
+jest.mock("login.dfe.api-client/users");
+
 const { getUserDetails } = require("../../../src/app/users/utils");
 const {
-  getPendingRequestsAssociatedWithUser,
-} = require("../../../src/infrastructure/organisations");
-const {
+  getPendingRequestsRaw,
   getUserOrganisationsWithServicesRaw,
 } = require("login.dfe.api-client/users");
 const {
@@ -130,8 +129,8 @@ describe("when getting users organisation details", () => {
         status: 1,
       },
     ]);
-    getPendingRequestsAssociatedWithUser.mockReset();
-    getPendingRequestsAssociatedWithUser.mockReturnValue([
+    getPendingRequestsRaw.mockReset();
+    getPendingRequestsRaw.mockReturnValue([
       {
         id: "requestId",
         org_id: "organisationId",
@@ -181,11 +180,8 @@ describe("when getting users organisation details", () => {
       userId: "user1",
     });
 
-    expect(getPendingRequestsAssociatedWithUser.mock.calls).toHaveLength(1);
-    expect(getPendingRequestsAssociatedWithUser.mock.calls[0][0]).toBe("user1");
-    expect(getPendingRequestsAssociatedWithUser.mock.calls[0][1]).toBe(
-      "correlationId",
-    );
+    expect(getPendingRequestsRaw.mock.calls).toHaveLength(1);
+    expect(getPendingRequestsRaw).toHaveBeenCalledWith({ userId: "user1" });
 
     expect(res.render.mock.calls[0][1].organisations).toHaveLength(3);
     expect(res.render.mock.calls[0][1].organisations[0]).toMatchObject({

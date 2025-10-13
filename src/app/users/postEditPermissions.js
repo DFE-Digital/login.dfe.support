@@ -10,7 +10,10 @@ const { mapRole } = require("./utils");
 const {
   addOrganisationToInvitation,
 } = require("login.dfe.api-client/invitations");
-const { addOrganisationToUser, getUserOrganisationsWithServicesRaw } = require("login.dfe.api-client/users");
+const {
+  addOrganisationToUser,
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 
 const validatePermissions = (req) => {
   const validPermissions = [0, 10000];

@@ -15,7 +15,10 @@ const {
   getSearchDetailsForUserById,
 } = require("./../../../src/infrastructure/search");
 
-const { addOrganisationToUser, getUserOrganisationsWithServicesRaw } = require("login.dfe.api-client/users");
+const {
+  addOrganisationToUser,
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 
 jest.mock("login.dfe.jobs-client");
 jest.mock("login.dfe.api-client/services");

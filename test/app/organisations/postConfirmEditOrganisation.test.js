@@ -5,7 +5,10 @@ jest.mock("./../../../src/infrastructure/utils");
 jest.mock("login.dfe.api-client/organisations");
 
 const { getRequestMock, getResponseMock } = require("../../utils");
-const { getOrganisationRaw, updateOrganisation } = require("login.dfe.api-client/organisations");
+const {
+  getOrganisationRaw,
+  updateOrganisation,
+} = require("login.dfe.api-client/organisations");
 const postConfirmEditOrganisation = require("../../../src/app/organisations/postConfirmEditOrganisation");
 
 const res = getResponseMock();

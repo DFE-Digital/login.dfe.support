@@ -5,13 +5,11 @@ jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("login.dfe.api-client/organisations");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
-const {
-  getCategories,
-} = require("./../../../src/infrastructure/organisations");
 const postAssociateOrganisation = require("./../../../src/app/users/postAssociateOrganisation");
 const {
   getOrganisationLegacyRaw,
   searchOrganisationsRaw,
+  getOrganisationCategories,
 } = require("login.dfe.api-client/organisations");
 
 const res = getResponseMock();
@@ -48,7 +46,7 @@ describe("when associating user to organisations", () => {
       name: "Organisation One",
     });
 
-    getCategories.mockReset().mockReturnValue([
+    getOrganisationCategories.mockReset().mockReturnValue([
       {
         id: "001",
       },
