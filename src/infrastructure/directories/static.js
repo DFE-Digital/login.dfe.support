@@ -24,10 +24,6 @@ const getUserStatus = async () => {
   return Promise.resolve({});
 };
 
-const getLegacyUsernames = async () => {
-  return Promise.resolve([]);
-};
-
 module.exports = {
   reactivate,
   createInvite,
@@ -35,5 +31,4 @@ module.exports = {
   deactivateInvite,
   reactivateInvite,
   getUserStatus,
-  getLegacyUsernames,
 };
