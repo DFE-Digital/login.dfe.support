@@ -1,7 +1,3 @@
-const updateInvite = async () => {
-  return Promise.resolve(null);
-};
-
 const getUsersByIdV2 = async () => {
   return Promise.resolve([]);
 };
@@ -15,7 +11,6 @@ const getLegacyUsernames = async () => {
 };
 
 module.exports = {
-  updateInvite,
   getUsersByIdV2,
   getUserStatus,
   getLegacyUsernames,

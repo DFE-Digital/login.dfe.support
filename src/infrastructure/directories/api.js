@@ -3,25 +3,6 @@ const jwtStrategy = require("login.dfe.jwt-strategies");
 
 const { fetchApi } = require("login.dfe.async-retry");
 
-const updateInvite = async (id, body, correlationId) => {
-  try {
-    const token = await jwtStrategy(
-      config.directories.service,
-    ).getBearerToken();
-
-    await fetchApi(`${config.directories.service.url}/invitations/${id}`, {
-      method: "PATCH",
-      headers: {
-        authorization: `bearer ${token}`,
-        "x-correlation-id": correlationId,
-      },
-      body,
-    });
-  } catch (e) {
-    console.log(e);
-  }
-};
-
 const getUsersByIdV2 = async (ids, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
@@ -89,7 +70,6 @@ const getLegacyUsernames = async (userIds, correlationId) => {
 };
 
 module.exports = {
-  updateInvite,
   getUsersByIdV2,
   getUserStatus,
   getLegacyUsernames,
