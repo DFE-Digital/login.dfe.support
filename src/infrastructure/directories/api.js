@@ -126,33 +126,11 @@ const updateInvite = async (id, body, correlationId) => {
   }
 };
 
-const getUserStatus = async (id, correlationId) => {
-  const token = await jwtStrategy(config.directories.service).getBearerToken();
-
-  try {
-    return await fetchApi(
-      `${config.directories.service.url}/users/${id}/status`,
-      {
-        method: "GET",
-        headers: {
-          authorization: `bearer ${token}`,
-          "x-correlation-id": correlationId,
-        },
-      },
-    );
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return null;
-    }
-    throw e;
-  }
-};
-
 module.exports = {
   reactivate,
   createInvite,
   updateInvite,
   deactivateInvite,
   reactivateInvite,
-  getUserStatus,
+
 };

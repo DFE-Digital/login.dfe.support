@@ -24,8 +24,8 @@ const {
   getServiceIdForClientId,
 } = require("./../../../src/infrastructure/serviceMapping");
 const { getServiceRaw } = require("login.dfe.api-client/services");
-const { getUserStatus } = require("./../../../src/infrastructure/directories");
 const getAudit = require("./../../../src/app/users/getAudit");
+const { getUserStatusRaw } = require("login.dfe.api-client/users");
 
 const organisationId = "org-1";
 
@@ -78,8 +78,8 @@ describe("when getting users audit details", () => {
       },
     });
 
-    getUserStatus.mockReset();
-    getUserStatus.mockReturnValue({
+    getUserStatusRaw.mockReset();
+    getUserStatusRaw.mockReturnValue({
       id: "user1",
       status: 0,
       statusChangeReasons: [
@@ -390,7 +390,7 @@ describe("when getting users audit details", () => {
   });
 
   it("should include an empty statusChangeReasons in the user model one is not found", async () => {
-    getUserStatus.mockReturnValue(null);
+    getUserStatusRaw.mockReturnValue(null);
     getUserDetails.mockReturnValue({
       id: "user1",
       status: {

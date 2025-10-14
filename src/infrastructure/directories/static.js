@@ -20,15 +20,10 @@ const reactivateInvite = async () => {
   return Promise.resolve(uuid());
 };
 
-const getUserStatus = async () => {
-  return Promise.resolve({});
-};
-
 module.exports = {
   reactivate,
   createInvite,
   updateInvite,
   deactivateInvite,
   reactivateInvite,
-  getUserStatus,
 };

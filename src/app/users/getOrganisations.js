@@ -14,8 +14,8 @@ const {
   getPendingRequestsRaw,
   getUserOrganisationsWithServicesRaw,
   getUsersRaw,
+  getUserStatusRaw,
 } = require("login.dfe.api-client/users");
-const { getUserStatus } = require("../../infrastructure/directories");
 const logger = require("../../infrastructure/logger");
 
 const getApproverDetails = async (organisations) => {
@@ -92,7 +92,7 @@ const action = async (req, res) => {
     ? dateFormat(user.lastLogin, "longDateFormat")
     : "";
   if (user.status.id === 0) {
-    const userStatus = await getUserStatus(user.id);
+    const userStatus = await getUserStatusRaw({ userId: user.id });
     user.statusChangeReasons = userStatus ? userStatus.statusChangeReasons : [];
   }
   const organisationDetails = await getOrganisations(user.id);
