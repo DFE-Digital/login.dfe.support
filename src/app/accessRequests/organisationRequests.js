@@ -1,4 +1,3 @@
-const Account = require("./../../infrastructure/directories");
 const flatten = require("lodash/flatten");
 const uniq = require("lodash/uniq");
 const { sendResult } = require("./../../infrastructure/utils");
@@ -9,6 +8,7 @@ const {
   unpackMultiSelect,
   search,
 } = require("./utils");
+const { getUsersRaw } = require("login.dfe.api-client/users");
 
 const getUserDetails = async (usersForApproval) => {
   const allUserId = flatten(usersForApproval.map((user) => user.user_id));
@@ -16,7 +16,7 @@ const getUserDetails = async (usersForApproval) => {
     return [];
   }
   const distinctUserIds = uniq(allUserId);
-  return await Account.getUsersByIdV2(distinctUserIds);
+  return await getUsersRaw({ by: { userIds: distinctUserIds } });
 };
 
 const getFiltersModel = async (req) => {

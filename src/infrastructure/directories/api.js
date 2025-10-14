@@ -126,28 +126,6 @@ const updateInvite = async (id, body, correlationId) => {
   }
 };
 
-const getUsersByIdV2 = async (ids, correlationId) => {
-  const token = await jwtStrategy(config.directories.service).getBearerToken();
-
-  try {
-    return await fetchApi(`${config.directories.service.url}/users/by-ids`, {
-      method: "POST",
-      headers: {
-        authorization: `bearer ${token}`,
-        "x-correlation-id": correlationId,
-      },
-      body: {
-        ids: ids.toString(),
-      },
-    });
-  } catch (e) {
-    if (e.statusCode === 404) {
-      return null;
-    }
-    throw e;
-  }
-};
-
 const getUserStatus = async (id, correlationId) => {
   const token = await jwtStrategy(config.directories.service).getBearerToken();
 
@@ -198,7 +176,6 @@ module.exports = {
   updateInvite,
   deactivateInvite,
   reactivateInvite,
-  getUsersByIdV2,
   getUserStatus,
   getLegacyUsernames,
 };

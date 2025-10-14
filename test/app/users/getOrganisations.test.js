@@ -16,11 +16,9 @@ const { getUserDetails } = require("../../../src/app/users/utils");
 const {
   getPendingRequestsRaw,
   getUserOrganisationsWithServicesRaw,
+  getUsersRaw,
 } = require("login.dfe.api-client/users");
-const {
-  getUsersByIdV2,
-  getUserStatus,
-} = require("../../../src/infrastructure/directories");
+const { getUserStatus } = require("../../../src/infrastructure/directories");
 const {
   getClientIdForServiceId,
 } = require("../../../src/infrastructure/serviceMapping");
@@ -105,8 +103,8 @@ describe("when getting users organisation details", () => {
       }
     });
 
-    getUsersByIdV2.mockReset();
-    getUsersByIdV2.mockReturnValue([
+    getUsersRaw.mockReset();
+    getUsersRaw.mockReturnValue([
       {
         sub: "user1",
         given_name: "User",
@@ -201,7 +199,7 @@ describe("when getting users organisation details", () => {
 
   it("should filter out users with a deactivated account", async () => {
     // Given
-    getUsersByIdV2.mockReturnValue([
+    getUsersRaw.mockReturnValue([
       {
         sub: "user1",
         given_name: "User",
@@ -302,7 +300,7 @@ describe("when getting users organisation details", () => {
     // Then
     expect(getUserDetails.mock.calls).toHaveLength(1);
     expect(getUserDetails.mock.calls[0][0]).toBe(req);
-    expect(getUsersByIdV2.mock.calls).toHaveLength(0);
+    expect(getUsersRaw.mock.calls).toHaveLength(0);
 
     // Organisations[0] is Great Big School
     expect(
