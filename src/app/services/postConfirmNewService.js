@@ -89,21 +89,21 @@ const postConfirmNewService = async (req, res) => {
   const newServiceId = createdService.id;
   const manageServiceId = config.access.identifiers.manageService;
 
-  await createServiceRole(
-    manageServiceId,
-    `${model.name} - Service Support`,
-    `${newServiceId}_serviceSup`,
-  );
-  await createServiceRole(
-    manageServiceId,
-    `${model.name} - Service Banner`,
-    `${newServiceId}_serviceBanner`,
-  );
-  await createServiceRole(
-    manageServiceId,
-    `${model.name} - Service Configuration`,
-    `${newServiceId}_serviceconfig`,
-  );
+  await createServiceRole({
+    sid: manageServiceId,
+    roleName: `${model.name} - Service Support`,
+    roleCode: `${newServiceId}_serviceSup`,
+  });
+  await createServiceRole({
+    sid: manageServiceId,
+    roleName: `${model.name} - Service Banner`,
+    roleCode: `${newServiceId}_serviceBanner`,
+  });
+  await createServiceRole({
+    sid: manageServiceId,
+    roleName: `${model.name} - Service Configuration`,
+    roleCode: `${newServiceId}_serviceconfig`,
+  });
 
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) created ${model.name} service`,
