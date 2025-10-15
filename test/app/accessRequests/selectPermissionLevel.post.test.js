@@ -10,17 +10,15 @@ jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("./../../../src/infrastructure/search");
 jest.mock("login.dfe.jobs-client");
 jest.mock("login.dfe.api-client/organisations");
+jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const {
   post,
 } = require("./../../../src/app/accessRequests/selectPermissionLevel");
+const { addOrganisationToUser } = require("login.dfe.api-client/users");
 
 const res = getResponseMock();
-const {
-  putUserInOrganisation,
-  updateRequestById,
-} = require("./../../../src/infrastructure/organisations");
 const {
   getSearchDetailsForUserById,
   updateIndex,
@@ -38,6 +36,7 @@ NotificationClient.mockImplementation(() => ({
 
 const {
   getOrganisationLegacyRaw,
+  updateRequestForOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
 
 Date.now = jest.fn(() => "2019-01-02");
@@ -61,8 +60,8 @@ describe("when selecting a permission level", () => {
     });
 
     logger.audit.mockReset();
-    putUserInOrganisation.mockReset();
-    updateRequestById.mockReset();
+    addOrganisationToUser.mockReset();
+    updateRequestForOrganisationRaw.mockReset();
 
     sendAccessRequest.mockReset();
     NotificationClient.mockImplementation(() => ({
@@ -108,8 +107,8 @@ describe("when selecting a permission level", () => {
 
     await post(req, res);
 
-    expect(putUserInOrganisation.mock.calls).toHaveLength(0);
-    expect(updateRequestById.mock.calls).toHaveLength(0);
+    expect(addOrganisationToUser.mock.calls).toHaveLength(0);
+    expect(updateRequestForOrganisationRaw.mock.calls).toHaveLength(0);
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe(
       "accessRequests/views/selectPermissionLevel",
@@ -150,8 +149,8 @@ describe("when selecting a permission level", () => {
 
     await post(req, res);
 
-    expect(putUserInOrganisation.mock.calls).toHaveLength(0);
-    expect(updateRequestById.mock.calls).toHaveLength(0);
+    expect(addOrganisationToUser.mock.calls).toHaveLength(0);
+    expect(updateRequestForOrganisationRaw.mock.calls).toHaveLength(0);
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe(
       "accessRequests/views/selectPermissionLevel",
@@ -211,8 +210,8 @@ describe("when selecting a permission level", () => {
 
     await post(req, res);
 
-    expect(putUserInOrganisation.mock.calls).toHaveLength(0);
-    expect(updateRequestById.mock.calls).toHaveLength(0);
+    expect(addOrganisationToUser.mock.calls).toHaveLength(0);
+    expect(updateRequestForOrganisationRaw.mock.calls).toHaveLength(0);
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe(
       "accessRequests/views/selectPermissionLevel",
@@ -253,24 +252,25 @@ describe("when selecting a permission level", () => {
   it("then it should put the user in the organisation if approved", async () => {
     await post(req, res);
 
-    expect(putUserInOrganisation.mock.calls).toHaveLength(1);
-    expect(putUserInOrganisation.mock.calls[0][0]).toBe("userId");
-    expect(putUserInOrganisation.mock.calls[0][1]).toBe("org1");
-    expect(putUserInOrganisation.mock.calls[0][2]).toBe(1);
-    expect(putUserInOrganisation.mock.calls[0][3]).toBe(0);
-    expect(putUserInOrganisation.mock.calls[0][4]).toBe("correlationId");
+    expect(addOrganisationToUser.mock.calls).toHaveLength(1);
+    expect(addOrganisationToUser).toHaveBeenCalledWith({
+      organisationId: "org1",
+      roleId: 0,
+      status: 1,
+      userId: "userId",
+    });
   });
 
   it("then it should patch the request as complete", async () => {
     await post(req, res);
 
-    expect(updateRequestById.mock.calls).toHaveLength(1);
-    expect(updateRequestById.mock.calls[0][0]).toBe("requestId");
-    expect(updateRequestById.mock.calls[0][1]).toBe(1);
-    expect(updateRequestById.mock.calls[0][2]).toBe("user1");
-    expect(updateRequestById.mock.calls[0][3]).toBe(null);
-    expect(updateRequestById.mock.calls[0][4]).toBe("2019-01-02");
-    expect(updateRequestById.mock.calls[0][5]).toBe("correlationId");
+    expect(updateRequestForOrganisationRaw.mock.calls).toHaveLength(1);
+    expect(updateRequestForOrganisationRaw).toHaveBeenCalledWith({
+      actionedAt: "2019-01-02",
+      actionedByUserId: "user1",
+      requestId: "requestId",
+      status: 1,
+    });
   });
 
   it("then it should update the search index with the new org", async () => {

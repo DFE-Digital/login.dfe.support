@@ -1,8 +1,10 @@
 const config = require("./../../infrastructure/config");
 const {
-  getUserOrganisations,
-  getInvitationOrganisations,
-} = require("./../../infrastructure/organisations");
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
+const {
+  getInvitationOrganisationsRaw,
+} = require("login.dfe.api-client/invitations");
 const { getAllServicesForUserInOrg } = require("./utils");
 const { getAllServices } = require("../services/utils");
 const PolicyEngine = require("login.dfe.policy-engine");
@@ -53,8 +55,8 @@ const get = async (req, res) => {
   }
   const userId = req.params.uid;
   const userOrganisations = userId.startsWith("inv-")
-    ? await getInvitationOrganisations(userId.substr(4), req.id)
-    : await getUserOrganisations(userId, req.id);
+    ? await getInvitationOrganisationsRaw({ invitationId: userId.substr(4) })
+    : await getUserOrganisationsWithServicesRaw({ userId });
   const organisationDetails = userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,
   );
@@ -85,8 +87,8 @@ const get = async (req, res) => {
 const validate = async (req) => {
   const userId = req.params.uid;
   const userOrganisations = userId.startsWith("inv-")
-    ? await getInvitationOrganisations(userId.substr(4), req.id)
-    : await getUserOrganisations(userId, req.id);
+    ? await getInvitationOrganisationsRaw(userId.substr(4), req.id)
+    : await getUserOrganisationsWithServicesRaw({ userId });
   const organisationDetails = userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,
   );

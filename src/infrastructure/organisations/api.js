@@ -28,36 +28,9 @@ const callOrganisationsApi = async (endpoint, method, body, correlationId) => {
   }
 };
 
-const getUserOrganisations = async (userId, correlationId) => {
-  return await callOrganisationsApi(
-    `organisations/associated-with-user/${userId}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
 const getUserOrganisationsV2 = async (userId, correlationId) => {
   return await callOrganisationsApi(
     `organisations/v2/associated-with-user/${userId}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
-const getInvitationOrganisations = async (invitationId, correlationId) => {
-  return await callOrganisationsApi(
-    `invitations/v2/${invitationId}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
-const getServiceById = async (serviceId, correlationId) => {
-  return await callOrganisationsApi(
-    `services/${serviceId}`,
     "GET",
     undefined,
     correlationId,
@@ -90,28 +63,6 @@ const deleteUserOrganisation = async (
   );
 };
 
-const listOrganisationStatus = async (correlationId) => {
-  return callOrganisationsApi(
-    "organisations/states",
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
-const createOrganisation = async (body, correlationId) => {
-  return callOrganisationsApi(`organisations/`, "POST", body, correlationId);
-};
-
-const editOrganisation = async (orgId, body, correlationId) => {
-  return callOrganisationsApi(
-    `organisations/${orgId}`,
-    "PATCH",
-    body,
-    correlationId,
-  );
-};
-
 const listRequests = async (page, filterStates, correlationId) => {
   let uri = `organisations/requests?page=${page}`;
   if (filterStates && filterStates.length > 0) {
@@ -133,83 +84,10 @@ const getRequestById = async (requestId, correlationId) => {
   );
 };
 
-const updateRequestById = async (
-  requestId,
-  status,
-  actionedBy,
-  actionedReason,
-  actionedAt,
-  correlationId,
-) => {
-  const body = {};
-  if (status) {
-    body.status = status;
-  }
-  if (actionedBy) {
-    body.actioned_by = actionedBy;
-  }
-  if (actionedReason) {
-    body.actioned_reason = actionedReason;
-  }
-  if (actionedAt) {
-    body.actioned_at = actionedAt;
-  }
-  return callOrganisationsApi(
-    `organisations/requests/${requestId}`,
-    "PATCH",
-    body,
-    correlationId,
-  );
-};
-
-const putUserInOrganisation = async (
-  userId,
-  orgId,
-  status,
-  role,
-  reason,
-  correlationId,
-) => {
-  return callOrganisationsApi(
-    `organisations/${orgId}/users/${userId}`,
-    "PUT",
-    { roleId: role, status, reason },
-    correlationId,
-  );
-};
-
-const getPendingRequestsAssociatedWithUser = async (userId, correlationId) => {
-  return callOrganisationsApi(
-    `organisations/requests-for-user/${userId}`,
-    "GET",
-    undefined,
-    correlationId,
-  );
-};
-
-const getCategories = async () => {
-  return await callOrganisationsApi(
-    "organisations/categories",
-    "GET",
-    undefined,
-    undefined,
-  );
-};
-
 module.exports = {
-  createOrganisation,
-  editOrganisation,
-  getUserOrganisations,
-  getInvitationOrganisations,
-  getServiceById,
   deleteUserOrganisation,
   deleteInvitationOrganisation,
   getUserOrganisationsV2,
   listRequests,
   getRequestById,
-  updateRequestById,
-  putUserInOrganisation,
-  listOrganisationStatus,
-  getPendingRequestsAssociatedWithUser,
-  getCategories,
 };

@@ -5,8 +5,8 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
 jest.mock("./../../../src/app/accessRequests/utils");
-jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("login.dfe.jobs-client");
+jest.mock("login.dfe.api-client/organisations");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const {
@@ -14,10 +14,12 @@ const {
 } = require("./../../../src/app/accessRequests/rejectOrganisationRequest");
 
 const res = getResponseMock();
-const organisations = require("./../../../src/infrastructure/organisations");
 const orgUtils = require("./../../../src/app/accessRequests/utils");
 const logger = require("./../../../src/infrastructure/logger");
 const { NotificationClient } = require("login.dfe.jobs-client");
+const {
+  updateRequestForOrganisationRaw,
+} = require("login.dfe.api-client/organisations");
 
 const sendAccessRequest = jest.fn();
 NotificationClient.mockImplementation(() => {
@@ -54,7 +56,7 @@ describe("when rejecting an organisation request", () => {
         reason: "reason for rejection",
       },
     });
-    organisations.updateRequestById.mockReset();
+    updateRequestForOrganisationRaw.mockReset();
 
     sendAccessRequest.mockReset();
     NotificationClient.mockImplementation(() => ({
@@ -105,7 +107,7 @@ describe("when rejecting an organisation request", () => {
 
     await post(req, res);
 
-    expect(organisations.updateRequestById.mock.calls).toHaveLength(0);
+    expect(updateRequestForOrganisationRaw.mock.calls).toHaveLength(0);
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe(
       "accessRequests/views/rejectOrganisationRequest",
@@ -147,7 +149,7 @@ describe("when rejecting an organisation request", () => {
 
     await post(req, res);
 
-    expect(organisations.updateRequestById.mock.calls).toHaveLength(0);
+    expect(updateRequestForOrganisationRaw.mock.calls).toHaveLength(0);
     expect(res.render.mock.calls).toHaveLength(1);
     expect(res.render.mock.calls[0][0]).toBe(
       "accessRequests/views/rejectOrganisationRequest",
@@ -185,17 +187,14 @@ describe("when rejecting an organisation request", () => {
   it("then it should patch the request as rejected", async () => {
     await post(req, res);
 
-    expect(organisations.updateRequestById.mock.calls).toHaveLength(1);
-    expect(organisations.updateRequestById.mock.calls[0][0]).toBe("requestId");
-    expect(organisations.updateRequestById.mock.calls[0][1]).toBe(-1);
-    expect(organisations.updateRequestById.mock.calls[0][2]).toBe("user1");
-    expect(organisations.updateRequestById.mock.calls[0][3]).toBe(
-      "reason for rejection",
-    );
-    expect(organisations.updateRequestById.mock.calls[0][4]).toBe("2019-01-02");
-    expect(organisations.updateRequestById.mock.calls[0][5]).toBe(
-      "correlationId",
-    );
+    expect(updateRequestForOrganisationRaw.mock.calls).toHaveLength(1);
+    expect(updateRequestForOrganisationRaw).toHaveBeenCalledWith({
+      actionedAt: "2019-01-02",
+      actionedByUserId: "user1",
+      reason: "reason for rejection",
+      requestId: "requestId",
+      status: -1,
+    });
   });
 
   it("then it should should audit rejected org request", async () => {

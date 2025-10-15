@@ -36,16 +36,10 @@ jest.mock("./../../../src/app/users/utils", () => {
 
 jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.api-client/users");
-jest.mock("./../../../src/infrastructure/organisations", () => ({
-  putUserInOrganisation: jest.fn(),
-}));
 
 // Import dependencies
 const jwtStrategy = require("login.dfe.jwt-strategies");
 const postManageConsoleRoles = require("./../../../src/app/users/postManageConsoleRoles");
-const {
-  putUserInOrganisation,
-} = require("./../../../src/infrastructure/organisations");
 const {
   getServiceRolesRaw,
   getServiceRaw,
@@ -53,13 +47,14 @@ const {
 const {
   addServiceToUser,
   updateUserServiceRoles,
+  getUserServiceRaw,
+  addOrganisationToUser,
 } = require("login.dfe.api-client/users");
 const { getUserDetails } = require("./../../../src/app/users/utils");
 const {
   getSingleServiceForUser,
   checkIfRolesChanged,
 } = require("./../../../src/app/users/getManageConsoleRoles");
-const { getUserServiceRaw } = require("login.dfe.api-client/users");
 
 describe("when changing a user's manage console access", () => {
   let req, res;
@@ -207,7 +202,7 @@ describe("when changing a user's manage console access", () => {
 
     await postManageConsoleRoles(req, res);
 
-    expect(putUserInOrganisation).toHaveBeenCalledTimes(1);
+    expect(addOrganisationToUser).toHaveBeenCalledTimes(1);
     expect(addServiceToUser).toHaveBeenCalledTimes(1);
     expect(updateUserServiceRoles).not.toHaveBeenCalled();
     expect(addServiceToUser).toHaveBeenCalledWith({

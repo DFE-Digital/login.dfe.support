@@ -11,9 +11,7 @@ jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
-const {
-  getPendingRequestsAssociatedWithUser,
-} = require("./../../../src/infrastructure/organisations");
+const { getPendingRequestsRaw } = require("login.dfe.api-client/users");
 const getConfirmAssociateOrganisation = require("./../../../src/app/users/getConfirmAssociateOrganisation");
 const {
   getSearchDetailsForUserById,
@@ -75,8 +73,8 @@ describe("when confirming new organisation association", () => {
         },
       ],
     });
-    getPendingRequestsAssociatedWithUser.mockReset();
-    getPendingRequestsAssociatedWithUser.mockReturnValue([
+    getPendingRequestsRaw.mockReset();
+    getPendingRequestsRaw.mockReturnValue([
       {
         id: "requestId",
         org_id: "organisationId",
@@ -115,11 +113,8 @@ describe("when confirming new organisation association", () => {
   it("then it should get the users pending requests", async () => {
     await getConfirmAssociateOrganisation(req, res);
 
-    expect(getPendingRequestsAssociatedWithUser.mock.calls).toHaveLength(1);
-    expect(getPendingRequestsAssociatedWithUser.mock.calls[0][0]).toBe("user1");
-    expect(getPendingRequestsAssociatedWithUser.mock.calls[0][1]).toBe(
-      "correlationId",
-    );
+    expect(getPendingRequestsRaw.mock.calls).toHaveLength(1);
+    expect(getPendingRequestsRaw).toHaveBeenCalledWith({ userId: "user1" });
   });
 
   it("then it should redirect back to users profile view", async () => {
