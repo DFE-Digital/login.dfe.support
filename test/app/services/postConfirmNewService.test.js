@@ -1,12 +1,30 @@
 jest.mock("./../../../src/infrastructure/config", () =>
-  require("../../utils").configMockFactory(),
+  require("../../utils").configMockFactory({
+    support: {
+      type: "api",
+      service: {
+        url: "http://support.test",
+      },
+    },
+    access: {
+      identifiers: {
+        departmentForEducation: "departmentForEducation1",
+        manageService: "manageService1",
+      },
+    },
+  }),
 );
 jest.mock("./../../../src/infrastructure/utils");
 jest.mock("login.dfe.api-client/services", () => ({
   createServiceRaw: jest.fn(),
+  createServiceRole: jest.fn(),
 }));
+
 const { getRequestMock, getResponseMock } = require("../../utils");
-const { createServiceRaw } = require("login.dfe.api-client/services");
+const {
+  createServiceRaw,
+  createServiceRole,
+} = require("login.dfe.api-client/services");
 const postConfirmNewService = require("../../../src/app/services/postConfirmNewService");
 
 const res = getResponseMock();
@@ -42,12 +60,30 @@ describe("when displaying the post create new service", () => {
     res.mockResetAll();
 
     createServiceRaw.mockReset().mockReturnValue({});
+    createServiceRole.mockReset().mockReturnValue({});
   });
 
   it("should redirect to /users on success", async () => {
     await postConfirmNewService(req, res);
+    const [firstCall, secondCall, thirdCall] = createServiceRole.mock.calls;
 
     expect(createServiceRaw).toHaveBeenCalledTimes(1);
+    expect(createServiceRole).toHaveBeenCalledTimes(3);
+
+    expect(firstCall[0].appId).toEqual("manageService1");
+    expect(firstCall[0].roleName).toEqual("newServiceName - Service Support");
+    expect(firstCall[0].roleCode.split("_")).toContain("serviceSup");
+
+    expect(secondCall[0].appId).toEqual("manageService1");
+    expect(secondCall[0].roleName).toEqual("newServiceName - Service Banner");
+    expect(secondCall[0].roleCode.split("_")).toContain("serviceBanner");
+
+    expect(thirdCall[0].appId).toEqual("manageService1");
+    expect(thirdCall[0].roleName).toEqual(
+      "newServiceName - Service Configuration",
+    );
+    expect(thirdCall[0].roleCode.split("_")).toContain("serviceconfig");
+
     expect(createServiceRaw.mock.calls[0][0]).toStrictEqual({
       description: "newServiceDescription blah",
       isChildService: false,
