@@ -2,13 +2,15 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const accessRequests = require("../../infrastructure/accessRequests");
-const organisations = require("../../infrastructure/organisations");
 const {
   getUserRaw,
   addOrganisationToUser,
   getUserOrganisationRequestRaw,
 } = require("login.dfe.api-client/users");
-const { getOrganisationRaw } = require("login.dfe.api-client/organisations");
+const {
+  getOrganisationRaw,
+  getOrganisationRequestsRaw,
+} = require("login.dfe.api-client/organisations");
 
 const unpackMultiSelect = (parameter) => {
   if (!parameter) {
@@ -28,8 +30,7 @@ const search = async (req) => {
     page = 1;
   }
   const filterStatus = unpackMultiSelect(paramsSource.status);
-
-  const results = await organisations.listRequests(page, filterStatus, req.id);
+  const results = await getOrganisationRequestsRaw({ pageNumber: page, filterStatus });
 
   return {
     page,

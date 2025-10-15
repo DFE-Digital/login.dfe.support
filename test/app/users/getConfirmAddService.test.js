@@ -7,8 +7,6 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.api-client/services");
 jest.mock("login.dfe.api-client/users");
-
-jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("../../../src/app/services/utils", () => ({
   getAllServices: jest.fn(),
 }));

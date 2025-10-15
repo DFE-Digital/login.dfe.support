@@ -11,7 +11,6 @@ jest.mock("./../../../src/app/accessRequests/utils", () => {
     }),
   };
 });
-jest.mock("./../../../src/infrastructure/organisations");
 
 const utils = require("./../../../src/app/accessRequests/utils");
 const { post } = require("./../../../src/app/accessRequests/search");
