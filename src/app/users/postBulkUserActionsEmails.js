@@ -1,6 +1,6 @@
 const logger = require("../../infrastructure/logger");
 const { sendResult } = require("../../infrastructure/utils");
-const { deactivateInvite } = require("../../infrastructure/directories");
+const { updateInvitation } = require("login.dfe.api-client/invitations");
 const {
   getUserDetailsById,
   updateUserDetails,
@@ -64,7 +64,11 @@ const deactivateUser = async (req, user, reason) => {
 };
 
 const deactivateInvitedUser = async (req, user) => {
-  await deactivateInvite(user.id, "Bulk user deactivation", req.id);
+  await updateInvitation({
+    invitationId: user.id.replace("inv-", ""),
+    reason: "Bulk user deactivation",
+    deactivated: true,
+  });
   await updateInvitedUserIndex(user, req.id);
 };
 

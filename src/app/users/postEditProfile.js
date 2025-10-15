@@ -6,7 +6,7 @@ const {
   updateUserDetails,
   waitForIndexToUpdate,
 } = require("./utils");
-const { updateInvite } = require("../../infrastructure/directories");
+const { updateInvitation } = require("login.dfe.api-client/invitations");
 
 const { updateUser } = require("login.dfe.api-client/users");
 const validate = (req) => {
@@ -94,12 +94,13 @@ const postEditProfile = async (req, res) => {
   const uid = req.params.uid;
   if (uid.startsWith("inv-")) {
     const invitationId = uid.substr(4);
-    const newName = {
+
+    await updateInvitation({
+      invitationId,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
-    };
+    });
 
-    await updateInvite(invitationId, newName);
     await updateUserIndex(
       user.id,
       req.body.firstName,
