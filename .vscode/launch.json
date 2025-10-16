@@ -8,7 +8,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "envFile": "${workspaceFolder}/../local.env",
+            "envFile": "${workspaceFolder}/../.env",
             "env": {
                 "NODE_TLS_REJECT_UNAUTHORIZED": "0"
             },
