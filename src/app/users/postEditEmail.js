@@ -43,11 +43,11 @@ const codeExpiry = (updatedAt) => {
   return date > diff;
 };
 
-const updateUserIndex = async (uid, pendingEmail, correlationId) => {
+const updateUserIndex = async (uid, pendingEmail) => {
   const user = await getUserDetailsById(uid);
   user.pendingEmail = pendingEmail;
 
-  await updateUserDetails(user, correlationId);
+  await updateUserDetails(user);
 
   await waitForIndexToUpdate(
     uid,
@@ -75,7 +75,7 @@ const updateUserEmail = async (req, model, user) => {
     selfInvoked: false,
   });
 
-  await updateUserIndex(user.id, model.email, req.id);
+  await updateUserIndex(user.id, model.email);
 
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) initiated a change of email for ${user.email} (id: ${user.id}) to ${model.email}`,

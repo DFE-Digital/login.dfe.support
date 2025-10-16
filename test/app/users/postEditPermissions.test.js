@@ -5,15 +5,14 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/organisations");
-jest.mock("./../../../src/infrastructure/search");
 jest.mock("login.dfe.api-client/invitations");
+jest.mock(
+  "../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById",
+);
 jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const postEditPermissions = require("./../../../src/app/users/postEditPermissions");
-const {
-  getSearchDetailsForUserById,
-} = require("./../../../src/infrastructure/search");
 
 const {
   addOrganisationToUser,
@@ -26,6 +25,9 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 const {
   addOrganisationToInvitation,
 } = require("login.dfe.api-client/invitations");
+const {
+  getSearchDetailsForUserById,
+} = require("../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById");
 
 const res = getResponseMock();
 

@@ -58,6 +58,9 @@ setupApi({
     access: {
       baseUri: config.access.service.url,
     },
+    search: {
+      baseUri: config.search.service.url,
+    },
   },
 });
 

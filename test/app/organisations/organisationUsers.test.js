@@ -2,14 +2,16 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("./../../utils").configMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/utils");
-jest.mock("./../../../src/infrastructure/search");
+jest.mock("../../../src/app/users/userSearchHelpers/searchAndMapUsers");
 jest.mock("login.dfe.api-client/organisations");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const { sendResult } = require("./../../../src/infrastructure/utils");
 const { getOrganisationRaw } = require("login.dfe.api-client/organisations");
-const { searchForUsers } = require("./../../../src/infrastructure/search");
 const organisationUsers = require("./../../../src/app/organisations/organisationUsers");
+const {
+  searchAndMapUsers,
+} = require("../../../src/app/users/userSearchHelpers/searchAndMapUsers");
 
 const res = getResponseMock();
 const orgResult = { id: "org-1", name: "organisation one" };
@@ -38,7 +40,7 @@ describe("when displaying organisation users", () => {
   beforeEach(() => {
     getOrganisationRaw.mockReset().mockReturnValue(orgResult);
 
-    searchForUsers.mockReset().mockReturnValue(usersResult);
+    searchAndMapUsers.mockReset().mockReturnValue(usersResult);
   });
 
   [
@@ -113,16 +115,12 @@ describe("when displaying organisation users", () => {
 
       await action(req, res);
 
-      expect(searchForUsers).toHaveBeenCalledTimes(1);
-      expect(searchForUsers).toHaveBeenCalledWith(
-        "*",
-        2,
-        undefined,
-        undefined,
-        {
-          organisations: ["org-1"],
-        },
-      );
+      expect(searchAndMapUsers).toHaveBeenCalledTimes(1);
+      expect(searchAndMapUsers).toHaveBeenCalledWith({
+        criteria: "*",
+        filterBy: { organisationIds: ["org-1"] },
+        pageNumber: 2,
+      });
     });
 
     it(`then it should request page 1 if no page specified (${method} / ${dataLocation})`, async () => {
@@ -138,16 +136,12 @@ describe("when displaying organisation users", () => {
 
       await action(req, res);
 
-      expect(searchForUsers).toHaveBeenCalledTimes(1);
-      expect(searchForUsers).toHaveBeenCalledWith(
-        "*",
-        1,
-        undefined,
-        undefined,
-        {
-          organisations: ["org-1"],
-        },
-      );
+      expect(searchAndMapUsers).toHaveBeenCalledTimes(1);
+      expect(searchAndMapUsers).toHaveBeenCalledWith({
+        criteria: "*",
+        filterBy: { organisationIds: ["org-1"] },
+        pageNumber: 1,
+      });
     });
 
     it(`then it should request current organisation details (${method} / ${dataLocation})`, async () => {

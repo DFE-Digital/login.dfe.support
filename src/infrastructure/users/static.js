@@ -45,11 +45,6 @@ const search = async (criteria) => {
     numberOfPages: 1,
   });
 };
-
-const getById = async (userId) => {
-  return users.find((x) => x.id === userId);
-};
-
 const getExistingIndex = async () => {
   return Promise.resolve("existing");
 };
@@ -80,7 +75,6 @@ const setDateOfLastIndexUpdate = async () => {
 
 module.exports = {
   search,
-  getById,
   getExistingIndex,
   createIndex,
   updateIndex,
