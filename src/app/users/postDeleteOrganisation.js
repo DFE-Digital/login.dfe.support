@@ -1,7 +1,11 @@
 const logger = require("./../../infrastructure/logger");
 const config = require("./../../infrastructure/config");
 const { NotificationClient } = require("login.dfe.jobs-client");
-const { deleteUserServiceAccess } = require("login.dfe.api-client/users");
+const {
+  deleteUserServiceAccess,
+  searchUserByIdRaw,
+  updateUserDetailsInSearchIndex,
+} = require("login.dfe.api-client/users");
 const {
   deleteServiceAccessFromInvitation,
 } = require("login.dfe.api-client/invitations");
@@ -13,12 +17,10 @@ const {
   getUserOrganisationsWithServicesRaw,
 } = require("login.dfe.api-client/users");
 const { getAllServicesForUserInOrg } = require("./utils");
+const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const {
   getSearchDetailsForUserById,
-  updateIndex,
-  getById,
-} = require("./../../infrastructure/search");
-const { isSupportEmailNotificationAllowed } = require("../services/utils");
+} = require("./userSearchHelpers/getSearchDetailsForUserById");
 
 const deleteInvitationOrg = async (uid, req) => {
   const invitationId = uid.substr(4);
@@ -66,7 +68,7 @@ const postDeleteOrganisation = async (req, res) => {
     }
     await deleteUserOrg(uid, req);
     if (isEmailAllowed) {
-      const userDetails = await getById(uid, req.id);
+      const userDetails = await searchUserByIdRaw({ userId: uid });
       if (userDetails.statusId === 1) {
         const notificationClient = new NotificationClient({
           connectionString: config.notifications.connectionString,
@@ -88,10 +90,10 @@ const postDeleteOrganisation = async (req, res) => {
     const organisations = currentOrgDetails.filter(
       (org) => org.id !== organisationId,
     );
-    const patchBody = {
+    await updateUserDetailsInSearchIndex({
+      userId: uid,
       organisations,
-    };
-    await updateIndex(uid, patchBody, req.id);
+    });
   }
 
   const fullname = `${req.session.user.firstName} ${req.session.user.lastName}`;

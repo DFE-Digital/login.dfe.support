@@ -8,11 +8,11 @@ const {
   waitForIndexToUpdate,
 } = require("./utils");
 
-const updateUserIndex = async (uid, correlationId) => {
+const updateUserIndex = async (uid) => {
   const user = await getUserDetailsById(uid);
   user.pendingEmail = null;
 
-  await updateUserDetails(user, correlationId);
+  await updateUserDetails(user);
 
   await waitForIndexToUpdate(uid, (updated) => !updated.pendingEmail);
 };
@@ -24,7 +24,7 @@ const postCancelChangeEmail = async (req, res) => {
     userId: req.params.uid,
     verificationCodeType: "changeemail",
   });
-  await updateUserIndex(req.params.uid, req.id);
+  await updateUserIndex(req.params.uid);
 
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) cancelled the change of email for ${user.email} (id: ${user.id}) to email ${user.pendingEmail}`,

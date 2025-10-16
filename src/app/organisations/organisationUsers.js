@@ -1,8 +1,10 @@
 const { sendResult } = require("./../../infrastructure/utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { getOrganisationRaw } = require("login.dfe.api-client/organisations");
-const { searchForUsers } = require("./../../infrastructure/search");
 const { mapRole } = require("./../users/utils");
+const {
+  searchAndMapUsers,
+} = require("../users/userSearchHelpers/searchAndMapUsers");
 
 const render = async (req, res, dataSource) => {
   const organisation = await getOrganisationRaw({
@@ -13,8 +15,10 @@ const render = async (req, res, dataSource) => {
     pageNumber = 1;
   }
 
-  const results = await searchForUsers("*", pageNumber, undefined, undefined, {
-    organisations: [organisation.id],
+  const results = await searchAndMapUsers({
+    criteria: "*",
+    pageNumber,
+    filterBy: { organisationIds: [organisation.id] },
   });
 
   const users = results.users.map((user) => {

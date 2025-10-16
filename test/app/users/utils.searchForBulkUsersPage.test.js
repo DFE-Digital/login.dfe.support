@@ -4,16 +4,18 @@ jest.mock("./../../../src/infrastructure/config", () =>
 jest.mock("./../../../src/infrastructure/users", () => ({
   search: jest.fn().mockReturnValue([]),
 }));
-jest.mock("./../../../src/infrastructure/search", () => ({
-  searchForUsers: jest.fn(),
-}));
+
 jest.mock("./../../../src/infrastructure/logger", () =>
   require("../../utils").loggerMockFactory(),
 );
+jest.mock("login.dfe.api-client/users");
+jest.mock("../../../src/app/users/userSearchHelpers/searchAndMapUsers");
 
 const logger = require("../../../src/infrastructure/logger");
-const { searchForUsers } = require("../../../src/infrastructure/search");
 const { searchForBulkUsersPage } = require("../../../src/app/users/utils");
+const {
+  searchAndMapUsers,
+} = require("../../../src/app/users/userSearchHelpers/searchAndMapUsers");
 
 describe("When processing a user search request", () => {
   let usersSearchResult;
@@ -36,7 +38,7 @@ describe("When processing a user search request", () => {
       ],
       numberOfPages: 1,
     };
-    searchForUsers.mockReset().mockReturnValue(usersSearchResult);
+    searchAndMapUsers.mockReset().mockReturnValue(usersSearchResult);
 
     logger.audit.mockReset();
   });
@@ -63,7 +65,9 @@ describe("When processing a user search request", () => {
       expect(actual).toMatchObject({
         users: usersSearchResult.users,
       });
-      expect(searchForUsers.mock.calls[0][0]).toBe("test@test.com*");
+      expect(searchAndMapUsers.mock.calls[0][0]).toMatchObject({
+        criteria: "test@test.com*",
+      });
     });
 
     test("then it should include posted criteria", async () => {

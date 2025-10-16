@@ -40,32 +40,32 @@ const validateInput = async (req) => {
   return model;
 };
 
-const updateUserIndex = async (user, correlationId) => {
+const updateUserIndex = async (user) => {
   user.status = {
     id: 0,
     description: "Deactivated",
   };
 
-  await updateUserDetails(user, correlationId);
+  await updateUserDetails(user);
   await waitForIndexToUpdate(user.id, (updated) => updated.status.id === 0);
 };
 
-const updateInvitedUserIndex = async (user, correlationId) => {
+const updateInvitedUserIndex = async (user) => {
   user.status.id = -2;
   user.status.description = "Deactivated Invitation";
 
-  await updateUserDetails(user, correlationId);
+  await updateUserDetails(user);
   await waitForIndexToUpdate(user.id, (updated) => updated.status.id === -2);
 };
 
 const deactivateUser = async (req, user, reason) => {
   await apiClientDeactivateUser({ userId: user.id, reason });
-  await updateUserIndex(user, req.id);
+  await updateUserIndex(user);
 };
 
 const deactivateInvitedUser = async (req, user) => {
   await deactivateInvite(user.id, "Bulk user deactivation", req.id);
-  await updateInvitedUserIndex(user, req.id);
+  await updateInvitedUserIndex(user);
 };
 
 const postBulkUserActionsEmails = async (req, res) => {
