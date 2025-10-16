@@ -1,10 +1,7 @@
 const { NotificationClient } = require("login.dfe.jobs-client");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
-const {
-  getSearchDetailsForUserById,
-  updateIndex,
-} = require("../../infrastructure/search");
+
 const { isSupportEmailNotificationAllowed } = require("../services/utils");
 const { mapRole } = require("./utils");
 const {
@@ -13,7 +10,11 @@ const {
 const {
   addOrganisationToUser,
   getUserOrganisationsWithServicesRaw,
+  updateUserDetailsInSearchIndex,
 } = require("login.dfe.api-client/users");
+const {
+  getSearchDetailsForUserById,
+} = require("./userSearchHelpers/getSearchDetailsForUserById");
 
 const validatePermissions = (req) => {
   const validPermissions = [0, 10000];
@@ -106,10 +107,10 @@ const postEditPermissions = async (req, res) => {
       }
       return org;
     });
-    const patchBody = {
+    await updateUserDetailsInSearchIndex({
+      userId: uid,
       organisations,
-    };
-    await updateIndex(uid, patchBody, req.id);
+    });
   }
 
   const { organisationName } = model;
