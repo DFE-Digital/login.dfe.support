@@ -30,7 +30,10 @@ const search = async (req) => {
     page = 1;
   }
   const filterStatus = unpackMultiSelect(paramsSource.status);
-  const results = await getOrganisationRequestsRaw({ pageNumber: page, filterStatus });
+  const results = await getOrganisationRequestsRaw({
+    pageNumber: page,
+    filterStatus,
+  });
 
   return {
     page,
