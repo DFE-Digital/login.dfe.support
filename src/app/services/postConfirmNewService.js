@@ -78,25 +78,84 @@ const postConfirmNewService = async (req, res) => {
   };
 
   // Create manage service roles for new service
-  const createdService = await createServiceRaw(body);
+  // const createdService = await createServiceRaw(body);
+
+  let createdService;
+  try {
+    createdService = await createServiceRaw(body);
+
+    if (!createdService || !createdService.id) {
+      logger.error("Service creation failed — no service ID returned", {
+        serviceBody: body,
+      });
+      res.flash(
+        "error",
+        `Failed to create the ${model.name} service. Please try again.`,
+      );
+      return res.redirect("/users");
+    }
+  } catch (error) {
+    logger.error(`Error creating new service: ${model.name}`, { error });
+    res.flash(
+      "error",
+      `An error occurred while creating the ${model.name} service.`,
+    );
+    return res.redirect("/users");
+  }
+
   const newServiceId = createdService.id;
   const manageServiceId = config.access.identifiers.manageService;
 
-  await createServiceRole({
-    appId: manageServiceId,
-    roleName: `${model.name} - Service Support`,
-    roleCode: `${newServiceId}_serviceSup`,
-  });
-  await createServiceRole({
-    appId: manageServiceId,
-    roleName: `${model.name} - Service Banner`,
-    roleCode: `${newServiceId}_serviceBanner`,
-  });
-  await createServiceRole({
-    appId: manageServiceId,
-    roleName: `${model.name} - Service Configuration`,
-    roleCode: `${newServiceId}_serviceconfig`,
-  });
+  try {
+    await createServiceRole({
+      appId: manageServiceId,
+      roleName: `${model.name} - Service Support`,
+      roleCode: `${newServiceId}_serviceSup`,
+    });
+  } catch (error) {
+    logger.error(
+      `Failed to create "Service Support" role for service ${model.name} (${newServiceId})`,
+      { error },
+    );
+    res.flash(
+      "error",
+      `${model.name} service successfully created but not all the manage console roles were created.  Please investigate`,
+    );
+  }
+
+  try {
+    await createServiceRole({
+      appId: manageServiceId,
+      roleName: `${model.name} - Service Banner`,
+      roleCode: `${newServiceId}_serviceBanner`,
+    });
+  } catch (error) {
+    logger.error(
+      `Failed to create "Service Banner" role for service ${model.name} (${newServiceId})`,
+      { error },
+    );
+    res.flash(
+      "error",
+      `${model.name} service successfully created but not all the manage console roles were created.  Please investigate`,
+    );
+  }
+
+  try {
+    await createServiceRole({
+      appId: manageServiceId,
+      roleName: `${model.name} - Service Configuration`,
+      roleCode: `${newServiceId}_serviceconfig`,
+    });
+  } catch (error) {
+    logger.error(
+      `Failed to create "Service Configuration" role for service ${model.name} (${newServiceId})`,
+      { error },
+    );
+    res.flash(
+      "error",
+      `${model.name} service successfully created but not all the manage console roles were created.  Please investigate`,
+    );
+  }
 
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) created ${model.name} service`,
