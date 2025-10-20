@@ -5,17 +5,16 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
 jest.mock("./../../../src/infrastructure/organisations");
-jest.mock("./../../../src/infrastructure/search");
 jest.mock("login.dfe.api-client/organisations");
 jest.mock("login.dfe.api-client/invitations");
+jest.mock(
+  "../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById",
+);
 jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const { getPendingRequestsRaw } = require("login.dfe.api-client/users");
 const getConfirmAssociateOrganisation = require("./../../../src/app/users/getConfirmAssociateOrganisation");
-const {
-  getSearchDetailsForUserById,
-} = require("./../../../src/infrastructure/search");
 
 jest.mock("login.dfe.jobs-client");
 jest.mock("login.dfe.api-client/services");
@@ -27,6 +26,9 @@ const {
 const {
   addOrganisationToInvitation,
 } = require("login.dfe.api-client/invitations");
+const {
+  getSearchDetailsForUserById,
+} = require("../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById");
 
 const res = getResponseMock();
 

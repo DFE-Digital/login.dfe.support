@@ -120,27 +120,6 @@ const search = async (
   };
 };
 
-const getById = async (userId) => {
-  const currentIndexName = await client.get("CurrentIndex_Users");
-
-  const response = await fetchApi(
-    `${getAzureSearchUri(currentIndexName, "/docs")}&$filter=id+eq+'${userId}'`,
-    {
-      method: "GET",
-      headers: {
-        "content-type": "application/json",
-        "api-key": config.cache.params.apiKey,
-      },
-    },
-  );
-
-  if (response.value.length === 0) {
-    return null;
-  }
-
-  return mapSearchIndexUser(response.value[0]);
-};
-
 const getExistingIndex = async () => {
   return await client.get("CurrentIndex_Users");
 };
@@ -341,7 +320,6 @@ const setDateOfLastIndexUpdate = async (date) => {
 
 module.exports = {
   search,
-  getById,
   getExistingIndex,
   createIndex,
   updateIndex,

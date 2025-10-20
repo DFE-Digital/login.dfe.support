@@ -2,15 +2,17 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const { getAndMapOrgRequest } = require("./utils");
-const {
-  getSearchDetailsForUserById,
-  updateIndex,
-} = require("../../infrastructure/search");
 const { waitForIndexToUpdate } = require("../users/utils");
 const {
   getOrganisationLegacyRaw,
   updateRequestForOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
+const {
+  getSearchDetailsForUserById,
+} = require("../users/userSearchHelpers/getSearchDetailsForUserById");
+const {
+  updateUserDetailsInSearchIndex,
+} = require("login.dfe.api-client/users");
 const { addOrganisationToUser } = require("login.dfe.api-client/users");
 
 const get = async (req, res) => {
@@ -110,10 +112,10 @@ const post = async (req, res) => {
         roleId: model.selectedLevel,
       };
       currentOrganisationDetails.push(newOrgDetails);
-      const patchBody = {
+      await updateUserDetailsInSearchIndex({
+        userId: model.request.user_id,
         organisations: currentOrganisationDetails,
-      };
-      await updateIndex(model.request.user_id, patchBody, null, req.id);
+      });
       await waitForIndexToUpdate(
         model.request.user_id,
         (updated) =>
