@@ -77,8 +77,6 @@ const postConfirmNewService = async (req, res) => {
     },
   };
 
-  // Create manage service roles for new service
-
   let createdService;
   try {
     createdService = await createServiceRaw(body);
