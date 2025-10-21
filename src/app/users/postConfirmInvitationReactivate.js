@@ -7,12 +7,12 @@ const {
 } = require("./utils");
 const { updateInvitation } = require("login.dfe.api-client/invitations");
 
-const updateUserIndex = async (uid, correlationId) => {
+const updateUserIndex = async (uid) => {
   const user = await getUserDetailsById(uid);
   user.status.id = 1;
   user.status.description = "Reactivated Invitation";
 
-  await updateUserDetails(user, correlationId);
+  await updateUserDetails(user);
 
   await waitForIndexToUpdate(uid, (updated) => updated.status.id === 1);
 };
@@ -26,7 +26,7 @@ const postConfirmReactivate = async (req, res) => {
     deactivated: false,
   });
 
-  await updateUserIndex(user.id, req.id);
+  await updateUserIndex(user.id);
 
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) reactivated user invitation ${user.email} (id: ${user.id})`,

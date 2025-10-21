@@ -1,4 +1,3 @@
-const { createIndex } = require("../../infrastructure/search");
 const { waitForIndexToUpdate } = require("./utils");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
@@ -9,6 +8,9 @@ const {
   createInvitation,
   addOrganisationToInvitation,
 } = require("login.dfe.api-client/invitations");
+const {
+  updateUserSearchIndex,
+} = require("./userSearchHelpers/updateUserSearchIndex");
 
 const postConfirmNewUser = async (req, res) => {
   let emailOverrides = {};
@@ -66,8 +68,7 @@ const postConfirmNewUser = async (req, res) => {
       roleId: req.session.user.permission || 0,
     });
   }
-
-  await createIndex(`inv-${invitationId}`, req.id);
+  await updateUserSearchIndex(`inv-${invitationId}`);
 
   await waitForIndexToUpdate(`inv-${invitationId}`);
 

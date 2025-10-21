@@ -7,9 +7,12 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 jest.mock("./../../../src/app/accessRequests/utils");
 jest.mock("./../../../src/app/users/utils");
 jest.mock("./../../../src/infrastructure/organisations");
-jest.mock("./../../../src/infrastructure/search");
+jest.mock("login.dfe.api-client/users");
 jest.mock("login.dfe.jobs-client");
 jest.mock("login.dfe.api-client/organisations");
+jest.mock(
+  "../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById",
+);
 jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
@@ -19,10 +22,6 @@ const {
 const { addOrganisationToUser } = require("login.dfe.api-client/users");
 
 const res = getResponseMock();
-const {
-  getSearchDetailsForUserById,
-  updateIndex,
-} = require("./../../../src/infrastructure/search");
 const {
   getAndMapOrgRequest,
 } = require("./../../../src/app/accessRequests/utils");
@@ -38,6 +37,12 @@ const {
   getOrganisationLegacyRaw,
   updateRequestForOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
+const {
+  getSearchDetailsForUserById,
+} = require("../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById");
+const {
+  updateUserDetailsInSearchIndex,
+} = require("login.dfe.api-client/users");
 
 Date.now = jest.fn(() => "2019-01-02");
 
@@ -276,11 +281,12 @@ describe("when selecting a permission level", () => {
   it("then it should update the search index with the new org", async () => {
     await post(req, res);
 
-    expect(updateIndex.mock.calls).toHaveLength(1);
-    expect(updateIndex.mock.calls[0][0]).toBe("userId");
-    expect(updateIndex.mock.calls[0][1]).toEqual({
+    expect(updateUserDetailsInSearchIndex).toHaveBeenCalledTimes(1);
+    expect(updateUserDetailsInSearchIndex).toHaveBeenCalledWith({
+      userId: "userId",
       organisations: [
         {
+          UKPRN: undefined,
           categoryId: "001",
           establishmentNumber: undefined,
           id: "org1",
@@ -289,6 +295,7 @@ describe("when selecting a permission level", () => {
           roleId: 0,
           statusId: 1,
           uid: undefined,
+          upin: undefined,
           urn: undefined,
         },
       ],

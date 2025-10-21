@@ -9,12 +9,12 @@ const {
 const { sendResult } = require("../../infrastructure/utils");
 const { updateInvitation } = require("login.dfe.api-client/invitations");
 
-const updateUserIndex = async (uid, correlationId) => {
+const updateUserIndex = async (uid) => {
   const user = await getUserDetailsById(uid);
   user.status.id = -2;
   user.status.description = "Deactivated Invitation";
 
-  await updateUserDetails(user, correlationId);
+  await updateUserDetails(user);
 
   await waitForIndexToUpdate(uid, (updated) => updated.status.id === -2);
 };
@@ -53,7 +53,7 @@ const postConfirmDeactivate = async (req, res) => {
       reason: req.body.reason,
       deactivated: true,
     });
-    await updateUserIndex(user.id, req.id);
+    await updateUserIndex(user.id);
     if (req.body["remove-services-and-requests"]) {
       await removeAllServicesForInvitedUser(user.id, req);
     }

@@ -6,9 +6,12 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 );
 jest.mock("./../../../src/app/accessRequests/utils");
 jest.mock("./../../../src/app/users/utils");
-jest.mock("./../../../src/infrastructure/search");
+jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("login.dfe.jobs-client");
 jest.mock("login.dfe.api-client/organisations");
+jest.mock(
+  "../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById",
+);
 jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
@@ -18,9 +21,6 @@ const {
 
 const res = getResponseMock();
 const {
-  getSearchDetailsForUserById,
-} = require("./../../../src/infrastructure/search");
-const {
   getAndMapOrgRequest,
 } = require("./../../../src/app/accessRequests/utils");
 const logger = require("./../../../src/infrastructure/logger");
@@ -29,6 +29,9 @@ const {
   getOrganisationLegacyRaw,
   updateRequestForOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
+const {
+  getSearchDetailsForUserById,
+} = require("../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById");
 const { addOrganisationToUser } = require("login.dfe.api-client/users");
 
 const sendAccessRequest = jest.fn();

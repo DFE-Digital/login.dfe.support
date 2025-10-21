@@ -29,13 +29,13 @@ const validate = (req) => {
   };
 };
 
-const updateUserIndex = async (uid, firstName, lastName, correlationId) => {
+const updateUserIndex = async (uid, firstName, lastName) => {
   const user = await getUserDetailsById(uid);
   user.name = `${firstName} ${lastName}`;
   user.firstName = firstName;
   user.lastName = lastName;
 
-  await updateUserDetails(user, correlationId);
+  await updateUserDetails(user);
 
   await waitForIndexToUpdate(
     uid,
@@ -115,7 +115,7 @@ const postEditProfile = async (req, res) => {
         familyName: req.body.lastName,
       },
     });
-    await updateUserIndex(uid, req.body.firstName, req.body.lastName, req.id);
+    await updateUserIndex(uid, req.body.firstName, req.body.lastName);
   }
 
   auditEdit(req, user);

@@ -7,14 +7,14 @@ const {
 } = require("./utils");
 const { activateUser } = require("login.dfe.api-client/users");
 
-const updateUserIndex = async (uid, correlationId) => {
+const updateUserIndex = async (uid) => {
   const user = await getUserDetailsById(uid);
   user.status = {
     id: 1,
     description: "Active",
   };
 
-  await updateUserDetails(user, correlationId);
+  await updateUserDetails(user);
 
   await waitForIndexToUpdate(uid, (updated) => updated.status.id === 1);
 };
@@ -23,7 +23,7 @@ const postConfirmReactivate = async (req, res) => {
   const user = await getUserDetails(req);
 
   await activateUser({ userId: req.params.uid });
-  await updateUserIndex(req.params.uid, req.id);
+  await updateUserIndex(req.params.uid);
 
   // Audit
   logger.audit(
