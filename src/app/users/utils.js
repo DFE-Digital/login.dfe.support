@@ -237,6 +237,7 @@ const mapUserToSupportModel = (user, userFromSearch) => {
     isEntra: user.isEntra,
     isInternalUser: user.isInternalUser,
     entraOid: user.entraOid,
+    entraLinked: user.entraLinked,
     organisation: userFromSearch.primaryOrganisation
       ? {
           name: userFromSearch.primaryOrganisation,
