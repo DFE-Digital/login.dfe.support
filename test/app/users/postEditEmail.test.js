@@ -5,7 +5,7 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
 jest.mock("./../../../src/app/users/utils");
-jest.mock("./../../../src/infrastructure/directories");
+jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.api-client/users");
 
 const logger = require("./../../../src/infrastructure/logger");
@@ -20,7 +20,7 @@ const {
   getUserDetailsById,
   updateUserDetails,
 } = require("./../../../src/app/users/utils");
-const { updateInvite } = require("./../../../src/infrastructure/directories");
+const { updateInvitation } = require("login.dfe.api-client/invitations");
 const postEditEmail = require("./../../../src/app/users/postEditEmail");
 
 const userDetails = {
@@ -108,7 +108,7 @@ describe("when changing email address", () => {
 
     deleteUserVerificationCode.mockReset();
 
-    updateInvite.mockReset();
+    updateInvitation.mockReset();
   });
 
   it("then it should render view if email is not entered", async () => {
@@ -251,10 +251,11 @@ describe("when changing email address", () => {
     it("then it should update invitation with new email", async () => {
       await postEditEmail(req, res);
 
-      expect(updateInvite.mock.calls).toHaveLength(1);
-      expect(updateInvite.mock.calls[0][0]).toBe(
-        "35f60ab3-e169-41ec-bc88-d80e1beef937",
-      );
+      expect(updateInvitation.mock.calls).toHaveLength(1);
+      expect(updateInvitation).toHaveBeenCalledWith({
+        email: "rupert.grint@hogwarts.school.test",
+        invitationId: "35f60ab3-e169-41ec-bc88-d80e1beef937",
+      });
     });
 
     it("then it should update invitation in search index", async () => {

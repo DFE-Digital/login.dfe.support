@@ -14,7 +14,8 @@ const {
   updateUserDetails,
   waitForIndexToUpdate,
 } = require("./utils");
-const { updateInvite } = require("../../infrastructure/directories");
+
+const { updateInvitation } = require("login.dfe.api-client/invitations");
 
 const validate = async (req) => {
   const model = {
@@ -109,11 +110,11 @@ const updateInvitationIndex = async (uid, newEmail) => {
 };
 const updateInvitationEmail = async (req, model, user) => {
   const invitationId = req.params.uid.substr(4);
-  const newEmail = {
-    email: model.email,
-  };
 
-  await updateInvite(invitationId, newEmail);
+  await updateInvitation({
+    invitationId,
+    email: model.email,
+  });
   await updateInvitationIndex(user.id, model.email);
 
   logger.audit(

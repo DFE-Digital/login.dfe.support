@@ -5,7 +5,7 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
 jest.mock("./../../../src/app/users/utils");
-jest.mock("./../../../src/infrastructure/directories");
+jest.mock("login.dfe.api-client/users");
 
 const logger = require("./../../../src/infrastructure/logger");
 const {
@@ -13,7 +13,7 @@ const {
   getUserDetailsById,
   updateUserDetails,
 } = require("./../../../src/app/users/utils");
-const { reactivate } = require("./../../../src/infrastructure/directories");
+const { activateUser } = require("login.dfe.api-client/users");
 const postConfirmReactivate = require("./../../../src/app/users/postConfirmReactivate");
 
 describe("When reactivating an user account", () => {
@@ -90,11 +90,10 @@ describe("When reactivating an user account", () => {
   it("then it should activate user in directories", async () => {
     await postConfirmReactivate(req, res);
 
-    expect(reactivate.mock.calls).toHaveLength(1);
-    expect(reactivate.mock.calls[0][0]).toBe(
-      "915a7382-576b-4699-ad07-a9fd329d3867",
-    );
-    expect(reactivate.mock.calls[0][1]).toBe("correlationId");
+    expect(activateUser.mock.calls).toHaveLength(1);
+    expect(activateUser).toHaveBeenCalledWith({
+      userId: "915a7382-576b-4699-ad07-a9fd329d3867",
+    });
   });
 
   it("then it should update user in search index", async () => {
