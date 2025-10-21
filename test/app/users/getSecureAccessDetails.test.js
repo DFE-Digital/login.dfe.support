@@ -5,14 +5,11 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
 jest.mock("./../../../src/app/users/utils");
-jest.mock("./../../../src/infrastructure/directories");
 jest.mock("login.dfe.api-client/users");
 
 const { getUserDetails } = require("./../../../src/app/users/utils");
-const {
-  getLegacyUsernames,
-} = require("./../../../src/infrastructure/directories");
 const getSecureAccessDetails = require("./../../../src/app/users/getSecureAccessDetails");
+const { getLegacyUsernamesRaw } = require("login.dfe.api-client/users");
 
 describe("when getting users secure access details", () => {
   let req;
@@ -41,8 +38,8 @@ describe("when getting users secure access details", () => {
       id: "user1",
     });
 
-    getLegacyUsernames.mockReset();
-    getLegacyUsernames.mockReturnValue({
+    getLegacyUsernamesRaw.mockReset();
+    getLegacyUsernamesRaw.mockReturnValue({
       legacy_username: "username123",
       createdAt: "01-02-2017",
     });
@@ -61,9 +58,8 @@ describe("when getting users secure access details", () => {
   it("then it should get secure access details for user", async () => {
     await getSecureAccessDetails(req, res);
 
-    expect(getLegacyUsernames.mock.calls).toHaveLength(1);
-    expect(getLegacyUsernames.mock.calls[0][0]).toBe("user1");
-    expect(getLegacyUsernames.mock.calls[0][1]).toBe("correlationId");
+    expect(getLegacyUsernamesRaw.mock.calls).toHaveLength(1);
+    expect(getLegacyUsernamesRaw).toHaveBeenCalledWith({ userId: "user1" });
 
     expect(res.render.mock.calls[0][1].secureAccessDetails).toMatchObject({
       legacy_username: "username123",

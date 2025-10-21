@@ -11,9 +11,9 @@ const {
   getServiceIdForClientId,
 } = require("./../../infrastructure/serviceMapping");
 const { getServiceRaw } = require("login.dfe.api-client/services");
-const { getUserStatus } = require("../../infrastructure/directories");
 const {
   getUserOrganisationsWithServicesRaw,
+  getUserStatusRaw,
 } = require("login.dfe.api-client/users");
 const {
   getOrganisationLegacyRaw,
@@ -221,11 +221,11 @@ const getAudit = async (req, res) => {
     ? dateFormat(user.lastLogin, "longDateFormat")
     : "";
   if (user.status.id === 0) {
-    const userStatus = await getUserStatus(user.id);
+    const userStatus = await getUserStatusRaw({ userId: user.id });
     user.statusChangeReasons = userStatus ? userStatus.statusChangeReasons : [];
   }
   const userOrganisations = await getUserOrganisationsWithServicesRaw({
-    userId: user.id,
+    userId: req.params.uid,
   });
   req.session.type = "audit";
   const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
