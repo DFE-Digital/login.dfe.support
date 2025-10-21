@@ -102,6 +102,9 @@ const postConfirmNewService = async (req, res) => {
     return res.redirect("/users");
   }
 
+  /*
+  We're intentionally not redirecting after an error, like we did for the service creation, because if an error occurs when creating roles, we want as much of the service set up correctly as possible to reduce the amount of manual work that a fix would take
+  */
   const newServiceId = createdService.id;
   const manageServiceId = config.access.identifiers.manageService;
 
