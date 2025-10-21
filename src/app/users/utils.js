@@ -224,7 +224,7 @@ const searchForBulkUsersPage = async (email) => {
 };
 
 const getUserDetails = async (req) => {
-  return getUserDetailsById(req.params.uid, req.id);
+  return getUserDetailsById(req.params.uid, req, req.id);
 };
 
 const mapUserToSupportModel = (user, userFromSearch) => {
@@ -264,9 +264,13 @@ const checkManageAccess = async (arr) => {
   );
 };
 
-const getUserDetailsById = async (uid) => {
+const getUserDetailsById = async (uid, req) => {
   if (uid.startsWith("inv-")) {
     const invitation = await getInvitationRaw({ by: { id: uid.substr(4) } });
+
+    const entraOid = await req.externalAuth.getEntraAccountIdByEmail(
+      invitation.email,
+    );
 
     return {
       id: uid,
@@ -280,6 +284,7 @@ const getUserDetailsById = async (uid) => {
         successful: 0,
       },
       deactivated: invitation.deactivated,
+      entraOid,
     };
   } else {
     const userSearch = await getSearchDetailsForUserById(uid);
@@ -288,20 +293,10 @@ const getUserDetailsById = async (uid) => {
     const serviceDetails = await getUserServicesRaw({ userId: uid });
     const hasManageAccess = await checkManageAccess(serviceDetails ?? []);
 
-    const ktsDetails = serviceDetails
-      ? serviceDetails.find(
-          (c) =>
-            c.serviceId.toLowerCase() ===
-            config.serviceMapping.key2SuccessServiceId.toLowerCase(),
-        )
-      : undefined;
-    let externalIdentifier = "";
-    if (ktsDetails && ktsDetails.identifiers) {
-      const key = ktsDetails.identifiers.find((a) => (a.key = "k2s-id"));
-      if (key) {
-        externalIdentifier = key.value;
-      }
-    }
+    // if (!user.entraOid)  {
+    // const entraData = getEntraAccountIdByEmail(user.email);
+    // If not empty, populate the user object with it user.entraOid = entraData.id;  Otherwise do nothing
+    //}
 
     return {
       id: uid,
@@ -317,9 +312,6 @@ const getUserDetailsById = async (uid) => {
       loginsInPast12Months: {
         successful: user.successfulLoginsInPast12Months,
       },
-      serviceId: config.serviceMapping.key2SuccessServiceId,
-      orgId: ktsDetails ? ktsDetails.organisationId : "",
-      ktsId: externalIdentifier,
       pendingEmail: user.pendingEmail,
       serviceDetails,
       hasManageAccess,
