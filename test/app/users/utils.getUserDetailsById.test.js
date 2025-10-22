@@ -4,7 +4,7 @@ jest.mock("./../../../src/infrastructure/config", () =>
 jest.mock("login.dfe.api-client/invitations");
 
 const { getInvitationRaw } = require("login.dfe.api-client/invitations");
-const { getUserDetails } = require("../../../src/app/users/utils");
+const { getUserDetailsById } = require("../../../src/app/users/utils");
 
 describe("When getting user details for an invited user", () => {
   let req;
@@ -34,7 +34,7 @@ describe("When getting user details for an invited user", () => {
   });
 
   it("then it should return an object when getInvitationRaw returns a record", async () => {
-    const result = await getUserDetails(req, correlationId);
+    const result = await getUserDetailsById(req.params.uid, req);
 
     expect(result).toMatchObject({
       id: "inv-user1",

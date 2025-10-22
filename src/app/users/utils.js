@@ -260,10 +260,6 @@ const checkManageAccess = async (arr) => {
   );
 };
 
-const getUserDetails = async (req) => {
-  return getUserDetailsById(req.params.uid, req, req.id);
-};
-
 const getUserDetailsById = async (uid, req) => {
   if (uid.startsWith("inv-")) {
     const invitation = await getInvitationRaw({ by: { id: uid.substr(4) } });
@@ -511,7 +507,6 @@ const callServiceToUserFunc = async (
 module.exports = {
   search,
   searchForBulkUsersPage,
-  getUserDetails,
   getUserDetailsById,
   updateUserDetails,
   waitForIndexToUpdate,

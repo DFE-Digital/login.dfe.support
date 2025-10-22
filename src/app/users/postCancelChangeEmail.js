@@ -7,23 +7,26 @@ const {
   waitForIndexToUpdate,
 } = require("./utils");
 
-const updateUserIndex = async (uid) => {
-  const user = await getUserDetailsById(uid);
+const updateUserIndex = async (req) => {
+  const user = await getUserDetailsById(req.params.uid, req);
   user.pendingEmail = null;
 
   await updateUserDetails(user);
 
-  await waitForIndexToUpdate(uid, (updated) => !updated.pendingEmail);
+  await waitForIndexToUpdate(
+    req.params.uid,
+    (updated) => !updated.pendingEmail,
+  );
 };
 
 const postCancelChangeEmail = async (req, res) => {
-  const user = await getUserDetailsById(req);
+  const user = await getUserDetailsById(req.params.uid, req);
 
   await deleteUserVerificationCode({
     userId: req.params.uid,
     verificationCodeType: "changeemail",
   });
-  await updateUserIndex(req.params.uid);
+  await updateUserIndex(req);
 
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) cancelled the change of email for ${user.email} (id: ${user.id}) to email ${user.pendingEmail}`,

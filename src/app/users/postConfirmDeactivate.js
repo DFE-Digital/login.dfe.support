@@ -1,6 +1,5 @@
 const logger = require("../../infrastructure/logger");
 const {
-  getUserDetails,
   getUserDetailsById,
   rejectOpenOrganisationRequestsForUser,
   rejectOpenUserServiceRequestsForUser,
@@ -71,7 +70,7 @@ const postConfirmDeactivate = async (req, res) => {
   // Now that we're sure we've got a sensible payload, start getting details and reshaping data
   const isNonDefaultDropdownReasonSelected =
     model.selectReason && model.selectReason !== "Select a reason";
-  const user = await getUserDetails(req);
+  const user = await getUserDetailsById(req.params.uid, req);
   let reason = model.reason.trim();
   if (isNonDefaultDropdownReasonSelected) {
     if (reason.length === 0) {

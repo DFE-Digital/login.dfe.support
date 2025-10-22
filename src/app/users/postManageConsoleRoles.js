@@ -1,6 +1,6 @@
 const config = require("../../infrastructure/config");
 const { sendResult } = require("../../infrastructure/utils");
-const { getUserDetails, callServiceToUserFunc } = require("./utils");
+const { getUserDetailsById, callServiceToUserFunc } = require("./utils");
 const {
   getServiceRolesRaw,
   getServiceRaw,
@@ -28,7 +28,7 @@ const postManageConsoleRoles = async (req, res) => {
   const serviceSelectedByUser = await getServiceRaw({
     by: { serviceId: req.params.sid },
   });
-  const user = await getUserDetails(req);
+  const user = await getUserDetailsById(req.params.uid, req);
   const userManageRoles = await getSingleServiceForUser(
     req.params.uid,
     dfeId,
