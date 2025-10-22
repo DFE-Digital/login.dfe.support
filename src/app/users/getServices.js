@@ -9,9 +9,10 @@ const {
 } = require("login.dfe.api-client/invitations");
 const {
   getUserOrganisationsWithServicesRaw,
+  getUserStatusRaw,
 } = require("login.dfe.api-client/users");
 const { getAllServices } = require("../services/utils");
-const { getUserStatus } = require("../../infrastructure/directories");
+
 const logger = require("../../infrastructure/logger");
 
 const getOrganisations = async (userId) => {
@@ -65,7 +66,7 @@ const action = async (req, res) => {
     ? dateFormat(user.lastLogin, "longDateFormat")
     : "";
   if (user.status.id === 0) {
-    const userStatus = await getUserStatus(user.id);
+    const userStatus = await getUserStatusRaw({ userId: user.id });
     user.statusChangeReasons = userStatus ? userStatus.statusChangeReasons : [];
   }
   const organisationDetails = await getOrganisations(user.id, req.id);

@@ -87,7 +87,7 @@ const get = async (req, res) => {
 const validate = async (req) => {
   const userId = req.params.uid;
   const userOrganisations = userId.startsWith("inv-")
-    ? await getInvitationOrganisationsRaw(userId.substr(4), req.id)
+    ? await getInvitationOrganisationsRaw({ invitationId: userId.substr(4) })
     : await getUserOrganisationsWithServicesRaw({ userId });
   const organisationDetails = userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,

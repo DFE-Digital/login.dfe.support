@@ -5,8 +5,6 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("../../utils").loggerMockFactory(),
 );
 jest.mock("./../../../src/app/users/utils");
-jest.mock("./../../../src/infrastructure/organisations");
-jest.mock("./../../../src/infrastructure/directories");
 jest.mock("./../../../src/infrastructure/serviceMapping");
 jest.mock("./../../../src/infrastructure/audit");
 jest.mock("ioredis");
@@ -16,11 +14,9 @@ const { getUserDetailsById } = require("../../../src/app/users/utils");
 const {
   getPendingRequestsRaw,
   getUserOrganisationsWithServicesRaw,
+  getUsersRaw,
+  getUserStatusRaw,
 } = require("login.dfe.api-client/users");
-const {
-  getUsersByIdV2,
-  getUserStatus,
-} = require("../../../src/infrastructure/directories");
 const {
   getClientIdForServiceId,
 } = require("../../../src/infrastructure/serviceMapping");
@@ -60,8 +56,8 @@ describe("when getting users organisation details", () => {
       },
     });
 
-    getUserStatus.mockReset();
-    getUserStatus.mockReturnValue({
+    getUserStatusRaw.mockReset();
+    getUserStatusRaw.mockReturnValue({
       id: "user1",
       status: 0,
       statusChangeReasons: [
@@ -105,8 +101,8 @@ describe("when getting users organisation details", () => {
       }
     });
 
-    getUsersByIdV2.mockReset();
-    getUsersByIdV2.mockReturnValue([
+    getUsersRaw.mockReset();
+    getUsersRaw.mockReturnValue([
       {
         sub: "user1",
         given_name: "User",
@@ -202,7 +198,7 @@ describe("when getting users organisation details", () => {
 
   it("should filter out users with a deactivated account", async () => {
     // Given
-    getUsersByIdV2.mockReturnValue([
+    getUsersRaw.mockReturnValue([
       {
         sub: "user1",
         given_name: "User",
@@ -305,7 +301,7 @@ describe("when getting users organisation details", () => {
     expect(getUserDetailsById.mock.calls).toHaveLength(1);
     expect(getUserDetailsById.mock.calls[0][0]).toBe("user1");
     expect(getUserDetailsById.mock.calls[0][1]).toBe(req);
-    expect(getUsersByIdV2.mock.calls).toHaveLength(0);
+    expect(getUsersRaw.mock.calls).toHaveLength(0);
 
     // Organisations[0] is Great Big School
     expect(
@@ -343,7 +339,7 @@ describe("when getting users organisation details", () => {
   });
 
   it("should include an empty statusChangeReasons in the user model one is not found", async () => {
-    getUserStatus.mockReturnValue(null);
+    getUserStatusRaw.mockReturnValue(null);
     getUserDetailsById.mockReturnValue({
       id: "user1",
       status: {

@@ -13,30 +13,29 @@ const {
 const {
   getPendingRequestsRaw,
   getUserOrganisationsWithServicesRaw,
+  getUsersRaw,
+  getUserStatusRaw,
 } = require("login.dfe.api-client/users");
-const {
-  getUsersByIdV2,
-  getUserStatus,
-} = require("../../infrastructure/directories");
 const logger = require("../../infrastructure/logger");
 
-const getApproverDetails = async (organisations, correlationId) => {
+const getApproverDetails = async (organisations) => {
   const allApproverIds = flatten(organisations.map((org) => org.approvers));
   const distinctApproverIds = uniq(allApproverIds);
   if (distinctApproverIds.length === 0) {
     return [];
   }
-  return await getUsersByIdV2(distinctApproverIds, correlationId);
+
+  return await getUsersRaw({ by: { userIds: distinctApproverIds } });
 };
 
-const getOrganisations = async (userId, correlationId) => {
+const getOrganisations = async (userId) => {
   const orgMapping = userId.startsWith("inv-")
     ? await getInvitationOrganisationsRaw({ invitationId: userId.substr(4) })
     : await getUserOrganisationsWithServicesRaw({ userId });
   if (!orgMapping) {
     return [];
   }
-  const allApprovers = await getApproverDetails(orgMapping, correlationId);
+  const allApprovers = await getApproverDetails(orgMapping);
   // Filter out all deactivated accounts
   const activeAccountApprovers = allApprovers.filter(
     (approver) => approver.status !== 0,
@@ -93,10 +92,10 @@ const action = async (req, res) => {
     ? dateFormat(user.lastLogin, "longDateFormat")
     : "";
   if (user.status.id === 0) {
-    const userStatus = await getUserStatus(user.id);
+    const userStatus = await getUserStatusRaw({ userId: user.id });
     user.statusChangeReasons = userStatus ? userStatus.statusChangeReasons : [];
   }
-  const organisationDetails = await getOrganisations(user.id, req.id);
+  const organisationDetails = await getOrganisations(user.id);
   const organisationRequests = !user.id.startsWith("inv-")
     ? await getPendingRequests(user.id)
     : [];

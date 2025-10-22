@@ -1,7 +1,6 @@
 jest.mock("./../../../src/infrastructure/config", () =>
   require("./../../utils").configMockFactory(),
 );
-jest.mock("./../../../src/infrastructure/directories");
 jest.mock("./../../../src/infrastructure/accessRequests");
 jest.mock("./../../../src/infrastructure/logger");
 jest.mock("login.dfe.jobs-client");

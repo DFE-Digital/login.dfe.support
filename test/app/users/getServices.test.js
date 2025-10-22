@@ -5,7 +5,6 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
 jest.mock("./../../../src/app/users/utils");
-jest.mock("./../../../src/infrastructure/directories");
 jest.mock("./../../../src/infrastructure/serviceMapping");
 jest.mock("./../../../src/infrastructure/audit");
 jest.mock("../../../src/app/services/utils", () => ({
@@ -18,12 +17,12 @@ jest.mock("ioredis");
 const { getUserDetailsById } = require("./../../../src/app/users/utils");
 const {
   getUserOrganisationsWithServicesRaw,
+  getUserStatusRaw,
 } = require("login.dfe.api-client/users");
 const {
   getClientIdForServiceId,
 } = require("./../../../src/infrastructure/serviceMapping");
 const { getAllServices } = require("../../../src/app/services/utils");
-const { getUserStatus } = require("./../../../src/infrastructure/directories");
 
 const getServices = require("./../../../src/app/users/getServices");
 
@@ -61,8 +60,8 @@ describe("when getting users service details", () => {
       },
     });
 
-    getUserStatus.mockReset();
-    getUserStatus.mockReturnValue({
+    getUserStatusRaw.mockReset();
+    getUserStatusRaw.mockReturnValue({
       id: "user1",
       status: 0,
       statusChangeReasons: [
@@ -325,7 +324,7 @@ describe("when getting users service details", () => {
   });
 
   it("should include an empty statusChangeReasons in the user model one is not found", async () => {
-    getUserStatus.mockReturnValue(null);
+    getUserStatusRaw.mockReturnValue(null);
     getUserDetailsById.mockReturnValue({
       id: "user1",
       status: {
