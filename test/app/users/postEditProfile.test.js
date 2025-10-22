@@ -5,7 +5,7 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
 jest.mock("./../../../src/app/users/utils");
-jest.mock("./../../../src/infrastructure/directories");
+jest.mock("login.dfe.api-client/invitations");
 jest.mock("./../../../src/infrastructure/users");
 jest.mock("login.dfe.api-client/users", () => ({
   updateUser: jest.fn(),
@@ -17,7 +17,7 @@ const {
   getUserDetailsById,
   updateUserDetails,
 } = require("./../../../src/app/users/utils");
-const { updateInvite } = require("./../../../src/infrastructure/directories");
+const { updateInvitation } = require("login.dfe.api-client/invitations");
 const postEditProfile = require("./../../../src/app/users/postEditProfile");
 const { updateUser } = require("login.dfe.api-client/users");
 
@@ -87,7 +87,7 @@ describe("when updating users profile details", () => {
     updateUserDetails.mockReset();
 
     updateUser.mockReset();
-    updateInvite.mockReset();
+    updateInvitation.mockReset();
   });
 
   it("then it should render view if firstName missing", async () => {
@@ -175,18 +175,17 @@ describe("when updating users profile details", () => {
     });
   });
 
-  it("should call updateInvite if updating an invited user", async () => {
+  it("should call updateInvitation if updating an invited user", async () => {
     req.params.uid = "inv-915a7382-576b-4699-ad07-a9fd329d3867";
 
     await postEditProfile(req, res);
 
     expect(updateUser).not.toHaveBeenCalled();
-    expect(updateInvite).toHaveBeenCalled();
-    expect(updateInvite.mock.calls).toHaveLength(1);
-    expect(updateInvite.mock.calls[0][0]).toBe(
-      "915a7382-576b-4699-ad07-a9fd329d3867",
-    );
-    expect(updateInvite.mock.calls[0][1].firstName).toBe("Rupert");
-    expect(updateInvite.mock.calls[0][1].lastName).toBe("Grint");
+    expect(updateInvitation).toHaveBeenCalled();
+    expect(updateInvitation).toHaveBeenCalledWith({
+      firstName: "Rupert",
+      invitationId: "915a7382-576b-4699-ad07-a9fd329d3867",
+      lastName: "Grint",
+    });
   });
 });
