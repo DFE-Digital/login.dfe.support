@@ -26,7 +26,7 @@ jest.mock("./../../../src/infrastructure/utils", () => ({
 }));
 
 jest.mock("./../../../src/app/users/utils", () => ({
-  getUserDetails: jest.fn(),
+  getUserDetailsById: jest.fn(),
 }));
 jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.policy-engine");

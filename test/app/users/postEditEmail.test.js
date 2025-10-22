@@ -16,7 +16,6 @@ const {
   createUserVerificationCodeRaw,
 } = require("login.dfe.api-client/users");
 const {
-  getUserDetails,
   getUserDetailsById,
   updateUserDetails,
 } = require("./../../../src/app/users/utils");
@@ -93,8 +92,6 @@ describe("when changing email address", () => {
     };
 
     logger.audit.mockReset();
-
-    getUserDetails.mockReset().mockReturnValue(userDetails);
 
     getUserDetailsById.mockReset().mockReturnValue(userDetails);
 
@@ -243,9 +240,13 @@ describe("when changing email address", () => {
     beforeEach(() => {
       req.params.uid = "inv-35f60ab3-e169-41ec-bc88-d80e1beef937";
 
-      getUserDetails.mockReturnValue(Object.assign({}, inviteDetails));
-
-      getUserDetailsById.mockReturnValue(Object.assign({}, inviteDetails));
+      // Need to force the mock to return 2 separate objects (with the same data) as only
+      // doing mockReturnValue once was causing issues where changes to the object after the
+      // first call were being reflected in the 2nd call, even though they were
+      // in separate functions
+      getUserDetailsById
+        .mockReturnValueOnce(structuredClone(inviteDetails))
+        .mockReturnValue(structuredClone(inviteDetails));
     });
 
     it("then it should update invitation with new email", async () => {

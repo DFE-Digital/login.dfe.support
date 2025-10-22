@@ -9,7 +9,6 @@ const {
 } = require("login.dfe.api-client/users");
 
 const {
-  getUserDetails,
   getUserDetailsById,
   updateUserDetails,
   waitForIndexToUpdate,
@@ -44,10 +43,10 @@ const codeExpiry = (updatedAt) => {
 };
 
 const updateUserIndex = async (uid, pendingEmail) => {
-  const user = await getUserDetailsById(uid);
-  user.pendingEmail = pendingEmail;
+  const userToBeUpdated = await getUserDetailsById(uid);
+  userToBeUpdated.pendingEmail = pendingEmail;
 
-  await updateUserDetails(user);
+  await updateUserDetails(userToBeUpdated);
 
   await waitForIndexToUpdate(
     uid,
@@ -97,11 +96,11 @@ const updateUserEmail = async (req, model, user) => {
 };
 
 const updateInvitationIndex = async (uid, newEmail) => {
-  const user = await getUserDetailsById(uid);
+  const userToBeUpdated = await getUserDetailsById(uid);
 
-  user.email = newEmail;
+  userToBeUpdated.email = newEmail;
 
-  await updateUserDetails(user);
+  await updateUserDetails(userToBeUpdated);
 
   await waitForIndexToUpdate(
     uid,
@@ -137,7 +136,7 @@ const updateInvitationEmail = async (req, model, user) => {
 };
 
 const postEditEmail = async (req, res) => {
-  const user = await getUserDetails(req);
+  const user = await getUserDetailsById(req.params.uid, req);
 
   const model = await validate(req);
   if (Object.keys(model.validationMessages).length > 0) {

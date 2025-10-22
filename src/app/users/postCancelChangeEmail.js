@@ -2,7 +2,6 @@ const logger = require("../../infrastructure/logger");
 const { deleteUserVerificationCode } = require("login.dfe.api-client/users");
 
 const {
-  getUserDetails,
   getUserDetailsById,
   updateUserDetails,
   waitForIndexToUpdate,
@@ -18,7 +17,7 @@ const updateUserIndex = async (uid) => {
 };
 
 const postCancelChangeEmail = async (req, res) => {
-  const user = await getUserDetails(req);
+  const user = await getUserDetailsById(req);
 
   await deleteUserVerificationCode({
     userId: req.params.uid,

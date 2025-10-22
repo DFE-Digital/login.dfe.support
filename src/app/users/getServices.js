@@ -2,7 +2,7 @@ const {
   sendResult,
   isInternalEntraUser,
 } = require("../../infrastructure/utils");
-const { getUserDetails } = require("./utils");
+const { getUserDetailsById } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const {
   getInvitationOrganisationsRaw,
@@ -59,7 +59,7 @@ const getOrganisations = async (userId) => {
 };
 
 const action = async (req, res) => {
-  const user = await getUserDetails(req);
+  const user = await getUserDetailsById(req.params.uid, req);
   const showChangeEmail = !isInternalEntraUser(user);
   user.formattedLastLogin = user.lastLogin
     ? dateFormat(user.lastLogin, "longDateFormat")
