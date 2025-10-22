@@ -1,6 +1,4 @@
-const {
-  getUserOrganisationsV2,
-} = require("./../../infrastructure/organisations");
+const { getUserOrganisationsRaw } = require("login.dfe.api-client/users");
 const {
   getInvitationOrganisationsRaw,
 } = require("login.dfe.api-client/invitations");
@@ -13,7 +11,7 @@ const getNaturalIdentifiers = async (req) => {
   const userId = req.params.uid;
   const userOrganisations = userId.startsWith("inv-")
     ? await getInvitationOrganisationsRaw({ invitationId: userId.substr(4) })
-    : await getUserOrganisationsV2(req.params.uid, req.id);
+    : await getUserOrganisationsRaw({ userId });
   for (let i = 0; i < userOrganisations.length; i++) {
     const org = userOrganisations[i];
     if (org.organisation) {
