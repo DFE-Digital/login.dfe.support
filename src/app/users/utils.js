@@ -223,10 +223,6 @@ const searchForBulkUsersPage = async (email) => {
   };
 };
 
-const getUserDetails = async (req) => {
-  return getUserDetailsById(req.params.uid, req, req.id);
-};
-
 const mapUserToSupportModel = (user, userFromSearch) => {
   return {
     id: user.sub,
@@ -264,6 +260,10 @@ const checkManageAccess = async (arr) => {
   );
 };
 
+const getUserDetails = async (req) => {
+  return getUserDetailsById(req.params.uid, req, req.id);
+};
+
 const getUserDetailsById = async (uid, req) => {
   if (uid.startsWith("inv-")) {
     const invitation = await getInvitationRaw({ by: { id: uid.substr(4) } });
@@ -293,10 +293,15 @@ const getUserDetailsById = async (uid, req) => {
     const serviceDetails = await getUserServicesRaw({ userId: uid });
     const hasManageAccess = await checkManageAccess(serviceDetails ?? []);
 
-    // if (!user.entraOid)  {
-    // const entraData = getEntraAccountIdByEmail(user.email);
-    // If not empty, populate the user object with it user.entraOid = entraData.id;  Otherwise do nothing
-    //}
+    // No entra data in our database, check entra incase somehow the link has been broken
+    if (!user.entraOid) {
+      const entraData = await req.externalAuth.getEntraAccountIdByEmail(
+        user.email,
+      );
+      if (entraData) {
+        user.entraOid = entraData.id;
+      }
+    }
 
     return {
       id: uid,
@@ -307,6 +312,8 @@ const getUserDetailsById = async (uid, req) => {
       isEntra: user.isEntra,
       isInternalUser: user.isInternalUser,
       entraOid: user.entraOid,
+      entraDeferUntil:
+        user.isEntra && !user.entraOid ? user.entraDeferUntil : "N/A",
       lastLogin: user.lastLogin,
       status: user.status,
       loginsInPast12Months: {
