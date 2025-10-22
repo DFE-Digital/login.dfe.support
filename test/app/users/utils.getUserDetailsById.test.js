@@ -27,6 +27,9 @@ describe("When getting user details for an invited user", () => {
       params: {
         uid: "inv-user1",
       },
+      externalAuth: {
+        getEntraAccountIdByEmail: jest.fn(),
+      },
     };
   });
 

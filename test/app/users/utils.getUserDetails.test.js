@@ -57,6 +57,9 @@ describe("When getting user details", () => {
       params: {
         uid: "user1",
       },
+      externalAuth: {
+        getEntraAccountIdByEmail: jest.fn(),
+      },
     };
   });
 
