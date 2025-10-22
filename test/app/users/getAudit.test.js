@@ -3,7 +3,6 @@ jest.mock("./../../../src/infrastructure/config", () =>
 );
 jest.mock("./../../../src/infrastructure/utils");
 jest.mock("./../../../src/app/users/utils");
-jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("login.dfe.api-client/services", () => ({
   getServiceRaw: jest.fn(),
 }));

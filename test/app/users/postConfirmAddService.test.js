@@ -4,7 +4,6 @@ jest.mock("./../../../src/infrastructure/config", () =>
 jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
-jest.mock("./../../../src/infrastructure/organisations");
 jest.mock("../../../src/app/services/utils", () => ({
   getAllServices: jest.fn(),
   isSupportEmailNotificationAllowed: jest.fn(),
