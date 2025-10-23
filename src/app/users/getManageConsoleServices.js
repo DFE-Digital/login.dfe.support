@@ -5,7 +5,7 @@ const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { getUserDetailsById } = require("./utils");
 
 const buildModel = async (req) => {
-  const user = await getUserDetailsById(req);
+  const user = await getUserDetailsById(req.params.uid, req);
   user.formattedLastLogin = user.lastLogin
     ? dateFormat(user.lastLogin, "longDateFormat")
     : "";

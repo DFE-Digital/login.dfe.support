@@ -124,7 +124,7 @@ describe("When retrieving manage console services for a user", () => {
     await getManageConsoleServices(req, res);
 
     expect(getUserDetailsById).toHaveBeenCalled();
-    expect(getUserDetailsById.mock.calls[0]).toHaveLength(1);
+    expect(getUserDetailsById.mock.calls[0]).toHaveLength(2);
     expect(sendResult.mock.calls[0][3].user).toMatchObject({
       id: "user1",
     });

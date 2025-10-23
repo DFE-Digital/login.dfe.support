@@ -42,8 +42,8 @@ const codeExpiry = (updatedAt) => {
   return date > diff;
 };
 
-const updateUserIndex = async (uid, pendingEmail) => {
-  const userToBeUpdated = await getUserDetailsById(uid);
+const updateUserIndex = async (uid, pendingEmail, req) => {
+  const userToBeUpdated = await getUserDetailsById(uid, req);
   userToBeUpdated.pendingEmail = pendingEmail;
 
   await updateUserDetails(userToBeUpdated);
@@ -74,7 +74,7 @@ const updateUserEmail = async (req, model, user) => {
     selfInvoked: false,
   });
 
-  await updateUserIndex(user.id, model.email);
+  await updateUserIndex(user.id, model.email, req);
 
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) initiated a change of email for ${user.email} (id: ${user.id}) to ${model.email}`,
@@ -95,8 +95,8 @@ const updateUserEmail = async (req, model, user) => {
   );
 };
 
-const updateInvitationIndex = async (uid, newEmail) => {
-  const userToBeUpdated = await getUserDetailsById(uid);
+const updateInvitationIndex = async (uid, newEmail, req) => {
+  const userToBeUpdated = await getUserDetailsById(uid, req);
 
   userToBeUpdated.email = newEmail;
 
@@ -114,7 +114,7 @@ const updateInvitationEmail = async (req, model, user) => {
     invitationId,
     email: model.email,
   });
-  await updateInvitationIndex(user.id, model.email);
+  await updateInvitationIndex(user.id, model.email, req);
 
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) changed email on invitation for ${user.email} (id: ${user.id}) to ${model.email}`,

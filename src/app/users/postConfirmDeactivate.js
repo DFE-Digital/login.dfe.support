@@ -11,8 +11,8 @@ const {
 const { deactivateUser } = require("login.dfe.api-client/users");
 const { sendResult } = require("../../infrastructure/utils");
 
-const updateUserIndex = async (uid) => {
-  const user = await getUserDetailsById(uid);
+const updateUserIndex = async (uid, req) => {
+  const user = await getUserDetailsById(uid, req);
   user.status = {
     id: 0,
     description: "Deactivated",
@@ -82,7 +82,7 @@ const postConfirmDeactivate = async (req, res) => {
   }
 
   await deactivateUser({ userId: user.id, reason });
-  await updateUserIndex(user.id);
+  await updateUserIndex(user.id, req);
 
   if (req.body["remove-services-and-requests"]) {
     await rejectOpenUserServiceRequestsForUser(user.id, req);

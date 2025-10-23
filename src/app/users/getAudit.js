@@ -23,10 +23,10 @@ let cachedServiceIds = {};
 let cachedServices = {};
 let cachedUsers = {};
 
-const getCachedUserById = async (userId, reqId) => {
-  let key = `${userId}:${reqId}`;
+const getCachedUserById = async (userId, req) => {
+  let key = `${userId}:${req.id}`;
   if (!(key in cachedUsers)) {
-    const user = await getUserDetailsById(userId);
+    const user = await getUserDetailsById(userId, req);
     cachedUsers[key] = user;
   }
   return cachedUsers[key];
@@ -66,7 +66,7 @@ const describeAuditEvent = async (audit, req) => {
 
   if (audit.type === "support" && audit.subType === "user-edit") {
     const viewedUser = audit.editedUser
-      ? await getCachedUserById(audit.editedUser, req.id)
+      ? await getCachedUserById(audit.editedUser, req)
       : "";
     const editedStatusTo =
       audit.editedFields && audit.editedFields.find((x) => x.name === "status");
