@@ -145,6 +145,7 @@ describe("when editing a users permission level", () => {
     expect(res.render.mock.calls[0][0]).toBe("users/views/editPermissions");
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
+      currentPage: "users",
       userFullName: "James Howlett",
       selectedLevel: undefined,
       organisationName: "X-Men",
@@ -163,6 +164,7 @@ describe("when editing a users permission level", () => {
     expect(res.render.mock.calls[0][0]).toBe("users/views/editPermissions");
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
+      currentPage: "users",
       userFullName: "James Howlett",
       organisationName: "X-Men",
       selectedLevel: 999999,

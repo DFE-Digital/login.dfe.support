@@ -68,6 +68,7 @@ describe("when displaying organisation users", () => {
         {
           backLink: "/organisations",
           csrfToken: req.csrfToken(),
+          currentPage: "organisations",
           layout: "sharedViews/layout.ejs",
           organisation: orgResult,
           page: 2,

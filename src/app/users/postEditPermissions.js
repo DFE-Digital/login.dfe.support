@@ -22,6 +22,7 @@ const validatePermissions = (req) => {
   const model = {
     userFullName: `${req.session.user.firstName} ${req.session.user.lastName}`,
     organisationName: req.session.org.name,
+    currentPage: "users",
     selectedLevel: isNaN(level) ? undefined : level,
     validationMessages: {},
   };

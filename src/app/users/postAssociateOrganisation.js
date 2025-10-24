@@ -43,6 +43,7 @@ const postAssociateOrganisation = async (req, res) => {
     csrfToken: req.csrfToken(),
     layout: "sharedViews/layout.ejs",
     backLink: true,
+    currentPage: "users",
     criteria,
     results,
     page: pageNumber,

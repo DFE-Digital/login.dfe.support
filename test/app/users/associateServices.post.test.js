@@ -115,6 +115,7 @@ describe("when adding services to a user", () => {
       layout: "sharedViews/layout.ejs",
       name: "test name",
       backLink: "/users/user1/select-organisation",
+      currentPage: "users",
       organisationDetails: {
         organisation: {
           id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
@@ -188,6 +189,7 @@ describe("when adding services to a user", () => {
       layout: "sharedViews/layout.ejs",
       name: "test name",
       backLink: "/users/user1/select-organisation",
+      currentPage: "users",
       organisationDetails: {
         organisation: {
           id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",

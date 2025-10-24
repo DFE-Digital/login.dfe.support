@@ -62,6 +62,7 @@ const postManageConsoleRoles = async (req, res) => {
         manageConsoleRolesForSelectedService,
         userManageRoles,
         backLink: true,
+        currentPage: "users",
         validationMessages: {
           roleSelection: "You have selected an invalid role for this service",
         },

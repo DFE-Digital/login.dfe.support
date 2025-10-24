@@ -15,6 +15,7 @@ const getConfirmEditOrganisation = async (req, res) => {
   sendResult(req, res, "organisations/views/confirmEditOrganisation", {
     csrfToken: req.csrfToken(),
     backlink: "edit-organisation",
+    currentPage: "organisations",
     organisation,
     name,
     address,

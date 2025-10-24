@@ -64,6 +64,7 @@ const get = async (req, res) => {
 
   const model = {
     csrfToken: req.csrfToken(),
+    currentPage: "users",
     name: req.session.user
       ? `${req.session.user.firstName} ${req.session.user.lastName}`
       : "",
@@ -110,6 +111,7 @@ const validate = async (req) => {
       userOrganisations.length > 1
         ? `/users/${req.params.uid}/select-organisation`
         : `/users/${req.params.uid}/organisations`,
+    currentPage: "users",
     organisationDetails,
     services: externalServices,
     selectedServices,

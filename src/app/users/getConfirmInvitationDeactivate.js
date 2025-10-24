@@ -5,6 +5,7 @@ const getConfirmDeactivate = (req, res) => {
     csrfToken: req.csrfToken(),
     layout: "sharedViews/layout.ejs",
     backLink: "services",
+    currentPage: "users",
     reason: "",
     validationMessages: {},
   });

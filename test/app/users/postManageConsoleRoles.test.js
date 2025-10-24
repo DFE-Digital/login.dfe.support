@@ -1,4 +1,3 @@
-jest.mock("login.dfe.jwt-strategies");
 jest.mock("./../../../src/infrastructure/config", () =>
   require("./../../utils").configMockFactory({
     support: {
@@ -38,7 +37,6 @@ jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.api-client/users");
 
 // Import dependencies
-const jwtStrategy = require("login.dfe.jwt-strategies");
 const postManageConsoleRoles = require("./../../../src/app/users/postManageConsoleRoles");
 const {
   getServiceRolesRaw,
@@ -58,13 +56,6 @@ const {
 
 describe("when changing a user's manage console access", () => {
   let req, res;
-
-  // Common setup
-  beforeAll(() => {
-    jwtStrategy.mockImplementation(() => ({
-      getBearerToken: jest.fn().mockReturnValue("token"),
-    }));
-  });
 
   beforeEach(() => {
     req = {

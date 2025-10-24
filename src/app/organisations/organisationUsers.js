@@ -39,6 +39,7 @@ const render = async (req, res, dataSource) => {
     csrfToken: req.csrfToken(),
     layout: "sharedViews/layout.ejs",
     backLink: "/organisations",
+    currentPage: "organisations",
     organisation: organisation,
     users,
     page: pageNumber,

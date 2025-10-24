@@ -9,6 +9,7 @@ const getEditOrganisation = async (req, res) => {
   sendResult(req, res, "organisations/views/editOrganisation", {
     csrfToken: req.csrfToken(),
     backlink: "users",
+    currentPage: "organisations",
     organisation,
     validationMessages: {},
   });

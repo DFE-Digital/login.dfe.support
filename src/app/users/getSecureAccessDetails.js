@@ -17,6 +17,7 @@ const getSecureDetails = async (req, res) => {
     csrfToken: req.csrfToken(),
     user,
     secureAccessDetails,
+    currentPage: "users",
     isInvitation: req.params.uid.startsWith("inv-"),
     organisations: userOrganisations,
   });

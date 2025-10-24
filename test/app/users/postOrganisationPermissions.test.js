@@ -49,6 +49,7 @@ describe("when associating user to organisations", () => {
     );
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
+      currentPage: "users",
       userFullName: "James Howlett",
       organisationName: "X-Men",
       selectedLevel: undefined,
@@ -69,6 +70,7 @@ describe("when associating user to organisations", () => {
     );
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
+      currentPage: "users",
       userFullName: "James Howlett",
       organisationName: "X-Men",
       selectedLevel: 999999999,

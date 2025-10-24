@@ -68,6 +68,7 @@ const getViewModel = async (req) => {
     user: req.session.user,
     validationMessages: {},
     backLink: true,
+    currentPage: "users",
     organisationDetails,
     selectedRoles,
     serviceDetails,
