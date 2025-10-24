@@ -22,6 +22,7 @@ const getDeleteOrganisation = async (req, res) => {
 
   return res.render("users/views/removeOrganisation", {
     backLink: true,
+    currentPage: "users",
     csrfToken: req.csrfToken(),
     organisationDetails,
     services: servicesForUser,

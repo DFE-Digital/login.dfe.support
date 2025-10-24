@@ -76,6 +76,7 @@ describe("when postEditOrganisation is called", () => {
       validationMessages: {},
       backLink: "users",
       csrfToken: "token",
+      currentPage: "organisations",
     };
   });
 
@@ -131,6 +132,7 @@ describe("when postEditOrganisation is called", () => {
         name: "You cannot edit Government organisations",
       },
       backLink: "users",
+      currentPage: "organisations",
       csrfToken: "token",
     };
     getOrganisationRaw.mockReset().mockReturnValue(orgResultInvalidCategory);
@@ -166,6 +168,7 @@ describe("when postEditOrganisation is called", () => {
       {
         csrfToken: req.csrfToken(),
         backLink: "users",
+        currentPage: "organisations",
         organisation: {
           category: {
             id: "008",
