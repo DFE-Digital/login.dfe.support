@@ -8,7 +8,6 @@ const { getUserDetailsById } = require("../../../src/app/users/utils");
 
 describe("When getting user details for an invited user", () => {
   let req;
-  const correlationId = "correlation-id";
 
   beforeEach(() => {
     getInvitationRaw.mockReset().mockReturnValue({
