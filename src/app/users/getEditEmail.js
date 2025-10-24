@@ -1,8 +1,8 @@
 const { sendResult } = require("./../../infrastructure/utils");
-const { getUserDetails } = require("./utils");
+const { getUserDetailsById } = require("./utils");
 
 const getEditEmail = async (req, res) => {
-  const user = await getUserDetails(req);
+  const user = await getUserDetailsById(req.params.uid, req);
 
   sendResult(req, res, "users/views/editEmail", {
     csrfToken: req.csrfToken(),

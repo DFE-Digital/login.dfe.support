@@ -1,6 +1,5 @@
 const logger = require("../../infrastructure/logger");
 const {
-  getUserDetails,
   getUserDetailsById,
   updateUserDetails,
   waitForIndexToUpdate,
@@ -9,8 +8,8 @@ const {
 const { sendResult } = require("../../infrastructure/utils");
 const { updateInvitation } = require("login.dfe.api-client/invitations");
 
-const updateUserIndex = async (uid) => {
-  const user = await getUserDetailsById(uid);
+const updateUserIndex = async (uid, req) => {
+  const user = await getUserDetailsById(uid, req);
   user.status.id = -2;
   user.status.description = "Deactivated Invitation";
 
@@ -20,7 +19,7 @@ const updateUserIndex = async (uid) => {
 };
 
 const postConfirmDeactivate = async (req, res) => {
-  const user = await getUserDetails(req);
+  const user = await getUserDetailsById(req.params.uid, req);
   const isDefaultDropdownReasonSelected =
     req.body["select-reason"] &&
     req.body["select-reason"] === "Select a reason";
@@ -53,7 +52,7 @@ const postConfirmDeactivate = async (req, res) => {
       reason: req.body.reason,
       deactivated: true,
     });
-    await updateUserIndex(user.id);
+    await updateUserIndex(user.id, req);
     if (req.body["remove-services-and-requests"]) {
       await removeAllServicesForInvitedUser(user.id, req);
     }

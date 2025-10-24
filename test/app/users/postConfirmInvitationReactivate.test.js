@@ -10,7 +10,6 @@ jest.mock("./../../../src/infrastructure/logger", () =>
 const { getRequestMock } = require("./../../utils");
 const post = require("./../../../src/app/users/postConfirmInvitationReactivate");
 const {
-  getUserDetails,
   getUserDetailsById,
   updateUserDetails,
 } = require("./../../../src/app/users/utils");
@@ -34,10 +33,6 @@ describe("When processing a post for a user invitation reactivate request", () =
       redirect: jest.fn(),
       flash: jest.fn(),
     };
-
-    getUserDetails
-      .mockReset()
-      .mockReturnValue({ id: expectedUserId, status: { id: 1 } });
 
     getUserDetailsById
       .mockReset()

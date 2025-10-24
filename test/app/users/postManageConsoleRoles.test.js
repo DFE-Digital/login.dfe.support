@@ -29,7 +29,6 @@ jest.mock("./../../../src/app/users/utils", () => {
 
   return {
     callServiceToUserFunc: actual.callServiceToUserFunc,
-    getUserDetails: jest.fn(),
     getUserDetailsById: jest.fn(),
   };
 });
@@ -50,7 +49,7 @@ const {
   getUserServiceRaw,
   addOrganisationToUser,
 } = require("login.dfe.api-client/users");
-const { getUserDetails } = require("./../../../src/app/users/utils");
+const { getUserDetailsById } = require("./../../../src/app/users/utils");
 const {
   getSingleServiceForUser,
   checkIfRolesChanged,
@@ -143,7 +142,7 @@ describe("when changing a user's manage console access", () => {
 
   it("should successfully update user services", async () => {
     checkIfRolesChanged.mockResolvedValue(false);
-    getUserDetails.mockResolvedValue({
+    getUserDetailsById.mockResolvedValue({
       hasManageAccess: true,
     });
 
@@ -159,7 +158,7 @@ describe("when changing a user's manage console access", () => {
   });
 
   it("should redirect the user to the manage console services endpoint with a flash message if updating the service", async () => {
-    getUserDetails.mockResolvedValue({
+    getUserDetailsById.mockResolvedValue({
       hasManageAccess: true,
     });
 
@@ -177,7 +176,7 @@ describe("when changing a user's manage console access", () => {
   });
 
   it("should redirect the user to the manage console services endpoint with a flash message if adding the service", async () => {
-    getUserDetails.mockResolvedValue({
+    getUserDetailsById.mockResolvedValue({
       hasManageAccess: false,
     });
 
@@ -196,7 +195,7 @@ describe("when changing a user's manage console access", () => {
 
   it("should call addServiceToUser if hasManageAccess is false", async () => {
     checkIfRolesChanged.mockResolvedValue(false);
-    getUserDetails.mockResolvedValue({
+    getUserDetailsById.mockResolvedValue({
       hasManageAccess: false,
     });
 

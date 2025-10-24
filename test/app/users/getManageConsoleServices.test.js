@@ -8,7 +8,7 @@ jest.mock("../../../src/app/services/utils", () => ({
   getAllServices: jest.fn(),
 }));
 jest.mock("./../../../src/app/users/utils", () => ({
-  getUserDetails: jest.fn(),
+  getUserDetailsById: jest.fn(),
 }));
 jest.mock("login.dfe.api-client/services", () => ({
   getPaginatedServicesRaw: jest.fn(),
@@ -17,7 +17,7 @@ const getManageConsoleServices = require("./../../../src/app/users/getManageCons
 const { sendResult } = require("./../../../src/infrastructure/utils");
 const { getAllServices } = require("../../../src/app/services/utils");
 const { getPaginatedServicesRaw } = require("login.dfe.api-client/services");
-const { getUserDetails } = require("./../../../src/app/users/utils");
+const { getUserDetailsById } = require("./../../../src/app/users/utils");
 
 describe("When retrieving manage console services for a user", () => {
   let req;
@@ -44,8 +44,8 @@ describe("When retrieving manage console services for a user", () => {
       render: jest.fn(),
     };
 
-    getUserDetails.mockReset();
-    getUserDetails.mockReturnValue({
+    getUserDetailsById.mockReset();
+    getUserDetailsById.mockReturnValue({
       id: "user1",
     });
 
@@ -123,8 +123,8 @@ describe("When retrieving manage console services for a user", () => {
   it("should call getUserDetails", async () => {
     await getManageConsoleServices(req, res);
 
-    expect(getUserDetails).toHaveBeenCalled();
-    expect(getUserDetails.mock.calls[0]).toHaveLength(1);
+    expect(getUserDetailsById).toHaveBeenCalled();
+    expect(getUserDetailsById.mock.calls[0]).toHaveLength(2);
     expect(sendResult.mock.calls[0][3].user).toMatchObject({
       id: "user1",
     });
