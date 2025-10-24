@@ -27,6 +27,7 @@ const { searchAndMapUsers } = require("./userSearchHelpers/searchAndMapUsers");
 const {
   updateRequestForOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
+const { dateFormat } = require("../helpers/dateFormatterHelper");
 
 const delay = async (milliseconds) => {
   return new Promise((resolve) => {
@@ -308,8 +309,13 @@ const getUserDetailsById = async (uid, req) => {
       isEntra: user.isEntra,
       isInternalUser: user.isInternalUser,
       entraOid: user.entraOid,
+      entraLinked: user.entraLinked
+        ? dateFormat(user.entraLinked, "longDateFormat")
+        : null,
       entraDeferUntil:
-        user.isEntra && !user.entraOid ? user.entraDeferUntil : "N/A",
+        user.isEntra && !user.entraOid
+          ? dateFormat(user.entraDeferUntil, "longDateFormat")
+          : null,
       lastLogin: user.lastLogin,
       status: user.status,
       loginsInPast12Months: {
