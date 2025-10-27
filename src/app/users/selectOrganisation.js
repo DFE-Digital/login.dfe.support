@@ -57,6 +57,7 @@ const get = async (req, res) => {
     csrfToken: req.csrfToken(),
     layout: "sharedViews/layout.ejs",
     backLink: "organisations",
+    currentPage: "users",
     organisations: userOrganisations,
     selectedOrganisation: null,
     validationMessages: {},

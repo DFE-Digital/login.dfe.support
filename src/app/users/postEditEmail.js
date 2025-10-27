@@ -23,6 +23,7 @@ const validate = async (req) => {
     validationMessages: {},
     layout: "sharedViews/layout.ejs",
     backLink: "services",
+    currentPage: "users",
   };
 
   if (!model.email || model.email.trim().length === 0) {

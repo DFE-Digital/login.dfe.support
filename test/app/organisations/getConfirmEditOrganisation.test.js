@@ -40,6 +40,7 @@ describe("when calling getConfirmEditOrganisation", () => {
         csrfToken: req.csrfToken(),
         organisation: orgResult,
         backlink: "edit-organisation",
+        currentPage: "organisations",
         name: "Test name",
         address: "123 address street",
         validationMessages: {},

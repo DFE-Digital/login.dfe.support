@@ -8,6 +8,7 @@ const validateInput = async (req) => {
     firstName: req.body.firstName || "",
     layout: "sharedViews/layout.ejs",
     backLink: "/users",
+    currentPage: "users",
     lastName: req.body.lastName || "",
     email: req.body.email || "",
     validationMessages: {},

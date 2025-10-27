@@ -296,6 +296,7 @@ const getAudit = async (req, res) => {
       req.session?.params?.searchType === "organisations"
         ? "/organisations"
         : "/users",
+    currentPage: "users",
     user,
     showChangeEmail,
     organisations: userOrganisations,

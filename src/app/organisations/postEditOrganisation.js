@@ -14,6 +14,7 @@ const validateInput = async (req) => {
   const model = {
     csrfToken: req.csrfToken(),
     backLink: "users",
+    currentPage: "organisations",
     organisation,
     validationMessages: {},
   };

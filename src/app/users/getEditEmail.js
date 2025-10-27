@@ -9,6 +9,7 @@ const getEditEmail = async (req, res) => {
     layout: "sharedViews/layout.ejs",
     user,
     backLink: "services",
+    currentPage: "users",
     email: user.email,
     validationMessages: {},
   });

@@ -32,6 +32,7 @@ describe("when calling getEditOrganisations", () => {
       {
         csrfToken: req.csrfToken(),
         organisation: orgResult,
+        currentPage: "organisations",
         backlink: "users",
         validationMessages: {},
       },

@@ -71,6 +71,7 @@ describe("When adding new users personal details", () => {
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
       backLink: "/users",
+      currentPage: "users",
       layout: "sharedViews/layout.ejs",
       firstName: "",
       lastName: "Howlett",
@@ -92,6 +93,7 @@ describe("When adding new users personal details", () => {
       csrfToken: "token",
       firstName: "James",
       backLink: "/users",
+      currentPage: "users",
       layout: "sharedViews/layout.ejs",
       lastName: "",
       email: "logan@x-men.test",
@@ -111,6 +113,7 @@ describe("When adding new users personal details", () => {
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
       backLink: "/users",
+      currentPage: "users",
       layout: "sharedViews/layout.ejs",
       firstName: "James",
       lastName: "Howlett",
@@ -131,6 +134,7 @@ describe("When adding new users personal details", () => {
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
       backLink: "/users",
+      currentPage: "users",
       layout: "sharedViews/layout.ejs",
       firstName: "James",
       lastName: "Howlett",
@@ -150,6 +154,7 @@ describe("When adding new users personal details", () => {
     expect(res.render.mock.calls[0][0]).toBe("users/views/newUser");
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
+      currentPage: "users",
       backLink: "/users",
       layout: "sharedViews/layout.ejs",
       firstName: "James",
