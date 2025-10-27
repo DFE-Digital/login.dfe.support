@@ -99,12 +99,10 @@
                 <dt class="govuk-summary-list__key govuk-!-padding-0">Entra linked date:</dt>
                 <dd class="govuk-summary-list__value govuk-!-padding-0"><%= user.entraLinked ? user.entraLinked : 'Not linked' %></dd>
             </div>
-            <% if(!user.isEntra && user.entraDeferUntil) { %>
             <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key govuk-!-padding-0">Entra deferred date:</dt>
-                <dd class="govuk-summary-list__value govuk-!-padding-0"><%= user.entraDeferUntil %></dd>
+                <dd class="govuk-summary-list__value govuk-!-padding-0"><%= user.entraDeferUntil && !user.entraOid ? user.entraDeferUntil : 'N/A' %></dd>
             </div>
-            <% } %>
         </dl>
     </div>
 
