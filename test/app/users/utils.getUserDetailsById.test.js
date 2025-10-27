@@ -16,7 +16,6 @@ const { getUserDetailsById } = require("../../../src/app/users/utils");
 const {
   getSearchDetailsForUserById,
 } = require("../../../src/app/users/userSearchHelpers/getSearchDetailsForUserById");
-const { data } = require("../../../src/infrastructure/logger");
 
 describe("When using the getUserDetailsById function", () => {
   describe("When getting user details for an invited user", () => {
