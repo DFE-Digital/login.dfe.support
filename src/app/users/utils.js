@@ -235,6 +235,7 @@ const mapUserToSupportModel = (user, userFromSearch) => {
     isInternalUser: user.isInternalUser,
     entraOid: user.entraOid,
     entraLinked: user.entraLinked,
+    entraDeferUntil: user.entraDeferUntil,
     organisation: userFromSearch.primaryOrganisation
       ? {
           name: userFromSearch.primaryOrganisation,
@@ -290,13 +291,13 @@ const getUserDetailsById = async (uid, req) => {
     const serviceDetails = await getUserServicesRaw({ userId: uid });
     const hasManageAccess = await checkManageAccess(serviceDetails ?? []);
 
-    // No entra data in our database, check entra incase somehow the link has been broken
-    if (!user.entraOid) {
+    // If user has entra but no entraOid in our database, check entra incase the link has been broken
+    if (user.isEntra && !user.entraOid) {
       const entraData = await req.externalAuth.getEntraAccountIdByEmail(
         user.email,
       );
       if (entraData) {
-        user.entraOid = entraData.id;
+        user.entraOid = entraData;
       }
     }
 
@@ -312,10 +313,9 @@ const getUserDetailsById = async (uid, req) => {
       entraLinked: user.entraLinked
         ? dateFormat(user.entraLinked, "longDateFormat")
         : null,
-      entraDeferUntil:
-        user.isEntra && !user.entraOid
-          ? dateFormat(user.entraDeferUntil, "longDateFormat")
-          : null,
+      entraDeferUntil: user.entraDeferUntil
+        ? dateFormat(user.entraDeferUntil, "longDateFormat")
+        : null,
       lastLogin: user.lastLogin,
       status: user.status,
       loginsInPast12Months: {
