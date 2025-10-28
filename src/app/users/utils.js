@@ -293,11 +293,11 @@ const getUserDetailsById = async (uid, req) => {
 
     // If user has entra but no entraOid in our database, check entra incase the link has been broken
     if (user.isEntra && !user.entraOid) {
-      const entraData = await req.externalAuth.getEntraAccountIdByEmail(
+      const entraOid = await req.externalAuth.getEntraAccountIdByEmail(
         user.email,
       );
-      if (entraData) {
-        user.entraOid = entraData;
+      if (entraOid) {
+        user.entraOid = entraOid;
       }
     }
 
