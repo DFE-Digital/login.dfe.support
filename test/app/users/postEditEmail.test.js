@@ -119,6 +119,7 @@ describe("when changing email address", () => {
       csrfToken: "token",
       layout: "sharedViews/layout.ejs",
       backLink: "services",
+      currentPage: "users",
       email: "",
       user: userDetails,
       validationMessages: {
@@ -137,6 +138,7 @@ describe("when changing email address", () => {
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
       backLink: "services",
+      currentPage: "users",
       layout: "sharedViews/layout.ejs",
       email: "not-an-email-address",
       user: userDetails,
@@ -157,6 +159,7 @@ describe("when changing email address", () => {
       csrfToken: "token",
       layout: "sharedViews/layout.ejs",
       backLink: "services",
+      currentPage: "users",
       email: "rupert.grint@hogwarts.school.test",
       user: userDetails,
       validationMessages: {

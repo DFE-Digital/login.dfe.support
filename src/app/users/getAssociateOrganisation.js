@@ -20,6 +20,7 @@ const getAssociateOrganisation = async (req, res) => {
       csrfToken: req.csrfToken(),
       layout: "sharedViews/layout.ejs",
       backLink: true,
+      currentPage: "users",
       criteria: "",
       results: undefined,
       page: 1,

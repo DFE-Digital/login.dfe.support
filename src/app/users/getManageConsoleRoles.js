@@ -78,6 +78,7 @@ const getManageConsoleRoles = async (req, res) => {
     manageConsoleRolesForSelectedService,
     userManageRoles,
     backLink: true,
+    currentPage: "users",
     cancelLink: `/users/${user.id}/organisations`,
   });
 };

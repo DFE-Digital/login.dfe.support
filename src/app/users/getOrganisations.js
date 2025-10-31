@@ -153,6 +153,7 @@ const action = async (req, res) => {
         ? "/organisations"
         : "/users",
     user,
+    currentPage: "users",
     showChangeEmail,
     organisations: sortedOrgs,
     isInvitation: req.params.uid.startsWith("inv-"),

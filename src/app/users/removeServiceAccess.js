@@ -28,6 +28,7 @@ const get = async (req, res) => {
 
   return res.render("users/views/removeService", {
     backLink: true,
+    currentPage: "users",
     csrfToken: req.csrfToken(),
     organisationDetails,
     service,

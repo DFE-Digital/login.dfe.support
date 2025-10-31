@@ -3,6 +3,7 @@ const getOrganisationPermissions = async (req, res) => {
     csrfToken: req.csrfToken(),
     layout: "sharedViews/layout.ejs",
     backLink: "associate-organisation",
+    currentPage: "users",
     userFullName: `${req.session.user.firstName} ${req.session.user.lastName}`,
     organisationName: req.session.user.organisationName,
     selectedLevel: req.session.user.permission || 0,

@@ -7,6 +7,7 @@ const validate = (req) => {
     organisationName: req.session.user.organisationName,
     selectedLevel: isNaN(level) ? undefined : level,
     validationMessages: {},
+    currentPage: "users",
   };
 
   if (model.selectedLevel === undefined || model.selectedLevel === null) {

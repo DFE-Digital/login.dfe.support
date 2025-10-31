@@ -143,6 +143,7 @@ const action = async (req, res) => {
     showChangeEmail,
     organisations: allOrganisationsForUser,
     isInvitation: req.params.uid.startsWith("inv-"),
+    currentPage: "users",
   });
 };
 
