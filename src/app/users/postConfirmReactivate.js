@@ -1,14 +1,13 @@
 const logger = require("../../infrastructure/logger");
 const {
-  getUserDetails,
   getUserDetailsById,
   updateUserDetails,
   waitForIndexToUpdate,
 } = require("./utils");
 const { activateUser } = require("login.dfe.api-client/users");
 
-const updateUserIndex = async (uid) => {
-  const user = await getUserDetailsById(uid);
+const updateUserIndex = async (req) => {
+  const user = await getUserDetailsById(req.params.uid, req);
   user.status = {
     id: 1,
     description: "Active",
@@ -16,14 +15,17 @@ const updateUserIndex = async (uid) => {
 
   await updateUserDetails(user);
 
-  await waitForIndexToUpdate(uid, (updated) => updated.status.id === 1);
+  await waitForIndexToUpdate(
+    req.params.uid,
+    (updated) => updated.status.id === 1,
+  );
 };
 
 const postConfirmReactivate = async (req, res) => {
-  const user = await getUserDetails(req);
+  const user = await getUserDetailsById(req.params.uid, req);
 
   await activateUser({ userId: req.params.uid });
-  await updateUserIndex(req.params.uid);
+  await updateUserIndex(req);
 
   // Audit
   logger.audit(

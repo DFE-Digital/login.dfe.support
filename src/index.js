@@ -27,6 +27,10 @@ const configSchema = require("./infrastructure/config/schema");
 const { isServiceCreator } = require("./infrastructure/utils");
 const { setupApi } = require("login.dfe.api-client/api/setup");
 
+const {
+  entraExternalAuthProvider,
+} = require("login.dfe.entra-auth-extensions/provider/index");
+
 const redisClient = new Redis(config.claims.params.connectionString);
 
 // Initialize store.
@@ -200,6 +204,20 @@ const init = async () => {
   });
 
   app.use(flash());
+
+  app.use(
+    entraExternalAuthProvider({
+      msal: {
+        cloudInstance: config.entra.cloudInstance,
+        tenantId: config.entra.tenantId,
+        clientId: config.entra.clientId,
+        clientSecret: config.entra.clientSecret,
+      },
+      graphApi: {
+        endpoint: config.entra.graphEndpoint,
+      },
+    }),
+  );
 
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(cookieParser(config.hostingEnvironment.sessionSecret));

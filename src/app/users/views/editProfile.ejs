@@ -44,8 +44,6 @@
           <input class="govuk-input govuk-!-width-one-half <%= (locals.validationMessages.lastName !== undefined) ? 'govuk-input--error' : '' %>" id="lastName" name="lastName" type="text" spellcheck="false" value="<%= locals.user.lastName %>">
         </div>
 
-        <input type="hidden" value="<%=locals.user.orgId%>" name="orgId" id="orgId" />
-        <input type="hidden" value="<%=locals.user.serviceId%>" name="serviceId" id="serviceId" />
         <div class="govuk-button-group">
           <button type="submit" class="govuk-button" data-module="govuk-button">
             Submit

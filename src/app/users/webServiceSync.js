@@ -4,7 +4,7 @@ const { getUserDetailsById } = require("./utils");
 const { ServiceNotificationsClient } = require("login.dfe.jobs-client");
 
 const get = async (req, res) => {
-  const user = await getUserDetailsById(req.params.uid);
+  const user = await getUserDetailsById(req.params.uid, req);
 
   sendResult(req, res, "users/views/webServiceSync", {
     csrfToken: req.csrfToken(),

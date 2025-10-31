@@ -13,7 +13,6 @@ jest.mock("login.dfe.api-client/users", () => ({
 
 const logger = require("./../../../src/infrastructure/logger");
 const {
-  getUserDetails,
   getUserDetailsById,
   updateUserDetails,
 } = require("./../../../src/app/users/utils");
@@ -50,7 +49,7 @@ describe("when updating users profile details", () => {
 
     logger.audit.mockReset();
 
-    getUserDetails.mockReset().mockReturnValue({
+    const userDetails = {
       id: "915a7382-576b-4699-ad07-a9fd329d3867",
       name: "Bobby Grint",
       firstName: "Bobby",
@@ -65,24 +64,13 @@ describe("when updating users profile details", () => {
       loginsInPast12Months: {
         successful: 0,
       },
-    });
+    };
 
-    getUserDetailsById.mockReset().mockReturnValue({
-      id: "915a7382-576b-4699-ad07-a9fd329d3867",
-      name: "Bobby Grint",
-      firstName: "Bobby",
-      lastName: "Grint",
-      email: "rupert.grint@hogwarts.test",
-      organisationName: "Hogwarts School of Witchcraft and Wizardry",
-      lastLogin: null,
-      status: {
-        id: 1,
-        description: "Active",
-      },
-      loginsInPast12Months: {
-        successful: 0,
-      },
-    });
+    // Need to force 2 separate objects for the 2 invocations of this function
+    getUserDetailsById
+      .mockReset()
+      .mockReturnValueOnce(structuredClone(userDetails))
+      .mockReturnValue(structuredClone(userDetails));
 
     updateUserDetails.mockReset();
 

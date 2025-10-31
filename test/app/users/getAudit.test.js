@@ -12,10 +12,7 @@ jest.mock("login.dfe.api-client/users");
 jest.mock("ioredis");
 jest.mock("login.dfe.api-client/organisations");
 
-const {
-  getUserDetails,
-  getUserDetailsById,
-} = require("./../../../src/app/users/utils");
+const { getUserDetailsById } = require("./../../../src/app/users/utils");
 const { sendResult } = require("./../../../src/infrastructure/utils");
 const { getPageOfUserAudits } = require("./../../../src/infrastructure/audit");
 const {
@@ -66,15 +63,6 @@ describe("when getting users audit details", () => {
     };
     res.render.mockReturnValue(res);
     res.status.mockReturnValue(res);
-
-    getUserDetails.mockReset();
-    getUserDetails.mockReturnValue({
-      id: "user1",
-      status: {
-        id: 1,
-        description: "Activated",
-      },
-    });
 
     getUserStatusRaw.mockReset();
     getUserStatusRaw.mockReturnValue({
@@ -352,13 +340,6 @@ describe("when getting users audit details", () => {
   });
 
   it("should include statusChangeReasons in the user model if the status is 0", async () => {
-    getUserDetails.mockReturnValue({
-      id: "user1",
-      status: {
-        id: 0,
-        description: "Dectivated",
-      },
-    });
     getUserDetailsById.mockReturnValue({
       id: "user1",
       status: {
@@ -389,13 +370,6 @@ describe("when getting users audit details", () => {
 
   it("should include an empty statusChangeReasons in the user model one is not found", async () => {
     getUserStatusRaw.mockReturnValue(null);
-    getUserDetails.mockReturnValue({
-      id: "user1",
-      status: {
-        id: 0,
-        description: "Dectivated",
-      },
-    });
     getUserDetailsById.mockReturnValue({
       id: "user1",
       status: {

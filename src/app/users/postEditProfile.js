@@ -1,7 +1,6 @@
 const logger = require("../../infrastructure/logger");
 const { sendResult } = require("../../infrastructure/utils");
 const {
-  getUserDetails,
   getUserDetailsById,
   updateUserDetails,
   waitForIndexToUpdate,
@@ -29,8 +28,8 @@ const validate = (req) => {
   };
 };
 
-const updateUserIndex = async (uid, firstName, lastName) => {
-  const user = await getUserDetailsById(uid);
+const updateUserIndex = async (uid, firstName, lastName, req) => {
+  const user = await getUserDetailsById(uid, req);
   user.name = `${firstName} ${lastName}`;
   user.firstName = firstName;
   user.lastName = lastName;
@@ -77,7 +76,7 @@ const auditEdit = (req, user) => {
 };
 
 const postEditProfile = async (req, res) => {
-  const user = await getUserDetails(req);
+  const user = await getUserDetailsById(req.params.uid, req);
   const validationResult = validate(req);
   if (!validationResult.isValid) {
     sendResult(req, res, "users/views/editProfile", {
@@ -101,12 +100,7 @@ const postEditProfile = async (req, res) => {
       lastName: req.body.lastName,
     });
 
-    await updateUserIndex(
-      user.id,
-      req.body.firstName,
-      req.body.lastName,
-      req.id,
-    );
+    await updateUserIndex(user.id, req.body.firstName, req.body.lastName, req);
   } else {
     updateUser({
       userId: uid,
@@ -115,7 +109,7 @@ const postEditProfile = async (req, res) => {
         familyName: req.body.lastName,
       },
     });
-    await updateUserIndex(uid, req.body.firstName, req.body.lastName);
+    await updateUserIndex(uid, req.body.firstName, req.body.lastName, req);
   }
 
   auditEdit(req, user);
