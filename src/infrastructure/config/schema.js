@@ -142,6 +142,12 @@ const accessIdentifiers = new SimpleSchema({
 
 accessIdentifiers.extend(schemas.apiClient);
 
+const encryptionSchema = new SimpleSchema({
+  Aes256GcmV1Key: {
+    type: String,
+  },
+});
+
 const schema = new SimpleSchema({
   loggerSettings: new SimpleSchema({ ...schemas.loggerSettings }),
   hostingEnvironment: schemas.hostingEnvironment,
@@ -160,6 +166,7 @@ const schema = new SimpleSchema({
   assets: new SimpleSchema({ ...schemas.assets }),
   adapter: adapterSchema,
   entra: entraSchema,
+  encryption: encryptionSchema,
 });
 
 module.exports.validate = () => {

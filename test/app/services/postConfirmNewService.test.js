@@ -22,6 +22,10 @@ jest.mock("login.dfe.api-client/services", () => ({
   createServiceRaw: jest.fn(),
   createServiceRole: jest.fn(),
 }));
+jest.mock("login.dfe.api-client/encryption", () => ({
+  encrypt: jest.fn((text) => text),
+  decrypt: jest.fn((text) => text),
+}));
 
 const logger = require("./../../../src/infrastructure/logger");
 

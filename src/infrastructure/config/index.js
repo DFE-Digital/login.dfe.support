@@ -216,6 +216,9 @@ const config = {
   },
   entra: {
     useEntraForAccountRegistration: process.env.ENTRA_USE_FOR_ACCOUNT_REGISTRATION?.toLowerCase() === 'true'
+  },
+  encryption: {
+    Aes256GcmV1Key: process.env.ENCRYPT_AES256GCM_KEY,
   }
 }
 
