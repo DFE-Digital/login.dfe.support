@@ -9,7 +9,6 @@ const {
 } = require("login.dfe.api-client/users");
 
 const {
-  getUserDetails,
   getUserDetailsById,
   updateUserDetails,
   waitForIndexToUpdate,
@@ -44,11 +43,11 @@ const codeExpiry = (updatedAt) => {
   return date > diff;
 };
 
-const updateUserIndex = async (uid, pendingEmail) => {
-  const user = await getUserDetailsById(uid);
-  user.pendingEmail = pendingEmail;
+const updateUserIndex = async (uid, pendingEmail, req) => {
+  const userToBeUpdated = await getUserDetailsById(uid, req);
+  userToBeUpdated.pendingEmail = pendingEmail;
 
-  await updateUserDetails(user);
+  await updateUserDetails(userToBeUpdated);
 
   await waitForIndexToUpdate(
     uid,
@@ -76,7 +75,7 @@ const updateUserEmail = async (req, model, user) => {
     selfInvoked: false,
   });
 
-  await updateUserIndex(user.id, model.email);
+  await updateUserIndex(user.id, model.email, req);
 
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) initiated a change of email for ${user.email} (id: ${user.id}) to ${model.email}`,
@@ -97,12 +96,12 @@ const updateUserEmail = async (req, model, user) => {
   );
 };
 
-const updateInvitationIndex = async (uid, newEmail) => {
-  const user = await getUserDetailsById(uid);
+const updateInvitationIndex = async (uid, newEmail, req) => {
+  const userToBeUpdated = await getUserDetailsById(uid, req);
 
-  user.email = newEmail;
+  userToBeUpdated.email = newEmail;
 
-  await updateUserDetails(user);
+  await updateUserDetails(userToBeUpdated);
 
   await waitForIndexToUpdate(
     uid,
@@ -116,7 +115,7 @@ const updateInvitationEmail = async (req, model, user) => {
     invitationId,
     email: model.email,
   });
-  await updateInvitationIndex(user.id, model.email);
+  await updateInvitationIndex(user.id, model.email, req);
 
   logger.audit(
     `${req.user.email} (id: ${req.user.sub}) changed email on invitation for ${user.email} (id: ${user.id}) to ${model.email}`,
@@ -138,7 +137,7 @@ const updateInvitationEmail = async (req, model, user) => {
 };
 
 const postEditEmail = async (req, res) => {
-  const user = await getUserDetails(req);
+  const user = await getUserDetailsById(req.params.uid, req);
 
   const model = await validate(req);
   if (Object.keys(model.validationMessages).length > 0) {

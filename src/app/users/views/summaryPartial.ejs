@@ -87,6 +87,18 @@
                 <dt class="govuk-summary-list__key govuk-!-padding-0">Number of logins in last 12 months:</dt>
                 <dd class="govuk-summary-list__value govuk-!-padding-0"><%= user.loginsInPast12Months.successful %></dd>
             </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-padding-0">Entra ID:</dt>
+                <dd class="govuk-summary-list__value govuk-!-padding-0"><%= user.entraOid ? user.entraOid : 'Not found' %></dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-padding-0">Entra linked date:</dt>
+                <dd class="govuk-summary-list__value govuk-!-padding-0"><%= user.entraLinked ? user.entraLinked : 'Not linked' %></dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-padding-0">Entra deferred date:</dt>
+                <dd class="govuk-summary-list__value govuk-!-padding-0"><%= user.entraDeferUntil && !user.entraOid ? user.entraDeferUntil : 'N/A' %></dd>
+            </div>
         </dl>
     </div>
 

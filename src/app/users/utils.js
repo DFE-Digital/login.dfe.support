@@ -27,6 +27,7 @@ const { searchAndMapUsers } = require("./userSearchHelpers/searchAndMapUsers");
 const {
   updateRequestForOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
+const { dateFormat } = require("../helpers/dateFormatterHelper");
 
 const delay = async (milliseconds) => {
   return new Promise((resolve) => {
@@ -223,10 +224,6 @@ const searchForBulkUsersPage = async (email) => {
   };
 };
 
-const getUserDetails = async (req) => {
-  return getUserDetailsById(req.params.uid, req.id);
-};
-
 const mapUserToSupportModel = (user, userFromSearch) => {
   return {
     id: user.sub,
@@ -237,6 +234,8 @@ const mapUserToSupportModel = (user, userFromSearch) => {
     isEntra: user.isEntra,
     isInternalUser: user.isInternalUser,
     entraOid: user.entraOid,
+    entraLinked: user.entraLinked,
+    entraDeferUntil: user.entraDeferUntil,
     organisation: userFromSearch.primaryOrganisation
       ? {
           name: userFromSearch.primaryOrganisation,
@@ -263,9 +262,13 @@ const checkManageAccess = async (arr) => {
   );
 };
 
-const getUserDetailsById = async (uid) => {
+const getUserDetailsById = async (uid, req) => {
   if (uid.startsWith("inv-")) {
     const invitation = await getInvitationRaw({ by: { id: uid.substr(4) } });
+
+    const entraOid = await req.externalAuth.getEntraAccountIdByEmail({
+      userEmail: invitation.email,
+    });
 
     return {
       id: uid,
@@ -279,6 +282,7 @@ const getUserDetailsById = async (uid) => {
         successful: 0,
       },
       deactivated: invitation.deactivated,
+      entraOid,
     };
   } else {
     const userSearch = await getSearchDetailsForUserById(uid);
@@ -287,18 +291,13 @@ const getUserDetailsById = async (uid) => {
     const serviceDetails = await getUserServicesRaw({ userId: uid });
     const hasManageAccess = await checkManageAccess(serviceDetails ?? []);
 
-    const ktsDetails = serviceDetails
-      ? serviceDetails.find(
-          (c) =>
-            c.serviceId.toLowerCase() ===
-            config.serviceMapping.key2SuccessServiceId.toLowerCase(),
-        )
-      : undefined;
-    let externalIdentifier = "";
-    if (ktsDetails && ktsDetails.identifiers) {
-      const key = ktsDetails.identifiers.find((a) => (a.key = "k2s-id"));
-      if (key) {
-        externalIdentifier = key.value;
+    // If user has entra but no entraOid in our database, check entra incase the link has been broken
+    if (user.isEntra && !user.entraOid) {
+      const entraOid = await req.externalAuth.getEntraAccountIdByEmail({
+        userEmail: user.email,
+      });
+      if (entraOid) {
+        user.entraOid = entraOid;
       }
     }
 
@@ -311,14 +310,17 @@ const getUserDetailsById = async (uid) => {
       isEntra: user.isEntra,
       isInternalUser: user.isInternalUser,
       entraOid: user.entraOid,
+      entraLinked: user.entraLinked
+        ? dateFormat(user.entraLinked, "longDateFormat")
+        : null,
+      entraDeferUntil: user.entraDeferUntil
+        ? dateFormat(user.entraDeferUntil, "longDateFormat")
+        : null,
       lastLogin: user.lastLogin,
       status: user.status,
       loginsInPast12Months: {
         successful: user.successfulLoginsInPast12Months,
       },
-      serviceId: config.serviceMapping.key2SuccessServiceId,
-      orgId: ktsDetails ? ktsDetails.organisationId : "",
-      ktsId: externalIdentifier,
       pendingEmail: user.pendingEmail,
       serviceDetails,
       hasManageAccess,
@@ -511,7 +513,6 @@ const callServiceToUserFunc = async (
 module.exports = {
   search,
   searchForBulkUsersPage,
-  getUserDetails,
   getUserDetailsById,
   updateUserDetails,
   waitForIndexToUpdate,

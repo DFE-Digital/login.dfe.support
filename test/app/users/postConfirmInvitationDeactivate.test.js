@@ -11,7 +11,6 @@ jest.mock("login.dfe.api-client/invitations");
 const { getRequestMock } = require("../../utils");
 const post = require("../../../src/app/users/postConfirmInvitationDeactivate");
 const {
-  getUserDetails,
   getUserDetailsById,
   updateUserDetails,
 } = require("../../../src/app/users/utils");
@@ -42,10 +41,6 @@ describe("When processing a post for a user invitation deactivate request", () =
     res = {
       redirect: jest.fn(),
     };
-
-    getUserDetails
-      .mockReset()
-      .mockReturnValue({ id: expectedUserId, status: { id: -1 } });
 
     getUserDetailsById
       .mockReset()
@@ -171,10 +166,6 @@ describe("When the remove services checkbox is ticked for a deactivated invite",
     res = {
       redirect: jest.fn(),
     };
-
-    getUserDetails
-      .mockReset()
-      .mockReturnValue({ id: expectedUserId, status: { id: -1 } });
 
     getUserDetailsById
       .mockReset()

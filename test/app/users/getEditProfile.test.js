@@ -5,7 +5,7 @@ jest.mock("./../../../src/app/users/utils");
 jest.mock("./../../../src/infrastructure/utils");
 
 const { sendResult } = require("../../../src/infrastructure/utils");
-const { getUserDetails } = require("../../../src/app/users/utils");
+const { getUserDetailsById } = require("../../../src/app/users/utils");
 const getEditProfile = require("../../../src/app/users/getEditProfile");
 
 describe("when getting user profile page", () => {
@@ -31,8 +31,8 @@ describe("when getting user profile page", () => {
       render: jest.fn(),
     };
 
-    getUserDetails.mockReset();
-    getUserDetails.mockReturnValue({
+    getUserDetailsById.mockReset();
+    getUserDetailsById.mockReturnValue({
       id: "user1",
     });
     sendResult.mockReset();

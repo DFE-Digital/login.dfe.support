@@ -14,7 +14,7 @@ jest.mock("../../../src/app/services/utils", () => ({
 jest.mock("login.dfe.api-client/users");
 jest.mock("ioredis");
 
-const { getUserDetails } = require("./../../../src/app/users/utils");
+const { getUserDetailsById } = require("./../../../src/app/users/utils");
 const {
   getUserOrganisationsWithServicesRaw,
   getUserStatusRaw,
@@ -51,8 +51,8 @@ describe("when getting users service details", () => {
       render: jest.fn(),
     };
 
-    getUserDetails.mockReset();
-    getUserDetails.mockReturnValue({
+    getUserDetailsById.mockReset();
+    getUserDetailsById.mockReturnValue({
       id: "user1",
       status: {
         id: 1,
@@ -201,8 +201,9 @@ describe("when getting users service details", () => {
   it("then it should get user details", async () => {
     await getServices(req, res);
 
-    expect(getUserDetails.mock.calls).toHaveLength(1);
-    expect(getUserDetails.mock.calls[0][0]).toBe(req);
+    expect(getUserDetailsById.mock.calls).toHaveLength(1);
+    expect(getUserDetailsById.mock.calls[0][0]).toBe("user1");
+    expect(getUserDetailsById.mock.calls[0][1]).toBe(req);
     expect(res.render.mock.calls[0][1].user).toMatchObject({
       id: "user1",
     });
@@ -294,7 +295,7 @@ describe("when getting users service details", () => {
   });
 
   it("should include statusChangeReasons in the user model if the status is 0", async () => {
-    getUserDetails.mockReturnValue({
+    getUserDetailsById.mockReturnValue({
       id: "user1",
       status: {
         id: 0,
@@ -324,7 +325,7 @@ describe("when getting users service details", () => {
 
   it("should include an empty statusChangeReasons in the user model one is not found", async () => {
     getUserStatusRaw.mockReturnValue(null);
-    getUserDetails.mockReturnValue({
+    getUserDetailsById.mockReturnValue({
       id: "user1",
       status: {
         id: 0,

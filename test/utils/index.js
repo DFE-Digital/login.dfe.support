@@ -40,6 +40,9 @@ const configMockFactory = (customConfig) => {
       },
       access: {
         type: "static",
+        identifiers: {
+          manageServiceIdentifiers: "manage-service-1",
+        },
       },
       loggerSettings: {},
       toggles: {},

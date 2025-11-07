@@ -20,7 +20,6 @@ jest.mock("login.dfe.api-client/organisations");
 
 const logger = require("../../../src/infrastructure/logger");
 const {
-  getUserDetails,
   getUserDetailsById,
   rejectOpenOrganisationRequestsForUser,
   rejectOpenUserServiceRequestsForUser,
@@ -72,7 +71,7 @@ beforeEach(() => {
 
   logger.audit.mockReset();
 
-  getUserDetails.mockReset().mockReturnValue({
+  const userDetails = {
     id: userId,
     name: "Rupert Grint",
     firstName: "Rupert",
@@ -87,24 +86,13 @@ beforeEach(() => {
     loginsInPast12Months: {
       successful: 0,
     },
-  });
+  };
 
-  getUserDetailsById.mockReset().mockReturnValue({
-    id: userId,
-    name: "Rupert Grint",
-    firstName: "Rupert",
-    lastName: "Grint",
-    email: "rupert.grint@hogwarts.test",
-    organisationName: "Hogwarts School of Witchcraft and Wizardry",
-    lastLogin: null,
-    status: {
-      id: 1,
-      description: "Active",
-    },
-    loginsInPast12Months: {
-      successful: 0,
-    },
-  });
+  // Need to force 2 separate objects for the 2 invocations of this function
+  getUserDetailsById
+    .mockReset()
+    .mockReturnValueOnce(structuredClone(userDetails))
+    .mockReturnValue(structuredClone(userDetails));
 
   updateUserDetails.mockReset();
 

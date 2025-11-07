@@ -1,12 +1,12 @@
 const { sendResult } = require("./../../infrastructure/utils");
-const { getUserDetails } = require("./utils");
+const { getUserDetailsById } = require("./utils");
 const {
   getLegacyUsernamesRaw,
   getUserOrganisationsWithServicesRaw,
 } = require("login.dfe.api-client/users");
 
 const getSecureDetails = async (req, res) => {
-  const user = await getUserDetails(req);
+  const user = await getUserDetailsById(req.params.uid, req);
   const userOrganisations = await getUserOrganisationsWithServicesRaw({
     userId: req.params.uid,
   });
