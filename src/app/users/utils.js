@@ -266,9 +266,9 @@ const getUserDetailsById = async (uid, req) => {
   if (uid.startsWith("inv-")) {
     const invitation = await getInvitationRaw({ by: { id: uid.substr(4) } });
 
-    const entraOid = await req.externalAuth.getEntraAccountIdByEmail(
-      invitation.email,
-    );
+    const entraOid = await req.externalAuth.getEntraAccountIdByEmail({
+      userEmail: invitation.email,
+    });
 
     return {
       id: uid,
@@ -293,9 +293,9 @@ const getUserDetailsById = async (uid, req) => {
 
     // If user has entra but no entraOid in our database, check entra incase the link has been broken
     if (user.isEntra && !user.entraOid) {
-      const entraOid = await req.externalAuth.getEntraAccountIdByEmail(
-        user.email,
-      );
+      const entraOid = await req.externalAuth.getEntraAccountIdByEmail({
+        userEmail: user.email,
+      });
       if (entraOid) {
         user.entraOid = entraOid;
       }
