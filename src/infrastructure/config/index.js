@@ -215,7 +215,12 @@ const config = {
     version: process.env.CDN_ASSETS_VERSION
   },
   entra: {
-    useEntraForAccountRegistration: process.env.ENTRA_USE_FOR_ACCOUNT_REGISTRATION?.toLowerCase() === 'true'
+    useEntraForAccountRegistration: process.env.ENTRA_USE_FOR_ACCOUNT_REGISTRATION?.toLowerCase() === 'true',
+    cloudInstance: process.env.ENTRA_CLOUD_INSTANCE,
+    tenantId: process.env.ENTRA_TENANT_ID,
+    clientId: process.env.DFE_SIGNIN_HYBRID_INTEGRATION_APP_CLIENT_ID,
+    clientSecret: process.env.DFE_SIGNIN_HYBRID_INTEGRATION_APP_SECRET,
+    graphEndpoint: process.env.ENTRA_GRAPH_ENDPOINT
   },
   encryption: {
     Aes256GcmV1Key: process.env.ENCRYPT_AES256GCM_KEY,

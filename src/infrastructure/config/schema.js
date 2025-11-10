@@ -128,6 +128,31 @@ const entraSchema = new SimpleSchema({
     optional: true,
     defaultValue: false,
   },
+  cloudInstance: {
+    type: String,
+    optional: true,
+    defaultValue: '',
+  },
+  tenantId: {
+    type: String,
+    optional: true,
+    defaultValue: '',
+  },
+  clientId: {
+    type: String,
+    optional: true,
+    defaultValue: '',
+  },
+  clientSecret: {
+    type: String,
+    optional: true,
+    defaultValue: '',
+  },
+  graphEndpoint: {
+    type: String,
+    optional: true,
+    defaultValue: '',
+  },
 });
 
 const accessIdentifiers = new SimpleSchema({

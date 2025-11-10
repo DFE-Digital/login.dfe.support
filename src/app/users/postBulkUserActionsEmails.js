@@ -111,7 +111,7 @@ const postBulkUserActionsEmails = async (req, res) => {
 
   for (const tickedUser of tickedUsers) {
     const userId = reqBody[tickedUser];
-    const user = await getUserDetailsById(userId);
+    const user = await getUserDetailsById(userId, req);
     if (isDeactivateTicked) {
       if (userId.startsWith("inv-")) {
         await deactivateInvitedUser(req, user);
