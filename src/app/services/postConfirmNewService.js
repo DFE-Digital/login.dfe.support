@@ -4,6 +4,7 @@ const {
   createServiceRaw,
   createServiceRole,
 } = require("login.dfe.api-client/services");
+const { encrypt } = require("login.dfe.api-client/encryption");
 
 const postConfirmNewService = async (req, res) => {
   if (!req.session.createServiceData) {
@@ -65,7 +66,7 @@ const postConfirmNewService = async (req, res) => {
     relyingParty: {
       clientId: model.clientId,
       clientSecret: model.clientSecret,
-      apiSecret: model.apiSecret,
+      apiSecret: model.apiSecret ? encrypt(model.apiSecret) : model.apiSecret,
       tokenEndpointAuthMethod: tokenEndpointAuthenticationMethod,
       serviceHome: model.homeUrl,
       postResetUrl: model.postPasswordResetUrl,

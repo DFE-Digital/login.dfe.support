@@ -221,6 +221,9 @@ const config = {
     clientId: process.env.DFE_SIGNIN_HYBRID_INTEGRATION_APP_CLIENT_ID,
     clientSecret: process.env.DFE_SIGNIN_HYBRID_INTEGRATION_APP_SECRET,
     graphEndpoint: process.env.ENTRA_GRAPH_ENDPOINT
+  },
+  encryption: {
+    Aes256GcmV1Key: process.env.ENCRYPT_AES256GCM_KEY,
   }
 }
 
