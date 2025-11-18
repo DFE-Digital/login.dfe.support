@@ -1,20 +1,24 @@
-# DfE Support Console
+# DfE Sign-in Support
 
-[![tested with jest](https://img.shields.io/badge/tested_with-jest-99424f.svg)](https://github.com/facebook/jest)
-
-Console for support staff to response to users requests for help
+**DfE Sign-in Support** provides a console that allows staff to manage and respond to requests from users and approvers, supporting the day-to-day operation of the DfE Sign-in platform. This service is part of the wider **login.dfe** project.
 
 ## Getting Started
 
-Install deps
+### Install Dependencies
 
 ```
 npm install
 ```
 
-To get linting, if you're using VSCode then install the 'ESLint' extension to have it highlighted
+Additionally, this app requires Redis as a backing service. The easiest way is to create an instance of Redis using Docker:
+
+```
+docker run -d -p 6379:6379 redis
+```
 
 ### Run application
+
+Start the application with:
 
 ```
 npm run dev
@@ -23,11 +27,39 @@ npm run dev
 Once the application has started, you can view it in the browser by going to:
 
 ```
-https://localhost:41020/
+https://localhost:41020
 ```
 
-### Run tests
+### Run Tests
+
+Run all tests with:
 
 ```
 npm run test
 ```
+
+### Code Quality and Formatting
+
+Run ESLint:
+
+```
+npm run lint
+```
+
+Automatically fix lint issues:
+
+```
+npm run lint:fix
+```
+
+### Development Checks
+
+Run linting and tests together:
+
+```
+npm run dev:checks
+```
+
+### Pre-commit Hooks
+
+Pre-commit hooks are handled automatically via Husky. No additional setup is required.
