@@ -27,6 +27,7 @@ const configSchema = require("./infrastructure/config/schema");
 const { isServiceCreator } = require("./infrastructure/utils");
 const { setupApi } = require("login.dfe.api-client/api/setup");
 const { setupEncryption } = require("login.dfe.api-client/encryption");
+const packageConfig = require("../package.json");
 
 const {
   entraExternalAuthProvider,
@@ -147,10 +148,11 @@ const init = async () => {
 
   app.use(setCorrelationId("X-Correlation-ID"));
 
-  let assetsUrl = config.assets.url;
-  assetsUrl = assetsUrl.endsWith("/")
-    ? assetsUrl.substr(0, assetsUrl.length - 1)
-    : assetsUrl;
+  const assetsVersion = packageConfig?.assets?.version;
+  const baseAssetsUrl = config.assets.url.replace(/\/$/, "");
+  const assetsUrl = assetsVersion
+    ? `${baseAssetsUrl}/${assetsVersion}`
+    : baseAssetsUrl;
   Object.assign(app.locals, {
     moment,
     urls: {
@@ -173,9 +175,6 @@ const init = async () => {
           : null,
     },
     gaTrackingId: config.hostingEnvironment.gaTrackingId,
-    assets: {
-      version: config.assets.version,
-    },
   });
 
   if (config.hostingEnvironment.env !== "dev") {
@@ -305,7 +304,6 @@ const init = async () => {
     {
       help: config.hostingEnvironment.helpUrl,
       assets: assetsUrl,
-      assetsVersion: config.assets.version,
     },
     config.hostingEnvironment.env === "dev",
   );
