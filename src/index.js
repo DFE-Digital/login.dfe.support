@@ -112,6 +112,7 @@ const init = async () => {
   const imgSources = [self, "data:", "blob:", allowedOrigin];
   const fontSources = [self, "data:", allowedOrigin];
   const defaultSources = [self, allowedOrigin];
+  const defaultConnectSources = [self, allowedOrigin];
 
   if (config.hostingEnvironment.env === "dev") {
     scriptSources.push("localhost:*");
@@ -130,7 +131,7 @@ const init = async () => {
           styleSrc: styleSources,
           imgSrc: imgSources,
           fontSrc: fontSources,
-          connectSrc: [self],
+          connectSrc: defaultConnectSources,
           formAction: [self, "*"],
         },
       },
