@@ -5,6 +5,10 @@
             Bulk user actions
             </h1>
             <p class="govuk-body">Select all the users you want to affect and the action you wish to perform on each one</p>
+            <div class="govuk-button-group pull-right">
+                <a href="./emails?selectAll=true" class="govuk-button govuk-button--secondary">Select all</a>
+                <a href="./emails" class="govuk-button govuk-button--secondary">Deselect all</a>
+            </div>
             <form method="post">
                 <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
                 <% if (locals.validationMessages.users !== undefined) { %>
@@ -56,7 +60,7 @@
                             <td class="govuk-table__cell"><%= users[i].status.description %></td>
                             <td class="govuk-table__cell">
                                 <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" type="checkbox" id="user-<%= users[i].id %>" name="user-<%= users[i].id %>" value="<%= users[i].id %>">
+                                    <input class="govuk-checkboxes__input" type="checkbox" id="user-<%= users[i].id %>" name="user-<%= users[i].id %>" value="<%= users[i].id %>" <%= selectAll ? "checked" : "" %> >
                                     <label class="govuk-label govuk-checkboxes__label" for="user-<%= users[i].id %>"></label>
                                 </div>
                             </td>
@@ -64,7 +68,10 @@
                         <% } %>
                     </tbody>
                 </table>
-
+                <div class="govuk-button-group pull-right">
+                    <a href="./emails?selectAll=true" class="govuk-button govuk-button--secondary">Select all</a>
+                    <a href="./emails" class="govuk-button govuk-button--secondary">Deselect all</a>
+                </div>
                 <% if(locals.users.length > 0) { %>
                 <div class="govuk-form-group">
                     <fieldset class="govuk-fieldset" aria-describedby="waste-hint">

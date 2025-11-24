@@ -32,6 +32,7 @@ describe("When processing a get for a bulk user action emails request", () => {
         emails: "user.one@unit.test",
       },
       params: {},
+      query: {},
       csrfToken: () => {
         return "token";
       },
@@ -154,5 +155,43 @@ describe("When processing a get for a bulk user action emails request", () => {
     await getBulkUserActionsEmails(req, res);
 
     expect(res.redirect.mock.calls[0][0]).toBe("/users");
+  });
+
+  it("should set selectAll to true when the query parameter selectAll is 'true'", async () => {
+    req.query.selectAll = "true";
+
+    await getBulkUserActionsEmails(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      selectAll: true,
+    });
+  });
+
+  it("should set selectAll to false when there is no query parameter", async () => {
+    await getBulkUserActionsEmails(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      selectAll: false,
+    });
+  });
+
+  it("should set selectAll to false when the query parameter selectAll is 'false'", async () => {
+    req.query.selectAll = "false";
+
+    await getBulkUserActionsEmails(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      selectAll: false,
+    });
+  });
+
+  it("should set selectAll to false when the query parameter selectAll has an invalid value", async () => {
+    req.query.selectAll = "invalid";
+
+    await getBulkUserActionsEmails(req, res);
+
+    expect(res.render.mock.calls[0][1]).toMatchObject({
+      selectAll: false,
+    });
   });
 });
