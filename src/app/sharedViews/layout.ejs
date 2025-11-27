@@ -19,16 +19,16 @@
         </title>
     <% } %>         
 
-    <link rel="stylesheet" href="<%= locals.urls.assets %>/gds-upgrade/css/main.css?version=<%= locals.assets.version %>">
+    <link rel="stylesheet" href="<%= locals.urls.assets %>/css/main.css">
 
-    <link rel="icon" sizes="48x48" href="<%= locals.urls.assets %>/gds-upgrade/rebrand/images/favicon.ico?version=<%= locals.assets.version %>"/>
+    <link rel="icon" sizes="48x48" href="<%= locals.urls.assets %>/assets/rebrand/images/favicon.ico">
 
-    <link rel="icon" sizes="any" href="<%= locals.urls.assets %>/gds-upgrade/rebrand/images/favicon.svg?version=<%= locals.assets.version %>" type="image/svg+xml">
-    <link rel="mask-icon" href="<%= locals.urls.assets %>/gds-upgrade/rebrand/images/govuk-icon-mask.svg?version=<%= locals.assets.version %>" color="#1d70b8">
-    <link rel="apple-touch-icon" href="<%= locals.urls.assets %>/gds-upgrade/rebrand/images/govuk-icon-180.png?version=<%= locals.assets.version %>">
-    <link rel="manifest" href="<%= locals.urls.assets %>/gds-upgrade/rebrand/manifest.json">
+    <link rel="icon" sizes="any" href="<%= locals.urls.assets %>/assets/rebrand/images/favicon.svg" type="image/svg+xml">
+    <link rel="mask-icon" href="<%= locals.urls.assets %>/assets/rebrand/images/govuk-icon-mask.svg" color="#1d70b8">
+    <link rel="apple-touch-icon" href="<%= locals.urls.assets %>/assets/rebrand/images/govuk-icon-180.png">
+    <link rel="manifest" href="<%= locals.urls.assets %>/assets/rebrand/manifest.json">
 
-    <meta property="og:image" content="<%= locals.urls.assets %>/gds-upgrade/images/govuk-opengraph-image.png?version=<%= locals.assets.version %>">
+    <meta property="og:image" content="<%= locals.urls.assets %>/images/opengraph-image.png">
 </head>
 
 <body class="govuk-template__body">
@@ -48,7 +48,7 @@
         <div class="govuk-header__container govuk-width-container">
             <div class="govuk-header__logo">
                 <a href="https://www.gov.uk/government/organisations/department-for-education" class="govuk-header__link govuk-header__link--homepage">
-                    <img src="<%= locals.urls.assets %>/gds-upgrade/images/department-for-education_white.png?version=<%= locals.assets.version %>" alt="Department for Education" class="govuk-header__logotype">
+                  <img src="<%= locals.urls.assets %>/assets/images/department-for-education_white.png" alt="Department for Education" class="govuk-header__logotype">
                 </a>
             </div>
             <% if (!locals.hideSignOut) { %>
@@ -213,9 +213,7 @@
   </div>
 </footer>
 
-<script type="text/javascript" src="<%= locals.urls.assets %>/gds-upgrade/javascript/vendors/jquery.min.js?version=<%= locals.assets.version %>"></script>
-<script type="text/javascript" src="<%= locals.urls.assets %>/gds-upgrade/javascript/vendors/vendors.min.js?version=<%= locals.assets.version %>"></script>
-<script src="<%= locals.urls.assets %>/gds-upgrade/javascript/app.min.js?version=<%= locals.assets.version %>"></script>
+<script src="<%= locals.urls.assets %>/javascript/app.min.js"></script>
 
 <script>
     <% if (locals.isLoggedIn) { %>

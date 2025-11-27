@@ -211,8 +211,7 @@ const config = {
     connectionString: process.env.LOCAL_REDIS_CONN ? process.env.LOCAL_REDIS_CONN + "/4" : process.env.REDIS_CONN + "/4?tls=true"
   },
   assets: {
-    url: process.env.CDN_HOST_NAME,
-    version: process.env.CDN_ASSETS_VERSION
+    url: process.env.CDN_HOST_NAME
   },
   entra: {
     useEntraForAccountRegistration: process.env.ENTRA_USE_FOR_ACCOUNT_REGISTRATION?.toLowerCase() === 'true',
