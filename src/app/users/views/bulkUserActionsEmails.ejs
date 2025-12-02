@@ -6,8 +6,6 @@
             </h1>
             <p class="govuk-body">Select all the users you want to affect and the action you wish to perform on each one</p>
             <div class="govuk-button-group pull-right">
-                <a href="./emails?selectAll=true" class="govuk-button govuk-button--secondary hidden-when-js-enabled">Select all</a>
-                <a href="./emails" class="govuk-button govuk-button--secondary hidden-when-js-enabled">Deselect all</a>
                 <button type="button" class="govuk-button govuk-button--secondary hidden-when-js-disabled select-all-button" data-target="userEmailTable">Select all</button>
                 <button type="button" class="govuk-button govuk-button--secondary hidden-when-js-disabled select-none-button" data-target="userEmailTable">Deselect all</button>
             </div>
@@ -62,7 +60,7 @@
                             <td class="govuk-table__cell"><%= users[i].status.description %></td>
                             <td class="govuk-table__cell">
                                 <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" type="checkbox" id="user-<%= users[i].id %>" name="user-<%= users[i].id %>" value="<%= users[i].id %>" <%= selectAll ? "checked" : "" %> >
+                                    <input class="govuk-checkboxes__input" type="checkbox" id="user-<%= users[i].id %>" name="user-<%= users[i].id %>" value="<%= users[i].id %>">
                                     <label class="govuk-label govuk-checkboxes__label" for="user-<%= users[i].id %>"></label>
                                 </div>
                             </td>
@@ -71,8 +69,6 @@
                     </tbody>
                 </table>
                 <div class="govuk-button-group pull-right">
-                    <a href="./emails?selectAll=true" class="govuk-button govuk-button--secondary hidden-when-js-enabled">Select all</a>
-                    <a href="./emails" class="govuk-button govuk-button--secondary hidden-when-js-enabled">Deselect all</a>
                     <button type="button" class="govuk-button govuk-button--secondary hidden-when-js-disabled select-all-button" data-target="userEmailTable">Select all</button>
                     <button type="button" class="govuk-button govuk-button--secondary hidden-when-js-disabled select-none-button" data-target="userEmailTable">Deselect all</button>
                 </div>

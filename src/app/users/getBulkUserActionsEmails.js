@@ -25,8 +25,6 @@ const getBulkUserActionsEmails = async (req, res) => {
     }
   }
 
-  const selectAll = req.query.selectAll === "true";
-
   const model = {
     csrfToken: req.csrfToken(),
     layout: "sharedViews/layout.ejs",
@@ -34,7 +32,6 @@ const getBulkUserActionsEmails = async (req, res) => {
     currentPage: "users",
     users,
     validationMessages: {},
-    selectAll,
   };
 
   res.render("users/views/bulkUserActionsEmails", model);
