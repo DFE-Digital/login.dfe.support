@@ -32,7 +32,6 @@ describe("When processing a get for a bulk user action emails request", () => {
         emails: "user.one@unit.test",
       },
       params: {},
-      query: {},
       csrfToken: () => {
         return "token";
       },
