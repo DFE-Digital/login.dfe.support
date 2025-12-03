@@ -146,7 +146,7 @@ const describeAuditEvent = async (audit, req) => {
     const organisation = await getOrganisationLegacyRaw({
       organisationId: organisationId.oldValue,
     });
-    const viewedUser = await getCachedUserById(audit.editedUser, req.id);
+    const viewedUser = await getCachedUserById(audit.editedUser, req);
     return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
       numericIdentifier: ${audit["numericIdentifier"]}, textIdentifier: ${audit["textIdentifier"]})`;
   }
@@ -157,7 +157,7 @@ const describeAuditEvent = async (audit, req) => {
     const organisation = await getOrganisationLegacyRaw({
       organisationId: organisationId.newValue,
     });
-    const viewedUser = await getCachedUserById(audit.editedUser, req.id);
+    const viewedUser = await getCachedUserById(audit.editedUser, req);
     return `Added organisation: ${organisation.name} for user ${viewedUser.firstName} ${viewedUser.lastName}`;
   }
   if (
@@ -167,7 +167,7 @@ const describeAuditEvent = async (audit, req) => {
     const editedFields =
       audit.editedFields &&
       audit.editedFields.find((x) => x.name === "edited_permission");
-    const viewedUser = await getCachedUserById(audit.editedUser, req.id);
+    const viewedUser = await getCachedUserById(audit.editedUser, req);
     return `Edited permission level to ${editedFields.newValue} for user ${viewedUser.firstName} ${viewedUser.lastName} in organisation ${editedFields.organisation}`;
   }
   if (audit.type === "approver" && audit.subType === "user-org-deleted") {
@@ -183,7 +183,7 @@ const describeAuditEvent = async (audit, req) => {
       audit.editedUser = /["]/.test(audit.editedUser)
         ? audit.editedUser.replace(/[""]+/g, "")
         : audit.editedUser;
-      const viewedUser = await getCachedUserById(audit.editedUser, req.id);
+      const viewedUser = await getCachedUserById(audit.editedUser, req);
       return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
         numericIdentifier: ${audit["numericIdentifier"]}, textIdentifier: ${audit["textIdentifier"]})`;
     } catch {
@@ -215,7 +215,7 @@ const getAudit = async (req, res) => {
   cachedServices = {};
   cachedUsers = {};
   const correlationId = req.id;
-  const user = await getCachedUserById(req.params.uid, req.id);
+  const user = await getCachedUserById(req.params.uid, req);
   const showChangeEmail = !isInternalEntraUser(user);
   user.formattedLastLogin = user.lastLogin
     ? dateFormat(user.lastLogin, "longDateFormat")
@@ -285,7 +285,7 @@ const getAudit = async (req, res) => {
       user:
         audit.userId.toLowerCase() === user.id.toLowerCase()
           ? user
-          : await getCachedUserById(audit.userId.toUpperCase(), req.id),
+          : await getCachedUserById(audit.userId.toUpperCase(), req),
     });
   }
 

@@ -146,6 +146,14 @@ describe("when getting users audit details", () => {
     });
   });
 
+  it("should call getUserDetailsById with correct userId and req parameters", async () => {
+    await getAudit(req, res);
+
+    expect(getUserDetailsById.mock.calls).toHaveLength(1);
+    expect(getUserDetailsById.mock.calls[0][0]).toBe("user1");
+    expect(getUserDetailsById.mock.calls[0][1]).toBe(req);
+  });
+
   it("then it should send result using audit view", async () => {
     await getAudit(req, res);
 
