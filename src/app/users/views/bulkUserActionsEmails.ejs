@@ -5,66 +5,75 @@
             Bulk user actions
             </h1>
             <p class="govuk-body">Select all the users you want to affect and the action you wish to perform on each one</p>
-            <form method="post">
-                <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
-                <% if (locals.validationMessages.users !== undefined) { %>
-                    <p id="users-error" class="govuk-error-message">
-                        <span class="govuk-visually-hidden">Error:</span> <%= locals.validationMessages.users %>
-                    </p>
-                    <% } %>
-                <table class="govuk-table">
-                    <thead class="govuk-table__head">
-                    <tr class="govuk-table__row">
-                        <th scope="col" class="govuk-table__header">Name</th>
-                        <th scope="col" class="govuk-table__header">Email</th>
-                        <th scope="col" class="govuk-table__header">Organisation</th>
-                        <th scope="col" class="govuk-table__header">Last Login</th>
-                        <th scope="col" class="govuk-table__header">Status</th>
-                        <th scope="col" class="govuk-table__header">Selected</th>
-                    </tr>
-                    </thead>
-                    <tbody class="govuk-table__body">
-                        <% if(locals.users.length === 0) { %>
+            <div class="app-selection-list">            
+                <div class="app-selection-list__actions hidden-when-js-disabled">
+                    <button type="button" class="govuk-button govuk-button--secondary app-selection-list__action--select-all">Select all</button>
+                    <button type="button" class="govuk-button govuk-button--secondary app-selection-list__action--select-none">Deselect all</button>
+                </div>
+                <form method="post">
+                    <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+                    <% if (locals.validationMessages.users !== undefined) { %>
+                        <p id="users-error" class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span> <%= locals.validationMessages.users %>
+                        </p>
+                        <% } %>
+                    <table class="govuk-table" id="userEmailTable">
+                        <thead class="govuk-table__head">
                         <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">No users found</td>
-                            <td class="govuk-table__cell"></td>
-                            <td class="govuk-table__cell"></td>
-                            <td class="govuk-table__cell"></td>
-                            <td class="govuk-table__cell"></td>
-                            <td class="govuk-table__cell"></td>
+                            <th scope="col" class="govuk-table__header">Name</th>
+                            <th scope="col" class="govuk-table__header">Email</th>
+                            <th scope="col" class="govuk-table__header">Organisation</th>
+                            <th scope="col" class="govuk-table__header">Last Login</th>
+                            <th scope="col" class="govuk-table__header">Status</th>
+                            <th scope="col" class="govuk-table__header">Selected</th>
                         </tr>
-                        <% } %>
+                        </thead>
+                        <tbody class="govuk-table__body">
+                            <% if(locals.users.length === 0) { %>
+                            <tr class="govuk-table__row">
+                                <td class="govuk-table__cell">No users found</td>
+                                <td class="govuk-table__cell"></td>
+                                <td class="govuk-table__cell"></td>
+                                <td class="govuk-table__cell"></td>
+                                <td class="govuk-table__cell"></td>
+                                <td class="govuk-table__cell"></td>
+                            </tr>
+                            <% } %>
 
-                        <% for (let i = 0; i < locals.users.length; i++) { %>
-                        <tr>
-                            <td class="govuk-table__cell"><%= users[i].name %></td>
-                            <td class="govuk-table__cell"><%= users[i].email %></td>
-                            <td class="govuk-table__cell">
-                                <% if(users[i].organisation) { %>
-                                <%= users[i].organisation.name %>
-                                <% }else { %>
-                                Unknown
-                                <% } %>
-                            </td>
-                            <td class="govuk-table__cell">
-                                <% if(locals.users[i].lastLogin) { %>
-                                <%= locals.moment(locals.users[i].lastLogin).fromNow() %>
-                                <% } else { %>
-                                Never
-                                <% } %>
-                            </td>
-                            <td class="govuk-table__cell"><%= users[i].status.description %></td>
-                            <td class="govuk-table__cell">
-                                <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" type="checkbox" id="user-<%= users[i].id %>" name="user-<%= users[i].id %>" value="<%= users[i].id %>">
-                                    <label class="govuk-label govuk-checkboxes__label" for="user-<%= users[i].id %>"></label>
-                                </div>
-                            </td>
-                        </tr>
-                        <% } %>
-                    </tbody>
-                </table>
-
+                            <% for (let i = 0; i < locals.users.length; i++) { %>
+                            <tr>
+                                <td class="govuk-table__cell"><%= users[i].name %></td>
+                                <td class="govuk-table__cell"><%= users[i].email %></td>
+                                <td class="govuk-table__cell">
+                                    <% if(users[i].organisation) { %>
+                                    <%= users[i].organisation.name %>
+                                    <% }else { %>
+                                    Unknown
+                                    <% } %>
+                                </td>
+                                <td class="govuk-table__cell">
+                                    <% if(locals.users[i].lastLogin) { %>
+                                    <%= locals.moment(locals.users[i].lastLogin).fromNow() %>
+                                    <% } else { %>
+                                    Never
+                                    <% } %>
+                                </td>
+                                <td class="govuk-table__cell"><%= users[i].status.description %></td>
+                                <td class="govuk-table__cell">
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input app-selection-list__select" type="checkbox" id="user-<%= users[i].id %>" name="user-<%= users[i].id %>" value="<%= users[i].id %>">
+                                        <label class="govuk-label govuk-checkboxes__label" for="user-<%= users[i].id %>"></label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                    <div class="app-selection-list__actions hidden-when-js-disabled">
+                        <button type="button" class="govuk-button govuk-button--secondary app-selection-list__action--select-all">Select all</button>
+                        <button type="button" class="govuk-button govuk-button--secondary app-selection-list__action--select-none">Deselect all</button>
+                    </div>
+                </div>
                 <% if(locals.users.length > 0) { %>
                 <div class="govuk-form-group">
                     <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
