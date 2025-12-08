@@ -31,7 +31,7 @@ const packageConfig = require("../package.json");
 
 const {
   entraExternalAuthProvider,
-} = require("login.dfe.entra-auth-extensions/provider/index");
+} = require("login.dfe.entra-auth-extensions/provider");
 
 const redisClient = new Redis(config.claims.params.connectionString);
 
