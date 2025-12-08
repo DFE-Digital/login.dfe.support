@@ -49,7 +49,7 @@
     "login.dfe.audit.winston-sequelize-transport": "^3.2.6",
     "login.dfe.config.schema.common": "^2.1.8",
     "login.dfe.dao": "^5.0.6",
-    "login.dfe.entra-auth-extensions": "^1.0.18",
+    "login.dfe.entra-auth-extensions": "^1.0.20",
     "login.dfe.express-flash-2": "github:DFE-Digital/login.dfe.express-flash-2#v2.0.2",
     "login.dfe.express-helpers": "^2.0.0",
     "login.dfe.healthcheck": "^3.0.3",
