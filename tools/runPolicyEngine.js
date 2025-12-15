@@ -12,9 +12,9 @@ const getPolicyApplicationResult = async (
     await policyEngine.getPolicyApplicationResultsForUser(
       userId.startsWith("inv-") ? undefined : userId,
       organisationId,
-      serviceId,
+      [serviceId],
     );
-  return policyEngineResult.rolesAvailableToUser;
+  return policyEngineResult[0].rolesAvailableToUser;
 };
 
 const getPolicyApplicationForService = async () => {
@@ -41,20 +41,19 @@ const getPolicyApplicationForServices = async () => {
   const organisationId = process.argv[3];
 
   const allServices = await getAllServices();
-  const servicesNotAvailableThroughPolicies = [];
-  for (let i = 0; i < allServices.services.length; i++) {
-    const policyResult = await policyEngine.getPolicyApplicationResultsForUser(
-      !userId || userId.startsWith("inv-") ? undefined : userId,
-      organisationId,
-      allServices.services[i].id,
-    );
-    if (!policyResult.serviceAvailableToUser) {
-      servicesNotAvailableThroughPolicies.push(allServices.services[i].id);
-    }
-  }
-  const availableServices = allServices.services.filter(
-    (x) => !servicesNotAvailableThroughPolicies.find((y) => x.id === y),
+  const policyResults = await policyEngine.getPolicyApplicationResultsForUser(
+    !userId || userId.startsWith("inv-") ? undefined : userId,
+    organisationId,
+    allServices.map((x) => x.id),
   );
+  const availableServices = allServices.filter((service) =>
+    policyResults.find(
+      (result) =>
+        service.id.toLowerCase() === result.id.toLowerCase() &&
+        result.serviceAvailableToUser === true,
+    ),
+  );
+
   console.info(availableServices);
 };
 

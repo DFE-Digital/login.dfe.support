@@ -26,9 +26,9 @@ const getPolicyApplicationResult = async (
     await policyEngine.getPolicyApplicationResultsForUser(
       userId.startsWith("inv-") ? undefined : userId,
       organisationId,
-      serviceId,
+      [serviceId],
     );
-  return policyEngineResult.rolesAvailableToUser;
+  return policyEngineResult[0].rolesAvailableToUser;
 };
 
 const connection = new Connection(config.db);
