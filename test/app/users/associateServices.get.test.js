@@ -55,11 +55,14 @@ describe("when displaying the associate service view", () => {
 
     policyEngine.getPolicyApplicationResultsForUser
       .mockReset()
-      .mockReturnValue({
-        policiesAppliedForUser: [],
-        rolesAvailableToUser: [],
-        serviceAvailableToUser: true,
-      });
+      .mockReturnValue([
+        {
+          id: "service1",
+          policiesAppliedForUser: [],
+          rolesAvailableToUser: [],
+          serviceAvailableToUser: true,
+        },
+      ]);
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
     getAllServices.mockReset();
@@ -208,32 +211,26 @@ describe("when displaying the associate service view", () => {
     });
     getAllServicesForUserInOrg.mockReturnValue([]);
     policyEngine.getPolicyApplicationResultsForUser.mockImplementation(
-      (userId, organisationId, serviceId) => ({
-        policiesAppliedForUser: [],
-        rolesAvailableToUser: [],
-        serviceAvailableToUser: serviceId === "service2",
-      }),
+      (userId, organisationId, serviceIds) =>
+        serviceIds.map((id) => ({
+          id,
+          policiesAppliedForUser: [],
+          rolesAvailableToUser: [],
+          serviceAvailableToUser: id === "service2",
+        })),
     );
 
     await getAssociateServices(req, res);
 
     expect(
       policyEngine.getPolicyApplicationResultsForUser,
-    ).toHaveBeenCalledTimes(2);
+    ).toHaveBeenCalledTimes(1);
     expect(
       policyEngine.getPolicyApplicationResultsForUser,
     ).toHaveBeenCalledWith(
       "user1",
       "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-      "service1",
-      req.id,
-    );
-    expect(
-      policyEngine.getPolicyApplicationResultsForUser,
-    ).toHaveBeenCalledWith(
-      "user1",
-      "88a1ed39-5a98-43da-b66e-78e564ea72b0",
-      "service2",
+      ["service1", "service2"],
       req.id,
     );
     expect(res.render.mock.calls[0][1]).toMatchObject({

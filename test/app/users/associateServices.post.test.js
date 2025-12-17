@@ -51,11 +51,14 @@ describe("when adding services to a user", () => {
 
     policyEngine.getPolicyApplicationResultsForUser
       .mockReset()
-      .mockReturnValue({
-        policiesAppliedForUser: [],
-        rolesAvailableToUser: [],
-        serviceAvailableToUser: true,
-      });
+      .mockReturnValue([
+        {
+          id: "service1",
+          policiesAppliedForUser: [],
+          rolesAvailableToUser: [],
+          serviceAvailableToUser: true,
+        },
+      ]);
     PolicyEngine.mockReset().mockImplementation(() => policyEngine);
 
     getAllServices.mockReset();
@@ -173,11 +176,13 @@ describe("when adding services to a user", () => {
       ],
     });
     policyEngine.getPolicyApplicationResultsForUser.mockImplementation(
-      (userId, organisationId, serviceId) => ({
-        policiesAppliedForUser: [],
-        rolesAvailableToUser: [],
-        serviceAvailableToUser: serviceId === "service3",
-      }),
+      (userId, organisationId, serviceIds) =>
+        serviceIds.map((id) => ({
+          id,
+          policiesAppliedForUser: [],
+          rolesAvailableToUser: [],
+          serviceAvailableToUser: id === "service3",
+        })),
     );
 
     await postAssociateServices(req, res);

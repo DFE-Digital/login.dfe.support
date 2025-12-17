@@ -54,7 +54,7 @@
     "login.dfe.express-helpers": "^2.0.0",
     "login.dfe.healthcheck": "^3.0.3",
     "login.dfe.jobs-client": "^6.1.3",
-    "login.dfe.policy-engine": "^3.1.4",
+    "login.dfe.policy-engine": "^4.0.1",
     "login.dfe.validation": "^2.1.5",
     "moment": "^2.30.1",
     "niceware": "^4.0.0",
