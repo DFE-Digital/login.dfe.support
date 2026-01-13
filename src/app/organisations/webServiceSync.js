@@ -18,8 +18,10 @@ const post = async (req, res) => {
   try {
     const result = await wsSyncCall(req.params.id);
     if (result === undefined) {
-      res.flash("info", "Organisation was not found when performing sync");
-      logger.info(`Sync returned 404 status for org [${req.params.id}].`);
+      res.flash("info", "No sync was performed, please check logs for details");
+      logger.info(
+        `Sync call returned undefined for org [${req.params.id}]. Organisation either not found or undefined id`,
+      );
     }
   } catch (e) {
     res.flash("error", "Something went wrong during web service sync");
