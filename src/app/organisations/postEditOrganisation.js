@@ -33,15 +33,23 @@ const validateInput = async (req) => {
     model.validationMessages.name = "Special characters cannot be used";
   }
 
-  if (name) {
+  if (name && name !== organisation.name) {
     const nameResult = await searchOrganisationsRaw({
       organisationName: name,
       pageNumber: 1,
     });
 
     if (nameResult.totalNumberOfRecords > 0) {
-      model.validationMessages.name =
-        "An organisation with this name already exists";
+      const exactMatch = nameResult.organisations.find(
+        (org) =>
+          org.name.trim().toLowerCase() === name.toLowerCase() &&
+          org.id !== organisation.id,
+      );
+
+      if (exactMatch) {
+        model.validationMessages.name =
+          "An organisation with this name already exists";
+      }
     }
   }
 

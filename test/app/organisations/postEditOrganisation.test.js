@@ -38,16 +38,6 @@ const orgsResultWithNoResults = {
   totalNumberOfRecords: 0,
 };
 
-const orgsResultWithResults = {
-  organisations: [
-    { id: "org-1", name: "organisation one" },
-    { id: "org-2", name: "organisation two" },
-  ],
-  page: 1,
-  totalNumberOfPages: 1,
-  totalNumberOfRecords: 2,
-};
-
 describe("when postEditOrganisation is called", () => {
   let req;
   let exampleErrorResponse;
@@ -115,7 +105,16 @@ describe("when postEditOrganisation is called", () => {
   });
 
   it("should render an the page with an error in validationMessages if an organisation with a matching name exists", async () => {
-    searchOrganisationsRaw.mockReset().mockReturnValue(orgsResultWithResults);
+    const orgsResultWithMatchingName = {
+      organisations: [{ id: "org-2", name: "Test name" }],
+      page: 1,
+      totalNumberOfPages: 1,
+      totalNumberOfRecords: 1,
+    };
+
+    searchOrganisationsRaw
+      .mockReset()
+      .mockReturnValue(orgsResultWithMatchingName);
     exampleErrorResponse.validationMessages.name =
       "An organisation with this name already exists";
 
