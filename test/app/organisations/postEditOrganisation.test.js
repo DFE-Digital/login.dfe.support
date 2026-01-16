@@ -124,6 +124,20 @@ describe("when postEditOrganisation is called", () => {
     expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
+  it("should allow updating the address when the name remains the same", async () => {
+    req.body.name = "organisation one";
+    req.body.address = "New address";
+
+    await postEditOrganisation(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe(
+      `/organisations/org-1/confirm-edit-organisation`,
+    );
+    expect(sendResult).toHaveBeenCalledTimes(0);
+    expect(searchOrganisationsRaw).not.toHaveBeenCalled();
+  });
+
   it("should render an the page with an error in validationMessages if an organisation with an invalid category is modified", async () => {
     const invalidCategoryResponse = {
       organisation: orgResultInvalidCategory,
