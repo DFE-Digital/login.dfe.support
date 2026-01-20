@@ -38,16 +38,6 @@ const orgsResultWithNoResults = {
   totalNumberOfRecords: 0,
 };
 
-const orgsResultWithResults = {
-  organisations: [
-    { id: "org-1", name: "organisation one" },
-    { id: "org-2", name: "organisation two" },
-  ],
-  page: 1,
-  totalNumberOfPages: 1,
-  totalNumberOfRecords: 2,
-};
-
 describe("when postEditOrganisation is called", () => {
   let req;
   let exampleErrorResponse;
@@ -115,7 +105,16 @@ describe("when postEditOrganisation is called", () => {
   });
 
   it("should render an the page with an error in validationMessages if an organisation with a matching name exists", async () => {
-    searchOrganisationsRaw.mockReset().mockReturnValue(orgsResultWithResults);
+    const orgsResultWithMatchingName = {
+      organisations: [{ id: "org-2", name: "Test name" }],
+      page: 1,
+      totalNumberOfPages: 1,
+      totalNumberOfRecords: 1,
+    };
+
+    searchOrganisationsRaw
+      .mockReset()
+      .mockReturnValue(orgsResultWithMatchingName);
     exampleErrorResponse.validationMessages.name =
       "An organisation with this name already exists";
 
@@ -123,6 +122,20 @@ describe("when postEditOrganisation is called", () => {
 
     expect(sendResult).toHaveBeenCalledTimes(1);
     expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
+  });
+
+  it("should allow updating the address when the name remains the same", async () => {
+    req.body.name = "organisation one";
+    req.body.address = "New address";
+
+    await postEditOrganisation(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe(
+      `/organisations/org-1/confirm-edit-organisation`,
+    );
+    expect(sendResult).toHaveBeenCalledTimes(0);
+    expect(searchOrganisationsRaw).not.toHaveBeenCalled();
   });
 
   it("should render an the page with an error in validationMessages if an organisation with an invalid category is modified", async () => {
