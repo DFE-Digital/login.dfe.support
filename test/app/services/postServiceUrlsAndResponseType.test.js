@@ -1,6 +1,9 @@
 jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
+jest.mock("./../../../src/infrastructure/logger", () =>
+  require("./../../utils").loggerMockFactory(),
+);
 jest.mock("./../../../src/infrastructure/utils");
 jest.mock("../../../src/app/services/utils", () => ({
   getAllServices: jest.fn(),

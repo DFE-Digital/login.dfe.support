@@ -1,6 +1,9 @@
 jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
+jest.mock("./../../../src/infrastructure/logger", () =>
+  require("./../../utils").loggerMockFactory(),
+);
 jest.mock("./../../../src/infrastructure/utils");
 
 const { getRequestMock, getResponseMock } = require("../../utils");
@@ -78,6 +81,18 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult).toHaveBeenCalledTimes(0);
   });
 
+  it("should redirect to users page when the standard type is selected", async () => {
+    req.body.serviceType = "standardServiceType";
+
+    await postChooseServiceType(req, res);
+
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe(
+      "/services/service-name-and-description",
+    );
+    expect(sendResult).toHaveBeenCalledTimes(0);
+  });
+
   it("should render the page if there is an error saving to the session", async () => {
     req.session = {
       save: jest.fn((cb) => cb("Something went wrong")),
@@ -111,18 +126,6 @@ describe("when displaying the post choose service type screen", () => {
     exampleErrorResponse.serviceType = "";
     exampleErrorResponse.validationMessages.serviceType =
       "A service type must be selected";
-
-    await postChooseServiceType(req, res);
-
-    expect(sendResult).toHaveBeenCalledTimes(1);
-    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
-  });
-
-  it("should render an the page with an error in validationMessages the standard type is selected", async () => {
-    req.body.serviceType = "standardServiceType";
-    exampleErrorResponse.serviceType = "standardServiceType";
-    exampleErrorResponse.validationMessages.serviceType =
-      "The standard service type is not available yet. Only ID-only services can be created";
 
     await postChooseServiceType(req, res);
 

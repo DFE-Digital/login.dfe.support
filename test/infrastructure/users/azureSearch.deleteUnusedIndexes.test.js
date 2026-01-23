@@ -10,6 +10,9 @@ jest.mock("./../../../src/infrastructure/config", () =>
     },
   }),
 );
+jest.mock("./../../../src/infrastructure/logger", () =>
+  require("./../../utils").loggerMockFactory(),
+);
 jest.mock("login.dfe.async-retry");
 jest.mock("uuid", () => ({ v4: jest.fn().mockReturnValue("some-uuid") }));
 
