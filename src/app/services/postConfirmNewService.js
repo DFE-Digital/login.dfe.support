@@ -81,7 +81,7 @@ const postConfirmNewService = async (req, res) => {
       postLogoutRedirectUris: model.service.postLogoutRedirectUris,
       grantTypes: grantTypes,
       responseTypes: responseTypes,
-      params: params,
+      params,
     },
   };
 
