@@ -24,10 +24,11 @@ const postConfirmNewService = async (req, res) => {
     responseTypes.push(model.responseTypesToken);
   }
 
+  // Hardcode the most common params for each service type.  An iteration
+  // on this feature would add a page to add/change these default paramaters
+  // during service creation.
   let params = {};
   if (model.serviceType === "standardServiceType") {
-    // Hardcode the most common params for a standard service.  An iteration
-    // on this feature would add a page to add paramaters during service creation.
     params = {
       minimumRolesRequired: 1,
     };
@@ -108,11 +109,9 @@ const postConfirmNewService = async (req, res) => {
     return res.redirect("/users");
   }
 
-  /*
-  We're intentionally not redirecting after an error, like we did for the service creation.
-  If an error occurs when creating roles, we want as much of the service set up
-  correctly as possible to reduce the amount of manual work that a fix would take
-  */
+  // We're intentionally not redirecting after an error, like we did for the service creation.
+  // If an error occurs when creating roles, we want as much of the service set up
+  // correctly as possible to reduce the amount of manual work that a fix would take
   const newServiceId = createdService.id;
   const manageServiceId = config.access.identifiers.manageService;
 
