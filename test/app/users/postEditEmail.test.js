@@ -84,6 +84,9 @@ describe("when changing email address", () => {
         sub: "suser1",
         email: "super.user@unit.test",
       },
+      externalAuth: {
+        getEntraAccountIdByEmail: jest.fn(),
+      },
     };
 
     res = {
