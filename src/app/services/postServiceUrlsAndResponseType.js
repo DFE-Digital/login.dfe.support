@@ -109,7 +109,7 @@ const validateInput = async (req) => {
   } else {
     const allServices = await getAllServices();
     const isMatchingClientId = allServices.services.find(
-      (service) => service.clientId === model.clientId,
+      (service) => service.relyingParty.client_id === model.clientId,
     );
     if (isMatchingClientId) {
       model.validationMessages.clientId =
