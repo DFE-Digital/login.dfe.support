@@ -101,7 +101,7 @@ const postConfirmNewService = async (req, res) => {
       return res.redirect("/users");
     }
   } catch (error) {
-    logger.error(`Error creating new service: ${model.name}`, error);
+    logger.error(`Error creating new service: ${model.name}`, { error });
     res.flash(
       "error",
       `An error occurred while creating the ${model.name} service.`,
