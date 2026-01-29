@@ -37,6 +37,7 @@ if (services && services.length > 0) {
 
 <div class="govuk-width-container">
 
+
     <% if (locals.flash.info) { %>
     <div class="govuk-notification-banner govuk-notification-banner--success govuk-!-margin-top-5" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
       <div class="govuk-notification-banner__header">
@@ -48,12 +49,22 @@ if (services && services.length > 0) {
     </div>
     <% } %>
     <% if (locals.flash.rejected) { %>
-    <div class="govuk-notification-banner" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+    <div class="govuk-notification-banner govuk-!-margin-top-5" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
         <div class="govuk-notification-banner__header">
             <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">Rejected</h2>
         </div>
         <div class="govuk-notification-banner__content">
             <p class="govuk-body"><%= locals.flash.rejected %></p>
+        </div>
+    </div>
+    <% } %>
+    <% if (locals.flash.error) { %>
+    <div class="govuk-notification-banner govuk-!-margin-top-5" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+        <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">Error</h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+            <p class="govuk-body"><%= locals.flash.error %></p>
         </div>
     </div>
     <% } %>
