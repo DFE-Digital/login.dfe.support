@@ -13,11 +13,6 @@ const validateInput = (req) => {
     model.validationMessages.serviceType = "A service type must be selected";
   }
 
-  if (model.serviceType === "standardServiceType") {
-    model.validationMessages.serviceType =
-      "The standard service type is not available yet. Only ID-only services can be created";
-  }
-
   return model;
 };
 
