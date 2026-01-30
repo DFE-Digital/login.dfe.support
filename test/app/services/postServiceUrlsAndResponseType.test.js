@@ -1,6 +1,9 @@
 jest.mock("./../../../src/infrastructure/config", () =>
   require("../../utils").configMockFactory(),
 );
+jest.mock("./../../../src/infrastructure/logger", () =>
+  require("./../../utils").loggerMockFactory(),
+);
 jest.mock("./../../../src/infrastructure/utils");
 jest.mock("../../../src/app/services/utils", () => ({
   getAllServices: jest.fn(),
@@ -53,9 +56,11 @@ describe("when displaying the post choose service type screen", () => {
           id: "4A40415F-1A13-48F4-B54F-0AB0FC0A9AAC",
           name: "Existing service name",
           description: "Existing service description",
-          clientId: "existing-client-id",
           isExternalService: true,
           isIdOnlyService: false,
+          relyingParty: {
+            client_id: "existing-client-id",
+          },
         },
       ],
     };

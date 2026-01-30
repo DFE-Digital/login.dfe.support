@@ -24,13 +24,21 @@ const postConfirmNewService = async (req, res) => {
     responseTypes.push(model.responseTypesToken);
   }
 
-  // Hardcode hideApprover, hideSupport and helpHidden to reflect id only service
-  // This will need to be updated once we offer standard services
-  const params = {
-    hideApprover: true,
-    hideSupport: true,
-    helpHidden: model.hideFromContactUs === undefined ? false : true,
-  };
+  // Hardcode the most common params for each service type.  An iteration
+  // on this feature would add a page to add/change these default paramaters
+  // during service creation.
+  let params = {};
+  if (model.serviceType === "standardServiceType") {
+    params = {
+      minimumRolesRequired: 1,
+    };
+  } else {
+    params = {
+      hideApprover: true,
+      hideSupport: true,
+      helpHidden: model.hideFromContactUs === undefined ? false : true,
+    };
+  }
 
   // authorization_code if code is selected.
   // implicit if id_token, token, or id_token AND token are selected.
@@ -53,13 +61,13 @@ const postConfirmNewService = async (req, res) => {
     tokenEndpointAuthenticationMethod = undefined;
   }
 
-  // Hardcoding isIdOnlyService for now until we offer the ability to make a
-  // standard service via the UI
+  const isIdOnlyService =
+    model.serviceType === "standardServiceType" ? false : true;
   const body = {
     name: model.name,
     description: model.description,
     isExternalService: false,
-    isIdOnlyService: true,
+    isIdOnlyService,
     isHiddenService: model.hideFromUserServices === undefined ? false : true,
     isChildService: false,
     parentId: undefined,
@@ -74,7 +82,7 @@ const postConfirmNewService = async (req, res) => {
       postLogoutRedirectUris: model.service.postLogoutRedirectUris,
       grantTypes: grantTypes,
       responseTypes: responseTypes,
-      params: params,
+      params,
     },
   };
 
@@ -101,9 +109,9 @@ const postConfirmNewService = async (req, res) => {
     return res.redirect("/users");
   }
 
-  /*
-  We're intentionally not redirecting after an error, like we did for the service creation, because if an error occurs when creating roles, we want as much of the service set up correctly as possible to reduce the amount of manual work that a fix would take
-  */
+  // We're intentionally not redirecting after an error, like we did for the service creation.
+  // If an error occurs when creating roles, we want as much of the service set up
+  // correctly as possible to reduce the amount of manual work that a fix would take
   const newServiceId = createdService.id;
   const manageServiceId = config.access.identifiers.manageService;
 
@@ -156,6 +164,25 @@ const postConfirmNewService = async (req, res) => {
       "error",
       `${model.name} service successfully created but not all the manage console roles were created.  Please investigate`,
     );
+  }
+
+  if (model.serviceType === "standardServiceType") {
+    try {
+      await createServiceRole({
+        appId: manageServiceId,
+        roleName: `${model.name} - Service Access Management`,
+        roleCode: `${newServiceId}_accessManage`,
+      });
+    } catch (error) {
+      logger.error(
+        `Failed to create "Service Access Management" role for service ${model.name} (${newServiceId})`,
+        { error },
+      );
+      res.flash(
+        "error",
+        `${model.name} service successfully created but not all the manage console roles were created.  Please investigate`,
+      );
+    }
   }
 
   logger.audit(
