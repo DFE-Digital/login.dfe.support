@@ -30,14 +30,14 @@ describe("when updating users profile details", () => {
       csrfToken: () => "token",
       accepts: () => ["text/html"],
       params: {
-        uid: "915a7382-576b-4699-ad07-a9fd329d3867",
+        uid: "updated-user-id",
       },
       body: {
         firstName: "Rupert",
         lastName: "Grint",
       },
       user: {
-        sub: "suser1",
+        sub: "support-user-id",
         email: "super.user@unit.test",
       },
     };
@@ -50,7 +50,7 @@ describe("when updating users profile details", () => {
     logger.audit.mockReset();
 
     const userDetails = {
-      id: "915a7382-576b-4699-ad07-a9fd329d3867",
+      id: "updated-user-id",
       name: "Bobby Grint",
       firstName: "Bobby",
       lastName: "Grint",
@@ -112,7 +112,7 @@ describe("when updating users profile details", () => {
     expect(updateUser).toHaveBeenCalledTimes(1);
     expect(updateUser).toHaveBeenCalledWith({
       update: { familyName: "Grint", givenName: "Rupert" },
-      userId: "915a7382-576b-4699-ad07-a9fd329d3867",
+      userId: "updated-user-id",
     });
   });
 
@@ -121,7 +121,7 @@ describe("when updating users profile details", () => {
 
     expect(updateUserDetails.mock.calls).toHaveLength(1);
     expect(updateUserDetails.mock.calls[0][0]).toMatchObject({
-      id: "915a7382-576b-4699-ad07-a9fd329d3867",
+      id: "updated-user-id",
       name: "Rupert Grint",
       email: "rupert.grint@hogwarts.test",
       organisationName: "Hogwarts School of Witchcraft and Wizardry",
@@ -145,14 +145,14 @@ describe("when updating users profile details", () => {
 
     expect(logger.audit.mock.calls).toHaveLength(1);
     expect(logger.audit.mock.calls[0][0]).toBe(
-      "super.user@unit.test (id: suser1) updated user rupert.grint@hogwarts.test (id: 915a7382-576b-4699-ad07-a9fd329d3867)",
+      "super.user@unit.test (id: support-user-id) updated user rupert.grint@hogwarts.test (id: updated-user-id)",
     );
     expect(logger.audit.mock.calls[0][1]).toMatchObject({
       type: "support",
       subType: "user-edit",
-      userId: "suser1",
+      userId: "support-user-id",
       userEmail: "super.user@unit.test",
-      editedUser: "915a7382-576b-4699-ad07-a9fd329d3867",
+      editedUser: "updated-user-id",
       editedFields: [
         {
           name: "given_name",
@@ -164,7 +164,7 @@ describe("when updating users profile details", () => {
   });
 
   it("should call updateInvitation if updating an invited user", async () => {
-    req.params.uid = "inv-915a7382-576b-4699-ad07-a9fd329d3867";
+    req.params.uid = "inv-updated-user-id";
 
     await postEditProfile(req, res);
 
@@ -172,7 +172,7 @@ describe("when updating users profile details", () => {
     expect(updateInvitation).toHaveBeenCalled();
     expect(updateInvitation).toHaveBeenCalledWith({
       firstName: "Rupert",
-      invitationId: "915a7382-576b-4699-ad07-a9fd329d3867",
+      invitationId: "updated-user-id",
       lastName: "Grint",
     });
   });
