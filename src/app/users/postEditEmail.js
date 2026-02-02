@@ -33,13 +33,20 @@ const validate = async (req) => {
     const userExistsInDatabase = await getUserRaw({
       by: { email: model.email },
     });
-    const entraOid = await req.externalAuth.getEntraAccountIdByEmail({
+    const userExistsInEntra = await req.externalAuth.getEntraAccountIdByEmail({
       userEmail: model.email,
     });
-    const userExistsInEntra = entraOid !== undefined;
-    if (userExistsInDatabase || userExistsInEntra) {
+    if (userExistsInDatabase) {
       model.validationMessages.email =
         "A DfE Sign-in user already exists with that email address";
+    }
+    if (userExistsInEntra) {
+      model.validationMessages.email =
+        "An Entra user already exists with that email address";
+    }
+    if (userExistsInDatabase && userExistsInEntra) {
+      model.validationMessages.email =
+        "A DfE Sign-in user and an Entra user already exists with that email address";
     }
   }
 

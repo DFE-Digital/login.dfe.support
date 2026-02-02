@@ -155,7 +155,29 @@ describe("when changing email address", () => {
     });
   });
 
-  it("then it should render view if email already associated to a user in entra", async () => {
+  it("should render view if email already associated to a user in the database but not entra", async () => {
+    getUserRaw.mockReturnValue({});
+    getEntraAccountIdByEmail.mockReturnValue(undefined);
+
+    await postEditEmail(req, res);
+
+    expect(res.render.mock.calls).toHaveLength(1);
+    expect(res.render.mock.calls[0][0]).toBe("users/views/editEmail");
+    expect(res.render.mock.calls[0][1]).toEqual({
+      csrfToken: "token",
+      layout: "sharedViews/layout.ejs",
+      backLink: "services",
+      currentPage: "users",
+      email: "rupert.grint@hogwarts.school.test",
+      user: userDetails,
+      validationMessages: {
+        email: "A DfE Sign-in user already exists with that email address",
+      },
+    });
+  });
+
+  it("should render view if email already associated to a user in entra and not in the database", async () => {
+    getUserRaw.mockReturnValue(undefined);
     getEntraAccountIdByEmail.mockReturnValue(
       "915a7382-576b-4699-ad07-a9fd329d3867",
     );
@@ -172,13 +194,16 @@ describe("when changing email address", () => {
       email: "rupert.grint@hogwarts.school.test",
       user: userDetails,
       validationMessages: {
-        email: "A DfE Sign-in user already exists with that email address",
+        email: "An Entra user already exists with that email address",
       },
     });
   });
 
-  it("then it should render view if email already associated to a user", async () => {
+  it("should render view if email already associated to a user in entra and in the database", async () => {
     getUserRaw.mockReturnValue({});
+    getEntraAccountIdByEmail.mockReturnValue(
+      "915a7382-576b-4699-ad07-a9fd329d3867",
+    );
 
     await postEditEmail(req, res);
 
@@ -186,13 +211,14 @@ describe("when changing email address", () => {
     expect(res.render.mock.calls[0][0]).toBe("users/views/editEmail");
     expect(res.render.mock.calls[0][1]).toEqual({
       csrfToken: "token",
-      layout: "sharedViews/layout.ejs",
       backLink: "services",
       currentPage: "users",
+      layout: "sharedViews/layout.ejs",
       email: "rupert.grint@hogwarts.school.test",
       user: userDetails,
       validationMessages: {
-        email: "A DfE Sign-in user already exists with that email address",
+        email:
+          "A DfE Sign-in user and an Entra user already exists with that email address",
       },
     });
   });
