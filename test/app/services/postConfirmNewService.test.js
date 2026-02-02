@@ -226,6 +226,28 @@ describe("when displaying the post create new service", () => {
     expect(createServiceRaw.mock.calls[0][0].relyingParty.apiSecret).toBe("");
   });
 
+  it("should use default clientSecret when clientSecret is empty", async () => {
+    req.session.createServiceData.clientSecret = "";
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(req, res);
+
+    expect(createServiceRaw.mock.calls[0][0].relyingParty.clientSecret).toBe(
+      "regenerate__me!",
+    );
+  });
+
+  it("should preserve clientSecret when it is not empty", async () => {
+    req.session.createServiceData.clientSecret = "my-custom-secret";
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(req, res);
+
+    expect(createServiceRaw.mock.calls[0][0].relyingParty.clientSecret).toBe(
+      "my-custom-secret",
+    );
+  });
+
   it("should not have authorization_code in grant types if code not present", async () => {
     req.session.createServiceData.responseTypesCode = undefined;
     await postConfirmNewService(req, res);

@@ -73,7 +73,8 @@ const postConfirmNewService = async (req, res) => {
     parentId: undefined,
     relyingParty: {
       clientId: model.clientId,
-      clientSecret: model.clientSecret,
+      clientSecret:
+        model.clientSecret === "" ? "regenerate__me!" : model.clientSecret,
       apiSecret: model.apiSecret ? encrypt(model.apiSecret) : model.apiSecret,
       tokenEndpointAuthMethod: tokenEndpointAuthenticationMethod,
       serviceHome: model.homeUrl,
