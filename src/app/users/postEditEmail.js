@@ -29,9 +29,25 @@ const validate = async (req) => {
     model.validationMessages.email = "Please enter email address";
   } else if (!emailPolicy.doesEmailMeetPolicy(model.email)) {
     model.validationMessages.email = "Please enter a valid email address";
-  } else if (await getUserRaw({ by: { email: model.email } })) {
-    model.validationMessages.email =
-      "A DfE Sign-in user already exists with that email address";
+  } else {
+    const userExistsInDatabase = await getUserRaw({
+      by: { email: model.email },
+    });
+    const userExistsInEntra = await req.externalAuth.getEntraAccountIdByEmail({
+      userEmail: model.email,
+    });
+    if (userExistsInDatabase) {
+      model.validationMessages.email =
+        "A DfE Sign-in user already exists with that email address";
+    }
+    if (userExistsInEntra) {
+      model.validationMessages.email =
+        "An Entra user already exists with that email address";
+    }
+    if (userExistsInDatabase && userExistsInEntra) {
+      model.validationMessages.email =
+        "A DfE Sign-in user and an Entra user already exists with that email address";
+    }
   }
 
   return model;
