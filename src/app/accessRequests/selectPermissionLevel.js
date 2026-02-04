@@ -150,7 +150,7 @@ const post = async (req, res) => {
 
     // audit organisation approved
     logger.audit(
-      `${req.user.email} (id: ${req.user.sub}) approved organisation request for ${model.request.org_id})`,
+      `${req.user.email} approved organisation request for ${model.request.usersEmail}`,
       {
         type: "approver",
         subType: "organisation-request-approved",
