@@ -153,8 +153,9 @@ const post = async (req, res) => {
       `${req.user.email} (id: ${req.user.sub}) approved organisation request for ${model.request.org_id})`,
       {
         type: "approver",
-        subType: "approved-org",
+        subType: "organisation-request-approved",
         userId: req.user.sub,
+        organisationId: model.request.org_id,
         editedUser: model.request.user_id,
         editedFields: [
           {
