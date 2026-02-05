@@ -21,6 +21,9 @@ const {
 const { getServiceRaw } = require("login.dfe.api-client/services");
 const getAudit = require("./../../../src/app/users/getAudit");
 const { getUserStatusRaw } = require("login.dfe.api-client/users");
+const {
+  getOrganisationLegacyRaw,
+} = require("login.dfe.api-client/organisations");
 
 const organisationId = "org-1";
 
@@ -396,5 +399,252 @@ describe("when getting users audit details", () => {
       },
       statusChangeReasons: [],
     });
+  });
+
+  it("should pass full req object when getting user", async () => {
+    getUserDetailsById.mockReset();
+    getUserDetailsById.mockImplementation((userId) => {
+      return {
+        id: userId,
+        firstName: "Test",
+        lastName: "User",
+        status: { id: 1 },
+      };
+    });
+
+    getPageOfUserAudits.mockReturnValue({
+      audits: [],
+      numberOfPages: 1,
+      numberOfRecords: 0,
+    });
+
+    await getAudit(req, res);
+
+    expect(getUserDetailsById.mock.calls).toHaveLength(1);
+    expect(getUserDetailsById.mock.calls[0][0]).toBe("user1");
+    expect(getUserDetailsById.mock.calls[0][1]).toBe(req);
+    expect(getUserDetailsById.mock.calls[0][1]).toHaveProperty("id");
+    expect(getUserDetailsById.mock.calls[0][1]).toHaveProperty("params");
+  });
+
+  it("should pass full req object for support user-org-deleted event", async () => {
+    getUserDetailsById.mockReset();
+    getUserDetailsById.mockImplementation((userId) => {
+      return {
+        id: userId,
+        firstName: "Test",
+        lastName: "User",
+        status: { id: 1 },
+      };
+    });
+
+    getOrganisationLegacyRaw.mockReset();
+    getOrganisationLegacyRaw.mockResolvedValue({
+      id: "org-1",
+      name: "Test Organisation",
+    });
+
+    getPageOfUserAudits.mockReturnValue({
+      audits: [
+        {
+          type: "support",
+          subType: "user-org-deleted",
+          userId: "user1",
+          editedUser: "edited-user1",
+          editedFields: [{ name: "new_organisation", oldValue: "org-1" }],
+          numericIdentifier: "12345",
+          textIdentifier: "ABC123",
+          timestamp: "2018-01-30T10:30:53.987Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const editedUserCall = getUserDetailsById.mock.calls.find(
+      (call) => call[0] === "edited-user1",
+    );
+    expect(editedUserCall).toBeDefined();
+    expect(editedUserCall[1]).toBe(req);
+    expect(editedUserCall[1]).toHaveProperty("id");
+    expect(editedUserCall[1]).toHaveProperty("params");
+  });
+
+  it("should pass full req object for support user-org event", async () => {
+    getUserDetailsById.mockReset();
+    getUserDetailsById.mockImplementation((userId) => {
+      return {
+        id: userId,
+        firstName: "Test",
+        lastName: "User",
+        status: { id: 1 },
+      };
+    });
+
+    getOrganisationLegacyRaw.mockReset();
+    getOrganisationLegacyRaw.mockResolvedValue({
+      id: "org-1",
+      name: "Test Organisation",
+    });
+
+    getPageOfUserAudits.mockReturnValue({
+      audits: [
+        {
+          type: "support",
+          subType: "user-org",
+          userId: "user1",
+          editedUser: "edited-user1",
+          editedFields: [{ name: "new_organisation", newValue: "org-1" }],
+          timestamp: "2018-01-30T10:30:53.987Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const editedUserCall = getUserDetailsById.mock.calls.find(
+      (call) => call[0] === "edited-user1",
+    );
+
+    expect(editedUserCall).toBeDefined();
+    expect(editedUserCall[1]).toBe(req);
+    expect(editedUserCall[1]).toHaveProperty("id");
+    expect(editedUserCall[1]).toHaveProperty("params");
+  });
+
+  it("should pass full req object for support user-org-permission-edited event", async () => {
+    getUserDetailsById.mockReset();
+    getUserDetailsById.mockImplementation((userId) => {
+      return {
+        id: userId,
+        firstName: "Test",
+        lastName: "User",
+        status: { id: 1 },
+      };
+    });
+
+    getOrganisationLegacyRaw.mockReset();
+    getOrganisationLegacyRaw.mockResolvedValue({
+      id: "org-1",
+      name: "Test Organisation",
+    });
+
+    getPageOfUserAudits.mockReturnValue({
+      audits: [
+        {
+          type: "support",
+          subType: "user-org-permission-edited",
+          userId: "user1",
+          editedUser: "edited-user1",
+          editedFields: [
+            {
+              name: "edited_permission",
+              oldValue: 0,
+              newValue: 10000,
+              organisation: "Test Organisation",
+            },
+          ],
+          timestamp: "2018-01-30T10:30:53.987Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const editedUserCall = getUserDetailsById.mock.calls.find(
+      (call) => call[0] === "edited-user1",
+    );
+    expect(editedUserCall).toBeDefined();
+    expect(editedUserCall[1]).toBe(req);
+    expect(editedUserCall[1]).toHaveProperty("id");
+    expect(editedUserCall[1]).toHaveProperty("params");
+  });
+
+  it("should pass full req object for approver user-org-deleted event", async () => {
+    getUserDetailsById.mockReset();
+    getUserDetailsById.mockImplementation((userId) => {
+      return {
+        id: userId,
+        firstName: "Test",
+        lastName: "User",
+        status: { id: 1 },
+      };
+    });
+
+    getOrganisationLegacyRaw.mockReset();
+    getOrganisationLegacyRaw.mockResolvedValue({
+      id: "org-1",
+      name: "Test Organisation",
+    });
+
+    getPageOfUserAudits.mockReturnValue({
+      audits: [
+        {
+          type: "approver",
+          subType: "user-org-deleted",
+          userId: "user1",
+          editedUser: "edited-user1",
+          meta: JSON.stringify({
+            editedFields: [{ name: "new_organisation", oldValue: "org-1" }],
+          }),
+          numericIdentifier: "12345",
+          textIdentifier: "ABC123",
+          timestamp: "2018-01-30T10:30:53.987Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const editedUserCall = getUserDetailsById.mock.calls.find(
+      (call) => call[0] === "edited-user1",
+    );
+    expect(editedUserCall).toBeDefined();
+    expect(editedUserCall[1]).toBe(req);
+    expect(editedUserCall[1]).toHaveProperty("id");
+    expect(editedUserCall[1]).toHaveProperty("params");
+  });
+
+  it("should pass full req object when fetching different audit user", async () => {
+    getUserDetailsById.mockReset();
+    getUserDetailsById.mockImplementation((userId) => {
+      return {
+        id: userId,
+        firstName: "Test",
+        lastName: "User",
+        status: { id: 1 },
+      };
+    });
+
+    getPageOfUserAudits.mockReturnValue({
+      audits: [
+        {
+          type: "sign-in",
+          subType: "username-password",
+          userId: "different-user",
+          timestamp: "2018-01-30T10:30:53.987Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const differentUserCall = getUserDetailsById.mock.calls.find(
+      (call) => call[0] === "DIFFERENT-USER",
+    );
+    expect(differentUserCall).toBeDefined();
+    expect(differentUserCall[1]).toBe(req);
+    expect(differentUserCall[1]).toHaveProperty("id");
+    expect(differentUserCall[1]).toHaveProperty("params");
   });
 });
