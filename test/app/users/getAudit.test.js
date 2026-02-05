@@ -83,12 +83,16 @@ describe("when getting users audit details", () => {
     });
 
     getUserDetailsById.mockReset();
-    getUserDetailsById.mockReturnValue({
-      id: "user1",
-      status: {
-        id: 1,
-        description: "Activated",
-      },
+    getUserDetailsById.mockImplementation((userId) => {
+      return {
+        id: userId,
+        firstName: "Test",
+        lastName: "User",
+        status: {
+          id: 1,
+          description: "Activated",
+        },
+      };
     });
 
     sendResult.mockReset();
@@ -189,6 +193,7 @@ describe("when getting users audit details", () => {
       backLink: "/organisations",
     });
   });
+
   it("should set the backlink to /users if the search type session param is not organisations", async () => {
     req.session.params.searchType = "/users";
     await getAudit(req, res);
@@ -402,16 +407,6 @@ describe("when getting users audit details", () => {
   });
 
   it("should pass full req object when getting user", async () => {
-    getUserDetailsById.mockReset();
-    getUserDetailsById.mockImplementation((userId) => {
-      return {
-        id: userId,
-        firstName: "Test",
-        lastName: "User",
-        status: { id: 1 },
-      };
-    });
-
     getPageOfUserAudits.mockReturnValue({
       audits: [],
       numberOfPages: 1,
@@ -428,16 +423,6 @@ describe("when getting users audit details", () => {
   });
 
   it("should pass full req object for support user-org-deleted event", async () => {
-    getUserDetailsById.mockReset();
-    getUserDetailsById.mockImplementation((userId) => {
-      return {
-        id: userId,
-        firstName: "Test",
-        lastName: "User",
-        status: { id: 1 },
-      };
-    });
-
     getOrganisationLegacyRaw.mockReset();
     getOrganisationLegacyRaw.mockResolvedValue({
       id: "org-1",
@@ -473,16 +458,6 @@ describe("when getting users audit details", () => {
   });
 
   it("should pass full req object for support user-org event", async () => {
-    getUserDetailsById.mockReset();
-    getUserDetailsById.mockImplementation((userId) => {
-      return {
-        id: userId,
-        firstName: "Test",
-        lastName: "User",
-        status: { id: 1 },
-      };
-    });
-
     getOrganisationLegacyRaw.mockReset();
     getOrganisationLegacyRaw.mockResolvedValue({
       id: "org-1",
@@ -517,16 +492,6 @@ describe("when getting users audit details", () => {
   });
 
   it("should pass full req object for support user-org-permission-edited event", async () => {
-    getUserDetailsById.mockReset();
-    getUserDetailsById.mockImplementation((userId) => {
-      return {
-        id: userId,
-        firstName: "Test",
-        lastName: "User",
-        status: { id: 1 },
-      };
-    });
-
     getOrganisationLegacyRaw.mockReset();
     getOrganisationLegacyRaw.mockResolvedValue({
       id: "org-1",
@@ -567,16 +532,6 @@ describe("when getting users audit details", () => {
   });
 
   it("should pass full req object for approver user-org-deleted event", async () => {
-    getUserDetailsById.mockReset();
-    getUserDetailsById.mockImplementation((userId) => {
-      return {
-        id: userId,
-        firstName: "Test",
-        lastName: "User",
-        status: { id: 1 },
-      };
-    });
-
     getOrganisationLegacyRaw.mockReset();
     getOrganisationLegacyRaw.mockResolvedValue({
       id: "org-1",
@@ -614,16 +569,6 @@ describe("when getting users audit details", () => {
   });
 
   it("should pass full req object when fetching different audit user", async () => {
-    getUserDetailsById.mockReset();
-    getUserDetailsById.mockImplementation((userId) => {
-      return {
-        id: userId,
-        firstName: "Test",
-        lastName: "User",
-        status: { id: 1 },
-      };
-    });
-
     getPageOfUserAudits.mockReturnValue({
       audits: [
         {
