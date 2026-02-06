@@ -83,7 +83,7 @@ describe("when getting users audit details", () => {
     });
 
     getUserDetailsById.mockReset();
-    getUserDetailsById.mockImplementation((userId) => {
+    getUserDetailsById.mockImplementation(async (userId) => {
       return {
         id: userId,
         firstName: "Test",
@@ -95,10 +95,16 @@ describe("when getting users audit details", () => {
       };
     });
 
+    getOrganisationLegacyRaw.mockReset();
+    getOrganisationLegacyRaw.mockResolvedValue({
+      id: "org-1",
+      name: "Test Organisation",
+    });
+
     sendResult.mockReset();
 
     getPageOfUserAudits.mockReset();
-    getPageOfUserAudits.mockReturnValue({
+    getPageOfUserAudits.mockResolvedValue({
       audits: [
         {
           type: "sign-in",
@@ -250,7 +256,10 @@ describe("when getting users audit details", () => {
               "some.user@test.tester added service Test Service for user another.user@example.com",
           },
           service: null,
-          organisation: undefined,
+          organisation: {
+            id: "org-1",
+            name: "Test Organisation",
+          },
           result: true,
           user: {
             id: "user1",
@@ -266,7 +275,7 @@ describe("when getting users audit details", () => {
   });
 
   it("should return the message as the type, if the type is Sign-out", async () => {
-    getPageOfUserAudits.mockReturnValue({
+    getPageOfUserAudits.mockResolvedValue({
       audits: [
         createSimpleAuditRecord("Sign-out", undefined, "User logged out"),
       ],
@@ -280,7 +289,7 @@ describe("when getting users audit details", () => {
   });
 
   it("should leave a number of subtypes of message unchanged", async () => {
-    getPageOfUserAudits.mockReturnValue({
+    getPageOfUserAudits.mockResolvedValue({
       audits: [
         createSimpleAuditRecord(
           "manage",
@@ -407,7 +416,7 @@ describe("when getting users audit details", () => {
   });
 
   it("should pass full req object when getting user", async () => {
-    getPageOfUserAudits.mockReturnValue({
+    getPageOfUserAudits.mockResolvedValue({
       audits: [],
       numberOfPages: 1,
       numberOfRecords: 0,
@@ -423,13 +432,7 @@ describe("when getting users audit details", () => {
   });
 
   it("should pass full req object for support user-org-deleted event", async () => {
-    getOrganisationLegacyRaw.mockReset();
-    getOrganisationLegacyRaw.mockResolvedValue({
-      id: "org-1",
-      name: "Test Organisation",
-    });
-
-    getPageOfUserAudits.mockReturnValue({
+    getPageOfUserAudits.mockResolvedValue({
       audits: [
         {
           type: "support",
@@ -458,13 +461,7 @@ describe("when getting users audit details", () => {
   });
 
   it("should pass full req object for support user-org event", async () => {
-    getOrganisationLegacyRaw.mockReset();
-    getOrganisationLegacyRaw.mockResolvedValue({
-      id: "org-1",
-      name: "Test Organisation",
-    });
-
-    getPageOfUserAudits.mockReturnValue({
+    getPageOfUserAudits.mockResolvedValue({
       audits: [
         {
           type: "support",
@@ -492,13 +489,7 @@ describe("when getting users audit details", () => {
   });
 
   it("should pass full req object for support user-org-permission-edited event", async () => {
-    getOrganisationLegacyRaw.mockReset();
-    getOrganisationLegacyRaw.mockResolvedValue({
-      id: "org-1",
-      name: "Test Organisation",
-    });
-
-    getPageOfUserAudits.mockReturnValue({
+    getPageOfUserAudits.mockResolvedValue({
       audits: [
         {
           type: "support",
@@ -532,13 +523,7 @@ describe("when getting users audit details", () => {
   });
 
   it("should pass full req object for approver user-org-deleted event", async () => {
-    getOrganisationLegacyRaw.mockReset();
-    getOrganisationLegacyRaw.mockResolvedValue({
-      id: "org-1",
-      name: "Test Organisation",
-    });
-
-    getPageOfUserAudits.mockReturnValue({
+    getPageOfUserAudits.mockResolvedValue({
       audits: [
         {
           type: "approver",
@@ -569,7 +554,7 @@ describe("when getting users audit details", () => {
   });
 
   it("should pass full req object when fetching different audit user", async () => {
-    getPageOfUserAudits.mockReturnValue({
+    getPageOfUserAudits.mockResolvedValue({
       audits: [
         {
           type: "sign-in",
