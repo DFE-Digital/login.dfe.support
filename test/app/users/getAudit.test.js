@@ -20,7 +20,10 @@ const {
 } = require("./../../../src/infrastructure/serviceMapping");
 const { getServiceRaw } = require("login.dfe.api-client/services");
 const getAudit = require("./../../../src/app/users/getAudit");
-const { getUserStatusRaw } = require("login.dfe.api-client/users");
+const {
+  getUserStatusRaw,
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
 const {
   getOrganisationLegacyRaw,
 } = require("login.dfe.api-client/organisations");
@@ -100,6 +103,9 @@ describe("when getting users audit details", () => {
       id: "org-1",
       name: "Test Organisation",
     });
+
+    getUserOrganisationsWithServicesRaw.mockReset();
+    getUserOrganisationsWithServicesRaw.mockResolvedValue([]);
 
     sendResult.mockReset();
 
@@ -576,5 +582,196 @@ describe("when getting users audit details", () => {
     expect(differentUserCall[1]).toBe(req);
     expect(differentUserCall[1]).toHaveProperty("id");
     expect(differentUserCall[1]).toHaveProperty("params");
+  });
+
+  describe("error handling for dependent function failures", () => {
+    it("should handle error when getUserDetailsById throws", async () => {
+      getUserDetailsById.mockReset();
+      getUserDetailsById.mockRejectedValue(
+        new Error("Database connection failed"),
+      );
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "Database connection failed",
+      );
+    });
+
+    it("should handle error when getPageOfUserAudits throws", async () => {
+      getPageOfUserAudits.mockReset();
+      getPageOfUserAudits.mockRejectedValue(
+        new Error("Audit database unavailable"),
+      );
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "Audit database unavailable",
+      );
+    });
+
+    it("should handle error when getUserStatusRaw throws for deactivated users", async () => {
+      getUserDetailsById.mockImplementation(async (userId) => {
+        return {
+          id: userId,
+          firstName: "Test",
+          lastName: "User",
+          status: {
+            id: 0,
+            description: "Deactivated",
+          },
+        };
+      });
+
+      getUserStatusRaw.mockReset();
+      getUserStatusRaw.mockImplementation(() => {
+        throw new Error("Status unavailable");
+      });
+
+      await expect(getAudit(req, res)).rejects.toThrow("Status unavailable");
+    });
+
+    it("should handle error when getServiceIdForClientId throws", async () => {
+      getServiceIdForClientId.mockReset();
+      getServiceIdForClientId.mockImplementation(() => {
+        throw new Error("Service mapping service down");
+      });
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "Service mapping service down",
+      );
+    });
+
+    it("should handle error when getServiceRaw throws", async () => {
+      getServiceRaw.mockReset();
+      getServiceRaw.mockRejectedValue(new Error("Service API unavailable"));
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "Service API unavailable",
+      );
+    });
+
+    it("should handle error when getOrganisationLegacyRaw throws", async () => {
+      getOrganisationLegacyRaw.mockReset();
+      getOrganisationLegacyRaw.mockRejectedValue(
+        new Error("Organisation service down"),
+      );
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "Organisation service down",
+      );
+    });
+
+    it("should handle error when getCachedUserById throws for edited user in audit events", async () => {
+      getUserDetailsById.mockReset();
+      getUserDetailsById.mockImplementation(async (userId) => {
+        if (userId === "edited-user1") {
+          throw new Error("Edited user not found in database");
+        }
+        return {
+          id: userId,
+          firstName: "Test",
+          lastName: "User",
+          status: { id: 1, description: "Activated" },
+        };
+      });
+
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [
+          {
+            type: "support",
+            subType: "user-org",
+            userId: "user1",
+            editedUser: "edited-user1",
+            editedFields: [{ name: "new_organisation", newValue: "org-1" }],
+            timestamp: "2018-01-30T10:30:53.987Z",
+          },
+        ],
+        numberOfPages: 1,
+        numberOfRecords: 1,
+      });
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "Edited user not found in database",
+      );
+    });
+
+    it("should handle error when getUserOrganisationsWithServicesRaw throws", async () => {
+      getUserOrganisationsWithServicesRaw.mockReset();
+      getUserOrganisationsWithServicesRaw.mockRejectedValue(
+        new Error("User organisations service unavailable"),
+      );
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "User organisations service unavailable",
+      );
+    });
+
+    it("should handle error in describeAuditEvent when processing complex audit types", async () => {
+      getUserDetailsById.mockReset();
+      getUserDetailsById.mockImplementation(async (userId) => {
+        if (userId === "DIFFERENT-USER") {
+          throw new Error("Different user lookup failed");
+        }
+        return {
+          id: userId,
+          firstName: "Test",
+          lastName: "User",
+          status: { id: 1, description: "Activated" },
+        };
+      });
+
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [
+          {
+            type: "sign-in",
+            subType: "username-password",
+            userId: "different-user",
+            timestamp: "2018-01-30T10:30:53.987Z",
+          },
+        ],
+        numberOfPages: 1,
+        numberOfRecords: 1,
+      });
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "Different user lookup failed",
+      );
+    });
+
+    it("should handle error when cache operations fail for user lookups", async () => {
+      getUserDetailsById.mockReset();
+
+      let callCount = 0;
+      getUserDetailsById.mockImplementation(async (userId) => {
+        callCount++;
+        if (callCount === 2) {
+          throw new Error("Cache corruption detected");
+        }
+        return {
+          id: userId,
+          firstName: "Test",
+          lastName: "User",
+          status: { id: 1, description: "Activated" },
+        };
+      });
+
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [
+          {
+            type: "support",
+            subType: "user-edit",
+            userId: "user1",
+            editedUser: "edited-user1",
+            editedFields: [{ name: "status", newValue: 0 }],
+            reason: "test reason",
+            timestamp: "2018-01-30T10:30:53.987Z",
+          },
+        ],
+        numberOfPages: 1,
+        numberOfRecords: 1,
+      });
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "Cache corruption detected",
+      );
+    });
   });
 });
