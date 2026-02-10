@@ -229,7 +229,7 @@ const getAudit = async (req, res) => {
   });
   req.session.type = "audit";
   const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
-  if (isNaN(pageNumber)) {
+  if (isNaN(pageNumber) || pageNumber < 1) {
     return res.status(400).send();
   }
   const pageOfAudits = await getPageOfUserAudits(user.id, pageNumber);

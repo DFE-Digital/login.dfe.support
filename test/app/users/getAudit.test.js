@@ -528,6 +528,15 @@ describe("when getting users audit details", () => {
     expect(editedUserCall[1]).toHaveProperty("params");
   });
 
+  it("should return 400 for negative page numbers", async () => {
+    req.query.page = "-1";
+    await getAudit(req, res);
+
+    expect(res.status.mock.calls).toHaveLength(1);
+    expect(res.status.mock.calls[0][0]).toBe(400);
+    expect(res.send.mock.calls).toHaveLength(1);
+  });
+
   it("should pass full req object for approver user-org-deleted event", async () => {
     getPageOfUserAudits.mockResolvedValue({
       audits: [
