@@ -271,9 +271,40 @@ describe("when getting users audit details", () => {
     expect(auditRows[0].event.description).toBe("Sign-out");
   });
 
+  // This test should be rewritten to be a paramaterised test
   it("should leave a number of subtypes of message unchanged", async () => {
     getPageOfUserAudits.mockReturnValue({
       audits: [
+        createSimpleAuditRecord(
+          "service",
+          "service-request-approved",
+          "email@email.com approved service request for john.doe@email.com",
+        ),
+        createSimpleAuditRecord(
+          "sub-service",
+          "sub-service-request-approved",
+          "email@email.com approved sub-service request for john.doe@email.com",
+        ),
+        createSimpleAuditRecord(
+          "manage",
+          "organisation-request-approved",
+          "email@email.com approved organisation request for john.doe@email.com",
+        ),
+        createSimpleAuditRecord(
+          "service",
+          "service-request-rejected",
+          "email@email.com rejected service request for john.doe@email.com",
+        ),
+        createSimpleAuditRecord(
+          "sub-service",
+          "sub-service-request-rejected",
+          "email@email.com rejected sub-service request for john.doe@email.com",
+        ),
+        createSimpleAuditRecord(
+          "manage",
+          "organisation-request-rejected",
+          "email@email.com rejected organisation request for john.doe@email.com",
+        ),
         createSimpleAuditRecord(
           "manage",
           "user-service-added",
@@ -292,9 +323,27 @@ describe("when getting users audit details", () => {
 
     const auditRows = sendResult.mock.calls[0][3].audits;
     expect(auditRows[0].event.description).toBe(
-      "some.user@test.tester added service Test Service for user another.user@example.com",
+      "email@email.com approved service request for john.doe@email.com",
     );
     expect(auditRows[1].event.description).toBe(
+      "email@email.com approved sub-service request for john.doe@email.com",
+    );
+    expect(auditRows[2].event.description).toBe(
+      "email@email.com approved organisation request for john.doe@email.com",
+    );
+    expect(auditRows[3].event.description).toBe(
+      "email@email.com rejected service request for john.doe@email.com",
+    );
+    expect(auditRows[4].event.description).toBe(
+      "email@email.com rejected sub-service request for john.doe@email.com",
+    );
+    expect(auditRows[5].event.description).toBe(
+      "email@email.com rejected organisation request for john.doe@email.com",
+    );
+    expect(auditRows[6].event.description).toBe(
+      "some.user@test.tester added service Test Service for user another.user@example.com",
+    );
+    expect(auditRows[7].event.description).toBe(
       "some.user@test.tester removed service Test Service for user another.user@example.com",
     );
   });
