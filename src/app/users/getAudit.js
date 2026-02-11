@@ -50,7 +50,15 @@ const describeAuditEvent = async (audit, req) => {
     return audit.type;
   }
 
+  // The default SHOULD be audit.message, until the work is done to make this happen
+  // any new audit subTypes should be added to this to make the switch easier.
   if (
+    audit.subType === "service-request-approved" ||
+    audit.subType === "sub-service-request-approved" ||
+    audit.subType === "organisation-request-approved" ||
+    audit.subType === "service-request-rejected" ||
+    audit.subType === "sub-service-request-rejected" ||
+    audit.subType === "organisation-request-rejected" ||
     audit.subType === "service-info-edit" ||
     audit.subType === "user-service-deleted" ||
     audit.subType === "user-service-added" ||
