@@ -60,7 +60,8 @@ const describeAuditEvent = async (audit, req) => {
     audit.subType === "rejected-org" ||
     audit.subType === "user-editemail" ||
     audit.subType === "user-view" ||
-    audit.subType === "access-request"
+    audit.subType === "access-request" ||
+    audit.subType === "service-create"
   ) {
     return audit.message;
   }
