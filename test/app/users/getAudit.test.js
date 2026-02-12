@@ -307,6 +307,11 @@ describe("when getting users audit details", () => {
           "user-service-deleted",
           "some.user@test.tester removed service Test Service for user another.user@example.com",
         ),
+        createSimpleAuditRecord(
+          "organisation",
+          "access-request",
+          "some.user@test.tester requested organisation access",
+        ),
       ],
       numberOfPages: 3,
       numberOfRecords: 56,
