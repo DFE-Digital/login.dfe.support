@@ -20,9 +20,6 @@ const postConfirmNewService = async (req, res) => {
   if (model.responseTypesIdToken !== "") {
     responseTypes.push(model.responseTypesIdToken);
   }
-  if (model.responseTypesToken !== "") {
-    responseTypes.push(model.responseTypesToken);
-  }
 
   // Hardcode the most common params for each service type.  An iteration
   // on this feature would add a page to add/change these default paramaters
@@ -41,12 +38,12 @@ const postConfirmNewService = async (req, res) => {
   }
 
   // authorization_code if code is selected.
-  // implicit if id_token, token, or id_token AND token are selected.
+  // implicit if id_token is selected.
   const grantTypes = [];
   if (model.responseTypesCode) {
     grantTypes.push("authorization_code");
   }
-  if (model.responseTypesToken || model.responseTypesIdToken) {
+  if (model.responseTypesIdToken) {
     grantTypes.push("implicit");
   }
   if (model.refreshToken) {
