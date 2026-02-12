@@ -322,6 +322,11 @@ describe("when getting users audit details", () => {
           "service-create",
           "some.user@test.tester created Check A Thing service",
         ),
+        createSimpleAuditRecord(
+          "manage",
+          "service-config-updated",
+          "some.user@test.tester updated service configuration",
+        ),
       ],
       numberOfPages: 3,
       numberOfRecords: 56,
