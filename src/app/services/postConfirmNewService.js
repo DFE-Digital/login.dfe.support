@@ -31,6 +31,9 @@ const postConfirmNewService = async (req, res) => {
   if (model.serviceType === "standardServiceType") {
     params = {
       minimumRolesRequired: 1,
+      helpHidden: model.hideFromContactUs === undefined ? false : true,
+      hideApprover: model.hideApprover === undefined ? false : true,
+      hideSupport: model.hideSupport === undefined ? false : true,
     };
   } else {
     params = {

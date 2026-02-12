@@ -202,6 +202,9 @@ describe("when displaying the post create new service", () => {
         grantTypes: ["authorization_code", "implicit", "refresh_token"],
         params: {
           minimumRolesRequired: 1,
+          helpHidden: false,
+          hideApprover: false,
+          hideSupport: false,
         },
         postResetUrl: "https://postPasswordReseturl.com",
         postLogoutRedirectUris: ["https://logout-uri.com"],
@@ -502,6 +505,62 @@ describe("when displaying the post create new service", () => {
 
     await postConfirmNewService(req, res);
 
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/users");
+  });
+
+  it("should have hideApprover param be true if hideApprover is defined for standardServiceType", async () => {
+    req.session.createServiceData.hideApprover = "hideApprover";
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(req, res);
+
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
+    expect(
+      createServiceRaw.mock.calls[0][0].relyingParty.params.hideApprover,
+    ).toBe(true);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/users");
+  });
+
+  it("should have hideSupport param be true if hideSupport is defined for standardServiceType", async () => {
+    req.session.createServiceData.hideSupport = "hideSupport";
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(req, res);
+
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
+    expect(
+      createServiceRaw.mock.calls[0][0].relyingParty.params.hideSupport,
+    ).toBe(true);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/users");
+  });
+
+  it("should have hideApprover param be true if hideApprover is defined for idOnly service", async () => {
+    req.session.createServiceData.hideApprover = "hideApprover";
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(req, res);
+
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
+    expect(
+      createServiceRaw.mock.calls[0][0].relyingParty.params.hideApprover,
+    ).toBe(true);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/users");
+  });
+
+  it("should have hideSupport param be true if hideSupport is defined for idOnly service", async () => {
+    req.session.createServiceData.hideSupport = "hideSupport";
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(req, res);
+
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
+    expect(
+      createServiceRaw.mock.calls[0][0].relyingParty.params.hideSupport,
+    ).toBe(true);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/users");
   });

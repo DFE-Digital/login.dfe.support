@@ -37,6 +37,8 @@ describe("when displaying the post choose service type screen", () => {
       serviceType: "standardServiceType",
       hideFromUserServices: "hideFromUserServices",
       hideFromContactUs: "hideFromContactUs",
+      hideSupport: undefined,
+      hideApprover: undefined,
       validationMessages: {},
       csrfToken: "token",
       currentPage: "services",
@@ -72,6 +74,8 @@ describe("when displaying the post choose service type screen", () => {
       description: "Test description",
       hideFromUserServices: "hideFromUserServices",
       hideFromContactUs: "hideFromContactUs",
+      hideSupport: undefined,
+      hideApprover: undefined,
       validationMessages: {},
     });
     expect(res.redirect.mock.calls).toHaveLength(1);
