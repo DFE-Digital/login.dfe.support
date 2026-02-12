@@ -312,6 +312,11 @@ describe("when getting users audit details", () => {
           "access-request",
           "some.user@test.tester requested organisation access",
         ),
+        createSimpleAuditRecord(
+          "services",
+          "access-request",
+          "some.user@test.tester requested service access",
+        ),
       ],
       numberOfPages: 3,
       numberOfRecords: 56,
