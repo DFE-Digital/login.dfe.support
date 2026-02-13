@@ -1,4 +1,8 @@
-const { NotificationClient } = require("login.dfe.jobs-client");
+const {
+  NotificationClient,
+  ServiceNotificationsClient,
+} = require("login.dfe.jobs-client");
+const asyncRetry = require("login.dfe.async-retry");
 const {
   deleteUserServiceAccess,
   getUserOrganisationsWithServicesRaw,
@@ -66,6 +70,64 @@ const post = async (req, res) => {
     });
   } else {
     await deleteUserServiceAccess({ userId: uid, serviceId, organisationId });
+
+    const serviceNotificationsClient = new ServiceNotificationsClient(
+      config.notifications,
+    );
+    try {
+      await asyncRetry(
+        async () =>
+          await serviceNotificationsClient.notifyUserUpdated({ sub: uid }),
+        asyncRetry.strategies.apiStrategy,
+      );
+      logger.audit(
+        `WS Sync notification succeeded for user ${uid} after service access removal`,
+        {
+          type: "support",
+          subType: "user-sync-notify-succeeded",
+          userId: req.user.sub,
+          userEmail: req.user.email,
+          editedUser: uid,
+          organisationId,
+          editedFields: [
+            {
+              name: "remove_service",
+              oldValue: serviceId,
+              newValue: undefined,
+            },
+          ],
+          success: true,
+        },
+      );
+    } catch (e) {
+      logger.error(
+        `Failed to notify legacy WS Sync on user update for ${uid}`,
+        e,
+      );
+      logger.audit(
+        `WS Sync notification failed for user ${uid} after service access removal`,
+        {
+          type: "support",
+          subType: "user-sync-notify-failed",
+          userId: req.user.sub,
+          userEmail: req.user.email,
+          editedUser: uid,
+          organisationId,
+          editedFields: [
+            {
+              name: "remove_service",
+              oldValue: serviceId,
+              newValue: undefined,
+            },
+          ],
+          success: false,
+        },
+      );
+      res.flash(
+        "warning",
+        "Sync notification to legacy WS service failed. You can retry from 'Sync user' page.",
+      );
+    }
     if (isEmailAllowed) {
       const notificationClient = new NotificationClient({
         connectionString: config.notifications.connectionString,
