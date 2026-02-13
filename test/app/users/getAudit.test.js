@@ -340,6 +340,18 @@ describe("when getting users audit details", () => {
     expect(auditRows[1].event.description).toBe(
       "some.user@test.tester removed service Test Service for user another.user@example.com",
     );
+    expect(auditRows[2].event.description).toBe(
+      "some.user@test.tester requested organisation access",
+    );
+    expect(auditRows[3].event.description).toBe(
+      "some.user@test.tester requested service access",
+    );
+    expect(auditRows[4].event.description).toBe(
+      "some.user@test.tester created Check A Thing service",
+    );
+    expect(auditRows[5].event.description).toBe(
+      "some.user@test.tester updated service configuration",
+    );
   });
 
   it("then it should include page number in model", async () => {
