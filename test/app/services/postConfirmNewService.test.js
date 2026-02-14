@@ -140,7 +140,7 @@ describe("when displaying the post create new service", () => {
         postResetUrl: "https://postPasswordReseturl.com",
         postLogoutRedirectUris: ["https://logout-uri.com"],
         redirectUris: ["https://redirect-uri.com"],
-        responseTypes: ["code", "id_token", "token"],
+        responseTypes: ["code", "id_token"],
         serviceHome: "https://homeUrl.com",
         tokenEndpointAuthMethod: "client_secret_post",
       },
@@ -206,7 +206,7 @@ describe("when displaying the post create new service", () => {
         postResetUrl: "https://postPasswordReseturl.com",
         postLogoutRedirectUris: ["https://logout-uri.com"],
         redirectUris: ["https://redirect-uri.com"],
-        responseTypes: ["code", "id_token", "token"],
+        responseTypes: ["code", "id_token"],
         serviceHome: "https://homeUrl.com",
         tokenEndpointAuthMethod: "client_secret_post",
       },
@@ -340,7 +340,7 @@ describe("when displaying the post create new service", () => {
     expect(createServiceRaw.mock.calls).toHaveLength(1);
     expect(
       createServiceRaw.mock.calls[0][0].relyingParty.responseTypes,
-    ).toStrictEqual(["id_token", "token"]);
+    ).toStrictEqual(["id_token"]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/users");
   });
@@ -352,7 +352,7 @@ describe("when displaying the post create new service", () => {
     expect(createServiceRaw.mock.calls).toHaveLength(1);
     expect(
       createServiceRaw.mock.calls[0][0].relyingParty.responseTypes,
-    ).toStrictEqual(["code", "token"]);
+    ).toStrictEqual(["code"]);
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/users");
   });

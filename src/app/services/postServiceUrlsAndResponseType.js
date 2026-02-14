@@ -27,7 +27,6 @@ const validateInput = async (req) => {
     },
     responseTypesCode: req.body["response_types-code"] || "",
     responseTypesIdToken: req.body["response_types-id_token"] || "",
-    responseTypesToken: req.body["response_types-token"] || "",
     refreshToken: req.body.refreshToken,
     clientSecret: req.body.clientSecret || "",
     tokenEndpointAuthenticationMethod:
@@ -221,19 +220,8 @@ const validateInput = async (req) => {
   }
 
   // Response types validation
-  if (
-    !model.responseTypesCode &&
-    !model.responseTypesToken &&
-    !model.responseTypesIdToken
-  ) {
+  if (!model.responseTypesCode && !model.responseTypesIdToken) {
     model.validationMessages.responseTypes = "Select at least 1 response type";
-  }
-
-  const isCodeOrIdTokenSelected =
-    model.responseTypesCode || model.responseTypesIdToken;
-  if (model.responseTypesToken && !isCodeOrIdTokenSelected) {
-    model.validationMessages.responseTypesToken =
-      "Select more than 1 response type when 'token' is selected as a response type";
   }
 
   if (model.responseTypesCode) {
