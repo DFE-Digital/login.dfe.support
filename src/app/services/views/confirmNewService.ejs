@@ -180,6 +180,28 @@
               <a class="govuk-link" href="choose-type">Change<span class="govuk-visually-hidden"> hide from contact us</span></a>
             </dd>
           </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Hide from support console
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= (model.hideSupport !== undefined) ? 'true' : 'false' %>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="choose-type">Change<span class="govuk-visually-hidden"> hide from support console</span></a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Hide from approvers
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <%= (model.hideApprover !== undefined) ? 'true' : 'false' %>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <a class="govuk-link" href="choose-type">Change<span class="govuk-visually-hidden"> hide from approvers</span></a>
+            </dd>
+          </div>
         </dl>
         <form method="post">
           <input type="hidden" name="_csrf" value="<%=csrfToken%>" />

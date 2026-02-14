@@ -85,6 +85,24 @@
                     Stop users from seeing the ID-only service listed on the <a class="govuk-link" href="">contact us</a> page
                   </div>
                 </div>
+                <div class="govuk-checkboxes__item">
+                  <input class="govuk-checkboxes__input" id="hideSupport" name="hideSupport" type="checkbox" value="hideSupport" <%= (locals.hideSupport) ? 'checked' : '' %>>
+                  <label class="govuk-label govuk-checkboxes__label" for="hideSupport">
+                    Hide from support console
+                  </label>
+                  <div id="hideSupport-item-hint" class="govuk-hint govuk-checkboxes__hint">
+                    Hides <span class="govuk-!-font-weight-bold">role-based</span> services from the support console.
+                  </div>
+                </div>
+                <div class="govuk-checkboxes__item">
+                  <input class="govuk-checkboxes__input" id="hideApprover" name="hideApprover" type="checkbox" value="hideApprover" <%= (locals.hideApprover) ? 'checked' : '' %>>
+                  <label class="govuk-label govuk-checkboxes__label" for="hideApprover">
+                    Hide from approvers
+                  </label>
+                  <div id="hideApprover-item-hint" class="govuk-hint govuk-checkboxes__hint">
+                    Hides <span class="govuk-!-font-weight-bold">role-based</span> services from users so they cannot request the service, and from approvers so they cannot add the service to their account or users in their orgnisation.
+                  </div>
+                </div>
               </div>
             </fieldset>
           </div>
