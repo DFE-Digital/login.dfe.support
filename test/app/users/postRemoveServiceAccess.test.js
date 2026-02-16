@@ -70,6 +70,8 @@ describe("when removing access to a service", () => {
       },
     });
     res.mockResetAll();
+    // Reset logger audit between tests to avoid cross-test leakage
+    logger.audit.mockReset();
 
     getUserOrganisationsWithServicesRaw.mockReset();
     getUserOrganisationsWithServicesRaw.mockReturnValue([
