@@ -59,7 +59,13 @@ const describeAuditEvent = async (audit, req) => {
     audit.subType === "org-edit" ||
     audit.subType === "rejected-org" ||
     audit.subType === "user-editemail" ||
-    audit.subType === "user-view"
+    audit.subType === "user-view" ||
+    audit.subType === "policy-created" ||
+    audit.subType === "policy-condition-added" ||
+    audit.subType === "policy-role-added" ||
+    audit.subType === "policy-removed" ||
+    audit.subType === "policy-condition-removed" ||
+    audit.subType === "policy-role-removed"
   ) {
     return audit.message;
   }
@@ -89,7 +95,7 @@ const describeAuditEvent = async (audit, req) => {
     return "Edited user";
   }
 
-  if (audit.type === "support" && audit.subType === "user-search") {
+  if (audit.subType === "user-search") {
     return `Searched for users using criteria "${audit.criteria}"`;
   }
 
