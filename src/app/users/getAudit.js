@@ -262,6 +262,12 @@ const getAudit = async (req, res) => {
         );
         service = { name: clientId };
       }
+    } else {
+      // If clientId isn't found, we'll try and see if the serviceId is part of the metadata
+      const serviceId = audit.serviceId;
+      if (serviceId) {
+        service = await getCachedServiceById(serviceId, req.id);
+      }
     }
     if (audit.organisationId) {
       organisation = await getOrganisationLegacyRaw({
