@@ -50,20 +50,22 @@ const describeAuditEvent = async (audit, req) => {
     return audit.type;
   }
 
-  if (
-    audit.subType === "service-info-edit" ||
-    audit.subType === "user-service-deleted" ||
-    audit.subType === "user-service-added" ||
-    audit.subType === "user-services-added" ||
-    audit.subType === "user-service-updated" ||
-    audit.subType === "org-edit" ||
-    audit.subType === "rejected-org" ||
-    audit.subType === "user-editemail" ||
-    audit.subType === "user-view" ||
-    audit.subType === "access-request" ||
-    audit.subType === "service-create" ||
-    audit.subType === "service-config-updated"
-  ) {
+  const AUDIT_MESSAGE_SUBTYPES = new Set([
+    "service-info-edit",
+    "user-service-deleted",
+    "user-service-added",
+    "user-services-added",
+    "user-service-updated",
+    "org-edit",
+    "rejected-org",
+    "user-editemail",
+    "user-view",
+    "access-request",
+    "service-create",
+    "service-config-updated",
+  ]);
+
+  if (AUDIT_MESSAGE_SUBTYPES.has(audit.subType)) {
     return audit.message;
   }
 

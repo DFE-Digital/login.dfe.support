@@ -294,64 +294,47 @@ describe("when getting users audit details", () => {
     expect(auditRows[0].event.description).toBe("Sign-out");
   });
 
-  it("should leave a number of subtypes of message unchanged", async () => {
+  it.each([
+    [
+      "manage",
+      "user-service-added",
+      "some.user@test.tester added service Test Service for user another.user@example.com",
+    ],
+    [
+      "manage",
+      "user-service-deleted",
+      "some.user@test.tester removed service Test Service for user another.user@example.com",
+    ],
+    [
+      "organisation",
+      "access-request",
+      "some.user@test.tester requested organisation access",
+    ],
+    [
+      "services",
+      "access-request",
+      "some.user@test.tester requested service access",
+    ],
+    [
+      "support",
+      "service-create",
+      "some.user@test.tester created Check A Thing service",
+    ],
+    [
+      "manage",
+      "service-config-updated",
+      "some.user@test.tester updated service configuration",
+    ],
+  ])("should convert %s / %s", async (type, subType, message) => {
     getPageOfUserAudits.mockResolvedValue({
-      audits: [
-        createSimpleAuditRecord(
-          "manage",
-          "user-service-added",
-          "some.user@test.tester added service Test Service for user another.user@example.com",
-        ),
-        createSimpleAuditRecord(
-          "manage",
-          "user-service-deleted",
-          "some.user@test.tester removed service Test Service for user another.user@example.com",
-        ),
-        createSimpleAuditRecord(
-          "organisation",
-          "access-request",
-          "some.user@test.tester requested organisation access",
-        ),
-        createSimpleAuditRecord(
-          "services",
-          "access-request",
-          "some.user@test.tester requested service access",
-        ),
-        createSimpleAuditRecord(
-          "support",
-          "service-create",
-          "some.user@test.tester created Check A Thing service",
-        ),
-        createSimpleAuditRecord(
-          "manage",
-          "service-config-updated",
-          "some.user@test.tester updated service configuration",
-        ),
-      ],
+      audits: [createSimpleAuditRecord(type, subType, message)],
       numberOfPages: 3,
       numberOfRecords: 56,
     });
     await getAudit(req, res);
 
     const auditRows = sendResult.mock.calls[0][3].audits;
-    expect(auditRows[0].event.description).toBe(
-      "some.user@test.tester added service Test Service for user another.user@example.com",
-    );
-    expect(auditRows[1].event.description).toBe(
-      "some.user@test.tester removed service Test Service for user another.user@example.com",
-    );
-    expect(auditRows[2].event.description).toBe(
-      "some.user@test.tester requested organisation access",
-    );
-    expect(auditRows[3].event.description).toBe(
-      "some.user@test.tester requested service access",
-    );
-    expect(auditRows[4].event.description).toBe(
-      "some.user@test.tester created Check A Thing service",
-    );
-    expect(auditRows[5].event.description).toBe(
-      "some.user@test.tester updated service configuration",
-    );
+    expect(auditRows[0].event.description).toBe(message);
   });
 
   it("then it should include page number in model", async () => {
