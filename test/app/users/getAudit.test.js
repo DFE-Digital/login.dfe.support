@@ -335,7 +335,7 @@ describe("when getting users audit details", () => {
       "policy-role-removed",
       "some.user@test.tester removed a policy role with name 'MyRole'",
     ],
-  ])("should convert %i / %i", async (type, subType, message) => {
+  ])("should convert %s / %s", async (type, subType, message) => {
     getPageOfUserAudits.mockResolvedValue({
       audits: [createSimpleAuditRecord(type, subType, message)],
       numberOfPages: 3,
