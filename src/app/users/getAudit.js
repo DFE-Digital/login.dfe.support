@@ -50,23 +50,25 @@ const describeAuditEvent = async (audit, req) => {
     return audit.type;
   }
 
-  if (
-    audit.subType === "service-info-edit" ||
-    audit.subType === "user-service-deleted" ||
-    audit.subType === "user-service-added" ||
-    audit.subType === "user-services-added" ||
-    audit.subType === "user-service-updated" ||
-    audit.subType === "org-edit" ||
-    audit.subType === "rejected-org" ||
-    audit.subType === "user-editemail" ||
-    audit.subType === "user-view" ||
-    audit.subType === "policy-created" ||
-    audit.subType === "policy-condition-added" ||
-    audit.subType === "policy-role-added" ||
-    audit.subType === "policy-removed" ||
-    audit.subType === "policy-condition-removed" ||
-    audit.subType === "policy-role-removed"
-  ) {
+  const AUDIT_MESSAGE_SUBTYPES = new Set([
+    "service-info-edit",
+    "user-service-deleted",
+    "user-service-added",
+    "user-services-added",
+    "user-service-updated",
+    "org-edit",
+    "rejected-org",
+    "user-editemail",
+    "user-view",
+    "policy-created",
+    "policy-condition-added",
+    "policy-role-added",
+    "policy-removed",
+    "policy-condition-removed",
+    "policy-role-removed",
+  ]);
+
+  if (AUDIT_MESSAGE_SUBTYPES.has(audit.subType)) {
     return audit.message;
   }
 
