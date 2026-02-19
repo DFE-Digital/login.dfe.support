@@ -296,6 +296,36 @@ describe("when getting users audit details", () => {
 
   it.each([
     [
+      "service",
+      "service-request-approved",
+      "email@email.com approved service request for john.doe@email.com",
+    ],
+    [
+      "sub-service",
+      "sub-service-request-approved",
+      "email@email.com approved sub-service request for john.doe@email.com",
+    ],
+    [
+      "manage",
+      "organisation-request-approved",
+      "email@email.com approved organisation request for john.doe@email.com",
+    ],
+    [
+      "service",
+      "service-request-rejected",
+      "email@email.com rejected service request for john.doe@email.com",
+    ],
+    [
+      "sub-service",
+      "sub-service-request-rejected",
+      "email@email.com rejected sub-service request for john.doe@email.com",
+    ],
+    [
+      "manage",
+      "organisation-request-rejected",
+      "email@email.com rejected organisation request for john.doe@email.com",
+    ],
+    [
       "manage",
       "user-service-added",
       "some.user@test.tester added service Test Service for user another.user@example.com",
