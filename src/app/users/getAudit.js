@@ -51,6 +51,12 @@ const describeAuditEvent = async (audit, req) => {
   }
 
   const AUDIT_MESSAGE_SUBTYPES = new Set([
+    "service-request-approved",
+    "sub-service-request-approved",
+    "organisation-request-approved",
+    "service-request-rejected",
+    "sub-service-request-rejected",
+    "organisation-request-rejected",
     "service-info-edit",
     "user-service-deleted",
     "user-service-added",
@@ -65,6 +71,8 @@ const describeAuditEvent = async (audit, req) => {
     "service-config-updated",
   ]);
 
+  // The default SHOULD be audit.message, until the work is done to make this happen
+  // any new audit subTypes should be added to this to make the switch easier.
   if (AUDIT_MESSAGE_SUBTYPES.has(audit.subType)) {
     return audit.message;
   }
