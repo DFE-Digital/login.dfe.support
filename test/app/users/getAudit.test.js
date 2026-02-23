@@ -336,16 +336,6 @@ describe("when getting users audit details", () => {
       "some.user@test.tester removed service Test Service for user another.user@example.com",
     ],
     [
-      "manage",
-      "user-service-added",
-      "some.user@test.tester added service Test Service for user another.user@example.com",
-    ],
-    [
-      "manage",
-      "user-service-deleted",
-      "some.user@test.tester removed service Test Service for user another.user@example.com",
-    ],
-    [
       "organisation",
       "access-request",
       "some.user@test.tester requested organisation access",
@@ -364,6 +354,33 @@ describe("when getting users audit details", () => {
       "manage",
       "service-config-updated",
       "some.user@test.tester updated service configuration",
+      "policy-created",
+      "user@unit.test added a policy with name 'Test policy'",
+    ],
+    [
+      "manage",
+      "policy-condition-added",
+      "some.user@test.tester added 'organisation.ukprn' policy condition",
+    ],
+    [
+      "manage",
+      "policy-role-added",
+      "some.user@test.tester added a policy role with name 'MyRole'",
+    ],
+    [
+      "manage",
+      "policy-removed",
+      "user@unit.test removed a policy with name 'Test policy'",
+    ],
+    [
+      "manage",
+      "policy-condition-removed",
+      "some.user@test.tester removed 'organisation.ukprn' policy condition",
+    ],
+    [
+      "manage",
+      "policy-role-removed",
+      "some.user@test.tester removed a policy role with name 'MyRole'",
     ],
   ])("should convert %s / %s", async (type, subType, message) => {
     getPageOfUserAudits.mockResolvedValue({
