@@ -50,17 +50,33 @@ const describeAuditEvent = async (audit, req) => {
     return audit.type;
   }
 
-  if (
-    audit.subType === "service-info-edit" ||
-    audit.subType === "user-service-deleted" ||
-    audit.subType === "user-service-added" ||
-    audit.subType === "user-services-added" ||
-    audit.subType === "user-service-updated" ||
-    audit.subType === "org-edit" ||
-    audit.subType === "rejected-org" ||
-    audit.subType === "user-editemail" ||
-    audit.subType === "user-view"
-  ) {
+  const AUDIT_MESSAGE_SUBTYPES = new Set([
+    "service-request-approved",
+    "sub-service-request-approved",
+    "organisation-request-approved",
+    "service-request-rejected",
+    "sub-service-request-rejected",
+    "organisation-request-rejected",
+    "service-info-edit",
+    "user-service-deleted",
+    "user-service-added",
+    "user-services-added",
+    "user-service-updated",
+    "org-edit",
+    "rejected-org",
+    "user-editemail",
+    "user-view",
+    "policy-created",
+    "policy-condition-added",
+    "policy-role-added",
+    "policy-removed",
+    "policy-condition-removed",
+    "policy-role-removed",
+  ]);
+
+  // The default SHOULD be audit.message, until the work is done to make this happen
+  // any new audit subTypes should be added to this to make the switch easier.
+  if (AUDIT_MESSAGE_SUBTYPES.has(audit.subType)) {
     return audit.message;
   }
 
@@ -89,7 +105,7 @@ const describeAuditEvent = async (audit, req) => {
     return "Edited user";
   }
 
-  if (audit.type === "support" && audit.subType === "user-search") {
+  if (audit.subType === "user-search") {
     return `Searched for users using criteria "${audit.criteria}"`;
   }
 
@@ -229,7 +245,7 @@ const getAudit = async (req, res) => {
   });
   req.session.type = "audit";
   const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
-  if (isNaN(pageNumber)) {
+  if (isNaN(pageNumber) || pageNumber < 1) {
     return res.status(400).send();
   }
   const pageOfAudits = await getPageOfUserAudits(user.id, pageNumber);
@@ -261,6 +277,12 @@ const getAudit = async (req, res) => {
           { correlationId },
         );
         service = { name: clientId };
+      }
+    } else {
+      // If clientId isn't found, we'll try and see if the serviceId is part of the metadata
+      const serviceId = audit.serviceId;
+      if (serviceId) {
+        service = await getCachedServiceById(serviceId, req.id);
       }
     }
     if (audit.organisationId) {

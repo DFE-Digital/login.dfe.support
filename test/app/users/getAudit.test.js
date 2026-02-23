@@ -20,7 +20,13 @@ const {
 } = require("./../../../src/infrastructure/serviceMapping");
 const { getServiceRaw } = require("login.dfe.api-client/services");
 const getAudit = require("./../../../src/app/users/getAudit");
-const { getUserStatusRaw } = require("login.dfe.api-client/users");
+const {
+  getUserStatusRaw,
+  getUserOrganisationsWithServicesRaw,
+} = require("login.dfe.api-client/users");
+const {
+  getOrganisationLegacyRaw,
+} = require("login.dfe.api-client/organisations");
 
 const organisationId = "org-1";
 
@@ -80,18 +86,31 @@ describe("when getting users audit details", () => {
     });
 
     getUserDetailsById.mockReset();
-    getUserDetailsById.mockReturnValue({
-      id: "user1",
-      status: {
-        id: 1,
-        description: "Activated",
-      },
+    getUserDetailsById.mockImplementation(async (userId) => {
+      return {
+        id: userId,
+        firstName: "Test",
+        lastName: "User",
+        status: {
+          id: 1,
+          description: "Activated",
+        },
+      };
     });
+
+    getOrganisationLegacyRaw.mockReset();
+    getOrganisationLegacyRaw.mockResolvedValue({
+      id: "org-1",
+      name: "Test Organisation",
+    });
+
+    getUserOrganisationsWithServicesRaw.mockReset();
+    getUserOrganisationsWithServicesRaw.mockResolvedValue([]);
 
     sendResult.mockReset();
 
     getPageOfUserAudits.mockReset();
-    getPageOfUserAudits.mockReturnValue({
+    getPageOfUserAudits.mockResolvedValue({
       audits: [
         {
           type: "sign-in",
@@ -186,6 +205,7 @@ describe("when getting users audit details", () => {
       backLink: "/organisations",
     });
   });
+
   it("should set the backlink to /users if the search type session param is not organisations", async () => {
     req.session.params.searchType = "/users";
     await getAudit(req, res);
@@ -242,7 +262,10 @@ describe("when getting users audit details", () => {
               "some.user@test.tester added service Test Service for user another.user@example.com",
           },
           service: null,
-          organisation: undefined,
+          organisation: {
+            id: "org-1",
+            name: "Test Organisation",
+          },
           result: true,
           user: {
             id: "user1",
@@ -258,7 +281,7 @@ describe("when getting users audit details", () => {
   });
 
   it("should return the message as the type, if the type is Sign-out", async () => {
-    getPageOfUserAudits.mockReturnValue({
+    getPageOfUserAudits.mockResolvedValue({
       audits: [
         createSimpleAuditRecord("Sign-out", undefined, "User logged out"),
       ],
@@ -271,32 +294,87 @@ describe("when getting users audit details", () => {
     expect(auditRows[0].event.description).toBe("Sign-out");
   });
 
-  it("should leave a number of subtypes of message unchanged", async () => {
-    getPageOfUserAudits.mockReturnValue({
-      audits: [
-        createSimpleAuditRecord(
-          "manage",
-          "user-service-added",
-          "some.user@test.tester added service Test Service for user another.user@example.com",
-        ),
-        createSimpleAuditRecord(
-          "manage",
-          "user-service-deleted",
-          "some.user@test.tester removed service Test Service for user another.user@example.com",
-        ),
-      ],
+  it.each([
+    [
+      "service",
+      "service-request-approved",
+      "email@email.com approved service request for john.doe@email.com",
+    ],
+    [
+      "sub-service",
+      "sub-service-request-approved",
+      "email@email.com approved sub-service request for john.doe@email.com",
+    ],
+    [
+      "manage",
+      "organisation-request-approved",
+      "email@email.com approved organisation request for john.doe@email.com",
+    ],
+    [
+      "service",
+      "service-request-rejected",
+      "email@email.com rejected service request for john.doe@email.com",
+    ],
+    [
+      "sub-service",
+      "sub-service-request-rejected",
+      "email@email.com rejected sub-service request for john.doe@email.com",
+    ],
+    [
+      "manage",
+      "organisation-request-rejected",
+      "email@email.com rejected organisation request for john.doe@email.com",
+    ],
+    [
+      "manage",
+      "user-service-added",
+      "some.user@test.tester added service Test Service for user another.user@example.com",
+    ],
+    [
+      "manage",
+      "user-service-deleted",
+      "some.user@test.tester removed service Test Service for user another.user@example.com",
+    ],
+    [
+      "manage",
+      "policy-created",
+      "user@unit.test added a policy with name 'Test policy'",
+    ],
+    [
+      "manage",
+      "policy-condition-added",
+      "some.user@test.tester added 'organisation.ukprn' policy condition",
+    ],
+    [
+      "manage",
+      "policy-role-added",
+      "some.user@test.tester added a policy role with name 'MyRole'",
+    ],
+    [
+      "manage",
+      "policy-removed",
+      "user@unit.test removed a policy with name 'Test policy'",
+    ],
+    [
+      "manage",
+      "policy-condition-removed",
+      "some.user@test.tester removed 'organisation.ukprn' policy condition",
+    ],
+    [
+      "manage",
+      "policy-role-removed",
+      "some.user@test.tester removed a policy role with name 'MyRole'",
+    ],
+  ])("should convert %s / %s", async (type, subType, message) => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [createSimpleAuditRecord(type, subType, message)],
       numberOfPages: 3,
       numberOfRecords: 56,
     });
     await getAudit(req, res);
 
     const auditRows = sendResult.mock.calls[0][3].audits;
-    expect(auditRows[0].event.description).toBe(
-      "some.user@test.tester added service Test Service for user another.user@example.com",
-    );
-    expect(auditRows[1].event.description).toBe(
-      "some.user@test.tester removed service Test Service for user another.user@example.com",
-    );
+    expect(auditRows[0].event.description).toBe(message);
   });
 
   it("then it should include page number in model", async () => {
@@ -395,6 +473,369 @@ describe("when getting users audit details", () => {
         id: 0,
       },
       statusChangeReasons: [],
+    });
+  });
+
+  it("should pass full req object when getting user", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [],
+      numberOfPages: 1,
+      numberOfRecords: 0,
+    });
+
+    await getAudit(req, res);
+
+    expect(getUserDetailsById.mock.calls).toHaveLength(1);
+    expect(getUserDetailsById.mock.calls[0][0]).toBe("user1");
+    expect(getUserDetailsById.mock.calls[0][1]).toBe(req);
+    expect(getUserDetailsById.mock.calls[0][1]).toHaveProperty("id");
+    expect(getUserDetailsById.mock.calls[0][1]).toHaveProperty("params");
+  });
+
+  it("should pass full req object for support user-org-deleted event", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "support",
+          subType: "user-org-deleted",
+          userId: "user1",
+          editedUser: "edited-user1",
+          editedFields: [{ name: "new_organisation", oldValue: "org-1" }],
+          numericIdentifier: "12345",
+          textIdentifier: "ABC123",
+          timestamp: "2018-01-30T10:30:53.987Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const editedUserCall = getUserDetailsById.mock.calls.find(
+      (call) => call[0] === "edited-user1",
+    );
+    expect(editedUserCall).toBeDefined();
+    expect(editedUserCall[1]).toBe(req);
+    expect(editedUserCall[1]).toHaveProperty("id");
+    expect(editedUserCall[1]).toHaveProperty("params");
+  });
+
+  it("should pass full req object for support user-org event", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "support",
+          subType: "user-org",
+          userId: "user1",
+          editedUser: "edited-user1",
+          editedFields: [{ name: "new_organisation", newValue: "org-1" }],
+          timestamp: "2018-01-30T10:30:53.987Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const editedUserCall = getUserDetailsById.mock.calls.find(
+      (call) => call[0] === "edited-user1",
+    );
+
+    expect(editedUserCall).toBeDefined();
+    expect(editedUserCall[1]).toBe(req);
+    expect(editedUserCall[1]).toHaveProperty("id");
+    expect(editedUserCall[1]).toHaveProperty("params");
+  });
+
+  it("should pass full req object for support user-org-permission-edited event", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "support",
+          subType: "user-org-permission-edited",
+          userId: "user1",
+          editedUser: "edited-user1",
+          editedFields: [
+            {
+              name: "edited_permission",
+              oldValue: 0,
+              newValue: 10000,
+              organisation: "Test Organisation",
+            },
+          ],
+          timestamp: "2018-01-30T10:30:53.987Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const editedUserCall = getUserDetailsById.mock.calls.find(
+      (call) => call[0] === "edited-user1",
+    );
+    expect(editedUserCall).toBeDefined();
+    expect(editedUserCall[1]).toBe(req);
+    expect(editedUserCall[1]).toHaveProperty("id");
+    expect(editedUserCall[1]).toHaveProperty("params");
+  });
+
+  it("should return 400 for negative page numbers", async () => {
+    req.query.page = "-1";
+    await getAudit(req, res);
+
+    expect(res.status.mock.calls).toHaveLength(1);
+    expect(res.status.mock.calls[0][0]).toBe(400);
+    expect(res.send.mock.calls).toHaveLength(1);
+  });
+
+  it("should pass full req object for approver user-org-deleted event", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "approver",
+          subType: "user-org-deleted",
+          userId: "user1",
+          editedUser: "edited-user1",
+          meta: JSON.stringify({
+            editedFields: [{ name: "new_organisation", oldValue: "org-1" }],
+          }),
+          numericIdentifier: "12345",
+          textIdentifier: "ABC123",
+          timestamp: "2018-01-30T10:30:53.987Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const editedUserCall = getUserDetailsById.mock.calls.find(
+      (call) => call[0] === "edited-user1",
+    );
+    expect(editedUserCall).toBeDefined();
+    expect(editedUserCall[1]).toBe(req);
+    expect(editedUserCall[1]).toHaveProperty("id");
+    expect(editedUserCall[1]).toHaveProperty("params");
+  });
+
+  it("should pass full req object when fetching different audit user", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "sign-in",
+          subType: "username-password",
+          userId: "different-user",
+          timestamp: "2018-01-30T10:30:53.987Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const differentUserCall = getUserDetailsById.mock.calls.find(
+      (call) => call[0] === "DIFFERENT-USER",
+    );
+    expect(differentUserCall).toBeDefined();
+    expect(differentUserCall[1]).toBe(req);
+    expect(differentUserCall[1]).toHaveProperty("id");
+    expect(differentUserCall[1]).toHaveProperty("params");
+  });
+
+  describe("error handling for dependent function failures", () => {
+    it("should handle error when getUserDetailsById throws", async () => {
+      getUserDetailsById.mockReset();
+      getUserDetailsById.mockRejectedValue(
+        new Error("Database connection failed"),
+      );
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "Database connection failed",
+      );
+    });
+
+    it("should handle error when getPageOfUserAudits throws", async () => {
+      getPageOfUserAudits.mockReset();
+      getPageOfUserAudits.mockRejectedValue(
+        new Error("Audit database unavailable"),
+      );
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "Audit database unavailable",
+      );
+    });
+
+    it("should handle error when getUserStatusRaw throws for deactivated users", async () => {
+      getUserDetailsById.mockImplementation(async (userId) => {
+        return {
+          id: userId,
+          firstName: "Test",
+          lastName: "User",
+          status: {
+            id: 0,
+            description: "Deactivated",
+          },
+        };
+      });
+
+      getUserStatusRaw.mockReset();
+      getUserStatusRaw.mockImplementation(() => {
+        throw new Error("Status unavailable");
+      });
+
+      await expect(getAudit(req, res)).rejects.toThrow("Status unavailable");
+    });
+
+    it("should handle error when getServiceIdForClientId throws", async () => {
+      getServiceIdForClientId.mockReset();
+      getServiceIdForClientId.mockImplementation(() => {
+        throw new Error("Service mapping service down");
+      });
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "Service mapping service down",
+      );
+    });
+
+    it("should handle error when getServiceRaw throws", async () => {
+      getServiceRaw.mockReset();
+      getServiceRaw.mockRejectedValue(new Error("Service API unavailable"));
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "Service API unavailable",
+      );
+    });
+
+    it("should handle error when getOrganisationLegacyRaw throws", async () => {
+      getOrganisationLegacyRaw.mockReset();
+      getOrganisationLegacyRaw.mockRejectedValue(
+        new Error("Organisation service down"),
+      );
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "Organisation service down",
+      );
+    });
+
+    it("should handle error when getCachedUserById throws for edited user in audit events", async () => {
+      getUserDetailsById.mockReset();
+      getUserDetailsById.mockImplementation(async (userId) => {
+        if (userId === "edited-user1") {
+          throw new Error("Edited user not found in database");
+        }
+        return {
+          id: userId,
+          firstName: "Test",
+          lastName: "User",
+          status: { id: 1, description: "Activated" },
+        };
+      });
+
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [
+          {
+            type: "support",
+            subType: "user-org",
+            userId: "user1",
+            editedUser: "edited-user1",
+            editedFields: [{ name: "new_organisation", newValue: "org-1" }],
+            timestamp: "2018-01-30T10:30:53.987Z",
+          },
+        ],
+        numberOfPages: 1,
+        numberOfRecords: 1,
+      });
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "Edited user not found in database",
+      );
+    });
+
+    it("should handle error when getUserOrganisationsWithServicesRaw throws", async () => {
+      getUserOrganisationsWithServicesRaw.mockReset();
+      getUserOrganisationsWithServicesRaw.mockRejectedValue(
+        new Error("User organisations service unavailable"),
+      );
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "User organisations service unavailable",
+      );
+    });
+
+    it("should handle error in describeAuditEvent when processing complex audit types", async () => {
+      getUserDetailsById.mockReset();
+      getUserDetailsById.mockImplementation(async (userId) => {
+        if (userId === "DIFFERENT-USER") {
+          throw new Error("Different user lookup failed");
+        }
+        return {
+          id: userId,
+          firstName: "Test",
+          lastName: "User",
+          status: { id: 1, description: "Activated" },
+        };
+      });
+
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [
+          {
+            type: "sign-in",
+            subType: "username-password",
+            userId: "different-user",
+            timestamp: "2018-01-30T10:30:53.987Z",
+          },
+        ],
+        numberOfPages: 1,
+        numberOfRecords: 1,
+      });
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "Different user lookup failed",
+      );
+    });
+
+    it("should handle error when cache operations fail for user lookups", async () => {
+      getUserDetailsById.mockReset();
+
+      let callCount = 0;
+      getUserDetailsById.mockImplementation(async (userId) => {
+        callCount++;
+        if (callCount === 2) {
+          throw new Error("Cache corruption detected");
+        }
+        return {
+          id: userId,
+          firstName: "Test",
+          lastName: "User",
+          status: { id: 1, description: "Activated" },
+        };
+      });
+
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [
+          {
+            type: "support",
+            subType: "user-edit",
+            userId: "user1",
+            editedUser: "edited-user1",
+            editedFields: [{ name: "status", newValue: 0 }],
+            reason: "test reason",
+            timestamp: "2018-01-30T10:30:53.987Z",
+          },
+        ],
+        numberOfPages: 1,
+        numberOfRecords: 1,
+      });
+
+      await expect(getAudit(req, res)).rejects.toThrow(
+        "Cache corruption detected",
+      );
     });
   });
 });
