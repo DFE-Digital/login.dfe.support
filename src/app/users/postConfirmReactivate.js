@@ -3,6 +3,7 @@ const {
   getUserDetailsById,
   updateUserDetails,
   waitForIndexToUpdate,
+  clearUserKillSwitch,
 } = require("./utils");
 const { activateUser } = require("login.dfe.api-client/users");
 
@@ -25,6 +26,7 @@ const postConfirmReactivate = async (req, res) => {
   const user = await getUserDetailsById(req.params.uid, req);
 
   await activateUser({ userId: req.params.uid });
+  await clearUserKillSwitch(req.params.uid);
   await updateUserIndex(req);
 
   // Audit

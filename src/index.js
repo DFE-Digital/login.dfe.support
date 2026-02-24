@@ -67,6 +67,9 @@ setupApi({
     search: {
       baseUri: config.search.service.url,
     },
+    oidcService: {
+      baseUri: config.identifyingParty.url,
+    },
   },
 });
 
