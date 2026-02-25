@@ -29,10 +29,10 @@ const post = async (req, res) => {
       asyncRetry.strategies.apiStrategy,
     );
     logger.audit(
-      `WS Sync notification succeeded when queuing user ${req.params.uid} from user sync page`,
+      `WS Sync notification when queuing user ${req.params.uid} from user sync page`,
       {
         type: "support",
-        subType: "user-sync-notify-succeeded",
+        subType: "user-sync-notify",
         userId: req.user.sub,
         userEmail: req.user.email,
         editedUser: req.params.uid,
@@ -46,10 +46,10 @@ const post = async (req, res) => {
       e,
     );
     logger.audit(
-      `WS Sync notification failed when queuing user ${req.params.uid} from user sync page`,
+      `WS Sync notification when queuing user ${req.params.uid} from user sync page`,
       {
         type: "support",
-        subType: "user-sync-notify-failed",
+        subType: "user-sync-notify",
         userId: req.user.sub,
         userEmail: req.user.email,
         editedUser: req.params.uid,
