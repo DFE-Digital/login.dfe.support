@@ -70,7 +70,6 @@ describe("when removing access to a service", () => {
       },
     });
     res.mockResetAll();
-    // Reset logger audit between tests to avoid cross-test leakage
     logger.audit.mockReset();
 
     getUserOrganisationsWithServicesRaw.mockReset();
@@ -166,7 +165,6 @@ describe("when removing access to a service", () => {
   it("then it should should audit service being removed", async () => {
     await postRemoveService(req, res);
 
-    // Expect two audits: WS Sync notify succeeded + service deleted
     expect(logger.audit.mock.calls).toHaveLength(2);
 
     // First audit: WS Sync notification succeeded for user update

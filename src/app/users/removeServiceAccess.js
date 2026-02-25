@@ -81,10 +81,10 @@ const post = async (req, res) => {
         asyncRetry.strategies.apiStrategy,
       );
       logger.audit(
-        `WS Sync notification succeeded for user ${uid} after service access removal`,
+        `WS Sync notification for user ${uid} after service access removal`,
         {
           type: "support",
-          subType: "user-sync-notify-succeeded",
+          subType: "user-sync-notify",
           userId: req.user.sub,
           userEmail: req.user.email,
           editedUser: uid,
@@ -105,10 +105,10 @@ const post = async (req, res) => {
         e,
       );
       logger.audit(
-        `WS Sync notification failed for user ${uid} after service access removal`,
+        `WS Sync notification for user ${uid} after service access removal`,
         {
           type: "support",
-          subType: "user-sync-notify-failed",
+          subType: "user-sync-notify",
           userId: req.user.sub,
           userEmail: req.user.email,
           editedUser: uid,
