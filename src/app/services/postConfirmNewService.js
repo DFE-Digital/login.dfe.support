@@ -186,16 +186,14 @@ const postConfirmNewService = async (req, res) => {
     }
   }
 
-  logger.audit(
-    `${req.user.email} (id: ${req.user.sub}) created ${model.name} service`,
-    {
-      type: "support",
-      subType: "service-create",
-      userId: req.user.sub,
-      userEmail: req.user.email,
-      name: model.name,
-    },
-  );
+  logger.audit(`${req.user.email} created '${model.name}' service`, {
+    type: "support",
+    subType: "service-create",
+    userId: req.user.sub,
+    userEmail: req.user.email,
+    client: model.clientId,
+    name: model.name,
+  });
 
   res.flash("info", `${model.name} service successfully created`);
   req.session.createServiceData = undefined;
