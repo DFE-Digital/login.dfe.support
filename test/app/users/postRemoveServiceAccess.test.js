@@ -167,13 +167,13 @@ describe("when removing access to a service", () => {
 
     expect(logger.audit.mock.calls).toHaveLength(2);
 
-    // First audit: WS Sync notification succeeded for user update
+    // First audit: WS Sync notification for user update
     expect(logger.audit.mock.calls[0][0]).toBe(
-      "WS Sync notification succeeded for user user1 after service access removal",
+      "WS Sync notification for user user1 after service access removal",
     );
     expect(logger.audit.mock.calls[0][1]).toMatchObject({
       type: "support",
-      subType: "user-sync-notify-succeeded",
+      subType: "user-sync-notify",
       userId: "suser1",
       userEmail: "super.user@unit.test",
       editedUser: "user1",
