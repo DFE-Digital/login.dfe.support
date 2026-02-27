@@ -81,6 +81,15 @@ describe("When processing a user search request", () => {
       expect(result.criteria).toEqual("user.one+1@unit.test");
     });
 
+    test("then it should search if criteria includes an apostrophe", async () => {
+      req.body.criteria = "sandra.d'souza@governor.support";
+
+      const result = await search(req);
+
+      expect(searchAndMapUsers).toHaveBeenCalled();
+      expect(result.criteria).toEqual("sandra.d'souza@governor.support");
+    });
+
     it("should put the criteria in double quotes if there is a dash character in it", async () => {
       req.body.criteria = "user.one-1@unit.test";
 

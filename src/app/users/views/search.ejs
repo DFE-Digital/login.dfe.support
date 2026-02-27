@@ -222,7 +222,7 @@ if (services && services.length > 0) {
         <table class="govuk-table">
             <thead class="govuk-table__head">
             <%
-            let baseSortUri = `?criteria=${criteria}&page=${page}&showFilters=${showFilters}`;
+            let baseSortUri = `?criteria=${encodeURIComponent(criteria)}&page=${page}&showFilters=${showFilters}`;
 
             if (organisationTypes && organisationTypes.length > 0) {
                 const selected = organisationTypes.filter(x => x.isSelected);

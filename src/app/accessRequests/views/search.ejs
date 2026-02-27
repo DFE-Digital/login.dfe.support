@@ -49,7 +49,7 @@ const paginationModel = {
         <table class="data">
             <thead>
             <%
-            let baseSortUri = `?criteria=${criteria}&page=${page}`;
+            let baseSortUri = `?criteria=${encodeURIComponent(criteria)}&page=${page}`;
             %>
             <tr class="sortable">
                 <th scope="col" class="cwp-15">

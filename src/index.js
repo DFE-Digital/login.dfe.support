@@ -234,7 +234,7 @@ const init = async () => {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(cookieParser(config.hostingEnvironment.sessionSecret));
 
-  const { doubleCsrfProtection: csrf } = doubleCsrf({
+  const { doubleCsrfProtection: csrfMiddleware, generateToken } = doubleCsrf({
     getSecret: (req) => req.secret,
 
     getTokenFromRequest: (req) => req.body._csrf,
@@ -249,6 +249,22 @@ const init = async () => {
     size: 64,
     ignoredMethods: ["GET", "HEAD", "OPTIONS"],
   });
+
+  // Wrap doubleCsrfProtection so that req.csrfToken() never throws on GET
+  // requests when a stale-but-signed CSRF cookie is present. csrf-csrf v3.x
+  // defaults validateOnReuse=true which causes generateToken to throw a 403
+  // when the existing cookie's hash doesn't match (e.g. after a server restart
+  // with a new csrfSecret). GET handlers render forms and only need a fresh
+  // valid token — they should silently replace a stale cookie, not 403.
+  const csrf = (req, res, next) => {
+    csrfMiddleware(req, res, (err) => {
+      if (err) return next(err);
+      // Override req.csrfToken so stale cookies are replaced (overwrite=false,
+      // validateOnReuse=false) rather than throwing 403.
+      req.csrfToken = () => generateToken(req, res, false, false);
+      next();
+    });
+  };
 
   app.use(
     sanitization({
