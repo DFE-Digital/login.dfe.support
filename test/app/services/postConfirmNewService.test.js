@@ -202,6 +202,9 @@ describe("when displaying the post create new service", () => {
         grantTypes: ["authorization_code", "implicit", "refresh_token"],
         params: {
           minimumRolesRequired: 1,
+          helpHidden: false,
+          hideApprover: false,
+          hideSupport: false,
         },
         postResetUrl: "https://postPasswordReseturl.com",
         postLogoutRedirectUris: ["https://logout-uri.com"],
@@ -504,5 +507,425 @@ describe("when displaying the post create new service", () => {
 
     expect(res.redirect.mock.calls).toHaveLength(1);
     expect(res.redirect.mock.calls[0][0]).toBe("/users");
+  });
+
+  it("should have hideApprover param be true if hideApprover is defined for standardServiceType", async () => {
+    req.session.createServiceData.hideApprover = "hideApprover";
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(req, res);
+
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
+    expect(
+      createServiceRaw.mock.calls[0][0].relyingParty.params.hideApprover,
+    ).toBe(true);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/users");
+  });
+
+  it("should have hideSupport param be true if hideSupport is defined for standardServiceType", async () => {
+    req.session.createServiceData.hideSupport = "hideSupport";
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(req, res);
+
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
+    expect(
+      createServiceRaw.mock.calls[0][0].relyingParty.params.hideSupport,
+    ).toBe(true);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/users");
+  });
+
+  it("should have hideApprover param be true if hideApprover is defined for idOnly service", async () => {
+    req.session.createServiceData.hideApprover = "hideApprover";
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(req, res);
+
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
+    expect(
+      createServiceRaw.mock.calls[0][0].relyingParty.params.hideApprover,
+    ).toBe(true);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/users");
+  });
+
+  it("should have hideSupport param be true if hideSupport is defined for idOnly service", async () => {
+    req.session.createServiceData.hideSupport = "hideSupport";
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(req, res);
+
+    expect(createServiceRaw.mock.calls).toHaveLength(1);
+    expect(
+      createServiceRaw.mock.calls[0][0].relyingParty.params.hideSupport,
+    ).toBe(true);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls[0][0]).toBe("/users");
+  });
+
+  it("should mark ID-only service as hidden from users/approver and support even if hide options aren't selected", async () => {
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(req, res);
+
+    expect(createServiceRaw.mock.calls[0][0]).toMatchObject({
+      isIdOnlyService: true,
+      isHiddenService: false,
+      relyingParty: {
+        params: {
+          helpHidden: false,
+          hideApprover: true,
+          hideSupport: true,
+        },
+      },
+    });
+  });
+
+  it("should not hide role-based service when no hide options are selected", async () => {
+    const testReq = getRequestMock({
+      session: {
+        createServiceData: standardServiceData,
+      },
+    });
+
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(testReq, res);
+
+    expect(createServiceRaw.mock.calls[0][0]).toMatchObject({
+      isIdOnlyService: false,
+      isHiddenService: false,
+      relyingParty: {
+        params: {
+          minimumRolesRequired: 1,
+          hideApprover: false,
+          hideSupport: false,
+          helpHidden: false,
+        },
+      },
+    });
+  });
+
+  it("should hide role-based service when the hide from users/approvers option is selected", async () => {
+    const testReq = getRequestMock({
+      session: {
+        createServiceData: {
+          serviceType: "standardServiceType",
+          hideFromUserServices: undefined,
+          hideApprover: "hideApprover",
+          hideFromContactUs: undefined,
+          name: "Standard Service Hidden from Users",
+          description: "Test standard service hidden from users",
+          homeUrl: "https://homeUrl.com",
+          postPasswordResetUrl: "https://postPasswordReseturl.com",
+          clientId: "TestClientId",
+          service: {
+            redirectUris: ["https://redirect-uri.com"],
+            postLogoutRedirectUris: ["https://logout-uri.com"],
+          },
+          responseTypesCode: "code",
+          responseTypesIdToken: "id_token",
+          refreshToken: "refresh_token",
+          clientSecret: "this.is.a.client.secret",
+          tokenEndpointAuthenticationMethod: "client_secret_post",
+          apiSecret: "this.is.an.api.secret",
+        },
+      },
+    });
+
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(testReq, res);
+
+    expect(createServiceRaw.mock.calls[0][0]).toMatchObject({
+      isIdOnlyService: false,
+      isHiddenService: false,
+      relyingParty: {
+        params: {
+          minimumRolesRequired: 1,
+          hideApprover: true,
+          hideSupport: false,
+          helpHidden: false,
+        },
+      },
+    });
+  });
+
+  it("should not hide role-based service when only hide from support console option is selected", async () => {
+    const testReq = getRequestMock({
+      session: {
+        createServiceData: {
+          serviceType: "standardServiceType",
+          hideFromUserServices: undefined,
+          hideApprover: undefined,
+          hideFromContactUs: undefined,
+          hideSupport: "hideSupport",
+          name: "Standard Service Hidden from Support",
+          description: "Test standard service hidden from support console",
+          homeUrl: "https://homeUrl.com",
+          postPasswordResetUrl: "https://postPasswordReseturl.com",
+          clientId: "TestClientId",
+          service: {
+            redirectUris: ["https://redirect-uri.com"],
+            postLogoutRedirectUris: ["https://logout-uri.com"],
+          },
+          responseTypesCode: "code",
+          responseTypesIdToken: "id_token",
+          refreshToken: "refresh_token",
+          clientSecret: "this.is.a.client.secret",
+          tokenEndpointAuthenticationMethod: "client_secret_post",
+          apiSecret: "this.is.an.api.secret",
+        },
+      },
+    });
+
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(testReq, res);
+
+    expect(createServiceRaw.mock.calls[0][0]).toMatchObject({
+      isIdOnlyService: false,
+      isHiddenService: false,
+      relyingParty: {
+        params: {
+          minimumRolesRequired: 1,
+          helpHidden: false,
+          hideApprover: false,
+          hideSupport: true,
+        },
+      },
+    });
+  });
+
+  it("should hide role-based service when all hide options are selected", async () => {
+    const testReq = getRequestMock({
+      session: {
+        createServiceData: {
+          serviceType: "standardServiceType",
+          hideFromUserServices: "hideFromUserServices",
+          hideFromContactUs: "hideFromContactUs",
+          hideApprover: "hideApprover",
+          hideSupport: "hideSupport",
+          name: "Standard Service Fully Hidden",
+          description: "Test standard service with all hide options selected",
+          homeUrl: "https://homeUrl.com",
+          postPasswordResetUrl: "https://postPasswordReseturl.com",
+          clientId: "TestClientId",
+          service: {
+            redirectUris: ["https://redirect-uri.com"],
+            postLogoutRedirectUris: ["https://logout-uri.com"],
+          },
+          responseTypesCode: "code",
+          responseTypesIdToken: "id_token",
+          refreshToken: "refresh_token",
+          clientSecret: "this.is.a.client.secret",
+          tokenEndpointAuthenticationMethod: "client_secret_post",
+          apiSecret: "this.is.an.api.secret",
+        },
+      },
+    });
+
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(testReq, res);
+
+    expect(createServiceRaw.mock.calls[0][0]).toMatchObject({
+      isIdOnlyService: false,
+      isHiddenService: true,
+      relyingParty: {
+        params: {
+          minimumRolesRequired: 1,
+          hideApprover: true,
+          hideSupport: true,
+          helpHidden: true,
+        },
+      },
+    });
+  });
+
+  it("should hide role-based service when all hide options are selected", async () => {
+    const testReq = getRequestMock({
+      session: {
+        createServiceData: {
+          serviceType: "standardServiceType",
+          hideFromUserServices: "hideFromUserServices",
+          hideFromContactUs: "hideFromContactUs",
+          hideApprover: "hideApprover",
+          hideSupport: "hideSupport",
+          name: "Standard Service Fully Hidden",
+          description: "Test standard service with all hide options selected",
+          homeUrl: "https://homeUrl.com",
+          postPasswordResetUrl: "https://postPasswordReseturl.com",
+          clientId: "TestClientId",
+          service: {
+            redirectUris: ["https://redirect-uri.com"],
+            postLogoutRedirectUris: ["https://logout-uri.com"],
+          },
+          responseTypesCode: "code",
+          responseTypesIdToken: "id_token",
+          refreshToken: "refresh_token",
+          clientSecret: "this.is.a.client.secret",
+          tokenEndpointAuthenticationMethod: "client_secret_post",
+          apiSecret: "this.is.an.api.secret",
+        },
+      },
+    });
+
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(testReq, res);
+
+    expect(createServiceRaw.mock.calls[0][0]).toMatchObject({
+      isIdOnlyService: false,
+      isHiddenService: true,
+      relyingParty: {
+        params: {
+          minimumRolesRequired: 1,
+          hideApprover: true,
+          hideSupport: true,
+          helpHidden: true,
+        },
+      },
+    });
+  });
+
+  it("should have isHiddenService and hideSupport true when hideFromUserServices and hideSupport are set", async () => {
+    const testReq = getRequestMock({
+      session: {
+        createServiceData: {
+          serviceType: "standardServiceType",
+          hideFromUserServices: "hideFromUserServices",
+          hideFromContactUs: undefined,
+          hideApprover: undefined,
+          hideSupport: "hideSupport",
+          name: "Standard Service Fully Hidden",
+          description: "Test standard service with all hide options selected",
+          homeUrl: "https://homeUrl.com",
+          postPasswordResetUrl: "https://postPasswordReseturl.com",
+          clientId: "TestClientId",
+          service: {
+            redirectUris: ["https://redirect-uri.com"],
+            postLogoutRedirectUris: ["https://logout-uri.com"],
+          },
+          responseTypesCode: "code",
+          responseTypesIdToken: "id_token",
+          refreshToken: "refresh_token",
+          clientSecret: "this.is.a.client.secret",
+          tokenEndpointAuthenticationMethod: "client_secret_post",
+          apiSecret: "this.is.an.api.secret",
+        },
+      },
+    });
+
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(testReq, res);
+
+    expect(createServiceRaw.mock.calls[0][0]).toMatchObject({
+      isIdOnlyService: false,
+      isHiddenService: true,
+      relyingParty: {
+        params: {
+          minimumRolesRequired: 1,
+          hideApprover: false,
+          hideSupport: true,
+          helpHidden: false,
+        },
+      },
+    });
+  });
+
+  it("should have helpHidden and hideApprover true when both hideFromContactUs and hideApprover are set", async () => {
+    const testReq = getRequestMock({
+      session: {
+        createServiceData: {
+          serviceType: "standardServiceType",
+          hideFromUserServices: undefined,
+          hideFromContactUs: "hideFromContactUs",
+          hideApprover: "hideApprover",
+          hideSupport: undefined,
+          name: "Standard Service Fully Hidden",
+          description: "Test standard service with all hide options selected",
+          homeUrl: "https://homeUrl.com",
+          postPasswordResetUrl: "https://postPasswordReseturl.com",
+          clientId: "TestClientId",
+          service: {
+            redirectUris: ["https://redirect-uri.com"],
+            postLogoutRedirectUris: ["https://logout-uri.com"],
+          },
+          responseTypesCode: "code",
+          responseTypesIdToken: "id_token",
+          refreshToken: "refresh_token",
+          clientSecret: "this.is.a.client.secret",
+          tokenEndpointAuthenticationMethod: "client_secret_post",
+          apiSecret: "this.is.an.api.secret",
+        },
+      },
+    });
+
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(testReq, res);
+
+    expect(createServiceRaw.mock.calls[0][0]).toMatchObject({
+      isIdOnlyService: false,
+      isHiddenService: false,
+      relyingParty: {
+        params: {
+          minimumRolesRequired: 1,
+          hideApprover: true,
+          hideSupport: false,
+          helpHidden: true,
+        },
+      },
+    });
+  });
+
+  it("should have helpHidden true when hideFromContactUs is set for standardServiceType", async () => {
+    const testReq = getRequestMock({
+      session: {
+        createServiceData: {
+          serviceType: "standardServiceType",
+          hideFromUserServices: undefined,
+          hideFromContactUs: "hideFromContactUs",
+          hideApprover: undefined,
+          hideSupport: undefined,
+          name: "Standard Service Fully Hidden",
+          description: "Test standard service with all hide options selected",
+          homeUrl: "https://homeUrl.com",
+          postPasswordResetUrl: "https://postPasswordReseturl.com",
+          clientId: "TestClientId",
+          service: {
+            redirectUris: ["https://redirect-uri.com"],
+            postLogoutRedirectUris: ["https://logout-uri.com"],
+          },
+          responseTypesCode: "code",
+          responseTypesIdToken: "id_token",
+          refreshToken: "refresh_token",
+          clientSecret: "this.is.a.client.secret",
+          tokenEndpointAuthenticationMethod: "client_secret_post",
+          apiSecret: "this.is.an.api.secret",
+        },
+      },
+    });
+
+    createServiceRaw.mockResolvedValue({ id: "new-service-id" });
+
+    await postConfirmNewService(testReq, res);
+
+    expect(createServiceRaw.mock.calls[0][0]).toMatchObject({
+      isIdOnlyService: false,
+      isHiddenService: false,
+      relyingParty: {
+        params: {
+          minimumRolesRequired: 1,
+          hideApprover: false,
+          hideSupport: false,
+          helpHidden: true,
+        },
+      },
+    });
   });
 });

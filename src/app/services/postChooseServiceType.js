@@ -6,13 +6,14 @@ const validateInput = (req) => {
     serviceType: req.body.serviceType,
     hideFromUserServices: req.body.hideFromUserServices,
     hideFromContactUs: req.body.hideFromContactUs,
+    hideSupport: req.body.hideSupport,
+    hideApprover: req.body.hideApprover,
     validationMessages: {},
   };
 
   if (!model.serviceType) {
     model.validationMessages.serviceType = "A service type must be selected";
   }
-
   return model;
 };
 
