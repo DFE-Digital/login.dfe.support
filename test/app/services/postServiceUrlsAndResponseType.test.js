@@ -31,7 +31,6 @@ describe("when displaying the post choose service type screen", () => {
         post_logout_redirect_uris: "https://test-url.com/log-out-redirect",
         "response_types-code": "responseTypesCode",
         "response_types-id_token": "",
-        "response_types-token": "",
         refreshToken: "refresh_token",
         clientSecret: "client-secret",
         apiSecret: "api-secret",
@@ -78,7 +77,6 @@ describe("when displaying the post choose service type screen", () => {
       },
       responseTypesCode: "responseTypesCode",
       responseTypesIdToken: "",
-      responseTypesToken: "",
       refreshToken: "refresh_token",
       clientSecret: "client-secret",
       tokenEndpointAuthenticationMethod: undefined,
@@ -143,7 +141,6 @@ describe("when displaying the post choose service type screen", () => {
       },
       responseTypesCode: "",
       responseTypesIdToken: "response_types-idToken",
-      responseTypesToken: "",
       refreshToken: undefined,
       clientSecret: "",
       tokenEndpointAuthenticationMethod: undefined,
@@ -176,7 +173,6 @@ describe("when displaying the post choose service type screen", () => {
         clientId: "test-client-id",
         responseTypesCode: "responseTypesCode",
         responseTypesIdToken: "",
-        responseTypesToken: "",
         service: {
           postLogoutRedirectUris: ["https://test-url.com/log-out-redirect"],
           redirectUris: ["https://test-url.com/redirect"],
@@ -598,34 +594,12 @@ describe("when displaying the post choose service type screen", () => {
     expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
   });
 
-  it("should render an the page with an error in validationMessages if only the token response type is selected", async () => {
-    req.body["response_types-code"] = "";
-    req.body["response_types-id_token"] = "";
-    req.body["response_types-token"] = "responseTypesToken";
-
-    // These 3 aren't part of the test, but modifying these elements makes the test shorter in length
-    exampleErrorResponse.responseTypesCode = "";
-    exampleErrorResponse.responseTypesToken = "responseTypesToken";
-    exampleErrorResponse.refreshToken = undefined;
-    exampleErrorResponse.clientSecret = "";
-
-    exampleErrorResponse.validationMessages.responseTypesToken =
-      "Select more than 1 response type when 'token' is selected as a response type";
-
-    await postServiceUrlsAndResponseType(req, res);
-
-    expect(sendResult).toHaveBeenCalledTimes(1);
-    expect(sendResult.mock.calls[0][3]).toStrictEqual(exampleErrorResponse);
-  });
-
   it("should render an the page with an error in validationMessages if no response types selected", async () => {
     req.body["response_types-code"] = "";
     req.body["response_types-id_token"] = "";
-    req.body["response_types-token"] = "";
 
-    // These 3 aren't part of the test, but modifying these elements makes the test shorter in length
+    // These aren't part of the test, but modifying these elements makes the test shorter in length
     exampleErrorResponse.responseTypesCode = "";
-    exampleErrorResponse.responseTypesToken = "";
     exampleErrorResponse.refreshToken = undefined;
     exampleErrorResponse.clientSecret = "";
 
