@@ -10,6 +10,7 @@ const {
   removeAllServicesForUser,
   removeAllServicesForInvitedUser,
   searchForBulkUsersPage,
+  destroyUserSession,
 } = require("./utils");
 const {
   deactivateUser: apiClientDeactivateUser,
@@ -61,6 +62,7 @@ const updateInvitedUserIndex = async (user) => {
 const deactivateUser = async (req, user, reason) => {
   await apiClientDeactivateUser({ userId: user.id, reason });
   await updateUserIndex(user);
+  await destroyUserSession(user.id);
 };
 
 const deactivateInvitedUser = async (req, user) => {

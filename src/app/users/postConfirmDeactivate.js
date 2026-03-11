@@ -6,6 +6,7 @@ const {
   removeAllServicesForUser,
   updateUserDetails,
   waitForIndexToUpdate,
+  destroyUserSession,
 } = require("./utils");
 
 const { deactivateUser } = require("login.dfe.api-client/users");
@@ -84,6 +85,7 @@ const postConfirmDeactivate = async (req, res) => {
 
   await deactivateUser({ userId: user.id, reason });
   await updateUserIndex(user.id, req);
+  await destroyUserSession(user.id);
 
   if (req.body["remove-services-and-requests"]) {
     await rejectOpenUserServiceRequestsForUser(user.id, req);

@@ -510,6 +510,45 @@ const callServiceToUserFunc = async (
   }
 };
 
+const { getApiClient, ApiName } = require("login.dfe.api-client/api");
+const { RequestMethod } = require("login.dfe.api-client/api/common/ApiClient");
+
+const destroyUserSession = async (userId) => {
+  try {
+    const oidcClient = getApiClient(ApiName.Oidc);
+    await oidcClient.request(
+      RequestMethod.POST,
+      `/users/${userId}/destroy-session`,
+    );
+    logger.info(
+      `Successfully requested OIDC session destruction for user ${userId}`,
+    );
+  } catch (e) {
+    // Log but don't fail the deactivation if session destruction fails
+    logger.error(
+      `Failed to destroy OIDC session for user ${userId}: ${e.message}`,
+    );
+  }
+};
+
+const clearUserKillSwitch = async (userId) => {
+  try {
+    const oidcClient = getApiClient(ApiName.Oidc);
+    await oidcClient.request(
+      RequestMethod.DELETE,
+      `/users/${userId}/kill-switch`,
+    );
+    logger.info(
+      `Successfully cleared kill switch for reactivated user ${userId}`,
+    );
+  } catch (e) {
+    // Log but don't fail the reactivation if kill switch removal fails
+    logger.error(
+      `Failed to clear kill switch for user ${userId}: ${e.message}`,
+    );
+  }
+};
+
 module.exports = {
   search,
   searchForBulkUsersPage,
@@ -523,4 +562,6 @@ module.exports = {
   removeAllServicesForUser,
   removeAllServicesForInvitedUser,
   callServiceToUserFunc,
+  destroyUserSession,
+  clearUserKillSwitch,
 };
