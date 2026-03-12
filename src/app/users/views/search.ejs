@@ -222,7 +222,7 @@ if (services && services.length > 0) {
         <table class="govuk-table">
             <thead class="govuk-table__head">
             <%
-            let baseSortUri = `?criteria=${criteria}&page=${page}&showFilters=${showFilters}`;
+            let baseSortUri = `?criteria=${encodeURIComponent(criteria)}&page=${page}&showFilters=${showFilters}`;
 
             if (organisationTypes && organisationTypes.length > 0) {
                 const selected = organisationTypes.filter(x => x.isSelected);
@@ -242,6 +242,10 @@ if (services && services.length > 0) {
                     baseSortUri += `&service=${item.id}`;
                 });
             }
+            // Exclude user-input criteria from profile link URLs to prevent WAF (Azure Front Door)
+            // from blocking requests where criteria contains an email address with '@'.
+            // The session already carries the criteria from the current search, so it is not lost.
+            const profileLinkSuffix = '?' + baseSortUri.slice(1).split('&').filter(p => !p.startsWith('criteria=')).join('&');
             %>
             <tr class="govuk-table__row">
                 <th scope="col" class="govuk-table__header">
@@ -274,7 +278,7 @@ if (services && services.length > 0) {
             <% } %>
             <% for (let i = 0; i < locals.users.length; i++) { %>
             <tr class="govuk-table__row govuk-body">
-                <td class="govuk-table__cell govuk-body-s"><a class="govuk-link" href="/users/<%= users[i].id %>/organisations<%= baseSortUri %>"><%= users[i].name %></a></td>
+                <td class="govuk-table__cell govuk-body-s"><a class="govuk-link" href="/users/<%= users[i].id %>/organisations<%= profileLinkSuffix %>"><%= users[i].name %></a></td>
                 <td class="govuk-table__cell govuk-body-s"><span><%= users[i].email %></span></td>
                 <td class="govuk-table__cell govuk-body-s">
                     <% if(users[i].organisation) { %>

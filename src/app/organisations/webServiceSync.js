@@ -17,9 +17,13 @@ const get = async (req, res) => {
 const post = async (req, res) => {
   try {
     const result = await wsSyncCall(req.params.id);
-    if (result === undefined) {
-      res.flash("info", "No sync was performed, please check logs for details");
-      logger.info(`Sync call returned undefined for org [${req.params.id}].`);
+    if (result?.status === "success") {
+      res.flash("info", "Web service sync completed successfully");
+    } else {
+      res.flash("info", "No data was available to sync for this organisation");
+      logger.info(
+        `Sync call returned unexpected result for org [${req.params.id}].`,
+      );
     }
   } catch (e) {
     res.flash("error", "Something went wrong during web service sync");
