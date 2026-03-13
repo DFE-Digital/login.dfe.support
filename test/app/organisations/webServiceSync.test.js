@@ -13,6 +13,7 @@ const { getRequestMock, getResponseMock } = require("./../../utils");
 const { sendResult } = require("./../../../src/infrastructure/utils");
 const { getOrganisationRaw } = require("login.dfe.api-client/organisations");
 const { ServiceNotificationsClient } = require("login.dfe.jobs-client");
+const { wsSyncCall } = require("../../../src/app/organisations/wsSynchFunCall");
 const webServiceSync = require("./../../../src/app/organisations/webServiceSync");
 
 const res = getResponseMock();
@@ -26,6 +27,7 @@ describe("when syncing organisation for sync", function () {
 
   beforeEach(() => {
     getOrganisationRaw.mockReset().mockReturnValue(orgResult);
+    wsSyncCall.mockReset().mockResolvedValue({ status: "success" });
 
     serviceNotificationsClient.notifyOrganisationUpdated.mockReset();
     ServiceNotificationsClient.mockReset().mockImplementation(
@@ -77,5 +79,41 @@ describe("when syncing organisation for sync", function () {
 
     expect(res.redirect).toHaveBeenCalledTimes(1);
     expect(res.redirect).toHaveBeenCalledWith("/organisations/org-1/users");
+  });
+
+  it("then it should flash success info when sync completes successfully", async () => {
+    wsSyncCall.mockResolvedValue({ status: "success" });
+
+    await webServiceSync.post(req, res);
+
+    expect(res.flash).toHaveBeenCalledTimes(1);
+    expect(res.flash).toHaveBeenCalledWith(
+      "info",
+      "Web service sync completed successfully",
+    );
+  });
+
+  it("then it should flash info when sync returns no data", async () => {
+    wsSyncCall.mockResolvedValue(undefined);
+
+    await webServiceSync.post(req, res);
+
+    expect(res.flash).toHaveBeenCalledTimes(1);
+    expect(res.flash).toHaveBeenCalledWith(
+      "info",
+      "No data was available to sync for this organisation",
+    );
+  });
+
+  it("then it should flash error when sync throws an exception", async () => {
+    wsSyncCall.mockRejectedValue(new Error("Something went wrong"));
+
+    await webServiceSync.post(req, res);
+
+    expect(res.flash).toHaveBeenCalledTimes(1);
+    expect(res.flash).toHaveBeenCalledWith(
+      "error",
+      "Something went wrong during web service sync",
+    );
   });
 });

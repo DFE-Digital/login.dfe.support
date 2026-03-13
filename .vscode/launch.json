@@ -14,6 +14,20 @@
             },
             "program": "${workspaceFolder}/src/index.js",
             "outputCapture": "std"
-        }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Support Local OIDC",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "envFile": "${workspaceFolder}/../local-oidc.env",
+            "env": {
+                "NODE_TLS_REJECT_UNAUTHORIZED": "0"
+            },
+            "program": "${workspaceFolder}/src/index.js",
+            "outputCapture": "std"
+        },
     ]
 }
