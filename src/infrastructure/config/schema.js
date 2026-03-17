@@ -61,7 +61,7 @@ const auditSchema = new SimpleSchema({
     allowedValues: ['static', 'sequelize']
   },
   params: {
-    type: new SimpleSchema({ ...schemas.sequelizeConnection }),
+    type: schemas.sequelizeConnection,
     optional: true,
     custom: function () {
       if (this.siblingField('type').value === 'sequelize' && !this.isSet) {
@@ -174,21 +174,21 @@ const encryptionSchema = new SimpleSchema({
 });
 
 const schema = new SimpleSchema({
-  loggerSettings: new SimpleSchema({ ...schemas.loggerSettings }),
+  loggerSettings: schemas.loggerSettings,
   hostingEnvironment: schemas.hostingEnvironment,
   identifyingParty: identifyingPartySchema,
   cache: cacheSchema,
   claims: claimsSchema,
-  directories: new SimpleSchema({ ...schemas.apiClient }),
-  organisations: new SimpleSchema({ ...schemas.apiClient }),
-  applications: new SimpleSchema({ ...schemas.apiClient }),
+  directories: schemas.apiClient,
+  organisations: schemas.apiClient,
+  applications: schemas.apiClient,
   access: accessIdentifiers,
-  search: new SimpleSchema({ ...schemas.apiClient }),
+  search: schemas.apiClient,
   audit: auditSchema,
   serviceMapping: serviceMappingSchema,
   toggles: togglesSchema,
   notifications: notificationsSchema,
-  assets: new SimpleSchema({ ...schemas.assets }),
+  assets: schemas.assets,
   adapter: adapterSchema,
   entra: entraSchema,
   encryption: encryptionSchema,
