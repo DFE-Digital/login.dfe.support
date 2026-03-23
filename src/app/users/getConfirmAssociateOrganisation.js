@@ -95,6 +95,7 @@ const getConfirmAssociateOrganisation = async (req, res) => {
 
   if (uid.startsWith("inv-")) {
     await addOrganisationToInvitation(uid, req);
+    res.flash("info", `${req.session.user.email} added to organisation`);
   } else {
     await addOrganisationToUser(uid, req);
     if (isEmailAllowed) {

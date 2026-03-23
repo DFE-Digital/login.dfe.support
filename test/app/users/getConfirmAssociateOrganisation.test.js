@@ -111,6 +111,18 @@ describe("when confirming new organisation association", () => {
     });
   });
 
+  it("then it should display a success banner when adding org to an invited user", async () => {
+    req.params.uid = "inv-user1";
+
+    await getConfirmAssociateOrganisation(req, res);
+
+    expect(res.flash.mock.calls).toHaveLength(1);
+    expect(res.flash.mock.calls[0][0]).toBe("info");
+    expect(res.flash.mock.calls[0][1]).toBe(
+      `${expectedEmailAddress} added to organisation`,
+    );
+  });
+
   it("then it should get the users pending requests", async () => {
     await getConfirmAssociateOrganisation(req, res);
 
