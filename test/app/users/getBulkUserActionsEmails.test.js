@@ -60,6 +60,9 @@ describe("When processing a get for a bulk user action emails request", () => {
       csrfToken: "token",
       users: userSearchResult,
       validationMessages: {},
+      selectReason: "Select a reason",
+      reason: "",
+      deactivateUsersTicked: false,
     });
   });
 
