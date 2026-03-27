@@ -89,10 +89,34 @@
                         <% } %>
                         <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                             <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" id="deactivate-users" name="deactivate-users" type="checkbox" value="deactivate-users">
+                                <input class="govuk-checkboxes__input" id="deactivate-users" name="deactivate-users" type="checkbox" value="deactivate-users" data-aria-controls="conditional-deactivate-users" <%- locals.deactivateUsersTicked ? 'checked' : '' %>>
                                 <label class="govuk-label govuk-checkboxes__label" for="deactivate-users">
                                 Deactivate users
                                 </label>
+                            </div>
+                            <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-deactivate-users">
+                                <div class="govuk-form-group <%= (locals.validationMessages.reason !== undefined) ? 'govuk-form-group--error' : '' %>">
+                                    <label class="govuk-label" for="select-reason">Reason for deactivation of user (mandatory)</label>
+                                    <select class="govuk-select govuk-form-group govuk-!-margin-bottom-2" style="padding: 5px 0px;" name="select-reason" id="select-reason">
+                                        <option <%= locals.selectReason === 'Select a reason' ? 'selected' : '' %> value="Select a reason">Select a reason</option>
+                                        <option <%= locals.selectReason === 'Generic email' ? 'selected' : '' %> value="Generic email">Generic email</option>
+                                        <option <%= locals.selectReason === 'Generic/shared account' ? 'selected' : '' %> value="Generic/shared account">Generic/shared account</option>
+                                        <option <%= locals.selectReason === 'Username and email mismatch' ? 'selected' : '' %> value="Username and email mismatch">Username and email mismatch</option>
+                                        <option <%= locals.selectReason === 'User has left organisation' ? 'selected' : '' %> value="User has left organisation">User has left organisation</option>
+                                        <option <%= locals.selectReason === 'Security breach' ? 'selected' : '' %> value="Security breach">Security breach</option>
+                                        <option <%= locals.selectReason === 'Account inactivity (2 years +)' ? 'selected' : '' %> value="Account inactivity (2 years +)">Account inactivity (2 years +)</option>
+                                        <option <%= locals.selectReason === 'Student, parent or general enquiry' ? 'selected' : '' %> value="Student, parent or general enquiry">Student, parent or general enquiry</option>
+                                    </select>
+                                    <% if (locals.validationMessages.reason !== undefined) { %>
+                                    <p class="govuk-error-message" id="validation-reason"><%= locals.validationMessages.reason %></p>
+                                    <% } %>
+                                    <textarea class="govuk-textarea" rows="6" id="reason" name="reason"
+                                        placeholder="Please select a reason from the dropdown menu, or type a reason here."
+                                        <% if (locals.validationMessages.reason !== undefined) { %>
+                                        aria-invalid="true" aria-describedby="validation-reason"
+                                        <% } %>
+                                    ><%= locals.reason %></textarea>
+                                </div>
                             </div>
                             <div class="govuk-checkboxes__item">
                                 <input class="govuk-checkboxes__input" id="remove-services-and-requests" name="remove-services-and-requests" type="checkbox" value="remove-services-and-requests">

@@ -23,6 +23,9 @@ const validateInput = async (req) => {
     currentPage: "users",
     users: [],
     validationMessages: {},
+    selectReason: req.body["select-reason"] || "Select a reason",
+    reason: req.body.reason || "",
+    deactivateUsersTicked: !!req.body["deactivate-users"],
   };
 
   const reqBody = req.body;
@@ -36,6 +39,27 @@ const validateInput = async (req) => {
     reqBody["remove-services-and-requests"] || false;
   if (!isDeactivateTicked && !isRemoveServicesAndRequestsTicked) {
     model.validationMessages.actions = "At least 1 action needs to be ticked";
+  }
+
+  if (isDeactivateTicked) {
+    const selectReason = reqBody["select-reason"] || "Select a reason";
+    const reason = reqBody.reason || "";
+    const isDefaultDropdownReasonSelected = selectReason === "Select a reason";
+    if (isDefaultDropdownReasonSelected) {
+      if (reason.trim().length === 0) {
+        model.validationMessages.reason =
+          "Please give a reason for deactivation";
+      } else if (reason.length > 1000) {
+        model.validationMessages.reason =
+          "Reason cannot be longer than 1000 characters";
+      }
+    } else if (reason.trim().length > 0) {
+      const reasonLengthToBeTested = `${selectReason} - ${reason}`;
+      if (reasonLengthToBeTested.length > 1000) {
+        model.validationMessages.reason =
+          "Reason cannot be longer than 1000 characters";
+      }
+    }
   }
 
   return model;
@@ -65,10 +89,10 @@ const deactivateUser = async (req, user, reason) => {
   await destroyUserSession(user.id);
 };
 
-const deactivateInvitedUser = async (req, user) => {
+const deactivateInvitedUser = async (req, user, reason) => {
   await updateInvitation({
     invitationId: user.id.replace("inv-", ""),
-    reason: "Bulk user deactivation",
+    reason,
     deactivated: true,
   });
   await updateInvitedUserIndex(user);
@@ -106,7 +130,18 @@ const postBulkUserActionsEmails = async (req, res) => {
   const isDeactivateTicked = reqBody["deactivate-users"] || false;
   const isRemoveServicesAndRequestsTicked =
     reqBody["remove-services-and-requests"] || false;
-  const userDeactivationReason = "Bulk user actions - deactivation";
+
+  const selectReason = reqBody["select-reason"] || "Select a reason";
+  const reasonText = (reqBody.reason || "").trim();
+  let userDeactivationReason;
+  if (selectReason !== "Select a reason") {
+    userDeactivationReason =
+      reasonText.length === 0
+        ? selectReason
+        : `${selectReason} - ${reasonText}`;
+  } else {
+    userDeactivationReason = reasonText;
+  }
 
   // Get all the inputs and figure out which users were ticked
   const tickedUsers = Object.keys(reqBody).filter((v) => v.startsWith("user-"));
@@ -116,7 +151,7 @@ const postBulkUserActionsEmails = async (req, res) => {
     const user = await getUserDetailsById(userId, req);
     if (isDeactivateTicked) {
       if (userId.startsWith("inv-")) {
-        await deactivateInvitedUser(req, user);
+        await deactivateInvitedUser(req, user, userDeactivationReason);
         logger.audit(
           `${req.user.email} (id: ${req.user.sub}) deactivated user invitation ${user.email} (id: ${userId})`,
           {

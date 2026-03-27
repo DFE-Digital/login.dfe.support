@@ -32,6 +32,9 @@ const getBulkUserActionsEmails = async (req, res) => {
     currentPage: "users",
     users,
     validationMessages: {},
+    selectReason: "Select a reason",
+    reason: "",
+    deactivateUsersTicked: false,
   };
 
   res.render("users/views/bulkUserActionsEmails", model);
