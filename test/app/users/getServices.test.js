@@ -344,4 +344,77 @@ describe("when getting users service details", () => {
       statusChangeReasons: [],
     });
   });
+
+  const fullyHiddenService = (id, paramValue) => ({
+    id,
+    dateActivated: "10/10/2018",
+    name: "Fully Hidden Service",
+    status: "active",
+    isExternalService: true,
+    relyingParty: {
+      params: {
+        hideApprover: paramValue,
+        hideSupport: paramValue,
+        helpHidden: paramValue,
+      },
+    },
+  });
+
+  it("should exclude services where all three hide params are string 'true'", async () => {
+    getAllServices.mockReturnValue({
+      services: [fullyHiddenService("hidden-str", "true")],
+    });
+
+    await getServices(req, res);
+
+    expect(
+      res.render.mock.calls[0][1].organisations.flatMap((o) => o.services),
+    ).toHaveLength(0);
+  });
+
+  it("should exclude services where all three hide params are integer 1", async () => {
+    getAllServices.mockReturnValue({
+      services: [fullyHiddenService("hidden-int", 1)],
+    });
+
+    await getServices(req, res);
+
+    expect(
+      res.render.mock.calls[0][1].organisations.flatMap((o) => o.services),
+    ).toHaveLength(0);
+  });
+
+  it("should exclude services where all three hide params are boolean true", async () => {
+    getAllServices.mockReturnValue({
+      services: [fullyHiddenService("hidden-bool", true)],
+    });
+
+    await getServices(req, res);
+
+    expect(
+      res.render.mock.calls[0][1].organisations.flatMap((o) => o.services),
+    ).toHaveLength(0);
+  });
+
+  it("should keep a service visible when only hideSupport is truthy", async () => {
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+          dateActivated: "10/10/2018",
+          name: "A good service",
+          status: "active",
+          isExternalService: true,
+          relyingParty: { params: { hideSupport: "true" } },
+        },
+      ],
+    });
+
+    await getServices(req, res);
+
+    const allServiceIds = res.render.mock.calls[0][1].organisations.flatMap(
+      (o) => o.services.map((s) => s.id),
+    );
+    expect(allServiceIds).toContain("83f00ace-f1a0-4338-8784-fa14f5943e5a");
+  });
 });
