@@ -1,8 +1,9 @@
 const { sendResult } = require("../../infrastructure/utils");
 const { getAllServices } = require("../services/utils");
-const { getPaginatedServicesRaw } = require("login.dfe.api-client/services");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { getUserDetailsById } = require("./utils");
+
+const isTruthy = (v) => v === true || v === 1 || v === "true" || v === "1";
 
 const buildModel = async (req) => {
   const user = await getUserDetailsById(req.params.uid, req);
@@ -10,7 +11,10 @@ const buildModel = async (req) => {
     ? dateFormat(user.lastLogin, "longDateFormat")
     : "";
   const allServices = await getAllServices();
-  const totalNumberOfResults = allServices.services.length;
+  const visibleServices = allServices.services.filter(
+    (s) => !isTruthy(s.relyingParty?.params?.hideSupport),
+  );
+  const totalNumberOfResults = visibleServices.length;
   const numberOfResultsOnPage = 20;
   const numberOfPages = Math.ceil(totalNumberOfResults / numberOfResultsOnPage);
   let paramsSource = req.method === "POST" ? req.body : req.query;
@@ -26,10 +30,13 @@ const buildModel = async (req) => {
     page = 1;
   }
 
-  const pageOfServices = (await getPaginatedServicesRaw({
-    pageSize: numberOfResultsOnPage,
-    pageNumber: page,
-  })) ?? { services: [] };
+  const startIndex = (page - 1) * numberOfResultsOnPage;
+  const pageOfServices = {
+    services: visibleServices.slice(
+      startIndex,
+      startIndex + numberOfResultsOnPage,
+    ),
+  };
 
   const model = {
     csrfToken: req.csrfToken(),
