@@ -10,7 +10,9 @@ const {
 const {
   getOrganisationRaw,
   getOrganisationRequestsRaw,
+  getServiceRequestRaw,
 } = require("login.dfe.api-client/organisations");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 
 const unpackMultiSelect = (parameter) => {
   if (!parameter) {
@@ -156,6 +158,30 @@ const getAndMapOrgRequest = async (req) => {
   return mappedRequest;
 };
 
+const getAndMapServiceRequest = async (req) => {
+  const request = await getServiceRequestRaw({
+    serviceRequestId: req.params.rid,
+  });
+
+  if (!request) {
+    return null;
+  }
+
+  const [user, service] = await Promise.all([
+    getUserRaw({ by: { id: request.user_id } }),
+    getServiceRaw({ by: { serviceId: request.service_id } }),
+  ]);
+
+  return Object.assign(
+    {
+      usersName: user ? `${user.given_name} ${user.family_name}` : "",
+      usersEmail: user ? user.email : "",
+      serviceName: service ? service.name : "",
+    },
+    request,
+  );
+};
+
 const mapStatusForSupport = (status) => {
   switch (status.id) {
     case 0:
@@ -186,6 +212,7 @@ module.exports = {
   getById,
   putUserInOrganisation,
   getAndMapOrgRequest,
+  getAndMapServiceRequest,
   mapStatusForSupport,
   unpackMultiSelect,
   userStatusMap,

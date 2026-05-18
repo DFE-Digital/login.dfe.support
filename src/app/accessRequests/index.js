@@ -22,6 +22,15 @@ const {
   get: getSelectPermissionLevel,
   post: postSelectPermissionLevel,
 } = require("./selectPermissionLevel");
+const {
+  get: getReviewServiceRequest,
+  post: postReviewServiceRequest,
+} = require("./reviewServiceRequest");
+const {
+  get: getRejectServiceRequest,
+  post: postRejectServiceRequest,
+} = require("./rejectServiceRequest");
+const { post: postApproveServiceRequest } = require("./approveServiceRequest");
 
 const router = express.Router({ mergeParams: true });
 
@@ -64,6 +73,32 @@ const users = (csrf) => {
     "/:rid/:from?/approve",
     csrf,
     asyncWrapper(postSelectPermissionLevel),
+  );
+
+  router.get(
+    "/:rid/service-request/review",
+    csrf,
+    asyncWrapper(getReviewServiceRequest),
+  );
+  router.post(
+    "/:rid/service-request/review",
+    csrf,
+    asyncWrapper(postReviewServiceRequest),
+  );
+  router.get(
+    "/:rid/service-request/reject",
+    csrf,
+    asyncWrapper(getRejectServiceRequest),
+  );
+  router.post(
+    "/:rid/service-request/reject",
+    csrf,
+    asyncWrapper(postRejectServiceRequest),
+  );
+  router.post(
+    "/:rid/service-request/approve",
+    csrf,
+    asyncWrapper(postApproveServiceRequest),
   );
 
   return router;

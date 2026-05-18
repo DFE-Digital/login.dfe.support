@@ -161,7 +161,10 @@
                             <td class="govuk-table__cell govuk-body-s"><span class="govuk-!-text-break-word"><%= locals.requests[i].usersEmail %></span> </td>
                             <td class="govuk-table__cell govuk-body-s"><span class="govuk-!-text-break-word"><%= locals.requests[i].request_type ? locals.requests[i].request_type.name : '' %></span> </td>
                             <td class="govuk-table__cell govuk-body-s"><span class="govuk-!-text-break-word"><%= locals.requests[i].statusText.name %></span> </td>
-                            <td class="govuk-table__cell govuk-body-s"><span class="govuk-!-text-break-word"><a class="govuk-link" href="access-requests/<%= locals.requests[i].id %>/review">Review request</a></span> </td>
+                            <% const reviewPath = locals.requests[i].request_type && locals.requests[i].request_type.id !== 'organisation'
+                                ? `access-requests/${locals.requests[i].id}/service-request/review`
+                                : `access-requests/${locals.requests[i].id}/review`; %>
+                            <td class="govuk-table__cell govuk-body-s"><span class="govuk-!-text-break-word"><a class="govuk-link" href="<%= reviewPath %>">Review request</a></span> </td>
                         </tr>
                         <% } %>
                     <% } %>
