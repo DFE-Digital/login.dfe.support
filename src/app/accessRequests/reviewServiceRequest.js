@@ -24,6 +24,9 @@ const get = async (req, res) => {
 
 const validate = async (req) => {
   const request = await getAndMapServiceRequest(req);
+  if (!request) {
+    return null;
+  }
   request.formattedCreatedDate = request.created_date
     ? dateFormat(request.created_date, "longDateFormat")
     : "";
@@ -46,15 +49,23 @@ const validate = async (req) => {
 const post = async (req, res) => {
   const model = await validate(req);
 
+  if (!model) {
+    return res.status(404).render("errors/notFound");
+  }
+
   if (Object.keys(model.validationMessages).length > 0) {
     model.csrfToken = req.csrfToken();
     return res.render("accessRequests/views/reviewServiceRequest", model);
   }
 
   if (model.selectedResponse === "reject") {
-    return res.redirect("service-request/reject");
+    return res.redirect(
+      `/access-requests/${req.params.rid}/service-request/reject`,
+    );
   } else if (model.selectedResponse === "approve") {
-    return res.redirect("service-request/approve");
+    return res.redirect(
+      `/access-requests/${req.params.rid}/service-request/approve`,
+    );
   }
 };
 

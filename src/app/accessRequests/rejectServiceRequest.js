@@ -4,10 +4,6 @@ const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const { updateServiceRequest } = require("login.dfe.api-client/services");
 
-const notificationClient = new NotificationClient({
-  connectionString: config.notifications.connectionString,
-});
-
 const get = async (req, res) => {
   return res.render("accessRequests/views/rejectServiceRequest", {
     csrfToken: req.csrfToken(),
@@ -54,6 +50,9 @@ const post = async (req, res) => {
     reason: model.reason,
   });
 
+  const notificationClient = new NotificationClient({
+    connectionString: config.notifications.connectionString,
+  });
   await notificationClient.sendAccessRequest(
     model.request.usersEmail,
     model.request.usersName,
