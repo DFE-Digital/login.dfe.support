@@ -5,6 +5,7 @@ const { dateFormat } = require("../helpers/dateFormatterHelper");
 const {
   mapStatusForSupport,
   userStatusMap,
+  requestTypeMap,
   unpackMultiSelect,
   search,
 } = require("./utils");
@@ -30,6 +31,7 @@ const getFiltersModel = async (req) => {
   }
 
   let requestStatuses = [];
+  let requestTypes = [];
 
   if (showFilters) {
     const selectedRequestStatuses = unpackMultiSelect(paramsSource.status);
@@ -42,11 +44,22 @@ const getFiltersModel = async (req) => {
           undefined,
       };
     });
+
+    const selectedRequestTypes = unpackMultiSelect(paramsSource.requestType);
+    requestTypes = requestTypeMap.map((type) => {
+      return {
+        id: type.id,
+        name: type.name,
+        isSelected:
+          selectedRequestTypes.find((x) => x === type.id) !== undefined,
+      };
+    });
   }
 
   return {
     showFilters,
     requestStatuses,
+    requestTypes,
   };
 };
 

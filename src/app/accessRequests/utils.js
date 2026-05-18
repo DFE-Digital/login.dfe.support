@@ -30,9 +30,11 @@ const search = async (req) => {
     page = 1;
   }
   const filterStatus = unpackMultiSelect(paramsSource.status);
+  const filterType = unpackMultiSelect(paramsSource.requestType);
   const results = await getOrganisationRequestsRaw({
     pageNumber: page,
     filterStatus,
+    filterType,
   });
 
   return {
@@ -173,6 +175,12 @@ const userStatusMap = [
   { id: 3, name: "No Approvers - Escalated to support" },
 ];
 
+const requestTypeMap = [
+  { id: "organisation", name: "Organisation" },
+  { id: "service", name: "Service" },
+  { id: "subService", name: "Sub-service" },
+];
+
 module.exports = {
   search,
   getById,
@@ -181,4 +189,5 @@ module.exports = {
   mapStatusForSupport,
   unpackMultiSelect,
   userStatusMap,
+  requestTypeMap,
 };
