@@ -2,7 +2,13 @@
     <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
     <input type="hidden" name="page" value="<%=page%>" />
     <% for (let i = 0; i < data.length; i++) {%>
+    <% if (Array.isArray(data[i].value)) { %>
+        <% for (let j = 0; j < data[i].value.length; j++) { %>
+        <input type="hidden" name="<%=data[i].key%>" value="<%=data[i].value[j]%>" />
+        <% } %>
+    <% } else { %>
     <input type="hidden" name="<%=data[i].key%>" value="<%=data[i].value%>" />
+    <% } %>
     <% } %>
     <button class="button-link" type="submit"><%=page%></button>
 </form>

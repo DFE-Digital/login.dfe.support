@@ -66,8 +66,18 @@
             </form>
             <form method="post" class="show-filters">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                <input type="hidden" name="page" value="<%= page %>"/>
+                <input type="hidden" name="page" value="1"/>
                 <input type="hidden" name="showFilters" value="<%= !showFilters %>"/>
+                <% for (let i = 0; i < requestStatuses.length; i++) { %>
+                    <% if (requestStatuses[i].isSelected) { %>
+                    <input type="hidden" name="status" value="<%= requestStatuses[i].id %>"/>
+                    <% } %>
+                <% } %>
+                <% for (let i = 0; i < requestTypes.length; i++) { %>
+                    <% if (requestTypes[i].isSelected) { %>
+                    <input type="hidden" name="requestType" value="<%= requestTypes[i].id %>"/>
+                    <% } %>
+                <% } %>
                 <button type="submit" class="govuk-button govuk-button--secondary filter-link govuk-!-margin-top-4 govuk-!-margin-padding-2"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
             </form>
         </div>
@@ -78,7 +88,7 @@
             <div class="govuk-grid-column-one-third">
                 <form method="post">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                    <input type="hidden" name="page" value="<%= page %>"/>
+                    <input type="hidden" name="page" value="1"/>
                     <input type="hidden" name="showFilters" value="true"/>
 
                     <div class="govuk-form-group">
