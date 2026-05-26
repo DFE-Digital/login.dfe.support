@@ -1,0 +1,30 @@
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">
+                Reason for rejection
+            </h1>
+            <form method="post" id="form-reject" class="prevent-form-double-submission">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l"><p class="govuk-body">Please give the reason why you have rejected this request. This will be recorded for audit purposes and shared with the requester.</p></legend>
+                    <div class="govuk-form-group <%= (locals.validationMessages.reason !== undefined) ? 'govuk-form-group--error' : '' %>">
+                        <label class="govuk-label" for="reason">Reason for rejection (optional)</label>
+                        <% if (locals.validationMessages.reason !== undefined) { %>
+                            <p class="govuk-error-message" id="validation-reason"><%= locals.validationMessages.reason %></p>
+                        <% } %>
+                        <textarea class="govuk-textarea" rows="6" id="reason" name="reason"
+                            <% if (locals.validationMessages.reason !== undefined) { %>
+                                aria-invalid="true" aria-describedby="validation-reason"
+                            <% } %>
+                            ><%= locals.reason %></textarea>
+                    </div>
+                </fieldset>
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button">Confirm</button>
+                    <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

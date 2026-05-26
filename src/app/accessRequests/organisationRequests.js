@@ -5,6 +5,7 @@ const { dateFormat } = require("../helpers/dateFormatterHelper");
 const {
   mapStatusForSupport,
   userStatusMap,
+  requestTypeMap,
   unpackMultiSelect,
   search,
 } = require("./utils");
@@ -29,24 +30,30 @@ const getFiltersModel = async (req) => {
     showFilters = true;
   }
 
-  let requestStatuses = [];
+  const selectedRequestStatuses = unpackMultiSelect(paramsSource.status);
+  const requestStatuses = userStatusMap.map((status) => {
+    return {
+      id: status.id,
+      name: status.name,
+      isSelected:
+        selectedRequestStatuses.find((x) => x === status.id.toString()) !==
+        undefined,
+    };
+  });
 
-  if (showFilters) {
-    const selectedRequestStatuses = unpackMultiSelect(paramsSource.status);
-    requestStatuses = userStatusMap.map((status) => {
-      return {
-        id: status.id,
-        name: status.name,
-        isSelected:
-          selectedRequestStatuses.find((x) => x === status.id.toString()) !==
-          undefined,
-      };
-    });
-  }
+  const selectedRequestTypes = unpackMultiSelect(paramsSource.requestType);
+  const requestTypes = requestTypeMap.map((type) => {
+    return {
+      id: type.id,
+      name: type.name,
+      isSelected: selectedRequestTypes.find((x) => x === type.id) !== undefined,
+    };
+  });
 
   return {
     showFilters,
     requestStatuses,
+    requestTypes,
   };
 };
 

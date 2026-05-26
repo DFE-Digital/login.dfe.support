@@ -1,0 +1,71 @@
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-half">
+            <h1 class="govuk-heading-xl">
+                Review request
+            </h1>
+            <p class="govuk-body">Review these details before actioning the <%= locals.request.request_type ? locals.request.request_type.name.toLowerCase() : 'service' %> request for <%= locals.request.usersName %>.</p>
+
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Name</dt>
+                    <dd class="govuk-summary-list__value"><%= locals.request.usersName %></dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Email address</dt>
+                    <dd class="govuk-summary-list__value"><%= locals.request.usersEmail %></dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Date</dt>
+                    <dd class="govuk-summary-list__value"><%= request.formattedCreatedDate %></dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Organisation</dt>
+                    <dd class="govuk-summary-list__value"><%= locals.request.org_name %></dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Service</dt>
+                    <dd class="govuk-summary-list__value"><%= locals.request.serviceName %></dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Request type</dt>
+                    <dd class="govuk-summary-list__value"><%= locals.request.request_type ? locals.request.request_type.name : '' %></dd>
+                </div>
+                <% if (locals.request.reason) { %>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Reason</dt>
+                    <dd class="govuk-summary-list__value"><%= locals.request.reason %></dd>
+                </div>
+                <% } %>
+            </dl>
+
+            <form method="post">
+                <div class="govuk-form-group <%= (locals.validationMessages.selectedResponse !== undefined) ? 'govuk-form-group--error' : '' %>">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                    <fieldset class="govuk-fieldset">
+                        <% if (locals.validationMessages.selectedResponse !== undefined) { %>
+                        <p class="govuk-error-message" id="validation-selected-response"><%= locals.validationMessages.selectedResponse %></p>
+                        <% } %>
+                        <legend>
+                            <h2 class="govuk-heading-s">Your response</h2>
+                        </legend>
+                        <div class="govuk-radios" data-module="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="approve" type="radio" name="selectedResponse" value="approve" <%= (locals.selectedResponse === 'approve' ? 'checked' : '') %>>
+                                <label class="govuk-label govuk-radios__label" for="approve">Approve</label>
+                            </div>
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="reject" type="radio" name="selectedResponse" value="reject" <%= (locals.selectedResponse === 'reject' ? 'checked' : '') %>>
+                                <label class="govuk-label govuk-radios__label" for="reject">Reject</label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button" data-module="govuk-button">Continue</button>
+                    <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

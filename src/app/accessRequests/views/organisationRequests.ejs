@@ -39,6 +39,12 @@
                     }
                     return result;
                 }, [])},
+            { key: 'requestType', value: locals.requestTypes.reduce((result, element) => {
+                    if(element.isSelected) {
+                        result.push(element.id);
+                    }
+                    return result;
+                }, [])},
         ]
     }
     %>
@@ -62,6 +68,16 @@
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                 <input type="hidden" name="page" value="<%= page %>"/>
                 <input type="hidden" name="showFilters" value="<%= !showFilters %>"/>
+                <% for (let i = 0; i < requestStatuses.length; i++) { %>
+                    <% if (requestStatuses[i].isSelected) { %>
+                    <input type="hidden" name="status" value="<%= requestStatuses[i].id %>"/>
+                    <% } %>
+                <% } %>
+                <% for (let i = 0; i < requestTypes.length; i++) { %>
+                    <% if (requestTypes[i].isSelected) { %>
+                    <input type="hidden" name="requestType" value="<%= requestTypes[i].id %>"/>
+                    <% } %>
+                <% } %>
                 <button type="submit" class="govuk-button govuk-button--secondary filter-link govuk-!-margin-top-4 govuk-!-margin-padding-2"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
             </form>
         </div>
@@ -69,30 +85,56 @@
 
     <div class="govuk-grid-row">
         <% if (showFilters) { %>
-            <div class="govuk-grid-column-one-quarter">
+            <div class="govuk-grid-column-one-third">
                 <form method="post">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                    <input type="hidden" name="page" value="<%= page %>"/>
+                    <input type="hidden" name="page" value="1"/>
                     <input type="hidden" name="showFilters" value="true"/>
 
-                    <div class="filter-box">
-                        <div class="container-head js-container-head">
-                            <div class="govuk-heading-s govuk-!-margin-0 govuk-!-padding-1 govuk-!-padding-left-2">
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
                                 Request status
-                            </div>
-                        </div>
-                        <div role="group" aria-labelledby="option-select-title-request-status" class="options-container"
-                            id="request-status">
-                            <div class="govuk-body"">
+                            </legend>
+                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                                 <% for (let i = 0; i < requestStatuses.length; i += 1) { %>
-                                    <label>
-                                        <input name="status" value="<%= requestStatuses[i].id %>"
-                                            type="checkbox" <%= (requestStatuses[i].isSelected ? 'checked="checked"' : '') %>>
-                                        <%= requestStatuses[i].name %>
-                                    </label>
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input"
+                                            id="requestStatus-<%= requestStatuses[i].id %>"
+                                            name="status"
+                                            type="checkbox"
+                                            value="<%= requestStatuses[i].id %>"
+                                            <%= (requestStatuses[i].isSelected ? 'checked' : '') %>>
+                                        <label class="govuk-label govuk-checkboxes__label" for="requestStatus-<%= requestStatuses[i].id %>">
+                                            <%= requestStatuses[i].name %>
+                                        </label>
+                                    </div>
                                 <% } %>
                             </div>
-                        </div>
+                        </fieldset>
+                    </div>
+
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                Type
+                            </legend>
+                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                <% for (let i = 0; i < requestTypes.length; i += 1) { %>
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input"
+                                            id="requestType-<%= requestTypes[i].id %>"
+                                            name="requestType"
+                                            type="checkbox"
+                                            value="<%= requestTypes[i].id %>"
+                                            <%= (requestTypes[i].isSelected ? 'checked' : '') %>>
+                                        <label class="govuk-label govuk-checkboxes__label" for="requestType-<%= requestTypes[i].id %>">
+                                            <%= requestTypes[i].name %>
+                                        </label>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </fieldset>
                     </div>
 
                     <button class="govuk-button govuk-button--secondary" data-module="govuk-button">Apply filter</button>
@@ -100,7 +142,7 @@
                 </form>
             </div>
         <% } %>
-        <div class="govuk-grid-column-<%= (showFilters ? "three-quarters" : "full") %>">
+        <div class="govuk-grid-column-<%= (showFilters ? "two-thirds" : "full") %>">
             <%- include('../../sharedViews/paginationNew', paginationModel); %>
             <table class="govuk-table">
                 <thead class="govuk-table__head">
@@ -109,6 +151,7 @@
                     <th scope="col" class="govuk-table__header">Requested organisation</th>
                     <th scope="col" class="govuk-table__header">Requested by</th>
                     <th scope="col" class="govuk-table__header">Requester email</th>
+                    <th scope="col" class="govuk-table__header">Type</th>
                     <th scope="col" class="govuk-table__header">Status</th>
                     <th scope="col" class="govuk-table__header">Action</th>
                 </tr>
@@ -117,7 +160,7 @@
                 <tbody class="govuk-table__body">
                     <% if (locals.requests && locals.requests.length === 0) { %>
                         <tr class="govuk-table__row govuk-body">
-                            <td class="govuk-!-padding-top-3" colspan="6"><span class="empty-state">There are no outstanding requests.</span></td>
+                            <td class="govuk-!-padding-top-3" colspan="7"><span class="empty-state">There are no outstanding requests.</span></td>
                         </tr>
                     <% } else { %>
                     <% for (let i = 0; i < locals.requests.length; i++) { %>
@@ -126,8 +169,12 @@
                             <td class="govuk-table__cell govuk-body-s"><span class="govuk-!-text-break-word"><%= locals.requests[i].org_name %></span> </td>
                             <td class="govuk-table__cell govuk-body-s"><span class="govuk-!-text-break-word"><%= locals.requests[i].usersName %></span> </td>
                             <td class="govuk-table__cell govuk-body-s"><span class="govuk-!-text-break-word"><%= locals.requests[i].usersEmail %></span> </td>
+                            <td class="govuk-table__cell govuk-body-s"><span class="govuk-!-text-break-word"><%= locals.requests[i].request_type ? locals.requests[i].request_type.name : '' %></span> </td>
                             <td class="govuk-table__cell govuk-body-s"><span class="govuk-!-text-break-word"><%= locals.requests[i].statusText.name %></span> </td>
-                            <td class="govuk-table__cell govuk-body-s"><span class="govuk-!-text-break-word"><a class="govuk-link" href="access-requests/<%= locals.requests[i].id %>/review">Review request</a></span> </td>
+                            <% const reviewPath = locals.requests[i].request_type && locals.requests[i].request_type.id !== 'organisation'
+                                ? `access-requests/${locals.requests[i].id}/service-request/review`
+                                : `access-requests/${locals.requests[i].id}/review`; %>
+                            <td class="govuk-table__cell govuk-body-s"><span class="govuk-!-text-break-word"><a class="govuk-link" href="<%= reviewPath %>">Review request</a></span> </td>
                         </tr>
                         <% } %>
                     <% } %>

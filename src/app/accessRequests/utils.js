@@ -10,7 +10,9 @@ const {
 const {
   getOrganisationRaw,
   getOrganisationRequestsRaw,
+  getServiceRequestRaw,
 } = require("login.dfe.api-client/organisations");
+const { getServiceRaw } = require("login.dfe.api-client/services");
 
 const unpackMultiSelect = (parameter) => {
   if (!parameter) {
@@ -30,9 +32,11 @@ const search = async (req) => {
     page = 1;
   }
   const filterStatus = unpackMultiSelect(paramsSource.status);
+  const filterType = unpackMultiSelect(paramsSource.requestType);
   const results = await getOrganisationRequestsRaw({
     pageNumber: page,
     filterStatus,
+    filterType,
   });
 
   return {
@@ -154,6 +158,30 @@ const getAndMapOrgRequest = async (req) => {
   return mappedRequest;
 };
 
+const getAndMapServiceRequest = async (req) => {
+  const request = await getServiceRequestRaw({
+    serviceRequestId: req.params.rid,
+  });
+
+  if (!request) {
+    return null;
+  }
+
+  const [user, service] = await Promise.all([
+    getUserRaw({ by: { id: request.user_id } }),
+    getServiceRaw({ by: { serviceId: request.service_id } }),
+  ]);
+
+  return Object.assign(
+    {
+      usersName: user ? `${user.given_name} ${user.family_name}` : "",
+      usersEmail: user ? user.email : "",
+      serviceName: service ? service.name : "",
+    },
+    request,
+  );
+};
+
 const mapStatusForSupport = (status) => {
   switch (status.id) {
     case 0:
@@ -173,12 +201,20 @@ const userStatusMap = [
   { id: 3, name: "No Approvers - Escalated to support" },
 ];
 
+const requestTypeMap = [
+  { id: "organisation", name: "Organisation" },
+  { id: "service", name: "Service" },
+  { id: "subService", name: "Sub-service" },
+];
+
 module.exports = {
   search,
   getById,
   putUserInOrganisation,
   getAndMapOrgRequest,
+  getAndMapServiceRequest,
   mapStatusForSupport,
   unpackMultiSelect,
   userStatusMap,
+  requestTypeMap,
 };
