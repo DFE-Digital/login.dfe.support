@@ -66,7 +66,7 @@
             </form>
             <form method="post" class="show-filters">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                <input type="hidden" name="page" value="1"/>
+                <input type="hidden" name="page" value="<%= page %>"/>
                 <input type="hidden" name="showFilters" value="<%= !showFilters %>"/>
                 <% for (let i = 0; i < requestStatuses.length; i++) { %>
                     <% if (requestStatuses[i].isSelected) { %>
