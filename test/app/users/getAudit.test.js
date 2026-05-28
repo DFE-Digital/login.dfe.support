@@ -11,6 +11,9 @@ jest.mock("./../../../src/infrastructure/audit");
 jest.mock("login.dfe.api-client/users");
 jest.mock("ioredis");
 jest.mock("login.dfe.api-client/organisations");
+jest.mock("login.dfe.api-client/invitations", () => ({
+  getInvitationOrganisationsRaw: jest.fn(),
+}));
 
 const { getUserDetailsById } = require("./../../../src/app/users/utils");
 const { sendResult } = require("./../../../src/infrastructure/utils");
@@ -27,6 +30,9 @@ const {
 const {
   getOrganisationLegacyRaw,
 } = require("login.dfe.api-client/organisations");
+const {
+  getInvitationOrganisationsRaw,
+} = require("login.dfe.api-client/invitations");
 
 const organisationId = "org-1";
 
@@ -106,6 +112,9 @@ describe("when getting users audit details", () => {
 
     getUserOrganisationsWithServicesRaw.mockReset();
     getUserOrganisationsWithServicesRaw.mockResolvedValue([]);
+
+    getInvitationOrganisationsRaw.mockReset();
+    getInvitationOrganisationsRaw.mockResolvedValue([]);
 
     sendResult.mockReset();
 
@@ -663,6 +672,128 @@ describe("when getting users audit details", () => {
     expect(differentUserCall[1]).toBe(req);
     expect(differentUserCall[1]).toHaveProperty("id");
     expect(differentUserCall[1]).toHaveProperty("params");
+  });
+
+  describe("when viewing audit for an invited user", () => {
+    const invitationGuid = "abc123-def456-ghi789";
+    const invitationUid = `inv-${invitationGuid}`;
+
+    beforeEach(() => {
+      req.params.uid = invitationUid;
+
+      getUserDetailsById.mockReset();
+      getUserDetailsById.mockImplementation(async (userId) => ({
+        id: userId,
+        firstName: "Invited",
+        lastName: "User",
+        email: "invited@example.com",
+        lastLogin: null,
+        status: { id: -1, description: "Invited" },
+        loginsInPast12Months: { successful: 0 },
+        deactivated: false,
+      }));
+
+      getPageOfUserAudits.mockReset();
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [
+          {
+            type: "support",
+            subType: "user-invited",
+            userId: "support-user-sub",
+            level: "audit",
+            message: "Invited user invited@example.com",
+            timestamp: "2025-05-01T10:00:00.000Z",
+          },
+          {
+            type: "support",
+            subType: "invite-created",
+            userId: "support-user-sub",
+            level: "audit",
+            message: "Invitation code created",
+            timestamp: "2025-05-01T10:01:00.000Z",
+          },
+        ],
+        numberOfPages: 1,
+        numberOfRecords: 2,
+      });
+    });
+
+    it("should call getPageOfUserAudits with the bare invitation GUID as both userId and invitationId", async () => {
+      await getAudit(req, res);
+
+      expect(getPageOfUserAudits).toHaveBeenCalledWith(
+        invitationGuid,
+        expect.any(Number),
+        invitationGuid,
+      );
+    });
+
+    it("should fetch organisations via getInvitationOrganisationsRaw, not getUserOrganisationsWithServicesRaw", async () => {
+      await getAudit(req, res);
+
+      expect(getInvitationOrganisationsRaw).toHaveBeenCalledWith({
+        invitationId: invitationGuid,
+      });
+      expect(getUserOrganisationsWithServicesRaw).not.toHaveBeenCalled();
+    });
+
+    it("should pass isInvitation: true to the view model", async () => {
+      await getAudit(req, res);
+
+      expect(sendResult.mock.calls[0][3]).toMatchObject({ isInvitation: true });
+    });
+
+    it("should render support/user-invited audit event with correct description", async () => {
+      await getAudit(req, res);
+
+      const audits = sendResult.mock.calls[0][3].audits;
+      const invitedEvent = audits.find(
+        (a) => a.event.subType === "user-invited",
+      );
+      expect(invitedEvent.event.description).toBe(
+        "User invite sent from support console.",
+      );
+    });
+
+    it("should render support/invite-created audit event with correct description", async () => {
+      await getAudit(req, res);
+
+      const audits = sendResult.mock.calls[0][3].audits;
+      const createdEvent = audits.find(
+        (a) => a.event.subType === "invite-created",
+      );
+      expect(createdEvent.event.description).toBe(
+        "Support/Invitation code created and sent.",
+      );
+    });
+
+    it("should not call getUserStatusRaw for invited users", async () => {
+      await getAudit(req, res);
+
+      expect(getUserStatusRaw).not.toHaveBeenCalled();
+    });
+
+    it("should use the invitation user as the audit user when audit.userId is empty", async () => {
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [
+          {
+            type: "support",
+            subType: "user-invited",
+            userId: "",
+            level: "audit",
+            message: "Invited",
+            timestamp: "2025-05-01T10:00:00.000Z",
+          },
+        ],
+        numberOfPages: 1,
+        numberOfRecords: 1,
+      });
+
+      await getAudit(req, res);
+
+      const audits = sendResult.mock.calls[0][3].audits;
+      expect(audits[0].user.id).toBe(invitationUid);
+    });
   });
 
   describe("error handling for dependent function failures", () => {

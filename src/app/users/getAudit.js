@@ -6,6 +6,9 @@ const {
 const { getUserDetailsById } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { getPageOfUserAudits } = require("./../../infrastructure/audit");
+const {
+  getInvitationOrganisationsRaw,
+} = require("login.dfe.api-client/invitations");
 const logger = require("./../../infrastructure/logger");
 const {
   getServiceIdForClientId,
@@ -75,6 +78,7 @@ const describeAuditEvent = async (audit, req) => {
     "policy-removed",
     "policy-condition-removed",
     "policy-role-removed",
+    "user-invite-org",
   ]);
 
   // The default SHOULD be audit.message, until the work is done to make this happen
@@ -234,6 +238,8 @@ const getAudit = async (req, res) => {
   cachedServices = {};
   cachedUsers = {};
   const correlationId = req.id;
+  const isInvitation = req.params.uid.startsWith("inv-");
+  const invitationId = isInvitation ? req.params.uid.substr(4) : null;
   const user = await getCachedUserById(req.params.uid, req);
   const showChangeEmail = !isInternalEntraUser(user);
   user.formattedLastLogin = user.lastLogin
@@ -243,15 +249,19 @@ const getAudit = async (req, res) => {
     const userStatus = await getUserStatusRaw({ userId: user.id });
     user.statusChangeReasons = userStatus ? userStatus.statusChangeReasons : [];
   }
-  const userOrganisations = await getUserOrganisationsWithServicesRaw({
-    userId: req.params.uid,
-  });
+  const userOrganisations = isInvitation
+    ? ((await getInvitationOrganisationsRaw({ invitationId })) ?? [])
+    : await getUserOrganisationsWithServicesRaw({ userId: req.params.uid });
   req.session.type = "audit";
   const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
   if (isNaN(pageNumber) || pageNumber < 1) {
     return res.status(400).send();
   }
-  const pageOfAudits = await getPageOfUserAudits(user.id, pageNumber);
+  const pageOfAudits = await getPageOfUserAudits(
+    isInvitation ? invitationId : user.id,
+    pageNumber,
+    invitationId,
+  );
   const audits = [];
 
   for (let i = 0; i < pageOfAudits.audits.length; i++) {
@@ -308,7 +318,7 @@ const getAudit = async (req, res) => {
       organisation,
       result: audit.success === undefined ? true : audit.success,
       user:
-        audit.userId.toLowerCase() === user.id.toLowerCase()
+        !audit.userId || audit.userId.toLowerCase() === user.id.toLowerCase()
           ? user
           : await getCachedUserById(audit.userId.toUpperCase(), req),
     });
@@ -324,6 +334,7 @@ const getAudit = async (req, res) => {
     currentPage: "users",
     user,
     showChangeEmail,
+    isInvitation,
     organisations: userOrganisations,
     audits,
     numberOfPages: pageOfAudits.numberOfPages,

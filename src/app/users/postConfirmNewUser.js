@@ -57,6 +57,7 @@ const postConfirmNewUser = async (req, res) => {
       type: "support",
       subType: "invite-created",
       userId: req.user.sub,
+      editedUser: `inv-${invitationId}`,
       message: `Invitation code is created. Id ${invitationId}`,
     });
   }
@@ -80,6 +81,7 @@ const postConfirmNewUser = async (req, res) => {
       userId: req.user.sub,
       userEmail: req.user.email,
       invitedUserEmail: req.session.user.email,
+      editedUser: `inv-${invitationId}`,
     },
   );
 

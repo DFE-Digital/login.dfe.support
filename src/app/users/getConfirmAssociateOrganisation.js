@@ -40,6 +40,7 @@ const addOrganisationToInvitation = async (uid, req) => {
       userEmail: req.user.email,
       invitedUserEmail: req.session.user.email,
       invitedOrganisation: organisationId,
+      editedUser: uid,
     },
   );
 };
