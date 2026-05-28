@@ -8,6 +8,7 @@ const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { getPageOfUserAudits } = require("./../../infrastructure/audit");
 const {
   getInvitationOrganisationsRaw,
+  getInvitationRaw,
 } = require("login.dfe.api-client/invitations");
 const logger = require("./../../infrastructure/logger");
 const {
@@ -322,6 +323,34 @@ const getAudit = async (req, res) => {
           ? user
           : await getCachedUserById(audit.userId.toUpperCase(), req),
     });
+  }
+
+  if (isInvitation) {
+    const hasInviteCreatedEvent = audits.some(
+      (a) => a.event.subType === "invite-created",
+    );
+    if (!hasInviteCreatedEvent) {
+      const invitation = await getInvitationRaw({ by: { id: invitationId } });
+      if (invitation) {
+        audits.push({
+          timestamp: new Date(invitation.createdAt),
+          formattedTimestamp: dateFormat(
+            invitation.createdAt,
+            "longDateFormat",
+          ),
+          event: {
+            type: "support",
+            subType: "invite-created",
+            description: "Invitation created",
+          },
+          service: null,
+          organisation: null,
+          result: true,
+          user: null,
+        });
+        audits.sort((a, b) => b.timestamp - a.timestamp);
+      }
+    }
   }
 
   sendResult(req, res, "users/views/audit", {

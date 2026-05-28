@@ -13,6 +13,7 @@ jest.mock("ioredis");
 jest.mock("login.dfe.api-client/organisations");
 jest.mock("login.dfe.api-client/invitations", () => ({
   getInvitationOrganisationsRaw: jest.fn(),
+  getInvitationRaw: jest.fn(),
 }));
 
 const { getUserDetailsById } = require("./../../../src/app/users/utils");
@@ -32,6 +33,7 @@ const {
 } = require("login.dfe.api-client/organisations");
 const {
   getInvitationOrganisationsRaw,
+  getInvitationRaw,
 } = require("login.dfe.api-client/invitations");
 
 const organisationId = "org-1";
@@ -115,6 +117,9 @@ describe("when getting users audit details", () => {
 
     getInvitationOrganisationsRaw.mockReset();
     getInvitationOrganisationsRaw.mockResolvedValue([]);
+
+    getInvitationRaw.mockReset();
+    getInvitationRaw.mockResolvedValue(null);
 
     sendResult.mockReset();
 
