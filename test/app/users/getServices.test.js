@@ -396,7 +396,7 @@ describe("when getting users service details", () => {
     ).toHaveLength(0);
   });
 
-  it("should keep a service visible when only hideSupport is truthy", async () => {
+  it("should hide a service when only hideSupport is truthy", async () => {
     getAllServices.mockReturnValue({
       services: [
         {
@@ -415,6 +415,6 @@ describe("when getting users service details", () => {
     const allServiceIds = res.render.mock.calls[0][1].organisations.flatMap(
       (o) => o.services.map((s) => s.id),
     );
-    expect(allServiceIds).toContain("83f00ace-f1a0-4338-8784-fa14f5943e5a");
+    expect(allServiceIds).not.toContain("83f00ace-f1a0-4338-8784-fa14f5943e5a");
   });
 });
