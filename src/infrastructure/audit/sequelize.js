@@ -50,10 +50,7 @@ const getPageOfUserAudits = async (userId, pageNumber, invitationId = null) => {
       UNION
       SELECT AL.id
         FROM AuditLogs AL
-        JOIN AuditLogMeta ALM
-          ON ALM.auditId = AL.id
-        WHERE ALM.[key] = 'message'
-          AND ALM.[Value] LIKE '%' + :invitationId + '%'
+        WHERE AL.message LIKE '%' + :invitationId + '%'
           AND AL.subType IN ('invite-created', 'user-invite-org')`;
   }
 
