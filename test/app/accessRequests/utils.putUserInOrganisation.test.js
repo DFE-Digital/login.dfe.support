@@ -67,7 +67,6 @@ describe("When putting a user in an organisation", () => {
       organisationId: "org1",
       reason: "",
       roleId: 1,
-      status: 1,
       userId: "user1",
     });
   });
@@ -82,7 +81,6 @@ describe("When putting a user in an organisation", () => {
       organisationId: "org1",
       reason: "",
       roleId: 10000,
-      status: 1,
       userId: "user1",
     });
   });
@@ -97,7 +95,6 @@ describe("When putting a user in an organisation", () => {
       organisationId: "org1",
       reason: "test message",
       roleId: 0,
-      status: -1,
       userId: "user1",
     });
   });

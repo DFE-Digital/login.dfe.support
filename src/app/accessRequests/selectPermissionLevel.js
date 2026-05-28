@@ -126,7 +126,6 @@ const post = async (req, res) => {
     await addOrganisationToUser({
       organisationId: model.request.org_id,
       userId: model.request.user_id,
-      status: 1,
       roleId: model.selectedLevel,
     });
     await updateRequestForOrganisationRaw({
