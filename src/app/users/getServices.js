@@ -71,17 +71,11 @@ const action = async (req, res) => {
   }
   const organisationDetails = await getOrganisations(user.id, req.id);
   const isTruthy = (v) => v === true || v === 1 || v === "true" || v === "1";
-  const isFullyHidden = (x) => {
-    const p = x.relyingParty?.params;
-    return (
-      isTruthy(p?.hideApprover) &&
-      isTruthy(p?.hideSupport) &&
-      isTruthy(p?.helpHidden)
-    );
-  };
   const allServices = await getAllServices();
   const externalServices = allServices.services.filter(
-    (x) => x.isExternalService === true && !isFullyHidden(x),
+    (x) =>
+      x.isExternalService === true &&
+      !isTruthy(x.relyingParty?.params?.hideSupport),
   );
 
   const allOrganisationsForUser = [];
