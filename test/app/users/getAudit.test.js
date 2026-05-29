@@ -671,7 +671,7 @@ describe("when getting users audit details", () => {
     await getAudit(req, res);
 
     const differentUserCall = getUserDetailsById.mock.calls.find(
-      (call) => call[0] === "DIFFERENT-USER",
+      (call) => call[0] === "different-user",
     );
     expect(differentUserCall).toBeDefined();
     expect(differentUserCall[1]).toBe(req);
@@ -680,7 +680,7 @@ describe("when getting users audit details", () => {
   });
 
   describe("when viewing audit for an invited user", () => {
-    const invitationGuid = "abc123-def456-ghi789";
+    const invitationGuid = "b755bb86-df39-46d3-a11f-99548f93061e";
     const invitationUid = `inv-${invitationGuid}`;
 
     beforeEach(() => {
@@ -797,6 +797,65 @@ describe("when getting users audit details", () => {
       await getAudit(req, res);
 
       const audits = sendResult.mock.calls[0][3].audits;
+      expect(audits[0].user.id).toBe(invitationUid);
+    });
+
+    it("should inject a synthetic invite-created entry when no audit records exist and getInvitationRaw returns a result", async () => {
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [],
+        numberOfPages: 0,
+        numberOfRecords: 0,
+      });
+      getInvitationRaw.mockResolvedValue({
+        id: invitationGuid,
+        createdAt: "2024-03-15T09:00:00.000Z",
+      });
+
+      await getAudit(req, res);
+
+      const audits = sendResult.mock.calls[0][3].audits;
+      expect(audits).toHaveLength(1);
+      expect(audits[0].event.subType).toBe("invite-created");
+      expect(audits[0].event.description).toBe("Invitation created");
+      expect(audits[0].timestamp).toEqual(new Date("2024-03-15T09:00:00.000Z"));
+      expect(audits[0].user).toBeNull();
+    });
+
+    it("should not inject a synthetic entry when an invite-created audit record already exists", async () => {
+      getInvitationRaw.mockResolvedValue({
+        id: invitationGuid,
+        createdAt: "2024-03-15T09:00:00.000Z",
+      });
+
+      await getAudit(req, res);
+
+      expect(getInvitationRaw).not.toHaveBeenCalled();
+    });
+
+    it("should treat audit.userId matching the bare invitation GUID as the current user", async () => {
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [
+          {
+            type: "support",
+            subType: "user-edit",
+            userId: invitationGuid,
+            editedUser: invitationUid,
+            editedFields: [{ name: "status", newValue: 1 }],
+            level: "audit",
+            message: "edited",
+            timestamp: "2025-05-01T10:00:00.000Z",
+          },
+        ],
+        numberOfPages: 1,
+        numberOfRecords: 1,
+      });
+
+      await getAudit(req, res);
+
+      const audits = sendResult.mock.calls[0][3].audits;
+      expect(audits[0].event.description).toBe(
+        "Reactivated user: Invited User",
+      );
       expect(audits[0].user.id).toBe(invitationUid);
     });
   });
@@ -924,7 +983,7 @@ describe("when getting users audit details", () => {
     it("should handle error in describeAuditEvent when processing complex audit types", async () => {
       getUserDetailsById.mockReset();
       getUserDetailsById.mockImplementation(async (userId) => {
-        if (userId === "DIFFERENT-USER") {
+        if (userId === "different-user") {
           throw new Error("Different user lookup failed");
         }
         return {

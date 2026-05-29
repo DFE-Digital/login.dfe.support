@@ -10,9 +10,9 @@ const USER_INVITE_ORG_RE =
 
 const findMissingEditedUser = async (subType) =>
   db.query(
-    `SELECT AL.id, ALM.[value] AS message
+    `SELECT AL.id, COALESCE(ALM.[value], AL.message) AS message
      FROM AuditLogs AL
-     JOIN AuditLogMeta ALM ON ALM.auditId = AL.id AND ALM.[key] = 'message'
+     LEFT JOIN AuditLogMeta ALM ON ALM.auditId = AL.id AND ALM.[key] = 'message'
      WHERE AL.subType = :subType
        AND NOT EXISTS (
          SELECT 1 FROM AuditLogMeta ALM2
@@ -40,6 +40,11 @@ const backfill = async () => {
     `invite-created records missing editedUser: ${inviteCreatedRows.length}`,
   );
   for (const row of inviteCreatedRows) {
+    if (!row.message) {
+      console.warn(`  skipped invite-created ${row.id}: message is null`);
+      skipped++;
+      continue;
+    }
     const match = INVITE_CREATED_RE.exec(row.message);
     if (match) {
       await insertEditedUser(row.id, `inv-${match[1]}`);
@@ -58,6 +63,11 @@ const backfill = async () => {
     `user-invite-org records missing editedUser: ${userInviteOrgRows.length}`,
   );
   for (const row of userInviteOrgRows) {
+    if (!row.message) {
+      console.warn(`  skipped user-invite-org ${row.id}: message is null`);
+      skipped++;
+      continue;
+    }
     const match = USER_INVITE_ORG_RE.exec(row.message);
     if (match) {
       await insertEditedUser(row.id, `inv-${match[1]}`);

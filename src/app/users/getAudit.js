@@ -37,8 +37,11 @@ const getCachedUserById = async (userId, req) => {
 };
 
 const describeAuditEvent = async (audit, req) => {
+  const uidForComparison = req.params.uid.startsWith("inv-")
+    ? req.params.uid.slice(4)
+    : req.params.uid;
   const isCurrentUser =
-    audit.userId.toLowerCase() === req.params.uid.toLowerCase();
+    audit.userId.toLowerCase() === uidForComparison.toLowerCase();
 
   if (audit.type === "sign-in") {
     let description = "Sign-in";
@@ -240,13 +243,13 @@ const getAudit = async (req, res) => {
   cachedUsers = {};
   const correlationId = req.id;
   const isInvitation = req.params.uid.startsWith("inv-");
-  const invitationId = isInvitation ? req.params.uid.substr(4) : null;
+  const invitationId = isInvitation ? req.params.uid.slice(4) : null;
   const user = await getCachedUserById(req.params.uid, req);
   const showChangeEmail = !isInternalEntraUser(user);
   user.formattedLastLogin = user.lastLogin
     ? dateFormat(user.lastLogin, "longDateFormat")
     : "";
-  if (user.status.id === 0) {
+  if (!isInvitation && user.status.id === 0) {
     const userStatus = await getUserStatusRaw({ userId: user.id });
     user.statusChangeReasons = userStatus ? userStatus.statusChangeReasons : [];
   }
@@ -263,6 +266,7 @@ const getAudit = async (req, res) => {
     pageNumber,
     invitationId,
   );
+  const currentUserId = isInvitation ? invitationId : user.id;
   const audits = [];
 
   for (let i = 0; i < pageOfAudits.audits.length; i++) {
@@ -319,9 +323,10 @@ const getAudit = async (req, res) => {
       organisation,
       result: audit.success === undefined ? true : audit.success,
       user:
-        !audit.userId || audit.userId.toLowerCase() === user.id.toLowerCase()
+        !audit.userId ||
+        audit.userId.toLowerCase() === currentUserId.toLowerCase()
           ? user
-          : await getCachedUserById(audit.userId.toUpperCase(), req),
+          : await getCachedUserById(audit.userId, req),
     });
   }
 
@@ -332,7 +337,7 @@ const getAudit = async (req, res) => {
     if (!hasInviteCreatedEvent) {
       const invitation = await getInvitationRaw({ by: { id: invitationId } });
       if (invitation) {
-        audits.push({
+        const syntheticEntry = {
           timestamp: new Date(invitation.createdAt),
           formattedTimestamp: dateFormat(
             invitation.createdAt,
@@ -347,8 +352,15 @@ const getAudit = async (req, res) => {
           organisation: null,
           result: true,
           user: null,
-        });
-        audits.sort((a, b) => b.timestamp - a.timestamp);
+        };
+        const insertAt = audits.findIndex(
+          (a) => a.timestamp <= syntheticEntry.timestamp,
+        );
+        if (insertAt === -1) {
+          audits.push(syntheticEntry);
+        } else {
+          audits.splice(insertAt, 0, syntheticEntry);
+        }
       }
     }
   }
