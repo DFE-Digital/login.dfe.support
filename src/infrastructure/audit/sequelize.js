@@ -28,7 +28,32 @@ const mapAuditEntity = (auditEntity) => {
   return audit;
 };
 
-const getPageOfUserAudits = async (userId, pageNumber) => {
+const getPageOfUserAudits = async (userId, pageNumber, invitationId = null) => {
+  const replacements = { userId };
+  let invitationClause = "";
+
+  if (invitationId) {
+    replacements.invitationId = invitationId;
+    replacements.invitationIdPrefixed = `inv-${invitationId}`;
+    invitationClause = `
+      UNION
+      SELECT AL.id
+        FROM AuditLogs AL
+        WHERE AL.userId = :invitationId
+      UNION
+      SELECT AL.id
+        FROM AuditLogs AL
+        JOIN AuditLogMeta ALM
+          ON ALM.auditId = AL.id
+        WHERE ALM.[key] IN ('invitationId', 'editedUser', 'viewedUser')
+          AND (ALM.[Value] = :invitationId OR ALM.[Value] = :invitationIdPrefixed)
+      UNION
+      SELECT AL.id
+        FROM AuditLogs AL
+        WHERE AL.message LIKE '%' + :invitationId + '%'
+          AND AL.subType IN ('invite-created', 'user-invite-org')`;
+  }
+
   const queryWhere = `
     WHERE type != 'technical-audit'
     AND id IN (
@@ -42,10 +67,11 @@ const getPageOfUserAudits = async (userId, pageNumber) => {
           ON ALM.auditId = AL.id
         WHERE ALM.[key] IN ('editedUser', 'viewedUser')
           AND ALM.[Value] = :userId
+      ${invitationClause}
     )`;
   const queryOpts = {
     type: QueryTypes.SELECT,
-    replacements: { userId },
+    replacements,
   };
   const skip = (pageNumber - 1) * pageSize;
   const { count } = (
