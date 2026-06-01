@@ -77,7 +77,11 @@ const post = async (req, res) => {
     try {
       await asyncRetry(
         async () =>
-          await serviceNotificationsClient.notifyUserUpdated({ sub: uid }),
+          await serviceNotificationsClient.notifyUserUpdated({
+            sub: uid,
+            removedServiceId: serviceId,
+            removedOrgId: organisationId,
+          }),
         asyncRetry.strategies.apiStrategy,
       );
       logger.audit(
