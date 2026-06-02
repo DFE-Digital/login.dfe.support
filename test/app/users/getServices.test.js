@@ -442,11 +442,6 @@ describe("when getting users service details", () => {
     expect(allServiceIds).not.toContain("id-only-hidden");
   });
 
-  // NOTE: This test verifies that isHiddenFromSupport returns false for a visible id-only service
-  // (i.e. it is NOT filtered out of externalServices). The service doesn't appear in allServiceIds
-  // because the getUserOrganisationsWithServicesRaw fixture doesn't associate it with any org —
-  // that's a fixture limitation, not a logic bug. The key assertion is that the service is present
-  // in externalServices after getAllServices filtering.
   it("should NOT exclude id-only services where isHiddenService is falsy", async () => {
     const visibleIdOnlyService = {
       id: "id-only-visible",
@@ -458,7 +453,6 @@ describe("when getting users service details", () => {
       isHiddenService: 0,
       relyingParty: { params: {} },
     };
-    // Also include a service that IS associated with an org so render is called
     getAllServices.mockReturnValue({
       services: [
         visibleIdOnlyService,
@@ -472,16 +466,38 @@ describe("when getting users service details", () => {
         },
       ],
     });
+    getUserOrganisationsWithServicesRaw.mockReturnValue([
+      {
+        organisation: {
+          id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+          name: "Big School",
+          status: { id: 1, name: "open" },
+        },
+        role: { id: 0, name: "End user" },
+        approvers: [],
+        services: [
+          {
+            id: "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+            name: "A good service",
+            requestDate: "2018-01-18T10:46:59.385Z",
+            status: 1,
+          },
+          {
+            id: "id-only-visible",
+            name: "Visible Id Only Service",
+            requestDate: "2018-01-18T10:46:59.385Z",
+            status: 1,
+          },
+        ],
+      },
+    ]);
 
     await getServices(req, res);
 
-    // The visible id-only service is not hidden — it passes the isHiddenFromSupport check.
-    // It doesn't appear in org services only because no org fixture has it; that's expected.
-    // Verify the org-associated service still renders (proving filter ran without error).
     const allServiceIds = res.render.mock.calls[0][1].organisations.flatMap(
       (o) => o.services.map((s) => s.id),
     );
     expect(allServiceIds).toContain("83f00ace-f1a0-4338-8784-fa14f5943e5a");
-    expect(allServiceIds).not.toContain("id-only-hidden");
+    expect(allServiceIds).toContain("id-only-visible");
   });
 });
