@@ -89,6 +89,15 @@ describe("When retrieving manage console services for a user", () => {
             },
           },
         },
+        {
+          id: "idOnlyHiddenId",
+          name: "Id Only Hidden Service",
+          description: "An id-only service that is hidden",
+          isExternalService: true,
+          isIdOnlyService: true,
+          isHiddenService: 1,
+          relyingParty: {},
+        },
       ],
     };
 
@@ -142,5 +151,33 @@ describe("When retrieving manage console services for a user", () => {
       isHiddenService: false,
       relyingParty: {},
     });
+  });
+
+  it("should not include id-only services where isHiddenService is truthy", async () => {
+    await getManageConsoleServices(req, res);
+
+    const pageServices = sendResult.mock.calls[0][3].pageOfServices.services;
+    expect(pageServices.find((s) => s.id === "idOnlyHiddenId")).toBeUndefined();
+  });
+
+  it("should include id-only services where isHiddenService is falsy", async () => {
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: "idOnlyVisibleId",
+          name: "Id Only Visible Service",
+          description: "An id-only service that is visible",
+          isExternalService: true,
+          isIdOnlyService: true,
+          isHiddenService: 0,
+          relyingParty: {},
+        },
+      ],
+    });
+
+    await getManageConsoleServices(req, res);
+
+    const pageServices = sendResult.mock.calls[0][3].pageOfServices.services;
+    expect(pageServices.find((s) => s.id === "idOnlyVisibleId")).toBeDefined();
   });
 });

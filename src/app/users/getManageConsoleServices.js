@@ -4,6 +4,10 @@ const { dateFormat } = require("../helpers/dateFormatterHelper");
 const { getUserDetailsById } = require("./utils");
 
 const isTruthy = (v) => v === true || v === 1 || v === "true" || v === "1";
+const isHiddenFromSupport = (s) => {
+  if (s.isIdOnlyService && isTruthy(s.isHiddenService)) return true;
+  return isTruthy(s.relyingParty?.params?.hideSupport);
+};
 
 const buildModel = async (req) => {
   const user = await getUserDetailsById(req.params.uid, req);
@@ -12,7 +16,7 @@ const buildModel = async (req) => {
     : "";
   const allServices = await getAllServices();
   const visibleServices = allServices.services.filter(
-    (s) => !isTruthy(s.relyingParty?.params?.hideSupport),
+    (s) => !isHiddenFromSupport(s),
   );
   const totalNumberOfResults = visibleServices.length;
   const numberOfResultsOnPage = 20;
