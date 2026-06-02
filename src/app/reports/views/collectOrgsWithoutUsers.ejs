@@ -1,0 +1,50 @@
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+
+            <h1 class="govuk-heading-l"><%= title %></h1>
+
+            <p class="govuk-body">
+                Open organisations that have had at least one COLLECT user in DfE Sign-In
+                but currently have no active users with COLLECT access.
+            </p>
+
+            <% if (organisations.length === 0) { %>
+                <p class="govuk-body">No organisations found matching this criteria.</p>
+            <% } else { %>
+                <p class="govuk-body">
+                    <strong><%= organisations.length.toLocaleString() %></strong>
+                    organisation<%= organisations.length === 1 ? '' : 's' %> found.
+                </p>
+
+                <table class="govuk-table">
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header">Organisation name</th>
+                            <th scope="col" class="govuk-table__header">URN</th>
+                            <th scope="col" class="govuk-table__header">Establishment no.</th>
+                            <th scope="col" class="govuk-table__header">LA code</th>
+                            <th scope="col" class="govuk-table__header">Category</th>
+                            <th scope="col" class="govuk-table__header">Total records</th>
+                            <th scope="col" class="govuk-table__header">Active users</th>
+                        </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+                        <% organisations.forEach(function(org) { %>
+                            <tr class="govuk-table__row">
+                                <td class="govuk-table__cell"><%= org.org_name %></td>
+                                <td class="govuk-table__cell"><%= org.urn || '—' %></td>
+                                <td class="govuk-table__cell"><%= org.establishment_number || '—' %></td>
+                                <td class="govuk-table__cell"><%= org.local_authority_code || '—' %></td>
+                                <td class="govuk-table__cell"><%= org.category || '—' %></td>
+                                <td class="govuk-table__cell"><%= org.total_user_service_records %></td>
+                                <td class="govuk-table__cell">0</td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            <% } %>
+
+        </div>
+    </div>
+</div>
