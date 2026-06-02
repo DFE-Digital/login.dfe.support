@@ -13,16 +13,12 @@ const policyEngine = new PolicyEngine(config);
 const getAllAvailableServices = async (req) => {
   const allServices = await getAllServices();
   const isTruthy = (v) => v === true || v === 1 || v === "true" || v === "1";
-  const isFullyHidden = (x) => {
-    const p = x.relyingParty?.params;
-    return (
-      isTruthy(p?.hideApprover) &&
-      isTruthy(p?.hideSupport) &&
-      isTruthy(p?.helpHidden)
-    );
+  const isHiddenFromSupport = (x) => {
+    if (x.isIdOnlyService && isTruthy(x.isHiddenService)) return true;
+    return isTruthy(x.relyingParty?.params?.hideSupport);
   };
   let externalServices = allServices.services.filter(
-    (x) => x.isExternalService === true && !isFullyHidden(x),
+    (x) => x.isExternalService === true && !isHiddenFromSupport(x),
   );
   if (req.params.uid) {
     const allUserServicesInOrg = await getAllServicesForUserInOrg(
