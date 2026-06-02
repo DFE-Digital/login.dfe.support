@@ -580,7 +580,10 @@ describe("when getting users audit details", () => {
     expect(editedUserCall[1]).toHaveProperty("params");
   });
 
-  it("should pass full req object for support user-org-permission-edited event", async () => {
+  it("should use audit message as description for user-org-permission-edited events (support type)", async () => {
+    const permissionMessage =
+      "super.user@unit.test (id: user1) edited permission level to approver for organisation Test Organisation (id: org-1) for user edited@user.com (id: edited-user1)";
+
     getPageOfUserAudits.mockResolvedValue({
       audits: [
         {
@@ -596,6 +599,7 @@ describe("when getting users audit details", () => {
               organisation: "Test Organisation",
             },
           ],
+          message: permissionMessage,
           timestamp: "2018-01-30T10:30:53.987Z",
         },
       ],
@@ -605,13 +609,209 @@ describe("when getting users audit details", () => {
 
     await getAudit(req, res);
 
-    const editedUserCall = getUserDetailsById.mock.calls.find(
-      (call) => call[0] === "edited-user1",
+    const auditRows = sendResult.mock.calls[0][3].audits;
+    expect(auditRows[0].event.description).toBe(permissionMessage);
+  });
+
+  it("should use audit message as description for user-org-permission-edited events (approver type)", async () => {
+    const permissionMessage =
+      "approver@unit.test edited permission level to approver for organisation Test Organisation (id: org-1) for user edited@user.com";
+
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "approver",
+          subType: "user-org-permission-edited",
+          userId: "user1",
+          editedUser: "edited-user1",
+          message: permissionMessage,
+          timestamp: "2018-01-30T10:30:53.987Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const auditRows = sendResult.mock.calls[0][3].audits;
+    expect(auditRows[0].event.description).toBe(permissionMessage);
+  });
+
+  it("should include the inviter name in the description for support/user-invited events", async () => {
+    getUserDetailsById.mockImplementation(async (userId) => {
+      if (userId === "support-user-1") {
+        return {
+          id: "support-user-1",
+          name: "Jane Smith",
+          firstName: "Jane",
+          lastName: "Smith",
+          status: { id: 1, description: "Activated" },
+        };
+      }
+      return {
+        id: userId,
+        name: "Test User",
+        firstName: "Test",
+        lastName: "User",
+        status: { id: 1, description: "Activated" },
+      };
+    });
+
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "support",
+          subType: "user-invited",
+          userId: "support-user-1",
+          userEmail: "jane.smith@education.gov.uk",
+          editedUser: "inv-test-invitation",
+          timestamp: "2025-06-02T10:00:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const auditRows = sendResult.mock.calls[0][3].audits;
+    expect(auditRows[0].event.description).toBe(
+      "User invite sent by Jane Smith from support console.",
     );
-    expect(editedUserCall).toBeDefined();
-    expect(editedUserCall[1]).toBe(req);
-    expect(editedUserCall[1]).toHaveProperty("id");
-    expect(editedUserCall[1]).toHaveProperty("params");
+  });
+
+  it("should fall back to email in description for support/user-invited when inviter cannot be fetched", async () => {
+    getUserDetailsById.mockImplementation(async (userId) => {
+      if (userId === "support-user-1") {
+        return null;
+      }
+      return {
+        id: userId,
+        name: "Test User",
+        firstName: "Test",
+        lastName: "User",
+        status: { id: 1, description: "Activated" },
+      };
+    });
+
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "support",
+          subType: "user-invited",
+          userId: "support-user-1",
+          userEmail: "jane.smith@education.gov.uk",
+          editedUser: "inv-test-invitation",
+          timestamp: "2025-06-02T10:00:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const auditRows = sendResult.mock.calls[0][3].audits;
+    expect(auditRows[0].event.description).toBe(
+      "User invite sent by jane.smith@education.gov.uk from support console.",
+    );
+  });
+
+  it("should use audit message for approver/invite-created events", async () => {
+    const inviteMessage =
+      "approver@unit.test (id: user1) invited new.user@example.com to Test Organisation (id: org-1) (id: inv-abc123)";
+
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "approver",
+          subType: "invite-created",
+          userId: "user1",
+          message: inviteMessage,
+          timestamp: "2025-06-02T10:00:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const auditRows = sendResult.mock.calls[0][3].audits;
+    expect(auditRows[0].event.description).toBe(inviteMessage);
+  });
+
+  it("should use audit message for support/invite-created events", async () => {
+    const inviteMessage =
+      "support@education.gov.uk (id: user1) created invitation for new.user@example.com (id: inv-abc123)";
+
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "support",
+          subType: "invite-created",
+          userId: "user1",
+          message: inviteMessage,
+          timestamp: "2025-06-02T10:00:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const auditRows = sendResult.mock.calls[0][3].audits;
+    expect(auditRows[0].event.description).toBe(inviteMessage);
+  });
+
+  it("should show N/A for missing legacy IDs in support/user-org-deleted events", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "support",
+          subType: "user-org-deleted",
+          userId: "user1",
+          editedUser: "edited-user1",
+          editedFields: [{ name: "new_organisation", oldValue: "org-1" }],
+          timestamp: "2018-01-30T10:30:53.987Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const auditRows = sendResult.mock.calls[0][3].audits;
+    expect(auditRows[0].event.description).toContain(
+      "numericIdentifier: N/A, textIdentifier: N/A",
+    );
+  });
+
+  it("should show N/A for missing legacy IDs in approver/user-org-deleted events", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "approver",
+          subType: "user-org-deleted",
+          userId: "user1",
+          editedUser: "edited-user1",
+          editedFields: [{ name: "new_organisation", oldValue: "org-1" }],
+          timestamp: "2018-01-30T10:30:53.987Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const auditRows = sendResult.mock.calls[0][3].audits;
+    expect(auditRows[0].event.description).toContain(
+      "numericIdentifier: N/A, textIdentifier: N/A",
+    );
   });
 
   it("should return 400 for negative page numbers", async () => {
@@ -756,7 +956,7 @@ describe("when getting users audit details", () => {
         (a) => a.event.subType === "user-invited",
       );
       expect(invitedEvent.event.description).toBe(
-        "User invite sent from support console.",
+        "User invite sent by unknown from support console.",
       );
     });
 
@@ -767,9 +967,7 @@ describe("when getting users audit details", () => {
       const createdEvent = audits.find(
         (a) => a.event.subType === "invite-created",
       );
-      expect(createdEvent.event.description).toBe(
-        "Support/Invitation code created and sent.",
-      );
+      expect(createdEvent.event.description).toBe("Invitation code created");
     });
 
     it("should not call getUserStatusRaw for invited users", async () => {

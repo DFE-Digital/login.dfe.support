@@ -83,6 +83,7 @@ const describeAuditEvent = async (audit, req) => {
     "policy-condition-removed",
     "policy-role-removed",
     "user-invite-org",
+    "user-org-permission-edited",
   ]);
 
   // The default SHOULD be audit.message, until the work is done to make this happen
@@ -138,20 +139,13 @@ const describeAuditEvent = async (audit, req) => {
   }
 
   if (audit.type === "support" && audit.subType === "user-invited") {
-    return "User invite sent from support console.";
+    const inviter = await getCachedUserById(audit.userId, req);
+    const inviterName = inviter?.name || audit.userEmail || "unknown";
+    return `User invite sent by ${inviterName} from support console.`;
   }
 
   if (audit.subType === "invite-created") {
-    switch (audit.type) {
-      case "approver":
-        return "Services/Invitation code created and sent.";
-      case "support":
-        return "Support/Invitation code created and sent.";
-      default:
-        break;
-    }
-
-    return audit.type;
+    return audit.message;
   }
 
   if (audit.type === "approver" && audit.subType === "user-invited") {
@@ -174,8 +168,9 @@ const describeAuditEvent = async (audit, req) => {
       organisationId: organisationId.oldValue,
     });
     const viewedUser = await getCachedUserById(audit.editedUser, req);
-    return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
-      numericIdentifier: ${audit["numericIdentifier"]}, textIdentifier: ${audit["textIdentifier"]})`;
+    const numericId = audit["numericIdentifier"] ?? "N/A";
+    const textId = audit["textIdentifier"] ?? "N/A";
+    return `Deleted organisation: ${organisation.name} for user ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (numericIdentifier: ${numericId}, textIdentifier: ${textId})`;
   }
   if (audit.type === "support" && audit.subType === "user-org") {
     const organisationId =
@@ -186,16 +181,6 @@ const describeAuditEvent = async (audit, req) => {
     });
     const viewedUser = await getCachedUserById(audit.editedUser, req);
     return `Added organisation: ${organisation.name} for user ${viewedUser.firstName} ${viewedUser.lastName}`;
-  }
-  if (
-    audit.type === "support" &&
-    audit.subType === "user-org-permission-edited"
-  ) {
-    const editedFields =
-      audit.editedFields &&
-      audit.editedFields.find((x) => x.name === "edited_permission");
-    const viewedUser = await getCachedUserById(audit.editedUser, req);
-    return `Edited permission level to ${editedFields.newValue} for user ${viewedUser.firstName} ${viewedUser.lastName} in organisation ${editedFields.organisation}`;
   }
   if (audit.type === "approver" && audit.subType === "user-org-deleted") {
     try {
@@ -211,8 +196,9 @@ const describeAuditEvent = async (audit, req) => {
         ? audit.editedUser.replace(/[""]+/g, "")
         : audit.editedUser;
       const viewedUser = await getCachedUserById(audit.editedUser, req);
-      return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
-        numericIdentifier: ${audit["numericIdentifier"]}, textIdentifier: ${audit["textIdentifier"]})`;
+      const numericId = audit["numericIdentifier"] ?? "N/A";
+      const textId = audit["textIdentifier"] ?? "N/A";
+      return `Deleted organisation: ${organisation.name} for user ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (numericIdentifier: ${numericId}, textIdentifier: ${textId})`;
     } catch {
       return audit.message;
     }
