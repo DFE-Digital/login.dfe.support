@@ -145,7 +145,7 @@ const describeAuditEvent = async (audit, req) => {
   }
 
   if (audit.subType === "invite-created") {
-    return audit.message;
+    return audit.message ?? `${audit.type}/invite-created`;
   }
 
   if (audit.type === "approver" && audit.subType === "user-invited") {
