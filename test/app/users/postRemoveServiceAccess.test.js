@@ -138,6 +138,16 @@ describe("when removing access to a service", () => {
     );
   });
 
+  it("should call getInvitationOrganisationsRaw with invitationId (not userId) for invited users", async () => {
+    req.params.uid = "inv-invite1";
+
+    await postRemoveService(req, res);
+
+    expect(getInvitationOrganisationsRaw).toHaveBeenCalledWith({
+      invitationId: "invite1",
+    });
+  });
+
   it("then it should delete service for invitation if request for invitation", async () => {
     req.params.uid = "inv-invite1";
 
