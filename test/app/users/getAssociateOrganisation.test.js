@@ -27,7 +27,34 @@ describe("When calling the getAssociateOrganisation function", () => {
     res = {
       render: jest.fn(),
       flash: jest.fn(),
+      redirect: jest.fn(),
     };
+  });
+
+  describe("when req.session.user is not set", () => {
+    it("should redirect to /users/new-user", async () => {
+      req.session.user = null;
+
+      await getAssociateOrganisation(req, res);
+
+      expect(res.redirect).toHaveBeenCalledWith("/users/new-user");
+    });
+
+    it("should not attempt to render the page", async () => {
+      req.session.user = null;
+
+      await getAssociateOrganisation(req, res);
+
+      expect(res.render).not.toHaveBeenCalled();
+    });
+
+    it("should not attempt to save the session", async () => {
+      req.session.user = null;
+
+      await getAssociateOrganisation(req, res);
+
+      expect(req.session.save).not.toHaveBeenCalled();
+    });
   });
 
   it("renders users/views/associateOrganisation on success", async () => {

@@ -1,6 +1,10 @@
 const logger = require("./../../infrastructure/logger");
 
 const getAssociateOrganisation = async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/users/new-user");
+  }
+
   delete req.session.user.organisationId;
   delete req.session.user.organisationName;
   delete req.session.user.permission;
