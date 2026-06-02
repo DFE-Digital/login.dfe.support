@@ -16,7 +16,6 @@ const {
   getUsersRaw,
   getUserStatusRaw,
 } = require("login.dfe.api-client/users");
-const logger = require("../../infrastructure/logger");
 
 const getApproverDetails = async (organisations) => {
   const allApproverIds = flatten(organisations.map((org) => org.approvers));
@@ -136,14 +135,6 @@ const action = async (req, res) => {
   if (req.session.params.searchType !== "organisations") {
     req.session.params.searchType = "users";
   }
-
-  logger.audit(`${req.user.email} viewed user ${user.email}`, {
-    type: "organisations",
-    subType: "user-view",
-    userId: req.user.sub,
-    userEmail: req.user.email,
-    viewedUser: user.id,
-  });
 
   sendResult(req, res, "users/views/organisations", {
     csrfToken: req.csrfToken(),

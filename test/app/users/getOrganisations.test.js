@@ -10,6 +10,7 @@ jest.mock("./../../../src/infrastructure/audit");
 jest.mock("ioredis");
 jest.mock("login.dfe.api-client/users");
 
+const logger = require("./../../../src/infrastructure/logger");
 const { getUserDetailsById } = require("../../../src/app/users/utils");
 const {
   getPendingRequestsRaw,
@@ -139,6 +140,12 @@ describe("when getting users organisation details", () => {
         created_date: "2019-08-12",
       },
     ]);
+  });
+
+  it("should not log a user-view audit event", async () => {
+    await getOrganisations(req, res);
+
+    expect(logger.audit).not.toHaveBeenCalled();
   });
 
   it("then it should get user details", async () => {
