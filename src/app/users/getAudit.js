@@ -84,6 +84,7 @@ const describeAuditEvent = async (audit, req) => {
     "policy-role-removed",
     "user-invite-org",
     "user-org-permission-edited",
+    "resent-invitation",
   ]);
 
   // The default SHOULD be audit.message, until the work is done to make this happen

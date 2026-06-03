@@ -638,6 +638,27 @@ describe("when getting users audit details", () => {
     expect(auditRows[0].event.description).toBe(permissionMessage);
   });
 
+  it("should display the audit message for resent-invitation events", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        createSimpleAuditRecord(
+          "approver",
+          "resent-invitation",
+          "approver@example.com (id: agent1) resent invitation email to user@example.com (id: inv-abc123)",
+        ),
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+
+    await getAudit(req, res);
+
+    const auditsPassed = sendResult.mock.calls[0][3].audits;
+    expect(auditsPassed[0].event.description).toBe(
+      "approver@example.com (id: agent1) resent invitation email to user@example.com (id: inv-abc123)",
+    );
+  });
+
   it("should include the inviter name in the description for support/user-invited events", async () => {
     getUserDetailsById.mockImplementation(async (userId) => {
       if (userId === "support-user-1") {
