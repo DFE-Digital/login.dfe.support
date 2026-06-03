@@ -14,6 +14,9 @@ const {
   createInvitation,
   addOrganisationToInvitation,
 } = require("login.dfe.api-client/invitations");
+const {
+  getOrganisationLegacyRaw,
+} = require("login.dfe.api-client/organisations");
 const { waitForIndexToUpdate } = require("./../../../src/app/users/utils");
 const {
   updateUserSearchIndex,
@@ -65,6 +68,8 @@ describe("postConfirmNewUser", () => {
 
     updateUserSearchIndex.mockReset();
     updateUserSearchIndex.mockResolvedValue();
+
+    getOrganisationLegacyRaw.mockReset();
   });
 
   describe("user-invited audit event", () => {
@@ -96,15 +101,34 @@ describe("postConfirmNewUser", () => {
   });
 
   describe("invite-created audit event", () => {
-    it("should use a user-friendly message format", async () => {
+    it("uses the standard format without org when no org is set", async () => {
+      // organisationId is null in default req.session.user
       await postConfirmNewUser(req, res);
 
-      const inviteCreatedCall = logger.audit.mock.calls.find(
-        (call) => call[0]?.subType === "invite-created",
+      const call = logger.audit.mock.calls.find(
+        (c) => c[0]?.subType === "invite-created",
       );
-      expect(inviteCreatedCall).toBeDefined();
-      expect(inviteCreatedCall[0].message).toBe(
-        "support@education.gov.uk (id: support-user-1) created invitation for jane.doe@example.com (id: inv-test-invitation-id)",
+      expect(call).toBeDefined();
+      expect(call[0].message).toBe(
+        "support@education.gov.uk invited jane.doe@example.com (id: inv-test-invitation-id)",
+      );
+    });
+
+    it("uses the standard format with org name and ID when an org is set", async () => {
+      getOrganisationLegacyRaw.mockResolvedValue({
+        id: "org-456",
+        name: "Big School",
+      });
+      req.session.user.organisationId = "org-456";
+
+      await postConfirmNewUser(req, res);
+
+      const call = logger.audit.mock.calls.find(
+        (c) => c[0]?.subType === "invite-created",
+      );
+      expect(call).toBeDefined();
+      expect(call[0].message).toBe(
+        "support@education.gov.uk invited jane.doe@example.com to Big School (id: org-456) (id: inv-test-invitation-id)",
       );
     });
   });
