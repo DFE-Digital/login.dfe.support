@@ -2,6 +2,10 @@ jest.mock("./../../../src/infrastructure/config", () =>
   require("./../../utils").configMockFactory(),
 );
 
+jest.mock("./../../../src/infrastructure/logger", () =>
+  require("./../../utils").loggerMockFactory(),
+);
+
 jest.mock("login.dfe.api-client/invitations", () => ({
   resendInvitation: jest.fn(),
 }));
@@ -21,7 +25,11 @@ describe("When resending a user invite", () => {
     res.redirect = jest.fn();
 
     req.params.uid = "inv-12345";
-    req.session.user = { firstName: "fname", lastName: "lname" };
+    req.session.user = {
+      firstName: "fname",
+      lastName: "lname",
+      email: "invited@example.com",
+    };
   });
 
   test("it should set session.type to organisations if undefined", async () => {
@@ -76,5 +84,27 @@ describe("When resending a user invite", () => {
     resendInvitation.mockResolvedValue(true);
     await postResendInvite(req, res);
     expect(resendInvitation).toHaveBeenCalledWith({ invitationId: "12345" });
+  });
+
+  test("it should write a resent-invitation audit on success", async () => {
+    resendInvitation.mockResolvedValue(true);
+    const logger = require("./../../../src/infrastructure/logger");
+    await postResendInvite(req, res);
+    expect(logger.audit).toHaveBeenCalledWith(
+      "super.user@unit.test (id: suser1) resent invitation to invited@example.com (id: inv-12345)",
+      expect.objectContaining({
+        type: "support",
+        subType: "resent-invitation",
+        userId: "suser1",
+        editedUser: "inv-12345",
+      }),
+    );
+  });
+
+  test("it should not write audit on failure", async () => {
+    resendInvitation.mockResolvedValue(null);
+    const logger = require("./../../../src/infrastructure/logger");
+    await postResendInvite(req, res);
+    expect(logger.audit).not.toHaveBeenCalled();
   });
 });
