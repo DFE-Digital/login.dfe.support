@@ -148,66 +148,76 @@ if (services && services.length > 0) {
                 <input type="hidden" name="sortDir" value="<%= sortOrder %>"/>
                 <input type="hidden" name="showFilters" value="true"/>
 
-                <div class="filter-box">
-                    <div class="container-head js-container-head">
-                        <div class="govuk-heading-s govuk-!-margin-0 govuk-!-padding-1 govuk-!-padding-left-2 option-select-label" id="option-select-title-organisationtype">
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
                             Organisation type
-                        </div>
-                    </div>
-                    <div role="group" aria-labelledby="option-select-title-organisationtype" class="options-container"
-                        id="organisationtypes">
-                        <div class="js-auto-height-inner">
+                        </legend>
+                        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                             <% for (let i = 0; i < organisationTypes.length; i += 1) { %>
-                            <label class="govuk-label">
-                                <input name="organisationType" value="<%= organisationTypes[i].id %>"
-                                    type="checkbox" <%= (organisationTypes[i].isSelected ? 'checked="checked"' : '') %>>
-                                <%= organisationTypes[i].name %>
-                            </label>
+                                <div class="govuk-checkboxes__item">
+                                    <input class="govuk-checkboxes__input"
+                                        id="organisationType-<%= organisationTypes[i].id %>"
+                                        name="organisationType"
+                                        type="checkbox"
+                                        value="<%= organisationTypes[i].id %>"
+                                        <%= (organisationTypes[i].isSelected ? 'checked' : '') %>>
+                                    <label class="govuk-label govuk-checkboxes__label" for="organisationType-<%= organisationTypes[i].id %>">
+                                        <%= organisationTypes[i].name %>
+                                    </label>
+                                </div>
                             <% } %>
                         </div>
-                    </div>
+                    </fieldset>
                 </div>
 
-                <div class="filter-box">
-                    <div class="container-head js-container-head">
-                        <div class="govuk-heading-s govuk-!-margin-0 govuk-!-padding-1 govuk-!-padding-left-2 option-select-label" id="option-select-title-account-status">
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
                             Account status
-                        </div>
-                    </div>
-                    <div role="group" aria-labelledby="option-select-title-account-status" class="options-container"
-                        id="account-status">
-                        <div class="js-auto-height-inner">
+                        </legend>
+                        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                             <% for (let i = 0; i < accountStatuses.length; i += 1) { %>
-                            <label class="govuk-label">
-                                <input name="accountStatus" value="<%= accountStatuses[i].id %>"
-                                    type="checkbox" <%= (accountStatuses[i].isSelected ? 'checked="checked"' : '') %>>
-                                <%= accountStatuses[i].name %>
-                            </label>
+                                <div class="govuk-checkboxes__item">
+                                    <input class="govuk-checkboxes__input"
+                                        id="accountStatus-<%= accountStatuses[i].id %>"
+                                        name="accountStatus"
+                                        type="checkbox"
+                                        value="<%= accountStatuses[i].id %>"
+                                        <%= (accountStatuses[i].isSelected ? 'checked' : '') %>>
+                                    <label class="govuk-label govuk-checkboxes__label" for="accountStatus-<%= accountStatuses[i].id %>">
+                                        <%= accountStatuses[i].name %>
+                                    </label>
+                                </div>
                             <% } %>
                         </div>
-                    </div>
+                    </fieldset>
                 </div>
 
-                <div class="filter-box">
-                    <div class="container-head js-container-head">
-                        <div class="govuk-heading-s govuk-!-margin-0 govuk-!-padding-1 govuk-!-padding-left-2 option-select-label" id="option-select-title-service">
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
                             Service
-                        </div>
-                    </div>
-                    <div role="group" aria-labelledby="option-select-title-service" class="options-container" id="services">
-                        <div class="js-auto-height-inner">
+                        </legend>
+                        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                             <% for (let i = 0; i < services.length; i += 1) { %>
-                            <label class="govuk-label">
-                                <input name="service" value="<%= services[i].id %>"
-                                    type="checkbox" <%= (services[i].isSelected ? 'checked="checked"' : '') %>>
-                                <%= services[i].name %>
-                            </label>
+                                <div class="govuk-checkboxes__item">
+                                    <input class="govuk-checkboxes__input"
+                                        id="service-<%= services[i].id %>"
+                                        name="service"
+                                        type="checkbox"
+                                        value="<%= services[i].id %>"
+                                        <%= (services[i].isSelected ? 'checked' : '') %>>
+                                    <label class="govuk-label govuk-checkboxes__label" for="service-<%= services[i].id %>">
+                                        <%= services[i].name %>
+                                    </label>
+                                </div>
                             <% } %>
                         </div>
-                    </div>
+                    </fieldset>
                 </div>
 
-                <button type="submit" class="govuk-button govuk-button--secondary">Apply filter</button>
+                <button class="govuk-button govuk-button--secondary" data-module="govuk-button">Apply filter</button>
 
             </form>
         </div>
