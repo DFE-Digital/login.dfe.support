@@ -13,8 +13,6 @@ const {
 } = require("login.dfe.api-client/users");
 const { getAllServices } = require("../services/utils");
 
-const logger = require("../../infrastructure/logger");
-
 const getOrganisations = async (userId) => {
   const orgServiceMapping = userId.startsWith("inv-")
     ? await getInvitationOrganisationsRaw({ invitationId: userId.substr(4) })
@@ -123,14 +121,6 @@ const action = async (req, res) => {
     lastName: user.lastName,
     email: user.email,
   };
-
-  logger.audit(`${req.user.email} viewed user ${user.email}`, {
-    type: "support",
-    subType: "user-view",
-    userId: req.user.sub,
-    userEmail: req.user.email,
-    viewedUser: user.id,
-  });
 
   sendResult(req, res, "users/views/services", {
     csrfToken: req.csrfToken(),

@@ -344,4 +344,10 @@ describe("when getting users service details", () => {
       statusChangeReasons: [],
     });
   });
+
+  it("should not write a user-view audit event", async () => {
+    const logger = require("./../../../src/infrastructure/logger");
+    await getServices(req, res);
+    expect(logger.audit).not.toHaveBeenCalled();
+  });
 });
