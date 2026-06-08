@@ -34,7 +34,7 @@ const getPageOfUserAudits = async (userId, pageNumber) => {
     AND id IN (
       SELECT AL.id
         FROM AuditLogs AL
-        WHERE AL.userId = :userId
+        WHERE AL.userId = TRY_CAST(:userId AS UNIQUEIDENTIFIER)
       UNION
       SELECT AL.id
         FROM AuditLogs AL

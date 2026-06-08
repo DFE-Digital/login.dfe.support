@@ -282,6 +282,7 @@ const getUserDetailsById = async (uid, req) => {
         successful: 0,
       },
       deactivated: invitation.deactivated,
+      createdAt: invitation.createdAt,
       entraOid,
     };
   } else {

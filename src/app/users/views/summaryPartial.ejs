@@ -173,16 +173,14 @@
                     </li>
                 <% } %>
         
-                <% if(!locals.isInvitation) { %>
-                    <% if(locals.area === 'audit') { %>
-                        <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
-                            <span class="govuk-tabs__tab">Audit</span>
-                        </li>
-                    <% } else { %>
-                        <li class="govuk-tabs__list-item">
-                            <a class="govuk-link" href="audit">Audit</a>
-                        </li>
-                    <% } %>
+                <% if(locals.area === 'audit') { %>
+                    <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+                        <span class="govuk-tabs__tab">Audit</span>
+                    </li>
+                <% } else { %>
+                    <li class="govuk-tabs__list-item">
+                        <a class="govuk-link" href="audit">Audit</a>
+                    </li>
                 <% } %>
             </ul>
         </div>

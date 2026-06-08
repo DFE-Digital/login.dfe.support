@@ -31,17 +31,18 @@ const addOrganisationToInvitation = async (uid, req) => {
     roleId: permissionId,
   });
 
-  logger.audit(
-    `${req.user.email} (id: ${req.user.sub}) added organisation ${organisationName} (id: ${organisationId}) to invitation for ${req.session.user.email} (id: ${invitationId})`,
-    {
-      type: "support",
-      subType: "user-invite-org",
-      userId: req.user.sub,
-      userEmail: req.user.email,
-      invitedUserEmail: req.session.user.email,
-      invitedOrganisation: organisationId,
-    },
-  );
+  const auditMessage = `${req.user.email} (id: ${req.user.sub}) added organisation ${organisationName} (id: ${organisationId}) to invitation for ${req.session.user.email} (id: inv-${invitationId})`;
+  const auditMeta = {
+    type: "support",
+    subType: "user-invite-org",
+    userId: req.user.sub,
+    userEmail: req.user.email,
+    editedUser: uid,
+    invitedUserEmail: req.session.user.email,
+    invitedOrganisation: organisationId,
+    organisationName,
+  };
+  logger.audit(auditMessage, auditMeta);
 };
 const addOrganisationToUser = async (uid, req) => {
   const { organisationId } = req.session.user;

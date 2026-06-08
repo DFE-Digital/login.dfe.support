@@ -18,10 +18,15 @@ const {
 const {
   getOrganisationLegacyRaw,
 } = require("login.dfe.api-client/organisations");
+const {
+  getInvitationOrganisationsRaw,
+} = require("login.dfe.api-client/invitations");
 
 let cachedServiceIds = {};
 let cachedServices = {};
 let cachedUsers = {};
+
+const INVITE_SUBTYPES = new Set(["invite-created", "user-invited"]);
 
 const getCachedUserById = async (userId, req) => {
   let key = `${userId}:${req.id}`;
@@ -35,6 +40,19 @@ const getCachedUserById = async (userId, req) => {
 const describeAuditEvent = async (audit, req) => {
   const isCurrentUser =
     audit.userId.toLowerCase() === req.params.uid.toLowerCase();
+
+  // Resolve the SUBJECT user's email for display (the invited/edited user, never
+  // the acting agent). New audit records carry the email in metadata, so this
+  // returns immediately without a lookup; only historical records written before
+  // the email was denormalised fall back to an id-based lookup by editedUser —
+  // the same pattern the user-org handlers below already use. The acting agent's
+  // email always comes straight from audit.userEmail, consistent with the
+  // existing user-org-permission-edited handler.
+  const resolveSubjectEmail = async (metaEmail, editedUser) =>
+    metaEmail ||
+    (editedUser
+      ? (await getCachedUserById(editedUser, req))?.email
+      : undefined);
 
   if (audit.type === "sign-in") {
     let description = "Sign-in";
@@ -130,24 +148,70 @@ const describeAuditEvent = async (audit, req) => {
   }
 
   if (audit.type === "support" && audit.subType === "user-invited") {
-    return "User invite sent from support console.";
-  }
-
-  if (audit.subType === "invite-created") {
-    switch (audit.type) {
-      case "approver":
-        return "Services/Invitation code created and sent.";
-      case "support":
-        return "Support/Invitation code created and sent.";
-      default:
-        break;
-    }
-
-    return audit.type;
+    const orgPart = audit.organisationName
+      ? ` to ${audit.organisationName}`
+      : "";
+    return `${audit.userEmail} invited ${audit.invitedUserEmail}${orgPart} from support console`;
   }
 
   if (audit.type === "approver" && audit.subType === "user-invited") {
-    return "User invite sent from Manage users (Services console).";
+    const invitedEmail = await resolveSubjectEmail(
+      audit.invitedUserEmail,
+      audit.invitedUser,
+    );
+    if (audit.userEmail && invitedEmail) {
+      return `${audit.userEmail} invited ${invitedEmail}`;
+    }
+    return audit.message;
+  }
+
+  if (
+    audit.type === "approver" &&
+    audit.subType === "invite-created" &&
+    audit.userEmail
+  ) {
+    const invitedEmail = await resolveSubjectEmail(
+      audit.invitedUserEmail,
+      audit.editedUser,
+    );
+    const orgPart = audit.organisationName
+      ? ` to ${audit.organisationName}`
+      : "";
+    return `${audit.userEmail} invited ${invitedEmail}${orgPart}`;
+  }
+
+  // Historical invite-created records (no denormalised userEmail) fall back to
+  // the stored message rather than rendering a blank agent.
+  if (
+    (audit.type === "support" || audit.type === "approver") &&
+    audit.subType === "invite-created"
+  ) {
+    return audit.message;
+  }
+
+  if (audit.type === "support" && audit.subType === "user-invite-org") {
+    const invitedEmail = await resolveSubjectEmail(
+      audit.invitedUserEmail,
+      audit.editedUser,
+    );
+    let orgName = audit.organisationName;
+    if (!orgName && audit.invitedOrganisation) {
+      orgName = (
+        await getOrganisationLegacyRaw({
+          organisationId: audit.invitedOrganisation,
+        })
+      )?.name;
+    }
+    const orgPart = orgName ? ` to ${orgName}` : "";
+    return `${audit.userEmail} invited ${invitedEmail}${orgPart}`;
+  }
+
+  if (audit.subType === "resent-invitation") {
+    const invitedEmail = await resolveSubjectEmail(
+      audit.invitedUserEmail,
+      audit.editedUser,
+    );
+    return `${audit.userEmail} resent invitation email to ${invitedEmail}`;
   }
 
   if (audit.type === "reset-password") {
@@ -166,8 +230,13 @@ const describeAuditEvent = async (audit, req) => {
       organisationId: organisationId.oldValue,
     });
     const viewedUser = await getCachedUserById(audit.editedUser, req);
-    return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
-      numericIdentifier: ${audit["numericIdentifier"]}, textIdentifier: ${audit["textIdentifier"]})`;
+    const numericId = audit["numericIdentifier"];
+    const textId = audit["textIdentifier"];
+    const legacyPart =
+      numericId && textId
+        ? ` legacyID: (numericIdentifier: ${numericId}, textIdentifier: ${textId})`
+        : "";
+    return `Deleted organisation: ${organisation.name} for user ${viewedUser.firstName} ${viewedUser.lastName}${legacyPart}`;
   }
   if (audit.type === "support" && audit.subType === "user-org") {
     const organisationId =
@@ -187,7 +256,23 @@ const describeAuditEvent = async (audit, req) => {
       audit.editedFields &&
       audit.editedFields.find((x) => x.name === "edited_permission");
     const viewedUser = await getCachedUserById(audit.editedUser, req);
-    return `Edited permission level to ${editedFields.newValue} for user ${viewedUser.firstName} ${viewedUser.lastName} in organisation ${editedFields.organisation}`;
+    return `${audit.userEmail || "Support agent"} edited permission to ${editedFields.newValue} for ${viewedUser.email} in organisation ${editedFields.organisation || ""}`;
+  }
+  if (
+    audit.type === "approver" &&
+    audit.subType === "user-org-permission-edited"
+  ) {
+    const editedFields =
+      audit.editedFields &&
+      audit.editedFields.find((x) => x.name === "edited_permission");
+    const editedEmail = await resolveSubjectEmail(
+      audit.editedUserEmail,
+      audit.editedUser,
+    );
+    const orgPart = audit.organisationName
+      ? ` in ${audit.organisationName}`
+      : "";
+    return `${audit.userEmail} edited permission to ${editedFields?.newValue} for ${editedEmail}${orgPart}`;
   }
   if (audit.type === "approver" && audit.subType === "user-org-deleted") {
     try {
@@ -203,8 +288,13 @@ const describeAuditEvent = async (audit, req) => {
         ? audit.editedUser.replace(/[""]+/g, "")
         : audit.editedUser;
       const viewedUser = await getCachedUserById(audit.editedUser, req);
-      return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
-        numericIdentifier: ${audit["numericIdentifier"]}, textIdentifier: ${audit["textIdentifier"]})`;
+      const numericId = audit["numericIdentifier"];
+      const textId = audit["textIdentifier"];
+      const legacyPart =
+        numericId && textId
+          ? ` legacyID: (numericIdentifier: ${numericId}, textIdentifier: ${textId})`
+          : "";
+      return `Deleted organisation: ${organisation.name} for user ${viewedUser.firstName} ${viewedUser.lastName}${legacyPart}`;
     } catch {
       return audit.message;
     }
@@ -243,9 +333,14 @@ const getAudit = async (req, res) => {
     const userStatus = await getUserStatusRaw({ userId: user.id });
     user.statusChangeReasons = userStatus ? userStatus.statusChangeReasons : [];
   }
-  const userOrganisations = await getUserOrganisationsWithServicesRaw({
-    userId: req.params.uid,
-  });
+  const userOrganisations =
+    (req.params.uid.startsWith("inv-")
+      ? await getInvitationOrganisationsRaw({
+          invitationId: req.params.uid.substr(4),
+        })
+      : await getUserOrganisationsWithServicesRaw({
+          userId: req.params.uid,
+        })) ?? [];
   req.session.type = "audit";
   const pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
   if (isNaN(pageNumber) || pageNumber < 1) {
@@ -314,6 +409,34 @@ const getAudit = async (req, res) => {
     });
   }
 
+  const isInvitation = req.params.uid.startsWith("inv-");
+  const hasInviteEvent = audits.some((a) =>
+    INVITE_SUBTYPES.has(a.event.subType),
+  );
+  // Only add fallback on single-page results — multi-page users are assumed to
+  // have a real invite event on a later page that hasn't loaded yet.
+  if (
+    isInvitation &&
+    pageNumber === 1 &&
+    !hasInviteEvent &&
+    pageOfAudits.numberOfPages <= 1 &&
+    user.createdAt
+  ) {
+    audits.push({
+      timestamp: new Date(user.createdAt),
+      formattedTimestamp: dateFormat(user.createdAt, "longDateFormat"),
+      event: {
+        type: "invitation-code",
+        subType: "post-invitation",
+        description: "Invitation created",
+      },
+      service: null,
+      organisation: null,
+      result: true,
+      user: { name: "" },
+    });
+  }
+
   sendResult(req, res, "users/views/audit", {
     csrfToken: req.csrfToken(),
     layout: "sharedViews/layout.ejs",
@@ -329,6 +452,7 @@ const getAudit = async (req, res) => {
     numberOfPages: pageOfAudits.numberOfPages,
     page: pageNumber,
     totalNumberOfResults: pageOfAudits.numberOfRecords,
+    isInvitation: req.params.uid.startsWith("inv-"),
   });
 };
 
