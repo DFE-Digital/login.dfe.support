@@ -280,8 +280,9 @@ const describeAuditEvent = async (audit, req) => {
       const organisationId =
         metaData.editedFields &&
         metaData.editedFields.find((x) => x.name === "new_organisation");
+      const orgId = organisationId?.oldValue ?? audit.organisationId;
       const organisation = await getOrganisationLegacyRaw({
-        organisationId: organisationId.oldValue,
+        organisationId: orgId,
       });
       // Escaping audit.editedUser double quotes bug
       audit.editedUser = /["]/.test(audit.editedUser)
