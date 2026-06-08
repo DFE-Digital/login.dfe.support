@@ -1571,4 +1571,49 @@ describe("when getting users audit details", () => {
       );
     });
   });
+
+  describe("approver/user-org-deleted without editedFields", () => {
+    it("shows readable description when editedFields is absent but organisationId is set", async () => {
+      getOrganisationLegacyRaw.mockResolvedValue({ name: "Test School" });
+      getUserDetailsById.mockResolvedValue({
+        id: "user-abc",
+        firstName: "Jane",
+        lastName: "Doe",
+        email: "jane@example.com",
+        status: { id: 1 },
+        loginsInPast12Months: { successful: 0 },
+        lastLogin: null,
+      });
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [
+          {
+            id: "audit-1",
+            type: "approver",
+            subType: "user-org-deleted",
+            userId: "user-abc",
+            message:
+              "someone@example.com removed org Test School for user jane@example.com numeric Identifier and textIdentifier(null)",
+            timestamp: "2026-06-01T10:00:00.000Z",
+            organisationId: "org-uuid-123",
+            editedFields: undefined,
+            editedUser: "user-abc",
+            success: true,
+          },
+        ],
+        numberOfPages: 1,
+        numberOfRecords: 1,
+      });
+
+      await getAudit(req, res);
+
+      const audits = sendResult.mock.calls[0][3].audits;
+      expect(audits[0].event.description).toBe(
+        "Deleted organisation: Test School for user Jane Doe",
+      );
+      expect(audits[0].event.description).not.toContain("null");
+      expect(getOrganisationLegacyRaw).toHaveBeenCalledWith({
+        organisationId: "org-uuid-123",
+      });
+    });
+  });
 });
