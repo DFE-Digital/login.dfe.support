@@ -11,6 +11,9 @@ jest.mock("./../../../src/infrastructure/audit");
 jest.mock("login.dfe.api-client/users");
 jest.mock("ioredis");
 jest.mock("login.dfe.api-client/organisations");
+jest.mock("login.dfe.api-client/invitations", () => ({
+  getInvitationOrganisationsRaw: jest.fn(),
+}));
 
 const { getUserDetailsById } = require("./../../../src/app/users/utils");
 const { sendResult } = require("./../../../src/infrastructure/utils");
@@ -27,6 +30,9 @@ const {
 const {
   getOrganisationLegacyRaw,
 } = require("login.dfe.api-client/organisations");
+const {
+  getInvitationOrganisationsRaw,
+} = require("login.dfe.api-client/invitations");
 
 const organisationId = "org-1";
 
@@ -106,6 +112,9 @@ describe("when getting users audit details", () => {
 
     getUserOrganisationsWithServicesRaw.mockReset();
     getUserOrganisationsWithServicesRaw.mockResolvedValue([]);
+
+    getInvitationOrganisationsRaw.mockReset();
+    getInvitationOrganisationsRaw.mockResolvedValue([]);
 
     sendResult.mockReset();
 
@@ -852,6 +861,713 @@ describe("when getting users audit details", () => {
 
       await expect(getAudit(req, res)).rejects.toThrow(
         "Cache corruption detected",
+      );
+    });
+  });
+
+  it("should pass isInvitation: true to the view model for invited users", async () => {
+    req.params.uid = "inv-user1";
+    getUserDetailsById.mockImplementation(async () => ({
+      id: "inv-user1",
+      firstName: "Jane",
+      lastName: "Doe",
+      email: "jane@example.com",
+      lastLogin: null,
+      status: { id: -1, description: "Invited" },
+      createdAt: "2025-01-01T00:00:00.000Z",
+    }));
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [],
+      numberOfPages: 1,
+      numberOfRecords: 0,
+    });
+    await getAudit(req, res);
+    expect(sendResult.mock.calls[0][3]).toMatchObject({ isInvitation: true });
+  });
+
+  it("should inject a fallback entry when invited user has no audit records", async () => {
+    req.params.uid = "inv-user1";
+    req.query.page = 1;
+    getUserDetailsById.mockImplementation(async () => ({
+      id: "inv-user1",
+      firstName: "Jane",
+      lastName: "Doe",
+      email: "jane@example.com",
+      lastLogin: null,
+      status: { id: -1, description: "Invited" },
+      createdAt: "2025-01-01T00:00:00.000Z",
+    }));
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [],
+      numberOfPages: 1,
+      numberOfRecords: 0,
+    });
+    await getAudit(req, res);
+    const auditRows = sendResult.mock.calls[0][3].audits;
+    expect(auditRows).toHaveLength(1);
+    expect(auditRows[0].event.description).toBe("Invitation created");
+  });
+
+  it("should display clean message for resent-invitation events (no IDs)", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          ...createSimpleAuditRecord(
+            "support",
+            "resent-invitation",
+            "raw msg (id: UUID)",
+          ),
+          userEmail: "agent@edu.gov.uk",
+          invitedUserEmail: "user@example.com",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe(
+      "agent@edu.gov.uk resent invitation email to user@example.com",
+    );
+    expect(desc).not.toMatch(/\bid:/);
+  });
+
+  it("should display audit.message for support/invite-created (not a hardcoded string)", async () => {
+    const msg = `support invited someone@example.com to Test Org (id: org-1) (id: inv-abc)`;
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [createSimpleAuditRecord("support", "invite-created", msg)],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const auditRows = sendResult.mock.calls[0][3].audits;
+    expect(auditRows[0].event.description).toBe(msg);
+  });
+
+  it("should display metadata-based message for approver/user-org-permission-edited (no IDs)", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          ...createSimpleAuditRecord(
+            "approver",
+            "user-org-permission-edited",
+            "raw (id: UUID)",
+          ),
+          userEmail: "agent@edu.gov.uk",
+          editedUserEmail: "user@example.com",
+          organisationName: "Test School",
+          editedFields: [{ name: "edited_permission", newValue: "Approver" }],
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe(
+      "agent@edu.gov.uk edited permission to Approver for user@example.com in Test School",
+    );
+    expect(desc).not.toMatch(/\bid:/);
+  });
+
+  it.each([["support"], ["approver"]])(
+    "should omit legacyID from %s/user-org-deleted when identifiers are absent",
+    async (type) => {
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [
+          {
+            ...createSimpleAuditRecord(type, "user-org-deleted", "raw msg"),
+            editedFields: [
+              {
+                name: "new_organisation",
+                oldValue: "org-1",
+                newValue: undefined,
+              },
+            ],
+            meta: JSON.stringify({
+              editedFields: [
+                {
+                  name: "new_organisation",
+                  oldValue: "org-1",
+                  newValue: undefined,
+                },
+              ],
+              editedUser: "edited-user1",
+            }),
+          },
+        ],
+        numberOfPages: 1,
+        numberOfRecords: 1,
+      });
+      await getAudit(req, res);
+      const auditRows = sendResult.mock.calls[0][3].audits;
+      expect(auditRows[0].event.description).not.toContain("legacyID");
+      expect(auditRows[0].event.description).not.toContain("undefined");
+    },
+  );
+
+  it("should display clean message for support/user-invite-org (no IDs)", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          ...createSimpleAuditRecord(
+            "support",
+            "user-invite-org",
+            "raw msg (id: UUID)",
+          ),
+          userEmail: "agent@edu.gov.uk",
+          invitedUserEmail: "user@example.com",
+          organisationName: "Test School",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe(
+      "agent@edu.gov.uk invited user@example.com to Test School",
+    );
+    expect(desc).not.toMatch(/\bid:/);
+  });
+
+  it("should pass an empty array to the view when getInvitationOrganisationsRaw returns null", async () => {
+    req.params.uid = "inv-user1";
+    getUserDetailsById.mockImplementation(async () => ({
+      id: "inv-user1",
+      firstName: "Jane",
+      lastName: "Doe",
+      email: "jane@example.com",
+      lastLogin: null,
+      status: { id: -1, description: "Invited" },
+      createdAt: "2025-01-01T00:00:00.000Z",
+    }));
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [],
+      numberOfPages: 1,
+      numberOfRecords: 0,
+    });
+    getInvitationOrganisationsRaw.mockResolvedValue(null);
+    await getAudit(req, res);
+    expect(sendResult.mock.calls[0][3].organisations).toEqual([]);
+  });
+
+  it("should use getInvitationOrganisationsRaw (not getUserOrganisationsWithServicesRaw) for invited users", async () => {
+    req.params.uid = "inv-user1";
+    getUserDetailsById.mockImplementation(async () => ({
+      id: "inv-user1",
+      firstName: "Jane",
+      lastName: "Doe",
+      email: "jane@example.com",
+      lastLogin: null,
+      status: { id: -1, description: "Invited" },
+      createdAt: "2025-01-01T00:00:00.000Z",
+    }));
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [],
+      numberOfPages: 1,
+      numberOfRecords: 0,
+    });
+    await getAudit(req, res);
+    expect(getInvitationOrganisationsRaw).toHaveBeenCalledWith({
+      invitationId: "user1",
+    });
+    expect(getUserOrganisationsWithServicesRaw).not.toHaveBeenCalled();
+  });
+
+  it("should display clean message for support/user-invited with org (no IDs)", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          ...createSimpleAuditRecord(
+            "support",
+            "user-invited",
+            "raw msg with (id: UUID)",
+          ),
+          userEmail: "agent@edu.gov.uk",
+          invitedUserEmail: "user@example.com",
+          organisationName: "Test School",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe(
+      "agent@edu.gov.uk invited user@example.com to Test School from support console",
+    );
+    expect(desc).not.toMatch(/\bid:/);
+  });
+
+  it("should display clean message for support/user-invited without org", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          ...createSimpleAuditRecord("support", "user-invited", "raw"),
+          userEmail: "agent@edu.gov.uk",
+          invitedUserEmail: "user@example.com",
+          organisationName: undefined,
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe(
+      "agent@edu.gov.uk invited user@example.com from support console",
+    );
+  });
+
+  it("should display clean message for approver/invite-created with org (no IDs)", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          ...createSimpleAuditRecord(
+            "approver",
+            "invite-created",
+            "raw (id: UUID)",
+          ),
+          userEmail: "agent@edu.gov.uk",
+          invitedUserEmail: "user@example.com",
+          organisationName: "Test School",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe(
+      "agent@edu.gov.uk invited user@example.com to Test School",
+    );
+    expect(desc).not.toMatch(/\bid:/);
+  });
+
+  it("falls back to the stored message for historical approver/invite-created lacking userEmail (no undefined agent)", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "approver",
+          subType: "invite-created",
+          userId: "approver-1",
+          editedUser: "inv-abc",
+          level: "audit",
+          message: "legacy invite-created message",
+          timestamp: "2025-01-29T17:31:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe("legacy invite-created message");
+    expect(desc).not.toContain("undefined");
+  });
+
+  it("should display clean message for approver/user-invited with invitedUserEmail present", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          ...createSimpleAuditRecord(
+            "approver",
+            "user-invited",
+            "raw msg (id: UUID)",
+          ),
+          userEmail: "agent@edu.gov.uk",
+          invitedUserEmail: "user@example.com",
+          invitedUser: "inv-abc",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe("agent@edu.gov.uk invited user@example.com");
+    expect(desc).not.toMatch(/\bid:/);
+  });
+
+  it("resolves invited email via lookup for approver/user-invited lacking invitedUserEmail", async () => {
+    getUserDetailsById.mockImplementation(async (userId) => ({
+      id: userId,
+      email: userId === "inv-abc" ? "invited@example.com" : "agent@edu.gov.uk",
+      firstName: "Test",
+      lastName: "User",
+      status: { id: -1, description: "Invited" },
+    }));
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "approver",
+          subType: "user-invited",
+          userId: "user1",
+          userEmail: "agent@edu.gov.uk",
+          invitedUser: "inv-abc",
+          level: "audit",
+          message: "fallback message",
+          timestamp: "2025-01-29T17:31:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe("agent@edu.gov.uk invited invited@example.com");
+  });
+
+  it("falls back to audit.message for approver/user-invited when userEmail is missing", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "approver",
+          subType: "user-invited",
+          userId: "user1",
+          invitedUser: "inv-abc",
+          level: "audit",
+          message: "legacy approver/user-invited message with org info",
+          timestamp: "2025-01-29T17:31:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe("legacy approver/user-invited message with org info");
+    expect(desc).not.toContain("undefined");
+  });
+
+  it("falls back to audit.message for approver/user-invited when invitedEmail cannot be resolved", async () => {
+    getUserDetailsById.mockImplementation(async (userId) => ({
+      id: userId,
+      email: "agent@edu.gov.uk",
+      firstName: "Test",
+      lastName: "User",
+      status: { id: 1, description: "Activated" },
+    }));
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "approver",
+          subType: "user-invited",
+          userId: "user1",
+          userEmail: "agent@edu.gov.uk",
+          // no invitedUserEmail, no invitedUser
+          level: "audit",
+          message: "historical message with full context",
+          timestamp: "2025-01-29T17:31:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe("historical message with full context");
+    expect(desc).not.toContain("undefined");
+  });
+
+  it("resolves invited email via lookup for historical support/resent-invitation lacking invitedUserEmail", async () => {
+    getUserDetailsById.mockImplementation(async (userId) => ({
+      id: userId,
+      email: userId === "inv-abc" ? "invited@example.com" : "other@example.com",
+      firstName: "Test",
+      lastName: "User",
+      status: { id: 1, description: "Activated" },
+    }));
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "support",
+          subType: "resent-invitation",
+          userId: "agent-1",
+          userEmail: "agent@edu.gov.uk",
+          editedUser: "inv-abc",
+          level: "audit",
+          message: "legacy resent (id: UUID)",
+          timestamp: "2025-01-29T17:31:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe(
+      "agent@edu.gov.uk resent invitation email to invited@example.com",
+    );
+    expect(desc).not.toContain("undefined");
+    expect(desc).not.toMatch(/\bid:/);
+  });
+
+  it("resolves edited email and omits org for historical approver/user-org-permission-edited lacking metadata", async () => {
+    getUserDetailsById.mockImplementation(async (userId) => ({
+      id: userId,
+      email: userId === "active-1" ? "edited@example.com" : "other@example.com",
+      firstName: "Test",
+      lastName: "User",
+      status: { id: 1, description: "Activated" },
+    }));
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "approver",
+          subType: "user-org-permission-edited",
+          userId: "approver-1",
+          userEmail: "agent@edu.gov.uk",
+          editedUser: "active-1",
+          editedFields: [{ name: "edited_permission", newValue: "Approver" }],
+          level: "audit",
+          message: "legacy permission (id: UUID)",
+          timestamp: "2025-01-29T17:31:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe(
+      "agent@edu.gov.uk edited permission to Approver for edited@example.com",
+    );
+    expect(desc).not.toContain("undefined");
+    expect(desc).not.toMatch(/\bid:/);
+  });
+
+  it("resolves org from invitedOrganisation id for historical support/user-invite-org lacking organisationName", async () => {
+    getOrganisationLegacyRaw.mockResolvedValue({
+      id: "org-99",
+      name: "Resolved Org",
+    });
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "support",
+          subType: "user-invite-org",
+          userId: "agent-1",
+          userEmail: "agent@edu.gov.uk",
+          invitedUserEmail: "user@example.com",
+          invitedOrganisation: "org-99",
+          editedUser: "inv-abc",
+          level: "audit",
+          message: "legacy add-org (id: UUID)",
+          timestamp: "2025-01-29T17:31:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe(
+      "agent@edu.gov.uk invited user@example.com to Resolved Org",
+    );
+    expect(desc).not.toContain("undefined");
+    expect(desc).not.toMatch(/\bid:/);
+  });
+
+  describe("synthetic 'Invitation created' fallback event", () => {
+    const inviteUserMock = {
+      id: "inv-user1",
+      firstName: "Jane",
+      lastName: "Doe",
+      email: "jane@example.com",
+      lastLogin: null,
+      status: { id: -1, description: "Invited" },
+      createdAt: "2025-01-01T00:00:00.000Z",
+    };
+
+    beforeEach(() => {
+      req.params.uid = "inv-user1";
+      req.query.page = 1;
+      getUserDetailsById.mockImplementation(async () => inviteUserMock);
+      getInvitationOrganisationsRaw.mockResolvedValue([]);
+    });
+
+    it("fires when: invitation user, page 1, no invite-type events, single page, createdAt present", async () => {
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [
+          {
+            type: "support",
+            subType: "user-view",
+            userId: "inv-user1",
+            level: "audit",
+            message: "Support agent viewed this user",
+            timestamp: "2025-03-01T10:00:00.000Z",
+          },
+        ],
+        numberOfPages: 1,
+        numberOfRecords: 1,
+      });
+
+      await getAudit(req, res);
+
+      const auditRows = sendResult.mock.calls[0][3].audits;
+      const syntheticEvent = auditRows.find(
+        (a) => a.event.description === "Invitation created",
+      );
+      expect(syntheticEvent).toBeDefined();
+      expect(syntheticEvent.event.type).toBe("invitation-code");
+      expect(syntheticEvent.event.subType).toBe("post-invitation");
+      expect(syntheticEvent.result).toBe(true);
+      expect(syntheticEvent.service).toBeNull();
+      expect(syntheticEvent.organisation).toBeNull();
+      expect(syntheticEvent.user).toEqual({ name: "" });
+      expect(syntheticEvent.timestamp).toEqual(
+        new Date("2025-01-01T00:00:00.000Z"),
+      );
+    });
+
+    it("does NOT fire when: invitation user has an invite-created event in audits", async () => {
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [
+          {
+            type: "approver",
+            subType: "invite-created",
+            userId: "approver-1",
+            userEmail: "approver@edu.gov.uk",
+            invitedUserEmail: "jane@example.com",
+            organisationName: "Test Org",
+            level: "audit",
+            message: "approver@edu.gov.uk invited jane@example.com to Test Org",
+            timestamp: "2025-01-01T00:00:00.000Z",
+          },
+        ],
+        numberOfPages: 1,
+        numberOfRecords: 1,
+      });
+
+      await getAudit(req, res);
+
+      const auditRows = sendResult.mock.calls[0][3].audits;
+      const syntheticEvent = auditRows.find(
+        (a) => a.event.description === "Invitation created",
+      );
+      expect(syntheticEvent).toBeUndefined();
+    });
+
+    it("does NOT fire when: invitation user has a user-invited event in audits", async () => {
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [
+          {
+            type: "approver",
+            subType: "user-invited",
+            userId: "approver-1",
+            userEmail: "approver@edu.gov.uk",
+            invitedUserEmail: "jane@example.com",
+            invitedUser: "inv-user1",
+            level: "audit",
+            message: "approver@edu.gov.uk invited jane@example.com",
+            timestamp: "2025-01-01T00:00:00.000Z",
+          },
+        ],
+        numberOfPages: 1,
+        numberOfRecords: 1,
+      });
+
+      await getAudit(req, res);
+
+      const auditRows = sendResult.mock.calls[0][3].audits;
+      const syntheticEvent = auditRows.find(
+        (a) => a.event.description === "Invitation created",
+      );
+      expect(syntheticEvent).toBeUndefined();
+    });
+
+    it("does NOT fire when: multiple pages exist (numberOfPages > 1) even if no invite event on page 1", async () => {
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [
+          {
+            type: "support",
+            subType: "user-view",
+            userId: "inv-user1",
+            level: "audit",
+            message: "Support agent viewed this user",
+            timestamp: "2025-03-01T10:00:00.000Z",
+          },
+        ],
+        numberOfPages: 2,
+        numberOfRecords: 25,
+      });
+
+      await getAudit(req, res);
+
+      const auditRows = sendResult.mock.calls[0][3].audits;
+      const syntheticEvent = auditRows.find(
+        (a) => a.event.description === "Invitation created",
+      );
+      expect(syntheticEvent).toBeUndefined();
+    });
+
+    it("does NOT fire when: not an invitation user (regular uid not starting with inv-)", async () => {
+      req.params.uid = "user1";
+      getUserDetailsById.mockImplementation(async (userId) => ({
+        id: userId,
+        firstName: "Test",
+        lastName: "User",
+        status: { id: 1, description: "Activated" },
+      }));
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [],
+        numberOfPages: 1,
+        numberOfRecords: 0,
+      });
+
+      await getAudit(req, res);
+
+      const auditRows = sendResult.mock.calls[0][3].audits;
+      const syntheticEvent = auditRows.find(
+        (a) => a.event.description === "Invitation created",
+      );
+      expect(syntheticEvent).toBeUndefined();
+    });
+
+    it("does NOT fire when: user.createdAt is absent/undefined", async () => {
+      getUserDetailsById.mockImplementation(async () => ({
+        ...inviteUserMock,
+        createdAt: undefined,
+      }));
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [],
+        numberOfPages: 1,
+        numberOfRecords: 0,
+      });
+
+      await getAudit(req, res);
+
+      const auditRows = sendResult.mock.calls[0][3].audits;
+      const syntheticEvent = auditRows.find(
+        (a) => a.event.description === "Invitation created",
+      );
+      expect(syntheticEvent).toBeUndefined();
+    });
+
+    it("does NOT fire when: page is greater than 1", async () => {
+      req.params.uid = "inv-abc123";
+      req.query = { page: "2" };
+      getUserDetailsById.mockResolvedValue({
+        id: "inv-abc123",
+        firstName: "Jane",
+        lastName: "Doe",
+        email: "jane@example.com",
+        status: { id: -1, description: "Invited" },
+        loginsInPast12Months: { successful: 0 },
+        lastLogin: null,
+        createdAt: "2025-01-15T10:00:00.000Z",
+      });
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [],
+        numberOfRecords: 0,
+        numberOfPages: 1,
+      });
+      await getAudit(req, res);
+      const audits = sendResult.mock.calls[0][3].audits;
+      expect(audits.some((a) => a.event.subType === "post-invitation")).toBe(
+        false,
       );
     });
   });

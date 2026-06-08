@@ -11,6 +11,7 @@ jest.mock("ioredis");
 jest.mock("login.dfe.api-client/users");
 
 const { getUserDetailsById } = require("../../../src/app/users/utils");
+const logger = require("../../../src/infrastructure/logger");
 const {
   getPendingRequestsRaw,
   getUserOrganisationsWithServicesRaw,
@@ -358,5 +359,19 @@ describe("when getting users organisation details", () => {
       },
       statusChangeReasons: [],
     });
+  });
+
+  it("should write a single user-view audit event on the landing tab", async () => {
+    await getOrganisations(req, res);
+    expect(logger.audit).toHaveBeenCalledTimes(1);
+    expect(logger.audit).toHaveBeenCalledWith(
+      expect.stringContaining("viewed user"),
+      expect.objectContaining({
+        type: "support",
+        subType: "user-view",
+        userId: "user1",
+        userEmail: "super.user@unit.test",
+      }),
+    );
   });
 });

@@ -5,6 +5,7 @@ const {
   sendResult,
   isInternalEntraUser,
 } = require("../../infrastructure/utils");
+const logger = require("../../infrastructure/logger");
 const { getUserDetailsById } = require("./utils");
 const { dateFormat } = require("../helpers/dateFormatterHelper");
 const {
@@ -16,7 +17,6 @@ const {
   getUsersRaw,
   getUserStatusRaw,
 } = require("login.dfe.api-client/users");
-const logger = require("../../infrastructure/logger");
 
 const getApproverDetails = async (organisations) => {
   const allApproverIds = flatten(organisations.map((org) => org.approvers));
@@ -137,8 +137,12 @@ const action = async (req, res) => {
     req.session.params.searchType = "users";
   }
 
+  // Log the profile view on the landing (Organisations) tab so every view of a
+  // user is recorded exactly once, regardless of status (active, invited,
+  // deactivated). Logged here rather than on the Services tab because this is the
+  // tab a user always lands on when opened.
   logger.audit(`${req.user.email} viewed user ${user.email}`, {
-    type: "organisations",
+    type: "support",
     subType: "user-view",
     userId: req.user.sub,
     userEmail: req.user.email,
