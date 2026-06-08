@@ -160,7 +160,10 @@ const describeAuditEvent = async (audit, req) => {
       audit.invitedUser,
     );
     if (audit.userEmail && invitedEmail) {
-      return `${audit.userEmail} invited ${invitedEmail}`;
+      const orgPart = audit.organisationName
+        ? ` to ${audit.organisationName}`
+        : "";
+      return `${audit.userEmail} invited ${invitedEmail}${orgPart}`;
     }
     return audit.message;
   }
