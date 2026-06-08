@@ -137,17 +137,22 @@ const action = async (req, res) => {
     req.session.params.searchType = "users";
   }
 
-  // Log the profile view on the landing (Organisations) tab so every view of a
-  // user is recorded exactly once, regardless of status (active, invited,
-  // deactivated). Logged here rather than on the Services tab because this is the
-  // tab a user always lands on when opened.
-  logger.audit(`${req.user.email} viewed user ${user.email}`, {
-    type: "support",
-    subType: "user-view",
-    userId: req.user.sub,
-    userEmail: req.user.email,
-    viewedUser: user.id,
-  });
+  // Log the profile view once per session per user — deduplicated so that
+  // navigating back to the Organisations tab after an action does not create
+  // a second entry for the same session.
+  if (!req.session.viewedUserAuditIds?.includes(user.id)) {
+    logger.audit(`${req.user.email} viewed user ${user.email}`, {
+      type: "support",
+      subType: "user-view",
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      viewedUser: user.id,
+    });
+    req.session.viewedUserAuditIds = [
+      ...(req.session.viewedUserAuditIds ?? []),
+      user.id,
+    ];
+  }
 
   sendResult(req, res, "users/views/organisations", {
     csrfToken: req.csrfToken(),
