@@ -416,6 +416,7 @@ const getAudit = async (req, res) => {
   );
   // Only add fallback on single-page results — multi-page users are assumed to
   // have a real invite event on a later page that hasn't loaded yet.
+  let totalNumberOfResults = pageOfAudits.numberOfRecords;
   if (
     isInvitation &&
     pageNumber === 1 &&
@@ -436,6 +437,7 @@ const getAudit = async (req, res) => {
       result: true,
       user: { name: "" },
     });
+    totalNumberOfResults += 1;
   }
 
   sendResult(req, res, "users/views/audit", {
@@ -452,7 +454,7 @@ const getAudit = async (req, res) => {
     audits,
     numberOfPages: pageOfAudits.numberOfPages,
     page: pageNumber,
-    totalNumberOfResults: pageOfAudits.numberOfRecords,
+    totalNumberOfResults,
     isInvitation: req.params.uid.startsWith("inv-"),
   });
 };
