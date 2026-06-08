@@ -1570,6 +1570,50 @@ describe("when getting users audit details", () => {
         false,
       );
     });
+
+    it("increments totalNumberOfResults by 1 when synthetic event is added", async () => {
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [
+          {
+            type: "support",
+            subType: "user-view",
+            userId: "inv-user1",
+            level: "audit",
+            message: "Support agent viewed this user",
+            timestamp: "2025-03-01T10:00:00.000Z",
+          },
+        ],
+        numberOfPages: 1,
+        numberOfRecords: 1,
+      });
+
+      await getAudit(req, res);
+
+      expect(sendResult.mock.calls[0][3].totalNumberOfResults).toBe(2);
+    });
+
+    it("does NOT increment totalNumberOfResults when synthetic event is not added", async () => {
+      getPageOfUserAudits.mockResolvedValue({
+        audits: [
+          {
+            type: "approver",
+            subType: "invite-created",
+            userId: "approver-1",
+            userEmail: "approver@edu.gov.uk",
+            invitedUserEmail: "jane@example.com",
+            level: "audit",
+            message: "approver@edu.gov.uk invited jane@example.com",
+            timestamp: "2025-01-01T00:00:00.000Z",
+          },
+        ],
+        numberOfPages: 1,
+        numberOfRecords: 1,
+      });
+
+      await getAudit(req, res);
+
+      expect(sendResult.mock.calls[0][3].totalNumberOfResults).toBe(1);
+    });
   });
 
   describe("approver/user-org-deleted without editedFields", () => {
