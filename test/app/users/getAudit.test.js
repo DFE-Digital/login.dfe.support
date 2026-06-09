@@ -403,6 +403,93 @@ describe("when getting users audit details", () => {
     expect(auditRows[0].event.description).toBe(message);
   });
 
+  it("should describe support/user-invite-editemail as a friendly email change", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "support",
+          subType: "user-invite-editemail",
+          userId: "user1",
+          userEmail: "agent@test.com",
+          editedUser: "user1",
+          editedFields: [
+            {
+              name: "new_email",
+              oldValue: "old@test.com",
+              newValue: "new@test.com",
+            },
+          ],
+          timestamp: "2025-01-29T17:31:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+
+    const description = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(description).toBe(
+      "agent@test.com changed email from old@test.com to new@test.com",
+    );
+  });
+
+  it("should describe support/user-editemail without embedding internal UUIDs", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "support",
+          subType: "user-editemail",
+          userId: "user1",
+          userEmail: "agent@test.com",
+          editedUser: "user1",
+          editedFields: [
+            {
+              name: "new_email",
+              oldValue: "old@test.com",
+              newValue: "new@test.com",
+            },
+          ],
+          message:
+            "agent@test.com (id: agent-uuid) initiated a change of email for old@test.com (id: user-uuid) to new@test.com",
+          timestamp: "2025-01-29T17:31:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+
+    const description = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(description).toBe(
+      "agent@test.com changed email from old@test.com to new@test.com",
+    );
+  });
+
+  it("should describe support/user-edit with given_name and family_name change as updated name", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "support",
+          subType: "user-edit",
+          userId: "user1",
+          userEmail: "agent@test.com",
+          editedUser: "user1",
+          editedFields: [
+            { name: "given_name", oldValue: "John", newValue: "Jonathan" },
+            { name: "family_name", oldValue: "Doe", newValue: "Smith" },
+          ],
+          timestamp: "2025-01-29T17:31:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+
+    const description = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(description).toBe("agent@test.com updated name to Jonathan Smith");
+  });
+
   it("then it should include page number in model", async () => {
     await getAudit(req, res);
 

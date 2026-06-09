@@ -82,7 +82,6 @@ const describeAuditEvent = async (audit, req) => {
     "user-service-updated",
     "org-edit",
     "rejected-org",
-    "user-editemail",
     "user-view",
     "access-request",
     "service-create",
@@ -123,7 +122,29 @@ const describeAuditEvent = async (audit, req) => {
       const newStatus = mapUserStatus(editedStatusTo.newValue);
       return newStatus.description;
     }
+    const givenField = audit.editedFields?.find((x) => x.name === "given_name");
+    const familyField = audit.editedFields?.find(
+      (x) => x.name === "family_name",
+    );
+    if (givenField || familyField) {
+      const newFirst = givenField?.newValue ?? viewedUser?.firstName ?? "";
+      const newLast = familyField?.newValue ?? viewedUser?.lastName ?? "";
+      const fullName = [newFirst, newLast].filter(Boolean).join(" ");
+      return `${audit.userEmail} updated name to ${fullName}`;
+    }
     return "Edited user";
+  }
+
+  if (
+    audit.type === "support" &&
+    (audit.subType === "user-editemail" ||
+      audit.subType === "user-invite-editemail")
+  ) {
+    const emailField = audit.editedFields?.find((x) => x.name === "new_email");
+    if (!emailField) return audit.message || "Changed email";
+    const oldEmail = emailField.oldValue || "";
+    const newEmail = emailField.newValue || "";
+    return `${audit.userEmail} changed email from ${oldEmail} to ${newEmail}`;
   }
 
   if (audit.subType === "user-search") {

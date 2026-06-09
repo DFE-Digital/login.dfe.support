@@ -14,6 +14,7 @@ jest.mock("login.dfe.api-client/users");
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const { getPendingRequestsRaw } = require("login.dfe.api-client/users");
 const getConfirmAssociateOrganisation = require("./../../../src/app/users/getConfirmAssociateOrganisation");
+const logger = require("./../../../src/infrastructure/logger");
 
 jest.mock("login.dfe.jobs-client");
 jest.mock("login.dfe.api-client/services");
@@ -154,5 +155,19 @@ describe("when confirming new organisation association", () => {
     expect(sendUserAddedToOrganisationStub.mock.calls[0][3]).toBe(
       expectedOrgName,
     );
+  });
+
+  it("should include organisationId in audit payload when adding organisation to an invitation", async () => {
+    req.params.uid = "inv-user1";
+    logger.audit.mockReset();
+
+    await getConfirmAssociateOrganisation(req, res);
+
+    expect(logger.audit.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls[0][1]).toMatchObject({
+      type: "support",
+      subType: "user-invite-org",
+      organisationId: "org1",
+    });
   });
 });

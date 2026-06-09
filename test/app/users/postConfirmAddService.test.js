@@ -285,6 +285,23 @@ describe("when adding new services to a user", () => {
     });
   });
 
+  it("should include serviceId in audit payload when updating a service", async () => {
+    req.session.user.isAddService = false;
+    logger.audit.mockReset();
+
+    await postConfirmAddService(req, res);
+
+    const serviceUpdatedCall = logger.audit.mock.calls.find(
+      (call) => call[1]?.subType === "user-service-updated",
+    );
+    expect(serviceUpdatedCall).toBeDefined();
+    expect(serviceUpdatedCall[1]).toMatchObject({
+      type: "support",
+      subType: "user-service-updated",
+      serviceId: req.session.user.services[0].serviceId,
+    });
+  });
+
   it("then it should redirect to services tab", async () => {
     await postConfirmAddService(req, res);
 
