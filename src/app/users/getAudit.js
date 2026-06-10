@@ -28,6 +28,9 @@ let cachedUsers = {};
 
 const INVITE_SUBTYPES = new Set(["invite-created", "user-invited"]);
 
+const sanitiseMessage = (msg) =>
+  msg ? msg.replace(/\s*\(id:\s*[^)]+\)/g, "").trim() : msg;
+
 const getCachedUserById = async (userId, req) => {
   let key = `${userId}:${req.id}`;
   if (!(key in cachedUsers)) {
@@ -97,7 +100,7 @@ const describeAuditEvent = async (audit, req) => {
   // The default SHOULD be audit.message, until the work is done to make this happen
   // any new audit subTypes should be added to this to make the switch easier.
   if (AUDIT_MESSAGE_SUBTYPES.has(audit.subType)) {
-    return audit.message;
+    return sanitiseMessage(audit.message);
   }
 
   if (audit.type === "support" && audit.subType === "user-edit") {
@@ -141,7 +144,7 @@ const describeAuditEvent = async (audit, req) => {
       audit.subType === "user-invite-editemail")
   ) {
     const emailField = audit.editedFields?.find((x) => x.name === "new_email");
-    if (!emailField) return audit.message || "Changed email";
+    if (!emailField) return sanitiseMessage(audit.message) || "Changed email";
     const oldEmail = emailField.oldValue || "";
     const newEmail = emailField.newValue || "";
     return `${audit.userEmail} changed email from ${oldEmail} to ${newEmail}`;
@@ -186,7 +189,7 @@ const describeAuditEvent = async (audit, req) => {
         : "";
       return `${audit.userEmail} invited ${invitedEmail}${orgPart}`;
     }
-    return audit.message;
+    return sanitiseMessage(audit.message);
   }
 
   if (
@@ -210,7 +213,7 @@ const describeAuditEvent = async (audit, req) => {
     (audit.type === "support" || audit.type === "approver") &&
     audit.subType === "invite-created"
   ) {
-    return audit.message;
+    return sanitiseMessage(audit.message);
   }
 
   if (audit.type === "support" && audit.subType === "user-invite-org") {
@@ -231,7 +234,7 @@ const describeAuditEvent = async (audit, req) => {
   }
 
   if (audit.subType === "resent-invitation") {
-    if (!audit.userEmail) return audit.message;
+    if (!audit.userEmail) return sanitiseMessage(audit.message);
     const invitedEmail = await resolveSubjectEmail(
       audit.invitedUserEmail,
       audit.editedUser,
@@ -290,7 +293,8 @@ const describeAuditEvent = async (audit, req) => {
     const editedFields =
       audit.editedFields &&
       audit.editedFields.find((x) => x.name === "edited_permission");
-    if (!audit.userEmail || !editedFields) return audit.message;
+    if (!audit.userEmail || !editedFields)
+      return sanitiseMessage(audit.message);
     const editedEmail = await resolveSubjectEmail(
       audit.editedUserEmail,
       audit.editedUser,
@@ -323,7 +327,7 @@ const describeAuditEvent = async (audit, req) => {
           : "";
       return `Deleted organisation: ${organisation.name} for user ${viewedUser.firstName} ${viewedUser.lastName}${legacyPart}`;
     } catch {
-      return audit.message;
+      return sanitiseMessage(audit.message);
     }
   }
 
@@ -456,7 +460,7 @@ const getAudit = async (req, res) => {
       event: {
         type: "invitation-code",
         subType: "post-invitation",
-        description: "Invitation created",
+        description: "User invited",
       },
       service: null,
       organisation: null,

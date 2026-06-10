@@ -992,7 +992,7 @@ describe("when getting users audit details", () => {
     await getAudit(req, res);
     const auditRows = sendResult.mock.calls[0][3].audits;
     expect(auditRows).toHaveLength(1);
-    expect(auditRows[0].event.description).toBe("Invitation created");
+    expect(auditRows[0].event.description).toBe("User invited");
   });
 
   it("should display clean message for resent-invitation events (no IDs)", async () => {
@@ -1019,16 +1019,92 @@ describe("when getting users audit details", () => {
     expect(desc).not.toMatch(/\bid:/);
   });
 
-  it("should display audit.message for support/invite-created (not a hardcoded string)", async () => {
-    const msg = `support invited someone@example.com to Test Org (id: org-1) (id: inv-abc)`;
+  it("should strip (id: ...) patterns from support/invite-created fallback messages", async () => {
+    const rawMsg = `support invited someone@example.com to Test Org (id: org-1) (id: inv-abc)`;
     getPageOfUserAudits.mockResolvedValue({
-      audits: [createSimpleAuditRecord("support", "invite-created", msg)],
+      audits: [createSimpleAuditRecord("support", "invite-created", rawMsg)],
       numberOfPages: 1,
       numberOfRecords: 1,
     });
     await getAudit(req, res);
     const auditRows = sendResult.mock.calls[0][3].audits;
-    expect(auditRows[0].event.description).toBe(msg);
+    expect(auditRows[0].event.description).toBe(
+      "support invited someone@example.com to Test Org",
+    );
+    expect(auditRows[0].event.description).not.toMatch(/\bid:/);
+  });
+
+  it("should strip (id: ...) patterns from AUDIT_MESSAGE_SUBTYPES historic messages", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        createSimpleAuditRecord(
+          "service",
+          "service-request-approved",
+          "agent@example.com (id: 706EEAEA-F63E-4AF7-ACDB-0FADC0EFBFC3) approved service request for user@example.com (id: inv-82AB3403-0C05-4078-9188-837455ABD1DD)",
+        ),
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe(
+      "agent@example.com approved service request for user@example.com",
+    );
+    expect(desc).not.toMatch(/\bid:/);
+  });
+
+  it("should strip (id: ...) patterns when falling back to audit.message for resent-invitation with missing userEmail", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "approver",
+          subType: "resent-invitation",
+          userId: "agent-1",
+          userEmail: undefined,
+          editedUser: "user-1",
+          level: "audit",
+          message:
+            "sarahdawn@yopmail.com (id: 706EEAEA-F63E-4AF7-ACDB-0FADC0EFBFC3) resent invitation email to user@example.com (id: inv-82AB3403-0C05-4078-9188-837455ABD1DD)",
+          timestamp: "2025-01-29T17:31:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe(
+      "sarahdawn@yopmail.com resent invitation email to user@example.com",
+    );
+    expect(desc).not.toMatch(/\bid:/);
+  });
+
+  it("should strip (id: ...) patterns when falling back to audit.message for approver/user-org-permission-edited with missing metadata", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "approver",
+          subType: "user-org-permission-edited",
+          userId: "approver-1",
+          userEmail: undefined,
+          editedUser: "user-1",
+          editedFields: undefined,
+          level: "audit",
+          message:
+            "sarahdawn@yopmail.com (id: 706EEAEA-F63E-4AF7-ACDB-0FADC0EFBFC3) edited permission level to approver for org Academic test (id: 4214D182-5429-46C5-AC4C-F37B7B584E1B) for user user@example.com (id: inv-82AB3403-0C05-4078-9188-837455ABD1DD)",
+          timestamp: "2025-01-29T17:31:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe(
+      "sarahdawn@yopmail.com edited permission level to approver for org Academic test for user user@example.com",
+    );
+    expect(desc).not.toMatch(/\bid:/);
   });
 
   it("should display metadata-based message for approver/user-org-permission-edited (no IDs)", async () => {
@@ -1548,7 +1624,7 @@ describe("when getting users audit details", () => {
 
       const auditRows = sendResult.mock.calls[0][3].audits;
       const syntheticEvent = auditRows.find(
-        (a) => a.event.description === "Invitation created",
+        (a) => a.event.description === "User invited",
       );
       expect(syntheticEvent).toBeDefined();
       expect(syntheticEvent.event.type).toBe("invitation-code");
@@ -1585,7 +1661,7 @@ describe("when getting users audit details", () => {
 
       const auditRows = sendResult.mock.calls[0][3].audits;
       const syntheticEvent = auditRows.find(
-        (a) => a.event.description === "Invitation created",
+        (a) => a.event.description === "User invited",
       );
       expect(syntheticEvent).toBeUndefined();
     });
@@ -1613,7 +1689,7 @@ describe("when getting users audit details", () => {
 
       const auditRows = sendResult.mock.calls[0][3].audits;
       const syntheticEvent = auditRows.find(
-        (a) => a.event.description === "Invitation created",
+        (a) => a.event.description === "User invited",
       );
       expect(syntheticEvent).toBeUndefined();
     });
@@ -1638,7 +1714,7 @@ describe("when getting users audit details", () => {
 
       const auditRows = sendResult.mock.calls[0][3].audits;
       const syntheticEvent = auditRows.find(
-        (a) => a.event.description === "Invitation created",
+        (a) => a.event.description === "User invited",
       );
       expect(syntheticEvent).toBeUndefined();
     });
@@ -1661,7 +1737,7 @@ describe("when getting users audit details", () => {
 
       const auditRows = sendResult.mock.calls[0][3].audits;
       const syntheticEvent = auditRows.find(
-        (a) => a.event.description === "Invitation created",
+        (a) => a.event.description === "User invited",
       );
       expect(syntheticEvent).toBeUndefined();
     });
@@ -1681,7 +1757,7 @@ describe("when getting users audit details", () => {
 
       const auditRows = sendResult.mock.calls[0][3].audits;
       const syntheticEvent = auditRows.find(
-        (a) => a.event.description === "Invitation created",
+        (a) => a.event.description === "User invited",
       );
       expect(syntheticEvent).toBeUndefined();
     });
