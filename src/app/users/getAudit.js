@@ -231,6 +231,7 @@ const describeAuditEvent = async (audit, req) => {
   }
 
   if (audit.subType === "resent-invitation") {
+    if (!audit.userEmail) return audit.message;
     const invitedEmail = await resolveSubjectEmail(
       audit.invitedUserEmail,
       audit.editedUser,
@@ -289,6 +290,7 @@ const describeAuditEvent = async (audit, req) => {
     const editedFields =
       audit.editedFields &&
       audit.editedFields.find((x) => x.name === "edited_permission");
+    if (!audit.userEmail || !editedFields) return audit.message;
     const editedEmail = await resolveSubjectEmail(
       audit.editedUserEmail,
       audit.editedUser,
