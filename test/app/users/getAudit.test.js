@@ -1425,6 +1425,59 @@ describe("when getting users audit details", () => {
     expect(desc).not.toMatch(/\bid:/);
   });
 
+  it("falls back to stored message for approver/resent-invitation when userEmail is missing (services event)", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "approver",
+          subType: "resent-invitation",
+          userId: "agent-1",
+          userEmail: undefined,
+          editedUser: "user-1",
+          level: "audit",
+          message:
+            "sarahdawn@yopmail.com resent invitation email to invited@example.com",
+          timestamp: "2025-01-29T17:31:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe(
+      "sarahdawn@yopmail.com resent invitation email to invited@example.com",
+    );
+    expect(desc).not.toContain("undefined");
+  });
+
+  it("falls back to stored message for approver/user-org-permission-edited when userEmail or editedFields missing (services event)", async () => {
+    getPageOfUserAudits.mockResolvedValue({
+      audits: [
+        {
+          type: "approver",
+          subType: "user-org-permission-edited",
+          userId: "approver-1",
+          userEmail: undefined,
+          editedUser: "user-1",
+          editedFields: undefined,
+          level: "audit",
+          message:
+            "sarahdawn@yopmail.com edited permission level for user@example.com at Test School to approver",
+          timestamp: "2025-01-29T17:31:00.000Z",
+        },
+      ],
+      numberOfPages: 1,
+      numberOfRecords: 1,
+    });
+    await getAudit(req, res);
+    const desc = sendResult.mock.calls[0][3].audits[0].event.description;
+    expect(desc).toBe(
+      "sarahdawn@yopmail.com edited permission level for user@example.com at Test School to approver",
+    );
+    expect(desc).not.toContain("undefined");
+  });
+
   it("resolves org from invitedOrganisation id for historical support/user-invite-org lacking organisationName", async () => {
     getOrganisationLegacyRaw.mockResolvedValue({
       id: "org-99",
