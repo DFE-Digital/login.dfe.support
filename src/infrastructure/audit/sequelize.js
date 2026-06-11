@@ -46,6 +46,9 @@ const mapAuditEntity = (auditEntity) => {
 };
 
 const getPageOfUserAudits = async (userId, pageNumber) => {
+  // login.dfe.services stores editedUser as the bare invitation UUID (no inv- prefix)
+  // because its user list links use user.id directly. Strip the prefix so we match both forms.
+  const userIdBare = userId.startsWith("inv-") ? userId.slice(4) : userId;
   const queryWhere = `
     WHERE type != 'technical-audit'
     AND id IN (
@@ -58,11 +61,14 @@ const getPageOfUserAudits = async (userId, pageNumber) => {
         JOIN AuditLogMeta ALM
           ON ALM.auditId = AL.id
         WHERE ALM.[key] IN ('editedUser', 'viewedUser')
-          AND (ALM.[Value] = :userId OR ALM.[Value] = CONCAT('"', :userId, '"'))
+          AND (
+            ALM.[Value] = :userId OR ALM.[Value] = CONCAT('"', :userId, '"')
+            OR ALM.[Value] = :userIdBare OR ALM.[Value] = CONCAT('"', :userIdBare, '"')
+          )
     )`;
   const queryOpts = {
     type: QueryTypes.SELECT,
-    replacements: { userId },
+    replacements: { userId, userIdBare },
   };
   const skip = (pageNumber - 1) * pageSize;
   const { count } = (
