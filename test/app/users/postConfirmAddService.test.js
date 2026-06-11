@@ -263,6 +263,23 @@ describe("when adding new services to a user", () => {
     });
   });
 
+  it("should include serviceId in audit payload when adding services (user-services-added)", async () => {
+    req.session.user.isAddService = true;
+    logger.audit.mockReset();
+
+    await postConfirmAddService(req, res);
+
+    const serviceAddedCall = logger.audit.mock.calls.find(
+      (call) => call[1]?.subType === "user-services-added",
+    );
+    expect(serviceAddedCall).toBeDefined();
+    expect(serviceAddedCall[1]).toMatchObject({
+      type: "support",
+      subType: "user-services-added",
+      serviceId: req.session.user.services[0].serviceId,
+    });
+  });
+
   it("then it should should audit editing a service if isAddService is false", async () => {
     await postConfirmAddService(req, res);
 
