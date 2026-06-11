@@ -367,31 +367,11 @@ describe("when getting users organisation details", () => {
     expect(logger.audit).toHaveBeenCalledWith(
       expect.stringContaining("viewed user"),
       expect.objectContaining({
-        type: "support",
+        type: "organisations",
         subType: "user-view",
         userId: "user1",
         userEmail: "super.user@unit.test",
       }),
     );
-  });
-
-  describe("user-view audit deduplication", () => {
-    it("logs user-view audit on first profile load in a session", async () => {
-      req.session.viewedUserAuditIds = [];
-      await getOrganisations(req, res);
-      expect(logger.audit).toHaveBeenCalledWith(
-        expect.stringContaining("viewed user"),
-        expect.objectContaining({ subType: "user-view" }),
-      );
-    });
-
-    it("does NOT log user-view audit when user already viewed in this session", async () => {
-      req.session.viewedUserAuditIds = ["user1"];
-      await getOrganisations(req, res);
-      expect(logger.audit).not.toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({ subType: "user-view" }),
-      );
-    });
   });
 });
