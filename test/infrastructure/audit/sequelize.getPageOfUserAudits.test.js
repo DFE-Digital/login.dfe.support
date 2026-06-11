@@ -53,4 +53,30 @@ describe("getPageOfUserAudits", () => {
       expect(sql).toMatch(/CONCAT\s*\(\s*'"'\s*,\s*:userId\s*,\s*'"'\s*\)/);
     });
   });
+
+  it("unwraps JSON-quoted string meta values returned from the database", async () => {
+    db.query.mockReset();
+    db.query.mockResolvedValueOnce([{ count: 1 }]).mockResolvedValueOnce([
+      {
+        id: "audit-id-1",
+        type: "approver",
+        subType: "user-service-updated",
+        userId: "approver-uuid",
+        level: "audit",
+        message: "approver added service",
+        createdAt: new Date("2026-01-01"),
+        organisationid: "org-uuid",
+        key: "serviceId",
+        value: '"service-uuid-with-json-quotes"',
+      },
+    ]);
+
+    const result = await getPageOfUserAudits(
+      "inv-05CF0E9E-E334-435E-A9D9-126E0ABAE7D0",
+      1,
+    );
+
+    expect(result.audits).toHaveLength(1);
+    expect(result.audits[0].serviceId).toBe("service-uuid-with-json-quotes");
+  });
 });
