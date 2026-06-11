@@ -5,6 +5,23 @@ const { Op } = Sequelize;
 const { QueryTypes } = Sequelize;
 const pageSize = 25;
 
+// Service Bus Subscriber wraps string meta values with JSON.stringify, storing them
+// as '"value"' (with surrounding quote characters). Unwrap those before returning.
+const unwrapMetaValue = (value) => {
+  if (
+    typeof value === "string" &&
+    value.startsWith('"') &&
+    value.endsWith('"')
+  ) {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return value;
+    }
+  }
+  return value;
+};
+
 const mapAuditEntity = (auditEntity) => {
   const audit = {
     type: auditEntity.getDataValue("type"),
@@ -22,7 +39,7 @@ const mapAuditEntity = (auditEntity) => {
     const key = meta.getDataValue("key");
     const value = meta.getDataValue("value");
     const isJson = key === "editedFields";
-    audit[key] = isJson ? JSON.parse(value) : value;
+    audit[key] = isJson ? JSON.parse(value) : unwrapMetaValue(value);
   });
 
   return audit;
@@ -86,13 +103,10 @@ const getPageOfUserAudits = async (userId, pageNumber) => {
     }
 
     if (currentRow.key) {
-      if (currentRow.key === "userId" && currentRow.value) {
-        currentRow.value = currentRow.value.replace(/['"]+/g, "");
-      }
       const isJson = currentRow.key === "editedFields";
       currentEntity[currentRow.key] = isJson
         ? JSON.parse(currentRow.value)
-        : currentRow.value;
+        : unwrapMetaValue(currentRow.value);
     }
   }
   return {
