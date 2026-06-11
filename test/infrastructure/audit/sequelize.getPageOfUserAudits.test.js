@@ -45,4 +45,12 @@ describe("getPageOfUserAudits", () => {
       "05CF0E9E-E334-435E-A9D9-126E0ABAE7D0",
     );
   });
+
+  it("matches JSON-quoted meta values stored by the Service Bus Subscriber alongside plain values", async () => {
+    await getPageOfUserAudits("inv-05CF0E9E-E334-435E-A9D9-126E0ABAE7D0", 1);
+    const sqlCalls = db.query.mock.calls;
+    sqlCalls.forEach(([sql]) => {
+      expect(sql).toMatch(/CONCAT\s*\(\s*'"'\s*,\s*:userId\s*,\s*'"'\s*\)/);
+    });
+  });
 });
