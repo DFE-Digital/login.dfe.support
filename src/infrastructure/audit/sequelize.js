@@ -41,7 +41,7 @@ const getPageOfUserAudits = async (userId, pageNumber) => {
         JOIN AuditLogMeta ALM
           ON ALM.auditId = AL.id
         WHERE ALM.[key] IN ('editedUser', 'viewedUser')
-          AND ALM.[Value] = :userId
+          AND (ALM.[Value] = :userId OR ALM.[Value] = CONCAT('"', :userId, '"'))
     )`;
   const queryOpts = {
     type: QueryTypes.SELECT,
