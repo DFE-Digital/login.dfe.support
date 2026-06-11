@@ -4,6 +4,8 @@ jest.mock("./../../../src/infrastructure/config", () =>
 jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
+
+const logger = require("./../../../src/infrastructure/logger");
 jest.mock("./../../../src/app/users/utils");
 jest.mock("./../../../src/infrastructure/serviceMapping");
 jest.mock("./../../../src/infrastructure/audit");
@@ -342,6 +344,26 @@ describe("when getting users service details", () => {
         id: 0,
       },
       statusChangeReasons: [],
+    });
+  });
+
+  describe("user-view audit deduplication", () => {
+    it("logs user-view audit on first Services tab load in a session", async () => {
+      req.session.viewedUserAuditIds = [];
+      await getServices(req, res);
+      expect(logger.audit).toHaveBeenCalledWith(
+        expect.stringContaining("viewed user"),
+        expect.objectContaining({ subType: "user-view" }),
+      );
+    });
+
+    it("does NOT log user-view audit when user already viewed in this session", async () => {
+      req.session.viewedUserAuditIds = ["user1"];
+      await getServices(req, res);
+      expect(logger.audit).not.toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ subType: "user-view" }),
+      );
     });
   });
 });
