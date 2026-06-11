@@ -54,6 +54,18 @@ describe("getPageOfUserAudits", () => {
     });
   });
 
+  it("also matches bare UUID (without inv- prefix) for invited users, as login.dfe.services stores editedUser without the prefix", async () => {
+    await getPageOfUserAudits("inv-05CF0E9E-E334-435E-A9D9-126E0ABAE7D0", 1);
+    const sqlCalls = db.query.mock.calls;
+    sqlCalls.forEach(([sql, opts]) => {
+      expect(opts.replacements.userIdBare).toBe(
+        "05CF0E9E-E334-435E-A9D9-126E0ABAE7D0",
+      );
+      expect(sql).toMatch(/:userIdBare/);
+      expect(sql).toMatch(/CONCAT\s*\(\s*'"'\s*,\s*:userIdBare\s*,\s*'"'\s*\)/);
+    });
+  });
+
   it("unwraps JSON-quoted string meta values returned from the database", async () => {
     db.query.mockReset();
     db.query.mockResolvedValueOnce([{ count: 1 }]).mockResolvedValueOnce([
