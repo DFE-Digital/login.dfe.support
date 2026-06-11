@@ -194,6 +194,7 @@ const post = async (req, res) => {
         userId: req.user.sub,
         userEmail: req.user.email,
         organisationId,
+        serviceId: req.session.user.services?.[0]?.serviceId,
         editedUser: uid,
         editedFields: [
           {
