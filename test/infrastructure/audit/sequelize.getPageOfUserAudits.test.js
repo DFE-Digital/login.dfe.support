@@ -66,6 +66,14 @@ describe("getPageOfUserAudits", () => {
     });
   });
 
+  it("also checks the 'invitedUser' metadata key so approver/user-invited events from login.dfe.services are found", async () => {
+    await getPageOfUserAudits("inv-05CF0E9E-E334-435E-A9D9-126E0ABAE7D0", 1);
+    const sqlCalls = db.query.mock.calls;
+    sqlCalls.forEach(([sql]) => {
+      expect(sql).toMatch(/'invitedUser'/);
+    });
+  });
+
   it("unwraps JSON-quoted string meta values returned from the database", async () => {
     db.query.mockReset();
     db.query.mockResolvedValueOnce([{ count: 1 }]).mockResolvedValueOnce([

@@ -26,8 +26,6 @@ let cachedServiceIds = {};
 let cachedServices = {};
 let cachedUsers = {};
 
-const INVITE_SUBTYPES = new Set(["invite-created", "user-invited"]);
-
 const sanitiseMessage = (msg) =>
   msg ? msg.replace(/\s*\(id:\s*[^)]+\)/g, "").trim() : msg;
 
@@ -441,34 +439,6 @@ const getAudit = async (req, res) => {
   }
 
   const isInvitation = req.params.uid.startsWith("inv-");
-  const hasInviteEvent = audits.some((a) =>
-    INVITE_SUBTYPES.has(a.event.subType),
-  );
-  // Only add fallback on single-page results — multi-page users are assumed to
-  // have a real invite event on a later page that hasn't loaded yet.
-  let totalNumberOfResults = pageOfAudits.numberOfRecords;
-  if (
-    isInvitation &&
-    pageNumber === 1 &&
-    !hasInviteEvent &&
-    pageOfAudits.numberOfPages <= 1 &&
-    user.createdAt
-  ) {
-    audits.push({
-      timestamp: new Date(user.createdAt),
-      formattedTimestamp: dateFormat(user.createdAt, "longDateFormat"),
-      event: {
-        type: "invitation-code",
-        subType: "post-invitation",
-        description: "User invited",
-      },
-      service: null,
-      organisation: null,
-      result: true,
-      user: { name: "" },
-    });
-    totalNumberOfResults += 1;
-  }
 
   sendResult(req, res, "users/views/audit", {
     csrfToken: req.csrfToken(),
@@ -484,8 +454,8 @@ const getAudit = async (req, res) => {
     audits,
     numberOfPages: pageOfAudits.numberOfPages,
     page: pageNumber,
-    totalNumberOfResults,
-    isInvitation: req.params.uid.startsWith("inv-"),
+    totalNumberOfResults: pageOfAudits.numberOfRecords,
+    isInvitation,
   });
 };
 

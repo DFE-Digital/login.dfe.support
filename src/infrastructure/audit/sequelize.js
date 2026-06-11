@@ -46,8 +46,9 @@ const mapAuditEntity = (auditEntity) => {
 };
 
 const getPageOfUserAudits = async (userId, pageNumber) => {
-  // login.dfe.services stores editedUser as the bare invitation UUID (no inv- prefix)
+  // login.dfe.services stores the subject user's ID as bare UUID (no inv- prefix)
   // because its user list links use user.id directly. Strip the prefix so we match both forms.
+  // 'invitedUser' is the metadata key used by services portal invite events (approver/user-invited).
   const userIdBare = userId.startsWith("inv-") ? userId.slice(4) : userId;
   const queryWhere = `
     WHERE type != 'technical-audit'
@@ -60,7 +61,7 @@ const getPageOfUserAudits = async (userId, pageNumber) => {
         FROM AuditLogs AL
         JOIN AuditLogMeta ALM
           ON ALM.auditId = AL.id
-        WHERE ALM.[key] IN ('editedUser', 'viewedUser')
+        WHERE ALM.[key] IN ('editedUser', 'viewedUser', 'invitedUser')
           AND (
             ALM.[Value] = :userId OR ALM.[Value] = CONCAT('"', :userId, '"')
             OR ALM.[Value] = :userIdBare OR ALM.[Value] = CONCAT('"', :userIdBare, '"')
