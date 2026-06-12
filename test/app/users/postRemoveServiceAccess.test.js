@@ -151,6 +151,16 @@ describe("when removing access to a service", () => {
     });
   });
 
+  it("calls getInvitationOrganisationsRaw with invitationId for invited users", async () => {
+    req.params.uid = "inv-invite1";
+
+    await postRemoveService(req, res);
+
+    expect(getInvitationOrganisationsRaw).toHaveBeenCalledWith({
+      invitationId: "invite1",
+    });
+  });
+
   it("then it should delete org for user if request for user", async () => {
     await postRemoveService(req, res);
 
