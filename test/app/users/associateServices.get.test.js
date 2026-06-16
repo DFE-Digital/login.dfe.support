@@ -246,4 +246,129 @@ describe("when displaying the associate service view", () => {
       ],
     });
   });
+
+  it("should exclude id-only services only when all four hide conditions are truthy", async () => {
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: "hidden-id-only",
+          name: "Hidden Id Only Service",
+          isExternalService: true,
+          isIdOnlyService: true,
+          isHiddenService: 1,
+          relyingParty: {
+            params: {
+              hideApprover: "true",
+              hideSupport: "true",
+              helpHidden: "true",
+            },
+          },
+        },
+      ],
+    });
+    policyEngine.getPolicyApplicationResultsForUser.mockReturnValue([
+      { id: "hidden-id-only", serviceAvailableToUser: true },
+    ]);
+
+    await getAssociateServices(req, res);
+
+    const services = res.render.mock.calls[0][1].services;
+    expect(services.find((s) => s.id === "hidden-id-only")).toBeUndefined();
+  });
+
+  it("should include id-only services where isHiddenService is truthy but not all params are truthy", async () => {
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: "partial-id-only",
+          name: "Partially Hidden Id Only Service",
+          isExternalService: true,
+          isIdOnlyService: true,
+          isHiddenService: 1,
+          relyingParty: { params: { hideApprover: "true" } },
+        },
+      ],
+    });
+    policyEngine.getPolicyApplicationResultsForUser.mockReturnValue([
+      { id: "partial-id-only", serviceAvailableToUser: true },
+    ]);
+
+    await getAssociateServices(req, res);
+
+    const services = res.render.mock.calls[0][1].services;
+    expect(services.find((s) => s.id === "partial-id-only")).toBeDefined();
+  });
+
+  it("should NOT exclude id-only services where isHiddenService is falsy", async () => {
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: "visible-id-only",
+          name: "Visible Id Only Service",
+          isExternalService: true,
+          isIdOnlyService: true,
+          isHiddenService: 0,
+          relyingParty: { params: {} },
+        },
+      ],
+    });
+    policyEngine.getPolicyApplicationResultsForUser.mockReturnValue([
+      { id: "visible-id-only", serviceAvailableToUser: true },
+    ]);
+
+    await getAssociateServices(req, res);
+
+    const services = res.render.mock.calls[0][1].services;
+    expect(services.find((s) => s.id === "visible-id-only")).toBeDefined();
+  });
+
+  it("should exclude role-based services where hideSupport is truthy", async () => {
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: "hidden-role-based",
+          name: "Hidden Role Based Service",
+          isExternalService: true,
+          isIdOnlyService: false,
+          relyingParty: { params: { hideSupport: "true" } },
+        },
+      ],
+    });
+    policyEngine.getPolicyApplicationResultsForUser.mockReturnValue([
+      { id: "hidden-role-based", serviceAvailableToUser: true },
+    ]);
+
+    await getAssociateServices(req, res);
+
+    const services = res.render.mock.calls[0][1].services;
+    expect(services.find((s) => s.id === "hidden-role-based")).toBeUndefined();
+  });
+
+  it("should NOT exclude role-based services where only hideApprover is truthy (not hideSupport)", async () => {
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: "approver-hidden-only",
+          name: "Approver Hidden Only Service",
+          isExternalService: true,
+          isIdOnlyService: false,
+          relyingParty: {
+            params: {
+              hideApprover: "true",
+              hideSupport: "false",
+              helpHidden: "true",
+            },
+          },
+        },
+      ],
+    });
+    policyEngine.getPolicyApplicationResultsForUser.mockReturnValue([
+      { id: "approver-hidden-only", serviceAvailableToUser: true },
+    ]);
+
+    await getAssociateServices(req, res);
+
+    const services = res.render.mock.calls[0][1].services;
+    expect(services.find((s) => s.id === "approver-hidden-only")).toBeDefined();
+  });
 });
