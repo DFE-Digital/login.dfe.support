@@ -52,15 +52,6 @@ const postConfirmNewUser = async (req, res) => {
         : false,
   });
 
-  if (invitationId) {
-    logger.audit({
-      type: "support",
-      subType: "invite-created",
-      userId: req.user.sub,
-      message: `Invitation code is created. Id ${invitationId}`,
-    });
-  }
-
   if (req.session.user.organisationId) {
     await addOrganisationToInvitation({
       invitationId,
@@ -72,16 +63,20 @@ const postConfirmNewUser = async (req, res) => {
 
   await waitForIndexToUpdate(`inv-${invitationId}`);
 
-  logger.audit(
-    `${req.user.email} (id: ${req.user.sub}) invited ${req.session.user.email}`,
-    {
-      type: "support",
-      subType: "user-invited",
-      userId: req.user.sub,
-      userEmail: req.user.email,
-      invitedUserEmail: req.session.user.email,
-    },
-  );
+  const orgPart = organisation
+    ? ` to ${organisation.name} (id: ${req.session.user.organisationId})`
+    : "";
+  const auditMessage = `${req.user.email} (id: ${req.user.sub}) invited ${req.session.user.email}${orgPart} (id: inv-${invitationId})`;
+  const auditMeta = {
+    type: "support",
+    subType: "user-invited",
+    userId: req.user.sub,
+    userEmail: req.user.email,
+    editedUser: `inv-${invitationId}`,
+    invitedUserEmail: req.session.user.email,
+    organisationName: organisation ? organisation.name : undefined,
+  };
+  logger.audit(auditMessage, auditMeta);
 
   res.flash(
     "info",

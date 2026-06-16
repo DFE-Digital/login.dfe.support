@@ -151,6 +151,16 @@ describe("when removing access to a service", () => {
     });
   });
 
+  it("then it should look up invitation organisations by invitationId for invited users", async () => {
+    req.params.uid = "inv-invite1";
+
+    await postRemoveService(req, res);
+
+    expect(getInvitationOrganisationsRaw).toHaveBeenCalledWith({
+      invitationId: "invite1",
+    });
+  });
+
   it("then it should delete org for user if request for user", async () => {
     await postRemoveService(req, res);
 
@@ -206,6 +216,22 @@ describe("when removing access to a service", () => {
           newValue: undefined,
         },
       ],
+    });
+  });
+
+  it("should include serviceId in the service-deleted audit payload", async () => {
+    logger.audit.mockReset();
+
+    await postRemoveService(req, res);
+
+    const serviceDeletedCall = logger.audit.mock.calls.find(
+      (call) => call[1]?.subType === "user-service-deleted",
+    );
+    expect(serviceDeletedCall).toBeDefined();
+    expect(serviceDeletedCall[1]).toMatchObject({
+      type: "support",
+      subType: "user-service-deleted",
+      serviceId: "service1",
     });
   });
 

@@ -12,7 +12,6 @@ const {
   getUserStatusRaw,
 } = require("login.dfe.api-client/users");
 const { getAllServices } = require("../services/utils");
-
 const logger = require("../../infrastructure/logger");
 
 const getOrganisations = async (userId) => {
@@ -124,13 +123,19 @@ const action = async (req, res) => {
     email: user.email,
   };
 
-  logger.audit(`${req.user.email} viewed user ${user.email}`, {
-    type: "support",
-    subType: "user-view",
-    userId: req.user.sub,
-    userEmail: req.user.email,
-    viewedUser: user.id,
-  });
+  if (!req.session.viewedUserAuditIds?.includes(user.id)) {
+    logger.audit(`${req.user.email} viewed user ${user.email}`, {
+      type: "support",
+      subType: "user-view",
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      viewedUser: user.id,
+    });
+    req.session.viewedUserAuditIds = [
+      ...(req.session.viewedUserAuditIds ?? []),
+      user.id,
+    ];
+  }
 
   sendResult(req, res, "users/views/services", {
     csrfToken: req.csrfToken(),

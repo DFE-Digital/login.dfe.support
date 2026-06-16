@@ -122,6 +122,7 @@ const postEditPermissions = async (req, res) => {
       subType: "user-org-permission-edited",
       userId: req.user.sub,
       userEmail: req.user.email,
+      organisationId: req.params.id,
       editedUser: uid,
       editedFields: [
         {

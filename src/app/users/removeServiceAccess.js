@@ -55,7 +55,7 @@ const post = async (req, res) => {
   const organisationId = req.params.orgId;
   const service = await getServiceRaw({ by: { serviceId: req.params.sid } });
   const userOrganisations = uid.startsWith("inv-")
-    ? await getInvitationOrganisationsRaw({ userId: uid.substr(4) })
+    ? await getInvitationOrganisationsRaw({ invitationId: uid.substr(4) })
     : await getUserOrganisationsWithServicesRaw({ userId: uid });
   const organisationDetails = userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,
@@ -149,6 +149,7 @@ const post = async (req, res) => {
       subType: "user-service-deleted",
       userId: req.user.sub,
       userEmail: req.user.email,
+      serviceId,
       organisationId,
       editedUser: uid,
       editedFields: [
