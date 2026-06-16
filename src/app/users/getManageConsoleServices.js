@@ -5,7 +5,15 @@ const { getUserDetailsById } = require("./utils");
 
 const isTruthy = (v) => v === true || v === 1 || v === "true" || v === "1";
 const isHiddenFromSupport = (s) => {
-  if (s.isIdOnlyService && isTruthy(s.isHiddenService)) return true;
+  if (s.isIdOnlyService) {
+    const params = s.relyingParty?.params;
+    return (
+      isTruthy(s.isHiddenService) &&
+      isTruthy(params?.hideApprover) &&
+      isTruthy(params?.hideSupport) &&
+      isTruthy(params?.helpHidden)
+    );
+  }
   return isTruthy(s.relyingParty?.params?.hideSupport);
 };
 

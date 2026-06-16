@@ -96,7 +96,13 @@ describe("When retrieving manage console services for a user", () => {
           isExternalService: true,
           isIdOnlyService: true,
           isHiddenService: 1,
-          relyingParty: {},
+          relyingParty: {
+            params: {
+              hideApprover: "true",
+              hideSupport: "true",
+              helpHidden: "true",
+            },
+          },
         },
       ],
     };
@@ -153,11 +159,32 @@ describe("When retrieving manage console services for a user", () => {
     });
   });
 
-  it("should not include id-only services where isHiddenService is truthy", async () => {
+  it("should not include id-only services where all four hide conditions are truthy", async () => {
     await getManageConsoleServices(req, res);
 
     const pageServices = sendResult.mock.calls[0][3].pageOfServices.services;
     expect(pageServices.find((s) => s.id === "idOnlyHiddenId")).toBeUndefined();
+  });
+
+  it("should include id-only services where isHiddenService is truthy but not all params are truthy", async () => {
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: "partialIdOnly",
+          name: "Partial Id Only Service",
+          description: "An id-only service partially hidden",
+          isExternalService: true,
+          isIdOnlyService: true,
+          isHiddenService: 1,
+          relyingParty: { params: { hideApprover: "true" } },
+        },
+      ],
+    });
+
+    await getManageConsoleServices(req, res);
+
+    const pageServices = sendResult.mock.calls[0][3].pageOfServices.services;
+    expect(pageServices.find((s) => s.id === "partialIdOnly")).toBeDefined();
   });
 
   it("should include id-only services where isHiddenService is falsy", async () => {

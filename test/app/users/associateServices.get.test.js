@@ -247,7 +247,7 @@ describe("when displaying the associate service view", () => {
     });
   });
 
-  it("should exclude id-only services where isHiddenService is truthy", async () => {
+  it("should exclude id-only services only when all four hide conditions are truthy", async () => {
     getAllServices.mockReturnValue({
       services: [
         {
@@ -256,7 +256,13 @@ describe("when displaying the associate service view", () => {
           isExternalService: true,
           isIdOnlyService: true,
           isHiddenService: 1,
-          relyingParty: { params: {} },
+          relyingParty: {
+            params: {
+              hideApprover: "true",
+              hideSupport: "true",
+              helpHidden: "true",
+            },
+          },
         },
       ],
     });
@@ -268,6 +274,29 @@ describe("when displaying the associate service view", () => {
 
     const services = res.render.mock.calls[0][1].services;
     expect(services.find((s) => s.id === "hidden-id-only")).toBeUndefined();
+  });
+
+  it("should include id-only services where isHiddenService is truthy but not all params are truthy", async () => {
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: "partial-id-only",
+          name: "Partially Hidden Id Only Service",
+          isExternalService: true,
+          isIdOnlyService: true,
+          isHiddenService: 1,
+          relyingParty: { params: { hideApprover: "true" } },
+        },
+      ],
+    });
+    policyEngine.getPolicyApplicationResultsForUser.mockReturnValue([
+      { id: "partial-id-only", serviceAvailableToUser: true },
+    ]);
+
+    await getAssociateServices(req, res);
+
+    const services = res.render.mock.calls[0][1].services;
+    expect(services.find((s) => s.id === "partial-id-only")).toBeDefined();
   });
 
   it("should NOT exclude id-only services where isHiddenService is falsy", async () => {

@@ -14,7 +14,15 @@ const getAllAvailableServices = async (req) => {
   const allServices = await getAllServices();
   const isTruthy = (v) => v === true || v === 1 || v === "true" || v === "1";
   const isHiddenFromSupport = (x) => {
-    if (x.isIdOnlyService && isTruthy(x.isHiddenService)) return true;
+    if (x.isIdOnlyService) {
+      const params = x.relyingParty?.params;
+      return (
+        isTruthy(x.isHiddenService) &&
+        isTruthy(params?.hideApprover) &&
+        isTruthy(params?.hideSupport) &&
+        isTruthy(params?.helpHidden)
+      );
+    }
     return isTruthy(x.relyingParty?.params?.hideSupport);
   };
   let externalServices = allServices.services.filter(
