@@ -103,6 +103,60 @@ describe("search - email filtering", () => {
     expect(getOrganisationRequestsRaw).not.toHaveBeenCalled();
   });
 
+  it("propagates errors thrown by getSearchIndexUsersRaw", async () => {
+    getSearchIndexUsersRaw.mockRejectedValue(
+      new Error("Azure Search unavailable"),
+    );
+
+    await expect(
+      search(makeReq({ searchEmail: "user@example.com" })),
+    ).rejects.toThrow("Azure Search unavailable");
+
+    expect(getOrganisationRequestsRaw).not.toHaveBeenCalled();
+  });
+
+  it("does not match a user whose email is null", async () => {
+    getSearchIndexUsersRaw.mockResolvedValue({
+      users: [{ id: "other-user", email: null }],
+    });
+
+    const result = await search(makeReq({ searchEmail: "user@example.com" }));
+
+    expect(result.noUserFound).toBe(true);
+    expect(getOrganisationRequestsRaw).not.toHaveBeenCalled();
+  });
+
+  it("trims leading and trailing whitespace from searchEmail before resolving", async () => {
+    getSearchIndexUsersRaw.mockResolvedValue({
+      users: [{ id: "user-abc-123", email: "user@example.com" }],
+    });
+
+    await search(makeReq({ searchEmail: "  user@example.com  " }));
+
+    expect(getSearchIndexUsersRaw).toHaveBeenCalledWith(
+      expect.objectContaining({ searchCriteria: "user@example.com" }),
+    );
+    expect(getOrganisationRequestsRaw).toHaveBeenCalledWith(
+      expect.objectContaining({ filterUserId: "user-abc-123" }),
+    );
+  });
+
+  it("selects the exact match when multiple users are returned by Azure Search", async () => {
+    getSearchIndexUsersRaw.mockResolvedValue({
+      users: [
+        { id: "wrong-user", email: "user@example.com.au" },
+        { id: "correct-user", email: "user@example.com" },
+        { id: "another-user", email: "xuser@example.com" },
+      ],
+    });
+
+    await search(makeReq({ searchEmail: "user@example.com" }));
+
+    expect(getOrganisationRequestsRaw).toHaveBeenCalledWith(
+      expect.objectContaining({ filterUserId: "correct-user" }),
+    );
+  });
+
   it("returns searchEmail in result when search runs without email", async () => {
     const result = await search(makeReq({}));
 
