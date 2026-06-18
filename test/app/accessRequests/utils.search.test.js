@@ -93,6 +93,16 @@ describe("search - email filtering", () => {
     expect(getOrganisationRequestsRaw).not.toHaveBeenCalled();
   });
 
+  it("returns noUserFound true when getSearchIndexUsersRaw returns null", async () => {
+    getSearchIndexUsersRaw.mockResolvedValue(null);
+
+    const result = await search(makeReq({ searchEmail: "user@example.com" }));
+
+    expect(result.noUserFound).toBe(true);
+    expect(result.accessRequests).toEqual([]);
+    expect(getOrganisationRequestsRaw).not.toHaveBeenCalled();
+  });
+
   it("returns searchEmail in result when search runs without email", async () => {
     const result = await search(makeReq({}));
 
