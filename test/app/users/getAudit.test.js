@@ -315,6 +315,11 @@ describe("when getting users audit details", () => {
       "email@email.com approved sub-service request for john.doe@email.com",
     ],
     [
+      "sub-service",
+      "sub-service-roles-request-approved",
+      "email@email.com approved sub-service request for john.doe@email.com",
+    ],
+    [
       "manage",
       "organisation-request-approved",
       "email@email.com approved organisation request for john.doe@email.com",

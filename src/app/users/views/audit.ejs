@@ -15,19 +15,19 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
             <div class="govuk-tabs__panel" id="audit">
-                <table class="govuk-table">
-                    <div class="govuk-grid-row">
-                        <div class="govuk-grid-column-full">
-                            <form method="POST">
-                                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                                <button class="govuk-button" type="submit" 
-                                        onclick="this.form.submit(); this.disabled=true; this.innerText='Processing Update';">
-                                    Update and refresh
-                                </button>
-                            </form>
-                        </div>
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-full">
+                        <form method="POST">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                            <button class="govuk-button" type="submit"
+                                    onclick="this.form.submit(); this.disabled=true; this.innerText='Processing Update';">
+                                Update and refresh
+                            </button>
+                        </form>
                     </div>
-                    <%- include('../../sharedViews/paginationNew', paginationModel); %>
+                </div>
+                <%- include('../../sharedViews/paginationNew', paginationModel); %>
+                <table class="govuk-table">
                     <thead class="govuk-table__head">
                         <tr class="govuk-table__row">
                             <th scope="col" class="govuk-table__header">Date</th>
