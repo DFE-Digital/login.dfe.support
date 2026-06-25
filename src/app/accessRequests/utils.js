@@ -64,11 +64,11 @@ const putUserInOrganisation = async (req) => {
 
   const userId = req.body.user_id;
   const orgId = req.body.org_id;
-  const status = req.body.approve_reject.toLowerCase() === "approve" ? 1 : -1;
+  const approved = req.body.approve_reject.toLowerCase() === "approve";
   let role = 0;
   let reason = req.body.message;
 
-  if (status === 1) {
+  if (approved) {
     reason = "";
     role = req.body.role.toLowerCase() === "approver" ? 10000 : 1;
   }
@@ -77,7 +77,6 @@ const putUserInOrganisation = async (req) => {
     userId,
     organisationId: orgId,
     roleId: role,
-    status,
     reason,
   });
 
@@ -86,7 +85,7 @@ const putUserInOrganisation = async (req) => {
       req.body.email,
       req.body.name,
       req.body.org_name,
-      status === 1,
+      approved,
       reason,
     );
   }

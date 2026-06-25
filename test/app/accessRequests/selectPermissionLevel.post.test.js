@@ -260,7 +260,6 @@ describe("when selecting a permission level", () => {
     expect(addOrganisationToUser).toHaveBeenCalledWith({
       organisationId: "org1",
       roleId: 0,
-      status: 1,
       userId: "userId",
     });
   });
