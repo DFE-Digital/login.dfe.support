@@ -11,10 +11,20 @@ jest.mock("./../../../src/app/users/utils", () => {
     }),
   };
 });
+jest.mock("../../../src/app/services/utils", () => ({
+  getAllServices: jest.fn(),
+}));
+jest.mock("login.dfe.api-client/organisations", () => ({
+  getOrganisationCategories: jest.fn(),
+}));
 
 const utils = require("./../../../src/app/users/utils");
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const { get } = require("./../../../src/app/users/search");
+const { getAllServices } = require("../../../src/app/services/utils");
+const {
+  getOrganisationCategories,
+} = require("login.dfe.api-client/organisations");
 
 describe("When processing a get to search for users", () => {
   let req;
@@ -98,5 +108,46 @@ describe("When processing a get to search for users", () => {
       numberOfPages: undefined,
       users: undefined,
     });
+  });
+});
+
+describe("When showFilters is true", () => {
+  let filterReq;
+  let filterRes;
+
+  beforeEach(() => {
+    getOrganisationCategories.mockReturnValue([]);
+    getAllServices.mockReset();
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: "visible-service",
+          name: "Visible Service",
+          isIdOnlyService: false,
+          relyingParty: { params: {} },
+        },
+        {
+          id: "hidden-service",
+          name: "Hidden Service",
+          isIdOnlyService: false,
+          relyingParty: { params: { hideSupport: "true" } },
+        },
+      ],
+    });
+
+    filterReq = getRequestMock({
+      method: "GET",
+      query: { showFilters: "true" },
+    });
+    filterRes = getResponseMock();
+  });
+
+  it("should exclude hidden services from the service filter checkboxes", async () => {
+    await get(filterReq, filterRes);
+
+    const model = filterRes.render.mock.calls[0][1];
+    const serviceIds = model.services.map((s) => s.id);
+    expect(serviceIds).toContain("visible-service");
+    expect(serviceIds).not.toContain("hidden-service");
   });
 });
