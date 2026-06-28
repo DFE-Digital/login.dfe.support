@@ -27,6 +27,20 @@ const unpackMultiSelect = (parameter) => {
   return parameter;
 };
 
+const isTruthy = (v) => v === true || v === 1 || v === "true" || v === "1";
+const isHiddenFromSupport = (s) => {
+  if (s.isIdOnlyService) {
+    const params = s.relyingParty?.params;
+    return (
+      isTruthy(s.isHiddenService) &&
+      isTruthy(params?.hideApprover) &&
+      isTruthy(params?.hideSupport) &&
+      isTruthy(params?.helpHidden)
+    );
+  }
+  return isTruthy(s.relyingParty?.params?.hideSupport);
+};
+
 const getFiltersModel = async (req) => {
   const fromRedirect = req.session.params ? req.session.params : null;
   let paramsSource = req.method === "POST" ? req.body : req.query;
@@ -80,16 +94,18 @@ const getFiltersModel = async (req) => {
       paramsSource.service || paramsSource.services,
     );
     const getAll = await getAllServices();
-    services = getAll.services.map((service) => {
-      return {
-        id: service.id,
-        name: service.name,
-        isSelected:
-          selectedServices.find(
-            (x) => x.toLowerCase() === service.id.toLowerCase(),
-          ) !== undefined,
-      };
-    });
+    services = getAll.services
+      .filter((service) => !isHiddenFromSupport(service))
+      .map((service) => {
+        return {
+          id: service.id,
+          name: service.name,
+          isSelected:
+            selectedServices.find(
+              (x) => x.toLowerCase() === service.id.toLowerCase(),
+            ) !== undefined,
+        };
+      });
   }
 
   return {

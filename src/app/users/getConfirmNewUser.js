@@ -1,5 +1,19 @@
 const { getAllServices } = require("../services/utils");
 
+const isTruthy = (v) => v === true || v === 1 || v === "true" || v === "1";
+const isHiddenFromSupport = (s) => {
+  if (s.isIdOnlyService) {
+    const params = s.relyingParty?.params;
+    return (
+      isTruthy(s.isHiddenService) &&
+      isTruthy(params?.hideApprover) &&
+      isTruthy(params?.hideSupport) &&
+      isTruthy(params?.helpHidden)
+    );
+  }
+  return isTruthy(s.relyingParty?.params?.hideSupport);
+};
+
 const getRoleName = (id) => {
   switch (id) {
     case 0:
@@ -33,7 +47,7 @@ const getConfirmNewUser = async (req, res) => {
           name: getRoleName(req.session.user.permission),
         }
       : "",
-    oidcClients: oidcClients.services,
+    oidcClients: oidcClients.services.filter((s) => !isHiddenFromSupport(s)),
     backLink: true,
     currentPage: "users",
     layout: "sharedViews/layout.ejs",

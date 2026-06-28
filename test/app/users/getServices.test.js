@@ -344,4 +344,160 @@ describe("when getting users service details", () => {
       statusChangeReasons: [],
     });
   });
+
+  const fullyHiddenService = (id, paramValue) => ({
+    id,
+    dateActivated: "10/10/2018",
+    name: "Fully Hidden Service",
+    status: "active",
+    isExternalService: true,
+    relyingParty: {
+      params: {
+        hideApprover: paramValue,
+        hideSupport: paramValue,
+        helpHidden: paramValue,
+      },
+    },
+  });
+
+  it("should exclude services where all three hide params are string 'true'", async () => {
+    getAllServices.mockReturnValue({
+      services: [fullyHiddenService("hidden-str", "true")],
+    });
+
+    await getServices(req, res);
+
+    expect(
+      res.render.mock.calls[0][1].organisations.flatMap((o) => o.services),
+    ).toHaveLength(0);
+  });
+
+  it("should exclude services where all three hide params are integer 1", async () => {
+    getAllServices.mockReturnValue({
+      services: [fullyHiddenService("hidden-int", 1)],
+    });
+
+    await getServices(req, res);
+
+    expect(
+      res.render.mock.calls[0][1].organisations.flatMap((o) => o.services),
+    ).toHaveLength(0);
+  });
+
+  it("should exclude services where all three hide params are boolean true", async () => {
+    getAllServices.mockReturnValue({
+      services: [fullyHiddenService("hidden-bool", true)],
+    });
+
+    await getServices(req, res);
+
+    expect(
+      res.render.mock.calls[0][1].organisations.flatMap((o) => o.services),
+    ).toHaveLength(0);
+  });
+
+  it("should hide a service when only hideSupport is truthy", async () => {
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+          dateActivated: "10/10/2018",
+          name: "A good service",
+          status: "active",
+          isExternalService: true,
+          relyingParty: { params: { hideSupport: "true" } },
+        },
+      ],
+    });
+
+    await getServices(req, res);
+
+    const allServiceIds = res.render.mock.calls[0][1].organisations.flatMap(
+      (o) => o.services.map((s) => s.id),
+    );
+    expect(allServiceIds).not.toContain("83f00ace-f1a0-4338-8784-fa14f5943e5a");
+  });
+
+  it("should exclude id-only services where isHiddenService is truthy", async () => {
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: "id-only-hidden",
+          dateActivated: "10/10/2018",
+          name: "Hidden Id Only Service",
+          status: "active",
+          isExternalService: true,
+          isIdOnlyService: true,
+          isHiddenService: 1,
+          relyingParty: { params: {} },
+        },
+      ],
+    });
+
+    await getServices(req, res);
+
+    const allServiceIds = res.render.mock.calls[0][1].organisations.flatMap(
+      (o) => o.services.map((s) => s.id),
+    );
+    expect(allServiceIds).not.toContain("id-only-hidden");
+  });
+
+  it("should NOT exclude id-only services where isHiddenService is falsy", async () => {
+    const visibleIdOnlyService = {
+      id: "id-only-visible",
+      dateActivated: "10/10/2018",
+      name: "Visible Id Only Service",
+      status: "active",
+      isExternalService: true,
+      isIdOnlyService: true,
+      isHiddenService: 0,
+      relyingParty: { params: {} },
+    };
+    getAllServices.mockReturnValue({
+      services: [
+        visibleIdOnlyService,
+        {
+          id: "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+          dateActivated: "10/10/2018",
+          name: "A good service",
+          status: "active",
+          isExternalService: true,
+          relyingParty: { params: {} },
+        },
+      ],
+    });
+    getUserOrganisationsWithServicesRaw.mockReturnValue([
+      {
+        organisation: {
+          id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+          name: "Big School",
+          status: { id: 1, name: "open" },
+        },
+        role: { id: 0, name: "End user" },
+        approvers: [],
+        services: [
+          {
+            id: "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+            name: "A good service",
+            requestDate: "2018-01-18T10:46:59.385Z",
+            status: 1,
+          },
+          {
+            id: "id-only-visible",
+            name: "Visible Id Only Service",
+            requestDate: "2018-01-18T10:46:59.385Z",
+            status: 1,
+          },
+        ],
+      },
+    ]);
+
+    await getServices(req, res);
+
+    const allServiceIds = res.render.mock.calls[0][1].organisations.flatMap(
+      (o) => o.services.map((s) => s.id),
+    );
+    expect(allServiceIds).toContain("83f00ace-f1a0-4338-8784-fa14f5943e5a");
+    expect(allServiceIds).toContain("id-only-visible");
+  });
 });

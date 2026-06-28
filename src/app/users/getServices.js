@@ -70,15 +70,22 @@ const action = async (req, res) => {
     user.statusChangeReasons = userStatus ? userStatus.statusChangeReasons : [];
   }
   const organisationDetails = await getOrganisations(user.id, req.id);
+  const isTruthy = (v) => v === true || v === 1 || v === "true" || v === "1";
+  const isHiddenFromSupport = (x) => {
+    if (x.isIdOnlyService) {
+      const params = x.relyingParty?.params;
+      return (
+        isTruthy(x.isHiddenService) &&
+        isTruthy(params?.hideApprover) &&
+        isTruthy(params?.hideSupport) &&
+        isTruthy(params?.helpHidden)
+      );
+    }
+    return isTruthy(x.relyingParty?.params?.hideSupport);
+  };
   const allServices = await getAllServices();
   const externalServices = allServices.services.filter(
-    (x) =>
-      x.isExternalService === true &&
-      !(
-        x.relyingParty &&
-        x.relyingParty.params &&
-        x.relyingParty.params.hideSupport === "true"
-      ),
+    (x) => x.isExternalService === true && !isHiddenFromSupport(x),
   );
 
   const allOrganisationsForUser = [];
