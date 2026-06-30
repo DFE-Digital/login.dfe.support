@@ -46,8 +46,8 @@
                                 <tr class="govuk-table__row">
                                     <td class="govuk-table__cell"><%= audit.formattedTimestamp %></td>
                                     <td class="govuk-table__cell" style="overflow-wrap: break-word;"><%= audit.event.description %></td>
-                                    <td class="govuk-table__cell"><%= audit.service ? audit.service.name : '' %></td>
-                                    <td class="govuk-table__cell">
+                                    <td class="govuk-table__cell" style="overflow-wrap: break-word;"><%= audit.service ? audit.service.name : '' %></td>
+                                    <td class="govuk-table__cell" style="overflow-wrap: break-word;">
                                         <%= org ? org.UKPRN
                                             ? `${org.name} (UKPRN: ${org.UKPRN})`
                                             : org.URN
