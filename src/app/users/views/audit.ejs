@@ -45,7 +45,7 @@
                                 <% const org = audit.organisation; %>
                                 <tr class="govuk-table__row">
                                     <td class="govuk-table__cell"><%= audit.formattedTimestamp %></td>
-                                    <td class="govuk-table__cell" style="overflow-wrap: break-word;"><%= audit.event.description %></td>
+                                    <td class="govuk-table__cell"><div style="overflow-wrap: break-word; max-width: 25rem;"><%= audit.event.description %></div></td>
                                     <td class="govuk-table__cell"><%= audit.service ? audit.service.name : '' %></td>
                                     <td class="govuk-table__cell">
                                         <%= org ? org.UKPRN
@@ -56,7 +56,7 @@
                                         : '' %>
                                     </td>
                                     <td class="govuk-table__cell"><%= audit.result ? 'Success' : 'Failure' %></td>
-                                    <td class="govuk-table__cell" style="overflow-wrap: break-word; min-width: 6rem;"><%= audit.user ? audit.user.name : '' %></td>
+                                    <td class="govuk-table__cell"><div style="overflow-wrap: break-word; min-width: 6rem; max-width: 12rem;"><%= audit.user ? audit.user.name : '' %></div></td>
                                 </tr>
                             <% } %>
                         <% } else { %>
