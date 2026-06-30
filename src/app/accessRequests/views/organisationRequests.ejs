@@ -78,7 +78,7 @@
                     <input type="hidden" name="requestType" value="<%= requestTypes[i].id %>"/>
                     <% } %>
                 <% } %>
-                <button type="submit" class="govuk-button govuk-button--secondary filter-link govuk-!-margin-top-4 govuk-!-margin-padding-2"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
+                <button type="submit" class="govuk-button govuk-button--secondary filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
             </form>
         </div>
     </div>
@@ -91,53 +91,45 @@
                     <input type="hidden" name="page" value="1"/>
                     <input type="hidden" name="showFilters" value="true"/>
 
-                    <div class="govuk-form-group">
-                        <fieldset class="govuk-fieldset">
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                    <div class="filter-box">
+                        <div class="container-head js-container-head">
+                            <div class="govuk-heading-s govuk-!-margin-0 govuk-!-padding-1 govuk-!-padding-left-2 option-select-label" id="option-select-title-requeststatus">
                                 Request status
-                            </legend>
-                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                            </div>
+                        </div>
+                        <div role="group" aria-labelledby="option-select-title-requeststatus" class="options-container" id="requestStatuses">
+                            <div class="js-auto-height-inner">
                                 <% for (let i = 0; i < requestStatuses.length; i += 1) { %>
-                                    <div class="govuk-checkboxes__item">
-                                        <input class="govuk-checkboxes__input"
-                                            id="requestStatus-<%= requestStatuses[i].id %>"
-                                            name="status"
-                                            type="checkbox"
-                                            value="<%= requestStatuses[i].id %>"
-                                            <%= (requestStatuses[i].isSelected ? 'checked' : '') %>>
-                                        <label class="govuk-label govuk-checkboxes__label" for="requestStatus-<%= requestStatuses[i].id %>">
-                                            <%= requestStatuses[i].name %>
-                                        </label>
-                                    </div>
+                                    <label class="govuk-label">
+                                        <input name="status" value="<%= requestStatuses[i].id %>"
+                                            type="checkbox" <%= (requestStatuses[i].isSelected ? 'checked="checked"' : '') %>>
+                                        <%= requestStatuses[i].name %>
+                                    </label>
                                 <% } %>
                             </div>
-                        </fieldset>
+                        </div>
                     </div>
 
-                    <div class="govuk-form-group">
-                        <fieldset class="govuk-fieldset">
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                    <div class="filter-box">
+                        <div class="container-head js-container-head">
+                            <div class="govuk-heading-s govuk-!-margin-0 govuk-!-padding-1 govuk-!-padding-left-2 option-select-label" id="option-select-title-requesttype">
                                 Type
-                            </legend>
-                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                            </div>
+                        </div>
+                        <div role="group" aria-labelledby="option-select-title-requesttype" class="options-container" id="requestTypes">
+                            <div class="js-auto-height-inner">
                                 <% for (let i = 0; i < requestTypes.length; i += 1) { %>
-                                    <div class="govuk-checkboxes__item">
-                                        <input class="govuk-checkboxes__input"
-                                            id="requestType-<%= requestTypes[i].id %>"
-                                            name="requestType"
-                                            type="checkbox"
-                                            value="<%= requestTypes[i].id %>"
-                                            <%= (requestTypes[i].isSelected ? 'checked' : '') %>>
-                                        <label class="govuk-label govuk-checkboxes__label" for="requestType-<%= requestTypes[i].id %>">
-                                            <%= requestTypes[i].name %>
-                                        </label>
-                                    </div>
+                                    <label class="govuk-label">
+                                        <input name="requestType" value="<%= requestTypes[i].id %>"
+                                            type="checkbox" <%= (requestTypes[i].isSelected ? 'checked="checked"' : '') %>>
+                                        <%= requestTypes[i].name %>
+                                    </label>
                                 <% } %>
                             </div>
-                        </fieldset>
+                        </div>
                     </div>
 
-                    <button class="govuk-button govuk-button--secondary" data-module="govuk-button">Apply filter</button>
+                    <button type="submit" class="govuk-button govuk-button--secondary">Apply filter</button>
 
                 </form>
             </div>
