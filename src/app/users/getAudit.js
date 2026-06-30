@@ -167,8 +167,7 @@ const describeAuditEvent = async (audit, req) => {
       organisationId: organisationId.oldValue,
     });
     const viewedUser = await getCachedUserById(audit.editedUser, req);
-    return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
-      numericIdentifier: ${audit["numericIdentifier"]}, textIdentifier: ${audit["textIdentifier"]})`;
+    return `Deleted organisation: ${organisation.name} for user ${viewedUser.email}`;
   }
   if (audit.type === "support" && audit.subType === "user-org") {
     const organisationId =
@@ -204,11 +203,14 @@ const describeAuditEvent = async (audit, req) => {
         ? audit.editedUser.replace(/[""]+/g, "")
         : audit.editedUser;
       const viewedUser = await getCachedUserById(audit.editedUser, req);
-      return `Deleted organisation: ${organisation.name} for user  ${viewedUser.firstName} ${viewedUser.lastName} legacyID: (
-        numericIdentifier: ${audit["numericIdentifier"]}, textIdentifier: ${audit["textIdentifier"]})`;
+      return `Deleted organisation: ${organisation.name} for user ${viewedUser.email}`;
     } catch {
       return audit.message;
     }
+  }
+
+  if (audit.type === "sub-service" && audit.subType === "sub-service-request") {
+    return "Requested sub-service access";
   }
 
   return `${audit.type} / ${audit.subType}`;
