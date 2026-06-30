@@ -15,27 +15,27 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
             <div class="govuk-tabs__panel" id="audit">
-                <table class="govuk-table">
-                    <div class="govuk-grid-row">
-                        <div class="govuk-grid-column-full">
-                            <form method="POST">
-                                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                                <button class="govuk-button" type="submit" 
-                                        onclick="this.form.submit(); this.disabled=true; this.innerText='Processing Update';">
-                                    Update and refresh
-                                </button>
-                            </form>
-                        </div>
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-full">
+                        <form method="POST">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                            <button class="govuk-button" type="submit"
+                                    onclick="this.disabled=true; this.innerText='Processing Update';">
+                                Update and refresh
+                            </button>
+                        </form>
                     </div>
-                    <%- include('../../sharedViews/paginationNew', paginationModel); %>
+                </div>
+                <%- include('../../sharedViews/paginationNew', paginationModel); %>
+                <table class="govuk-table" style="table-layout: fixed; width: 100%;">
                     <thead class="govuk-table__head">
                         <tr class="govuk-table__row">
-                            <th scope="col" class="govuk-table__header">Date</th>
-                            <th scope="col" class="govuk-table__header">Event</th>
-                            <th scope="col" class="govuk-table__header">Service</th>
-                            <th scope="col" class="govuk-table__header">Organisation</th>
-                            <th scope="col" class="govuk-table__header">Result</th>
-                            <th scope="col" class="govuk-table__header">User</th>
+                            <th scope="col" class="govuk-table__header" style="width: 12%;">Date</th>
+                            <th scope="col" class="govuk-table__header" style="width: 32%;">Event</th>
+                            <th scope="col" class="govuk-table__header" style="width: 16%;">Service</th>
+                            <th scope="col" class="govuk-table__header" style="width: 15%;">Organisation</th>
+                            <th scope="col" class="govuk-table__header" style="width: 10%;">Result</th>
+                            <th scope="col" class="govuk-table__header" style="width: 15%;">User</th>
                         </tr>
                     </thead>
                     <tbody class="govuk-table__body">
@@ -45,9 +45,9 @@
                                 <% const org = audit.organisation; %>
                                 <tr class="govuk-table__row">
                                     <td class="govuk-table__cell"><%= audit.formattedTimestamp %></td>
-                                    <td class="govuk-table__cell"><%= audit.event.description %></td>
-                                    <td class="govuk-table__cell"><%= audit.service ? audit.service.name : '' %></td>
-                                    <td class="govuk-table__cell">
+                                    <td class="govuk-table__cell" style="overflow-wrap: break-word;"><%= audit.event.description %></td>
+                                    <td class="govuk-table__cell" style="overflow-wrap: break-word;"><%= audit.service ? audit.service.name : '' %></td>
+                                    <td class="govuk-table__cell" style="overflow-wrap: break-word;">
                                         <%= org ? org.UKPRN
                                             ? `${org.name} (UKPRN: ${org.UKPRN})`
                                             : org.URN
@@ -56,7 +56,7 @@
                                         : '' %>
                                     </td>
                                     <td class="govuk-table__cell"><%= audit.result ? 'Success' : 'Failure' %></td>
-                                    <td class="govuk-table__cell"><%= audit.user ? audit.user.name : '' %></td>
+                                    <td class="govuk-table__cell" style="overflow-wrap: break-word;"><%= audit.user ? audit.user.name : '' %></td>
                                 </tr>
                             <% } %>
                         <% } else { %>
