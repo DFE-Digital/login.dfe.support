@@ -5,6 +5,17 @@ jest.mock("./../../../src/infrastructure/logger", () =>
   require("./../../utils").loggerMockFactory(),
 );
 jest.mock("login.dfe.policy-engine");
+jest.mock("login.dfe.api-client/services", () => ({
+  getServiceRaw: jest.fn(),
+}));
+jest.mock("login.dfe.api-client/users", () => ({
+  getUserServiceRaw: jest.fn(),
+  getUserOrganisationsWithServicesRaw: jest.fn(),
+}));
+jest.mock("login.dfe.api-client/invitations", () => ({
+  getInvitationOrganisationsRaw: jest.fn(),
+  getInvitationServiceRaw: jest.fn(),
+}));
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const res = getResponseMock();
@@ -14,6 +25,22 @@ describe("when selecting the roles for a service", () => {
   let postAssociateRoles;
 
   beforeEach(() => {
+    const { getServiceRaw } = require("login.dfe.api-client/services");
+    const {
+      getUserOrganisationsWithServicesRaw,
+    } = require("login.dfe.api-client/users");
+    getServiceRaw
+      .mockReset()
+      .mockResolvedValue({ relyingParty: { client_id: "someService" } });
+    getUserOrganisationsWithServicesRaw.mockReset().mockResolvedValue([
+      {
+        organisation: {
+          id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+          category: { id: "001" },
+        },
+      },
+    ]);
+
     req = getRequestMock({
       params: {
         uid: "user1",
