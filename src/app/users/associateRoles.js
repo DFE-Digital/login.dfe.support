@@ -105,7 +105,7 @@ const get = async (req, res) => {
   const model = await getViewModel(req);
   if (
     model.organisationDetails?.organisation?.category?.id === "054" &&
-    model.serviceDetails?.relyingParty?.clientId !== "ukRlp"
+    model.serviceDetails?.relyingParty?.client_id !== "ukRlp"
   ) {
     return res.redirect(`/users/${userId}/organisations/${req.params.orgId}`);
   }
@@ -116,6 +116,22 @@ const post = async (req, res) => {
   const userId = req.params.uid;
   if (!req.session.user) {
     return res.redirect(`/users/${req.params.uid}/organisations`);
+  }
+
+  const [serviceForGuard, userOrgsForGuard] = await Promise.all([
+    getServiceRaw({ by: { serviceId: req.params.sid } }),
+    userId.startsWith("inv-")
+      ? getInvitationOrganisationsRaw({ invitationId: userId.substr(4) })
+      : getUserOrganisationsWithServicesRaw({ userId }),
+  ]);
+  const orgForGuard = userOrgsForGuard?.find(
+    (x) => x.organisation.id === req.params.orgId,
+  );
+  if (
+    orgForGuard?.organisation?.category?.id === "054" &&
+    serviceForGuard?.relyingParty?.client_id !== "ukRlp"
+  ) {
+    return res.redirect(`/users/${userId}/organisations/${req.params.orgId}`);
   }
 
   const currentService = req.session.user.services.findIndex(
