@@ -91,7 +91,7 @@ const buildModel = async (req) => {
     layout: "sharedViews/layout.ejs",
     currentPage: "users",
     title: "Requests - DfE Sign-in",
-    backLink: "/users",
+
     requests,
     page: result.page,
     numberOfPages: result.numberOfPages,
