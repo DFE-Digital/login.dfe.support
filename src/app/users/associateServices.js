@@ -10,7 +10,7 @@ const { getAllServices } = require("../services/utils");
 const PolicyEngine = require("login.dfe.policy-engine");
 const policyEngine = new PolicyEngine(config);
 
-const getAllAvailableServices = async (req) => {
+const getAllAvailableServices = async (req, organisationCategoryId) => {
   const allServices = await getAllServices();
   let externalServices = allServices.services.filter(
     (x) =>
@@ -40,13 +40,18 @@ const getAllAvailableServices = async (req) => {
     req.id,
   );
 
-  return externalServices.filter((service) =>
+  const available = externalServices.filter((service) =>
     policyResults.find(
       (result) =>
         service.id.toLowerCase() === result.id.toLowerCase() &&
         result.serviceAvailableToUser === true,
     ),
   );
+
+  if (organisationCategoryId === "054") {
+    return available.filter((svc) => svc.relyingParty?.clientId === "ukRlp");
+  }
+  return available;
 };
 
 const get = async (req, res) => {
@@ -60,7 +65,10 @@ const get = async (req, res) => {
   const organisationDetails = userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,
   );
-  const externalServices = await getAllAvailableServices(req);
+  const externalServices = await getAllAvailableServices(
+    req,
+    organisationDetails?.organisation?.category?.id,
+  );
 
   const model = {
     csrfToken: req.csrfToken(),
@@ -93,7 +101,10 @@ const validate = async (req) => {
   const organisationDetails = userOrganisations.find(
     (x) => x.organisation.id === req.params.orgId,
   );
-  const externalServices = await getAllAvailableServices(req);
+  const externalServices = await getAllAvailableServices(
+    req,
+    organisationDetails?.organisation?.category?.id,
+  );
   let selectedServices = [];
   if (req.body.service && req.body.service instanceof Array) {
     selectedServices = req.body.service;

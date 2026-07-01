@@ -103,6 +103,12 @@ const get = async (req, res) => {
   }
 
   const model = await getViewModel(req);
+  if (
+    model.organisationDetails?.organisation?.category?.id === "054" &&
+    model.serviceDetails?.relyingParty?.clientId !== "ukRlp"
+  ) {
+    return res.redirect(`/users/${userId}/organisations/${req.params.orgId}`);
+  }
   return res.render("users/views/associateRoles", model);
 };
 
