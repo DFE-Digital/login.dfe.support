@@ -26,6 +26,9 @@ const unpackMultiSelect = (parameter) => {
 };
 
 const resolveEmailToUserId = async (email) => {
+  if (!email.includes("@") || email.includes("/") || email.includes("..")) {
+    return null;
+  }
   const user = await getUserRaw({ by: { email } });
   return user ? user.sub : null;
 };

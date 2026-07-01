@@ -97,6 +97,21 @@ describe("search - email filtering", () => {
     expect(getPendingRequestsRaw).not.toHaveBeenCalled();
   });
 
+  it.each([
+    ["missing @ sign", "notanemail"],
+    ["path traversal with ..", "foo@bar.com/../admin"],
+    ["forward slash in input", "foo@bar.com/inject"],
+  ])(
+    "returns noUserFound true and skips getUserRaw for malformed input: %s",
+    async (_desc, badInput) => {
+      const result = await search(makeReq({ searchEmail: badInput }));
+
+      expect(getUserRaw).not.toHaveBeenCalled();
+      expect(result.noUserFound).toBe(true);
+      expect(result.accessRequests).toEqual([]);
+    },
+  );
+
   it("trims leading and trailing whitespace from searchEmail before resolving", async () => {
     getUserRaw.mockResolvedValue({
       sub: "user-abc-123",
