@@ -49,7 +49,7 @@ const getAllAvailableServices = async (req, organisationCategoryId) => {
   );
 
   if (organisationCategoryId === "054") {
-    return available.filter((svc) => svc.relyingParty?.clientId === "ukRlp");
+    return available.filter((svc) => svc.relyingParty?.client_id === "ukRlp");
   }
   return available;
 };
