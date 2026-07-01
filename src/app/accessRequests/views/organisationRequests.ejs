@@ -171,23 +171,6 @@
             </div>
         <% } %>
         <div class="govuk-grid-column-<%= (showFilters ? "two-thirds" : "full") %>">
-            <% if (locals.noUserFound) { %>
-            <div class="govuk-notification-banner" role="region"
-                 aria-labelledby="no-account-banner-title"
-                 data-module="govuk-notification-banner">
-                <div class="govuk-notification-banner__header">
-                    <h2 class="govuk-notification-banner__title" id="no-account-banner-title">
-                        No account found
-                    </h2>
-                </div>
-                <div class="govuk-notification-banner__content">
-                    <p class="govuk-body">
-                        No DfE Sign-in account was found with the email address
-                        <strong><%= searchEmail %></strong>.
-                    </p>
-                </div>
-            </div>
-            <% } %>
             <%- include('../../sharedViews/paginationNew', paginationModel); %>
             <table class="govuk-table">
                 <thead class="govuk-table__head">
