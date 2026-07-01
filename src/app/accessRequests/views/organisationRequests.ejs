@@ -164,8 +164,8 @@
 
                 <tbody class="govuk-table__body">
                     <% if (locals.requests && locals.requests.length === 0) { %>
-                        <tr class="govuk-table__row govuk-body">
-                            <td class="govuk-!-padding-top-3" colspan="7"><span class="empty-state">There are no outstanding requests.</span></td>
+                        <tr class="govuk-table__row">
+                            <td class="govuk-body-s" style="border-bottom: none;"><span>No requests found</span></td>
                         </tr>
                     <% } else { %>
                     <% for (let i = 0; i < locals.requests.length; i++) { %>
