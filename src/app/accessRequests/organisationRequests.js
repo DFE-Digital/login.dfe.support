@@ -50,10 +50,15 @@ const getFiltersModel = async (req) => {
     };
   });
 
+  const searchEmail = paramsSource.searchEmail
+    ? paramsSource.searchEmail.trim()
+    : "";
+
   return {
     showFilters,
     requestStatuses,
     requestTypes,
+    searchEmail,
   };
 };
 
@@ -86,11 +91,12 @@ const buildModel = async (req) => {
     layout: "sharedViews/layout.ejs",
     currentPage: "users",
     title: "Requests - DfE Sign-in",
-    backLink: "/users",
+
     requests,
     page: result.page,
     numberOfPages: result.numberOfPages,
     totalNumberOfResults: result.totalNumberOfResults,
+    noUserFound: result.noUserFound || false,
   };
 
   const filtersModel = await getFiltersModel(req);

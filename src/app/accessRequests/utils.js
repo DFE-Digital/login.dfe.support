@@ -6,6 +6,7 @@ const {
   getUserRaw,
   addOrganisationToUser,
   getUserOrganisationRequestRaw,
+  getPendingRequestsRaw,
 } = require("login.dfe.api-client/users");
 const {
   getOrganisationRaw,
@@ -24,6 +25,14 @@ const unpackMultiSelect = (parameter) => {
   return parameter;
 };
 
+const resolveEmailToUserId = async (email) => {
+  if (!email.includes("@") || email.includes("/") || email.includes("..")) {
+    return null;
+  }
+  const user = await getUserRaw({ by: { email } });
+  return user ? user.sub : null;
+};
+
 const search = async (req) => {
   const paramsSource = req.method === "POST" ? req.body : req.query;
 
@@ -31,8 +40,42 @@ const search = async (req) => {
   if (isNaN(page)) {
     page = 1;
   }
+
   const filterStatus = unpackMultiSelect(paramsSource.status);
   const filterType = unpackMultiSelect(paramsSource.requestType);
+  const searchEmail = paramsSource.searchEmail
+    ? paramsSource.searchEmail.trim()
+    : "";
+
+  if (searchEmail) {
+    const userId = await resolveEmailToUserId(searchEmail);
+    if (!userId) {
+      return {
+        page: 1,
+        numberOfPages: 0,
+        totalNumberOfResults: 0,
+        accessRequests: [],
+        noUserFound: true,
+        searchEmail,
+      };
+    }
+
+    const requests = ((await getPendingRequestsRaw({ userId })) || []).map(
+      (r) => ({
+        ...r,
+        request_type: { id: "organisation", name: "Organisation access" },
+      }),
+    );
+
+    return {
+      page: 1,
+      numberOfPages: requests.length > 0 ? 1 : 0,
+      totalNumberOfResults: requests.length,
+      accessRequests: requests,
+      searchEmail,
+    };
+  }
+
   const results = await getOrganisationRequestsRaw({
     pageNumber: page,
     filterStatus,
@@ -44,6 +87,7 @@ const search = async (req) => {
     numberOfPages: results.totalNumberOfPages,
     totalNumberOfResults: results.totalNumberOfRecords,
     accessRequests: results.requests,
+    searchEmail,
   };
 };
 
