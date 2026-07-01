@@ -55,15 +55,25 @@
             <h1 class="govuk-heading-xl">
                 Requests
             </h1>
-            <form method="post">
+            <form class="govuk-form-group" method="post">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                 <input type="hidden" name="showFilters" value="<%= showFilters %>"/>
-
-                <% for (let i = 0; i < requestStatuses.length; i += 1) { %>
+                <% for (let i = 0; i < requestStatuses.length; i++) { %>
                     <% if (requestStatuses[i].isSelected) { %>
-                        <input name="requestStatus" value="<%= requestStatuses[i].id %>" type="hidden">
+                    <input type="hidden" name="status" value="<%= requestStatuses[i].id %>"/>
                     <% } %>
                 <% } %>
+                <% for (let i = 0; i < requestTypes.length; i++) { %>
+                    <% if (requestTypes[i].isSelected) { %>
+                    <input type="hidden" name="requestType" value="<%= requestTypes[i].id %>"/>
+                    <% } %>
+                <% } %>
+                <div class="govuk-form-group">
+                    <label for="searchEmail" class="vh">Search by email address</label>
+                    <input class="govuk-input govuk-!-width-two-thirds" type="text" id="searchEmail" name="searchEmail"
+                           value="<%= searchEmail || '' %>" placeholder="Search by email address">
+                    <button type="submit" class="govuk-button">Search</button>
+                </div>
             </form>
             <form method="post" class="show-filters">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
@@ -80,32 +90,7 @@
                     <% } %>
                 <% } %>
                 <input type="hidden" name="searchEmail" value="<%= searchEmail || '' %>"/>
-                <button type="submit" class="govuk-button govuk-button--secondary filter-link govuk-!-margin-top-4 govuk-!-margin-padding-2"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
-            </form>
-            <form method="post" class="govuk-!-margin-top-2">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                <input type="hidden" name="showFilters" value="<%= showFilters %>"/>
-                <% for (let i = 0; i < requestStatuses.length; i++) { %>
-                    <% if (requestStatuses[i].isSelected) { %>
-                    <input type="hidden" name="status" value="<%= requestStatuses[i].id %>"/>
-                    <% } %>
-                <% } %>
-                <% for (let i = 0; i < requestTypes.length; i++) { %>
-                    <% if (requestTypes[i].isSelected) { %>
-                    <input type="hidden" name="requestType" value="<%= requestTypes[i].id %>"/>
-                    <% } %>
-                <% } %>
-                <div class="govuk-form-group">
-                    <label class="govuk-label" for="searchEmail">
-                        Search by email address
-                    </label>
-                    <div class="govuk-input__wrapper">
-                        <input class="govuk-input govuk-input--width-20" id="searchEmail" name="searchEmail"
-                               type="text" value="<%= searchEmail || '' %>"/>
-                        <button class="govuk-button govuk-button--secondary" type="submit"
-                                data-module="govuk-button">Search</button>
-                    </div>
-                </div>
+                <button type="submit" class="govuk-button govuk-button--secondary filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
             </form>
         </div>
     </div>
