@@ -6,7 +6,6 @@ const {
   getUserRaw,
   addOrganisationToUser,
   getUserOrganisationRequestRaw,
-  getSearchIndexUsersRaw,
   getPendingRequestsRaw,
 } = require("login.dfe.api-client/users");
 const {
@@ -27,15 +26,8 @@ const unpackMultiSelect = (parameter) => {
 };
 
 const resolveEmailToUserId = async (email) => {
-  const results = await getSearchIndexUsersRaw({
-    searchCriteria: email,
-    pageNumber: 1,
-  });
-  if (!results || !results.users) return null;
-  const match = results.users.find(
-    (u) => u.email && u.email.toLowerCase() === email.toLowerCase(),
-  );
-  return match ? match.id : null;
+  const user = await getUserRaw({ by: { email } });
+  return user ? user.sub : null;
 };
 
 const search = async (req) => {
