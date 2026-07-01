@@ -226,4 +226,16 @@ describe("search - email filtering", () => {
     expect(result.page).toBe(1);
     expect(result.numberOfPages).toBe(1);
   });
+
+  it("returns empty accessRequests when getPendingRequestsRaw returns null", async () => {
+    getSearchIndexUsersRaw.mockResolvedValue({
+      users: [{ id: "user-abc-123", email: "user@example.com" }],
+    });
+    getPendingRequestsRaw.mockResolvedValue(null);
+
+    const result = await search(makeReq({ searchEmail: "user@example.com" }));
+
+    expect(result.accessRequests).toEqual([]);
+    expect(result.totalNumberOfResults).toBe(0);
+  });
 });

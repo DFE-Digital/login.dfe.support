@@ -65,14 +65,16 @@ const search = async (req) => {
       };
     }
 
-    const requests = (await getPendingRequestsRaw({ userId })).map((r) => ({
-      ...r,
-      request_type: { id: "organisation", name: "Organisation access" },
-    }));
+    const requests = ((await getPendingRequestsRaw({ userId })) || []).map(
+      (r) => ({
+        ...r,
+        request_type: { id: "organisation", name: "Organisation access" },
+      }),
+    );
 
     return {
       page: 1,
-      numberOfPages: 1,
+      numberOfPages: requests.length > 0 ? 1 : 0,
       totalNumberOfResults: requests.length,
       accessRequests: requests,
       searchEmail,
