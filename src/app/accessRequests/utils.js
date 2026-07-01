@@ -7,6 +7,7 @@ const {
   addOrganisationToUser,
   getUserOrganisationRequestRaw,
   getSearchIndexUsersRaw,
+  getPendingRequestsRaw,
 } = require("login.dfe.api-client/users");
 const {
   getOrganisationRaw,
@@ -51,10 +52,9 @@ const search = async (req) => {
     ? paramsSource.searchEmail.trim()
     : "";
 
-  let filterUserId;
   if (searchEmail) {
-    filterUserId = await resolveEmailToUserId(searchEmail);
-    if (!filterUserId) {
+    const userId = await resolveEmailToUserId(searchEmail);
+    if (!userId) {
       return {
         page: 1,
         numberOfPages: 0,
@@ -64,13 +64,25 @@ const search = async (req) => {
         searchEmail,
       };
     }
+
+    const requests = (await getPendingRequestsRaw({ userId })).map((r) => ({
+      ...r,
+      request_type: { id: "organisation", name: "Organisation access" },
+    }));
+
+    return {
+      page: 1,
+      numberOfPages: 1,
+      totalNumberOfResults: requests.length,
+      accessRequests: requests,
+      searchEmail,
+    };
   }
 
   const results = await getOrganisationRequestsRaw({
     pageNumber: page,
     filterStatus,
     filterType,
-    filterUserId,
   });
 
   return {
