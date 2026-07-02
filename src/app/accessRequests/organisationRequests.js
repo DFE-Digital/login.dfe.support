@@ -96,7 +96,6 @@ const buildModel = async (req) => {
     page: result.page,
     numberOfPages: result.numberOfPages,
     totalNumberOfResults: result.totalNumberOfResults,
-    noUserFound: result.noUserFound || false,
   };
 
   const filtersModel = await getFiltersModel(req);

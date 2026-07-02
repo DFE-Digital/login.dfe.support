@@ -64,24 +64,6 @@ describe("organisationRequests GET", () => {
     });
   });
 
-  it("sets noUserFound to false when search does not return noUserFound", async () => {
-    await get(req, res);
-
-    expect(res.render.mock.calls[0][1]).toMatchObject({ noUserFound: false });
-  });
-
-  it("sets noUserFound to true when search returns noUserFound", async () => {
-    utils.search.mockResolvedValue({
-      ...baseSearchResult,
-      noUserFound: true,
-      searchEmail: "missing@example.com",
-    });
-
-    await get(req, res);
-
-    expect(res.render.mock.calls[0][1]).toMatchObject({ noUserFound: true });
-  });
-
   it("defaults searchEmail to empty string when absent from query", async () => {
     await get(req, res);
 

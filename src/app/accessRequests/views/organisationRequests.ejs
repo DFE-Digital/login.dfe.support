@@ -167,7 +167,7 @@
                 <tbody class="govuk-table__body">
                     <% if (locals.requests && locals.requests.length === 0) { %>
                         <tr class="govuk-table__row">
-                            <td class="govuk-body-s" style="border-bottom: none;"><span>No requests found</span></td>
+                            <td class="govuk-table__cell govuk-body-s" colspan="7" style="border-bottom: none;"><span>No requests found</span></td>
                         </tr>
                     <% } else { %>
                     <% for (let i = 0; i < locals.requests.length; i++) { %>

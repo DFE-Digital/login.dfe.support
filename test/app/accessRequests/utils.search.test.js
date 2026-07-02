@@ -6,6 +6,13 @@ jest.mock("./../../../src/infrastructure/accessRequests");
 jest.mock("login.dfe.jobs-client");
 jest.mock("login.dfe.api-client/users");
 jest.mock("login.dfe.api-client/organisations");
+jest.mock("login.dfe.validation", () => ({
+  emailPolicy: {
+    doesEmailMeetPolicy: jest.fn((email) =>
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
+    ),
+  },
+}));
 
 const {
   getUserRaw,

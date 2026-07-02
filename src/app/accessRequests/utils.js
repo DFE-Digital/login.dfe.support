@@ -2,6 +2,7 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const accessRequests = require("../../infrastructure/accessRequests");
+const { emailPolicy } = require("login.dfe.validation");
 const {
   getUserRaw,
   addOrganisationToUser,
@@ -26,7 +27,11 @@ const unpackMultiSelect = (parameter) => {
 };
 
 const resolveEmailToUserId = async (email) => {
-  if (!email.includes("@") || email.includes("/") || email.includes("..")) {
+  if (
+    !emailPolicy.doesEmailMeetPolicy(email) ||
+    email.includes("/") ||
+    email.includes("..")
+  ) {
     return null;
   }
   const user = await getUserRaw({ by: { email } });
