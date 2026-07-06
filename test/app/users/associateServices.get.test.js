@@ -74,9 +74,7 @@ describe("when displaying the associate service view", () => {
           name: "service name",
           status: "active",
           isExternalService: true,
-          relyingParty: {
-            params: {},
-          },
+          isHiddenForSupport: false,
         },
       ],
     });
@@ -195,17 +193,13 @@ describe("when displaying the associate service view", () => {
           id: "service1",
           name: "service one",
           isExternalService: true,
-          relyingParty: {
-            params: {},
-          },
+          isHiddenForSupport: false,
         },
         {
           id: "service2",
           name: "service two",
           isExternalService: true,
-          relyingParty: {
-            params: {},
-          },
+          isHiddenForSupport: false,
         },
       ],
     });
@@ -239,11 +233,44 @@ describe("when displaying the associate service view", () => {
           id: "service2",
           name: "service two",
           isExternalService: true,
-          relyingParty: {
-            params: {},
-          },
+          isHiddenForSupport: false,
         },
       ],
     });
+  });
+
+  it("then it should exclude services with isHiddenForSupport: true", async () => {
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: "service1",
+          name: "service one",
+          isExternalService: true,
+          isHiddenForSupport: false,
+        },
+        {
+          id: "hidden-service",
+          name: "hidden service",
+          isExternalService: true,
+          isHiddenForSupport: true,
+        },
+      ],
+    });
+    getAllServicesForUserInOrg.mockReturnValue([]);
+    policyEngine.getPolicyApplicationResultsForUser.mockImplementation(
+      (userId, organisationId, serviceIds) =>
+        serviceIds.map((id) => ({
+          id,
+          policiesAppliedForUser: [],
+          rolesAvailableToUser: [],
+          serviceAvailableToUser: true,
+        })),
+    );
+
+    await getAssociateServices(req, res);
+
+    const renderedServices = res.render.mock.calls[0][1].services;
+    expect(renderedServices.map((s) => s.id)).not.toContain("hidden-service");
+    expect(renderedServices.map((s) => s.id)).toContain("service1");
   });
 });

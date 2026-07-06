@@ -199,4 +199,5 @@ describe("When retrieving manage console services for a user", () => {
       relyingParty: {},
     });
   });
+
 });

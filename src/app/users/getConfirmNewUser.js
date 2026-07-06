@@ -33,7 +33,9 @@ const getConfirmNewUser = async (req, res) => {
           name: getRoleName(req.session.user.permission),
         }
       : "",
-    oidcClients: oidcClients.services,
+    oidcClients: oidcClients.services.filter(
+      (s) => s.isExternalService === true && !s.isHiddenForSupport,
+    ),
     backLink: true,
     currentPage: "users",
     layout: "sharedViews/layout.ejs",

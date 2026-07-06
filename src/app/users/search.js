@@ -80,16 +80,18 @@ const getFiltersModel = async (req) => {
       paramsSource.service || paramsSource.services,
     );
     const getAll = await getAllServices();
-    services = getAll.services.map((service) => {
-      return {
-        id: service.id,
-        name: service.name,
-        isSelected:
-          selectedServices.find(
-            (x) => x.toLowerCase() === service.id.toLowerCase(),
-          ) !== undefined,
-      };
-    });
+    services = getAll.services
+      .filter((s) => !s.isHiddenForSupport)
+      .map((service) => {
+        return {
+          id: service.id,
+          name: service.name,
+          isSelected:
+            selectedServices.find(
+              (x) => x.toLowerCase() === service.id.toLowerCase(),
+            ) !== undefined,
+        };
+      });
   }
 
   return {
