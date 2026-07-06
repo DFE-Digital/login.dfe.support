@@ -1,4 +1,5 @@
 const { resendInvitation } = require("login.dfe.api-client/invitations");
+const logger = require("../../infrastructure/logger");
 
 const postResendInvite = async (req, res) => {
   const resend = await resendInvitation({
@@ -10,13 +11,23 @@ const postResendInvite = async (req, res) => {
   }
 
   if (!resend) {
-    // change this to warning
     res.flash(
       "info",
       `Failed to send invitation email to ${req.session.user.firstName} ${req.session.user.lastName}`,
     );
     return res.redirect(req.session.type);
   }
+
+  const auditPayload = {
+    type: "support",
+    subType: "resent-invitation",
+    userId: req.user.sub,
+    userEmail: req.user.email,
+    editedUser: req.params.uid,
+    invitedUserEmail: req.session.user.email,
+    message: `${req.user.email} (id: ${req.user.sub}) resent invitation email to ${req.session.user.firstName} ${req.session.user.lastName} (id: ${req.params.uid})`,
+  };
+  logger.audit(auditPayload);
 
   res.flash(
     "info",

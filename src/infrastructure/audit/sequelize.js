@@ -5,6 +5,23 @@ const { Op } = Sequelize;
 const { QueryTypes } = Sequelize;
 const pageSize = 25;
 
+// Service Bus Subscriber wraps string meta values with JSON.stringify, storing them
+// as '"value"' (with surrounding quote characters). Unwrap those before returning.
+const unwrapMetaValue = (value) => {
+  if (
+    typeof value === "string" &&
+    value.startsWith('"') &&
+    value.endsWith('"')
+  ) {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return value;
+    }
+  }
+  return value;
+};
+
 const mapAuditEntity = (auditEntity) => {
   const audit = {
     type: auditEntity.getDataValue("type"),
@@ -22,30 +39,37 @@ const mapAuditEntity = (auditEntity) => {
     const key = meta.getDataValue("key");
     const value = meta.getDataValue("value");
     const isJson = key === "editedFields";
-    audit[key] = isJson ? JSON.parse(value) : value;
+    audit[key] = isJson ? JSON.parse(value) : unwrapMetaValue(value);
   });
 
   return audit;
 };
 
 const getPageOfUserAudits = async (userId, pageNumber) => {
+  // login.dfe.services stores the subject user's ID as bare UUID (no inv- prefix)
+  // because its user list links use user.id directly. Strip the prefix so we match both forms.
+  // 'invitedUser' is the metadata key used by services portal invite events (approver/user-invited).
+  const userIdBare = userId.startsWith("inv-") ? userId.slice(4) : userId;
   const queryWhere = `
     WHERE type != 'technical-audit'
     AND id IN (
       SELECT AL.id
         FROM AuditLogs AL
-        WHERE AL.userId = :userId
+        WHERE AL.userId = TRY_CAST(:userId AS UNIQUEIDENTIFIER)
       UNION
       SELECT AL.id
         FROM AuditLogs AL
         JOIN AuditLogMeta ALM
           ON ALM.auditId = AL.id
-        WHERE ALM.[key] IN ('editedUser', 'viewedUser')
-          AND ALM.[Value] = :userId
+        WHERE ALM.[key] IN ('editedUser', 'viewedUser', 'invitedUser')
+          AND (
+            ALM.[Value] = :userId OR ALM.[Value] = CONCAT('"', :userId, '"')
+            OR ALM.[Value] = :userIdBare OR ALM.[Value] = CONCAT('"', :userIdBare, '"')
+          )
     )`;
   const queryOpts = {
     type: QueryTypes.SELECT,
-    replacements: { userId },
+    replacements: { userId, userIdBare },
   };
   const skip = (pageNumber - 1) * pageSize;
   const { count } = (
@@ -86,13 +110,10 @@ const getPageOfUserAudits = async (userId, pageNumber) => {
     }
 
     if (currentRow.key) {
-      if (currentRow.key === "userId" && currentRow.value) {
-        currentRow.value = currentRow.value.replace(/['"]+/g, "");
-      }
       const isJson = currentRow.key === "editedFields";
       currentEntity[currentRow.key] = isJson
         ? JSON.parse(currentRow.value)
-        : currentRow.value;
+        : unwrapMetaValue(currentRow.value);
     }
   }
   return {

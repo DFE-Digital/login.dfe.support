@@ -12,6 +12,7 @@ jest.mock("login.dfe.api-client/users");
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
 const postEditPermissions = require("./../../../src/app/users/postEditPermissions");
+const logger = require("./../../../src/infrastructure/logger");
 
 const {
   addOrganisationToUser,
@@ -230,5 +231,18 @@ describe("when editing a users permission level", () => {
     expect(sendUserPermissionChangedStub.mock.calls[0][4]).toEqual(
       expectedPermission[1],
     );
+  });
+
+  it("should include organisationId in audit payload", async () => {
+    logger.audit.mockReset();
+
+    await postEditPermissions(req, res);
+
+    expect(logger.audit.mock.calls).toHaveLength(1);
+    expect(logger.audit.mock.calls[0][1]).toMatchObject({
+      type: "support",
+      subType: "user-org-permission-edited",
+      organisationId: "org1",
+    });
   });
 });

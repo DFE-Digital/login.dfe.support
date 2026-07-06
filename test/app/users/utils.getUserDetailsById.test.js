@@ -32,6 +32,7 @@ describe("When using the getUserDetailsById function", () => {
         organisation: null,
         lastLogin: null,
         successfulLoginsInPast12Months: 0,
+        createdAt: "2025-01-15T10:00:00.000Z",
       });
 
       req = {

@@ -137,13 +137,19 @@ const action = async (req, res) => {
     req.session.params.searchType = "users";
   }
 
-  logger.audit(`${req.user.email} viewed user ${user.email}`, {
-    type: "organisations",
-    subType: "user-view",
-    userId: req.user.sub,
-    userEmail: req.user.email,
-    viewedUser: user.id,
-  });
+  if (!req.session.viewedUserAuditIds?.includes(user.id)) {
+    logger.audit(`${req.user.email} viewed user ${user.email}`, {
+      type: "support",
+      subType: "user-view",
+      userId: req.user.sub,
+      userEmail: req.user.email,
+      viewedUser: user.id,
+    });
+    req.session.viewedUserAuditIds = [
+      ...(req.session.viewedUserAuditIds ?? []),
+      user.id,
+    ];
+  }
 
   sendResult(req, res, "users/views/organisations", {
     csrfToken: req.csrfToken(),

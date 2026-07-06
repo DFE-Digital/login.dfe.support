@@ -149,6 +149,7 @@ const post = async (req, res) => {
       subType: "user-service-deleted",
       userId: req.user.sub,
       userEmail: req.user.email,
+      serviceId,
       organisationId,
       editedUser: uid,
       editedFields: [

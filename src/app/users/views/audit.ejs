@@ -1,5 +1,5 @@
 <div class="govuk-width-container">
-    <%- include('summaryPartial', {area: 'audit', user: locals.user}); %>
+    <%- include('summaryPartial', {area: 'audit', user: locals.user, isInvitation: locals.isInvitation}); %>
 
     <%
         const paginationModel = {
