@@ -30,7 +30,10 @@ const {
   get: getRejectServiceRequest,
   post: postRejectServiceRequest,
 } = require("./rejectServiceRequest");
-const { post: postApproveServiceRequest } = require("./approveServiceRequest");
+const {
+  get: getApproveServiceRequest,
+  post: postApproveServiceRequest,
+} = require("./approveServiceRequest");
 
 const router = express.Router({ mergeParams: true });
 
@@ -63,6 +66,11 @@ const users = (csrf) => {
     "/:rid/service-request/reject",
     csrf,
     asyncWrapper(postRejectServiceRequest),
+  );
+  router.get(
+    "/:rid/service-request/approve",
+    csrf,
+    asyncWrapper(getApproveServiceRequest),
   );
   router.post(
     "/:rid/service-request/approve",

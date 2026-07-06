@@ -5,6 +5,21 @@ const config = require("../../infrastructure/config");
 const { updateServiceRequest } = require("login.dfe.api-client/services");
 const { addServiceToUser } = require("login.dfe.api-client/users");
 
+const get = async (req, res) => {
+  const request = await getAndMapServiceRequest(req);
+  if (!request) {
+    return res.status(404).render("errors/notFound");
+  }
+  return res.render("accessRequests/views/approveServiceRequest", {
+    csrfToken: req.csrfToken(),
+    title: "Confirm approval - DfE Sign-in",
+    backLink: true,
+    layout: "sharedViews/layout.ejs",
+    cancelLink: `/access-requests/${req.params.rid}/service-request/review`,
+    request,
+  });
+};
+
 const post = async (req, res) => {
   const request = await getAndMapServiceRequest(req);
   if (!request) {
@@ -62,4 +77,4 @@ const post = async (req, res) => {
   return res.redirect("/access-requests");
 };
 
-module.exports = { post };
+module.exports = { get, post };
