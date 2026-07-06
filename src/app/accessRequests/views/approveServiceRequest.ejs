@@ -1,0 +1,41 @@
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">
+                Confirm approval
+            </h1>
+            <p class="govuk-body">You are about to approve the <%= locals.request.request_type ? locals.request.request_type.name.toLowerCase() : 'service' %> request for <%= locals.request.usersName %>.</p>
+
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Name</dt>
+                    <dd class="govuk-summary-list__value"><%= locals.request.usersName %></dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Email address</dt>
+                    <dd class="govuk-summary-list__value"><%= locals.request.usersEmail %></dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Organisation</dt>
+                    <dd class="govuk-summary-list__value"><%= locals.request.org_name %></dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Service</dt>
+                    <dd class="govuk-summary-list__value"><%= locals.request.serviceName %></dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Request type</dt>
+                    <dd class="govuk-summary-list__value"><%= locals.request.request_type ? locals.request.request_type.name : '' %></dd>
+                </div>
+            </dl>
+
+            <form method="post" class="prevent-form-double-submission">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button">Confirm approval</button>
+                    <a href="<%= locals.cancelLink %>" class="govuk-button govuk-button--secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
