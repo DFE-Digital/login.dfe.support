@@ -72,6 +72,7 @@ const describeAuditEvent = async (audit, req) => {
   const AUDIT_MESSAGE_SUBTYPES = new Set([
     "service-request-approved",
     "sub-service-request-approved",
+    "sub-service-roles-request-approved",
     "organisation-request-approved",
     "service-request-rejected",
     "sub-service-request-rejected",
@@ -256,13 +257,7 @@ const describeAuditEvent = async (audit, req) => {
       organisationId: organisationId.oldValue,
     });
     const viewedUser = await getCachedUserById(audit.editedUser, req);
-    const numericId = audit["numericIdentifier"];
-    const textId = audit["textIdentifier"];
-    const legacyPart =
-      numericId && textId
-        ? ` legacyID: (numericIdentifier: ${numericId}, textIdentifier: ${textId})`
-        : "";
-    return `Deleted organisation: ${organisation.name} for user ${viewedUser.firstName} ${viewedUser.lastName}${legacyPart}`;
+    return `Deleted organisation: ${organisation.name} for user ${viewedUser.email}`;
   }
   if (audit.type === "support" && audit.subType === "user-org") {
     const organisationId =
@@ -317,16 +312,14 @@ const describeAuditEvent = async (audit, req) => {
         ? audit.editedUser.replace(/[""]+/g, "")
         : audit.editedUser;
       const viewedUser = await getCachedUserById(audit.editedUser, req);
-      const numericId = audit["numericIdentifier"];
-      const textId = audit["textIdentifier"];
-      const legacyPart =
-        numericId && textId
-          ? ` legacyID: (numericIdentifier: ${numericId}, textIdentifier: ${textId})`
-          : "";
-      return `Deleted organisation: ${organisation.name} for user ${viewedUser.firstName} ${viewedUser.lastName}${legacyPart}`;
+      return `Deleted organisation: ${organisation.name} for user ${viewedUser.email}`;
     } catch {
       return sanitiseMessage(audit.message);
     }
+  }
+
+  if (audit.type === "sub-service" && audit.subType === "sub-service-request") {
+    return "Requested sub-service access";
   }
 
   return `${audit.type} / ${audit.subType}`;

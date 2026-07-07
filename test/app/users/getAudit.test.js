@@ -97,6 +97,7 @@ describe("when getting users audit details", () => {
         id: userId,
         firstName: "Test",
         lastName: "User",
+        email: "test@example.com",
         status: {
           id: 1,
           description: "Activated",
@@ -312,6 +313,11 @@ describe("when getting users audit details", () => {
     [
       "sub-service",
       "sub-service-request-approved",
+      "email@email.com approved sub-service request for john.doe@email.com",
+    ],
+    [
+      "sub-service",
+      "sub-service-roles-request-approved",
       "email@email.com approved sub-service request for john.doe@email.com",
     ],
     [
@@ -1599,7 +1605,7 @@ describe("when getting users audit details", () => {
 
       const audits = sendResult.mock.calls[0][3].audits;
       expect(audits[0].event.description).toBe(
-        "Deleted organisation: Test School for user Jane Doe",
+        "Deleted organisation: Test School for user jane@example.com",
       );
       expect(audits[0].event.description).not.toContain("null");
       expect(getOrganisationLegacyRaw).toHaveBeenCalledWith({
