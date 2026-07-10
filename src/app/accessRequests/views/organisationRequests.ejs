@@ -94,6 +94,12 @@
                 <input type="hidden" name="searchEmail" value="<%= searchEmail || '' %>"/>
                 <button type="submit" class="govuk-button govuk-button--secondary filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
             </form>
+            <script>
+                document.querySelector('form.show-filters').addEventListener('submit', function () {
+                    this.querySelector('input[name="searchEmail"]').value =
+                        document.getElementById('searchEmail').value;
+                });
+            </script>
         </div>
     </div>
 

@@ -334,6 +334,101 @@ describe("search - email filtering", () => {
     });
   });
 
+  it("filters by request type when type filter is applied alongside email search", async () => {
+    getUserRaw.mockResolvedValue({
+      sub: "user-abc-123",
+      email: "user@example.com",
+    });
+    getPendingRequestsRaw.mockResolvedValue([
+      {
+        id: "org-req-1",
+        user_id: "user-abc-123",
+        org_id: "org-1",
+        org_name: "Test Org",
+        created_date: "2023-01-01T00:00:00.000Z",
+        status: { id: 2, name: "Overdue" },
+      },
+    ]);
+    getUserServiceRequestsRaw.mockResolvedValue([
+      {
+        id: "svc-req-1",
+        userId: "user-abc-123",
+        organisationId: "org-2",
+        createdAt: "2023-01-02T00:00:00.000Z",
+        status: 2,
+        requestType: "service",
+      },
+    ]);
+
+    const result = await search(
+      makeReq({ searchEmail: "user@example.com", requestType: "service" }),
+    );
+
+    expect(result.accessRequests).toHaveLength(1);
+    expect(result.accessRequests[0].id).toBe("svc-req-1");
+    expect(result.totalNumberOfResults).toBe(1);
+  });
+
+  it("filters by status when status filter is applied alongside email search", async () => {
+    getUserRaw.mockResolvedValue({
+      sub: "user-abc-123",
+      email: "user@example.com",
+    });
+    getPendingRequestsRaw.mockResolvedValue([
+      {
+        id: "org-req-pending",
+        user_id: "user-abc-123",
+        org_id: "org-1",
+        org_name: "Test Org",
+        created_date: "2023-01-01T00:00:00.000Z",
+        status: { id: 0, name: "Pending" },
+      },
+      {
+        id: "org-req-overdue",
+        user_id: "user-abc-123",
+        org_id: "org-1",
+        org_name: "Test Org",
+        created_date: "2023-01-02T00:00:00.000Z",
+        status: { id: 2, name: "Overdue" },
+      },
+    ]);
+    getUserServiceRequestsRaw.mockResolvedValue([]);
+
+    const result = await search(
+      makeReq({ searchEmail: "user@example.com", status: "2" }),
+    );
+
+    expect(result.accessRequests).toHaveLength(1);
+    expect(result.accessRequests[0].id).toBe("org-req-overdue");
+    expect(result.totalNumberOfResults).toBe(1);
+  });
+
+  it("returns empty results when type filter eliminates all requests in email search", async () => {
+    getUserRaw.mockResolvedValue({
+      sub: "user-abc-123",
+      email: "user@example.com",
+    });
+    getPendingRequestsRaw.mockResolvedValue([
+      {
+        id: "org-req-1",
+        user_id: "user-abc-123",
+        org_id: "org-1",
+        org_name: "Test Org",
+        created_date: "2023-01-01T00:00:00.000Z",
+        status: { id: 2, name: "Overdue" },
+      },
+    ]);
+    getUserServiceRequestsRaw.mockResolvedValue([]);
+
+    const result = await search(
+      makeReq({ searchEmail: "user@example.com", requestType: "service" }),
+    );
+
+    expect(result.accessRequests).toHaveLength(0);
+    expect(result.totalNumberOfResults).toBe(0);
+    expect(result.numberOfPages).toBe(0);
+  });
+
   it("handles null from getUserServiceRequestsRaw gracefully", async () => {
     getUserRaw.mockResolvedValue({
       sub: "user-abc-123",

@@ -122,7 +122,16 @@ const search = async (req) => {
       rawServiceRequests || [],
     );
 
-    const requests = [...orgRequests, ...serviceRequests];
+    let requests = [...orgRequests, ...serviceRequests];
+
+    if (filterType.length > 0) {
+      requests = requests.filter((r) => filterType.includes(r.request_type.id));
+    }
+    if (filterStatus.length > 0) {
+      requests = requests.filter((r) =>
+        filterStatus.includes(String(r.status.id)),
+      );
+    }
 
     return {
       page: 1,
