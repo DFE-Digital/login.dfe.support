@@ -1,4 +1,5 @@
 const logger = require("./../../infrastructure/logger");
+const { ServiceNotificationsClient } = require("login.dfe.jobs-client");
 const {
   getUserServicesRaw,
   deleteUserServiceAccess,
@@ -453,16 +454,32 @@ const removeAllServicesForUser = async (userId, req) => {
     `Removing ${userServices.length} service(s) from user ${userId}`,
     { correlationId },
   );
+  const serviceNotificationsClient = new ServiceNotificationsClient(
+    config.notifications,
+  );
   for (const service of userServices) {
     logger.info(
       `Removing service from user: ${service.userId} with serviceId: ${service.serviceId} and organisationId: ${service.organisationId}`,
       { correlationId },
     );
-    deleteUserServiceAccess({
+    await deleteUserServiceAccess({
       userId: service.userId,
       serviceId: service.serviceId,
       organisationId: service.organisationId,
     });
+
+    try {
+      await serviceNotificationsClient.notifyUserUpdated({
+        sub: service.userId,
+        removedServiceId: service.serviceId,
+        removedOrgId: service.organisationId,
+      });
+    } catch (e) {
+      logger.error(
+        `Failed to notify legacy WS Sync on service removal for user ${service.userId}`,
+        e,
+      );
+    }
   }
 };
 
