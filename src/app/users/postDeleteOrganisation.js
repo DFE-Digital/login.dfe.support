@@ -1,5 +1,6 @@
 const logger = require("./../../infrastructure/logger");
 const config = require("./../../infrastructure/config");
+const asyncRetry = require("login.dfe.async-retry");
 const {
   NotificationClient,
   ServiceNotificationsClient,
@@ -72,15 +73,57 @@ const postDeleteOrganisation = async (req, res) => {
       });
 
       try {
-        await serviceNotificationsClient.notifyUserUpdated({
-          sub: uid,
-          removedServiceId: service.id,
-          removedOrgId: organisationId,
-        });
+        await asyncRetry(
+          async () =>
+            await serviceNotificationsClient.notifyUserUpdated({
+              sub: uid,
+              removedServiceId: service.id,
+              removedOrgId: organisationId,
+            }),
+          asyncRetry.strategies.apiStrategy,
+        );
+        logger.audit(
+          `WS Sync notification for user ${uid} after service access removal`,
+          {
+            type: "support",
+            subType: "user-sync-notify",
+            userId: req.user.sub,
+            userEmail: req.user.email,
+            editedUser: uid,
+            organisationId,
+            editedFields: [
+              {
+                name: "remove_service",
+                oldValue: service.id,
+                newValue: undefined,
+              },
+            ],
+            success: true,
+          },
+        );
       } catch (e) {
         logger.error(
           `Failed to notify legacy WS Sync on service removal for user ${uid}`,
           e,
+        );
+        logger.audit(
+          `WS Sync notification for user ${uid} after service access removal`,
+          {
+            type: "support",
+            subType: "user-sync-notify",
+            userId: req.user.sub,
+            userEmail: req.user.email,
+            editedUser: uid,
+            organisationId,
+            editedFields: [
+              {
+                name: "remove_service",
+                oldValue: service.id,
+                newValue: undefined,
+              },
+            ],
+            success: false,
+          },
         );
         res.flash(
           "warning",
