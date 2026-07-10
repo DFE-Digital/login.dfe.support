@@ -23,7 +23,10 @@ const {
   getOrganisationRequestsRaw,
   getOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
-const { search } = require("./../../../src/app/accessRequests/utils");
+const {
+  search,
+  mapStatusForSupport,
+} = require("./../../../src/app/accessRequests/utils");
 
 const makeReq = (body = {}) => ({
   method: "POST",
@@ -468,5 +471,186 @@ describe("search - email filtering", () => {
       name: "Sub-service access",
     });
     expect(result.accessRequests[0].status).toEqual({ id: 0, name: "Pending" });
+  });
+
+  it("treats email with + as valid and calls getUserRaw", async () => {
+    getUserRaw.mockResolvedValue({
+      sub: "user-abc-123",
+      email: "dcttestemail+SharedUser@gmail.com",
+    });
+
+    await search(makeReq({ searchEmail: "dcttestemail+SharedUser@gmail.com" }));
+
+    expect(getUserRaw).toHaveBeenCalledWith({
+      by: { email: "dcttestemail+SharedUser@gmail.com" },
+    });
+  });
+
+  it("filters by organisation type when requestType=organisation is applied alongside email search", async () => {
+    getUserRaw.mockResolvedValue({
+      sub: "user-abc-123",
+      email: "user@example.com",
+    });
+    getPendingRequestsRaw.mockResolvedValue([
+      {
+        id: "org-req-1",
+        user_id: "user-abc-123",
+        org_id: "org-1",
+        org_name: "Test Org",
+        created_date: "2023-01-01T00:00:00.000Z",
+        status: { id: 2, name: "Overdue" },
+      },
+    ]);
+    getUserServiceRequestsRaw.mockResolvedValue([
+      {
+        id: "svc-req-1",
+        userId: "user-abc-123",
+        organisationId: "org-2",
+        createdAt: "2023-01-02T00:00:00.000Z",
+        status: 2,
+        requestType: "service",
+      },
+    ]);
+
+    const result = await search(
+      makeReq({ searchEmail: "user@example.com", requestType: "organisation" }),
+    );
+
+    expect(result.accessRequests).toHaveLength(1);
+    expect(result.accessRequests[0].id).toBe("org-req-1");
+    expect(result.totalNumberOfResults).toBe(1);
+  });
+
+  it("filters by subService type when requestType=subService is applied alongside email search", async () => {
+    getUserRaw.mockResolvedValue({
+      sub: "user-abc-123",
+      email: "user@example.com",
+    });
+    getPendingRequestsRaw.mockResolvedValue([]);
+    getUserServiceRequestsRaw.mockResolvedValue([
+      {
+        id: "svc-req-service",
+        userId: "user-abc-123",
+        organisationId: "org-1",
+        createdAt: "2023-01-01T00:00:00.000Z",
+        status: 0,
+        requestType: "service",
+      },
+      {
+        id: "svc-req-subservice",
+        userId: "user-abc-123",
+        organisationId: "org-1",
+        createdAt: "2023-01-02T00:00:00.000Z",
+        status: 0,
+        requestType: "subService",
+      },
+    ]);
+
+    const result = await search(
+      makeReq({ searchEmail: "user@example.com", requestType: "subService" }),
+    );
+
+    expect(result.accessRequests).toHaveLength(1);
+    expect(result.accessRequests[0].id).toBe("svc-req-subservice");
+  });
+
+  it("returns requests matching any of multiple status values when several are applied alongside email search", async () => {
+    getUserRaw.mockResolvedValue({
+      sub: "user-abc-123",
+      email: "user@example.com",
+    });
+    getPendingRequestsRaw.mockResolvedValue([
+      {
+        id: "pending",
+        user_id: "user-abc-123",
+        org_id: "org-1",
+        org_name: "Test Org",
+        created_date: "2023-01-01T00:00:00.000Z",
+        status: { id: 0, name: "Pending" },
+      },
+      {
+        id: "overdue",
+        user_id: "user-abc-123",
+        org_id: "org-1",
+        org_name: "Test Org",
+        created_date: "2023-01-02T00:00:00.000Z",
+        status: { id: 2, name: "Overdue" },
+      },
+      {
+        id: "no-approvers",
+        user_id: "user-abc-123",
+        org_id: "org-1",
+        org_name: "Test Org",
+        created_date: "2023-01-03T00:00:00.000Z",
+        status: { id: 3, name: "No Approvers" },
+      },
+    ]);
+    getUserServiceRequestsRaw.mockResolvedValue([]);
+
+    const result = await search(
+      makeReq({ searchEmail: "user@example.com", status: ["0", "2"] }),
+    );
+
+    expect(result.accessRequests).toHaveLength(2);
+    expect(result.accessRequests.map((r) => r.id)).toEqual(
+      expect.arrayContaining(["pending", "overdue"]),
+    );
+    expect(result.totalNumberOfResults).toBe(2);
+  });
+
+  it("falls back to empty string org_name when getOrganisationRaw returns null", async () => {
+    getUserRaw.mockResolvedValue({
+      sub: "user-abc-123",
+      email: "user@example.com",
+    });
+    getPendingRequestsRaw.mockResolvedValue([]);
+    getUserServiceRequestsRaw.mockResolvedValue([
+      {
+        id: "svc-req-1",
+        userId: "user-abc-123",
+        organisationId: "org-unknown",
+        createdAt: "2023-01-01T00:00:00.000Z",
+        status: 0,
+        requestType: "service",
+      },
+    ]);
+    getOrganisationRaw.mockResolvedValue(null);
+
+    const result = await search(makeReq({ searchEmail: "user@example.com" }));
+
+    expect(result.accessRequests[0].org_name).toBe("");
+  });
+});
+
+describe("mapStatusForSupport", () => {
+  it("remaps status 0 to Awaiting approver action", () => {
+    expect(mapStatusForSupport({ id: 0, name: "Pending" })).toEqual({
+      id: 0,
+      name: "Awaiting approver action",
+    });
+  });
+
+  it("appends escalation suffix for status 2", () => {
+    expect(mapStatusForSupport({ id: 2, name: "Overdue" })).toEqual({
+      id: 2,
+      name: "Overdue - Escalated to support",
+    });
+  });
+
+  it("appends escalation suffix for status 3", () => {
+    expect(mapStatusForSupport({ id: 3, name: "No Approvers" })).toEqual({
+      id: 3,
+      name: "No Approvers - Escalated to support",
+    });
+  });
+
+  it("returns an object with id and name for status 1 (Approved)", () => {
+    const result = mapStatusForSupport({ id: 1, name: "Approved" });
+    expect(result).toEqual({ id: 1, name: "Approved" });
+  });
+
+  it("returns an object with id and name for status -1 (Rejected)", () => {
+    const result = mapStatusForSupport({ id: -1, name: "Rejected" });
+    expect(result).toEqual({ id: -1, name: "Rejected" });
   });
 });

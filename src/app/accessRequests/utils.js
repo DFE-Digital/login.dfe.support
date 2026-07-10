@@ -300,7 +300,7 @@ const mapStatusForSupport = (status) => {
     case 3:
       return { id: 3, name: `${status.name} - Escalated to support` };
     default:
-      return status.name;
+      return { id: status.id, name: status.name };
   }
 };
 
