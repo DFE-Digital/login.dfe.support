@@ -1,6 +1,9 @@
 const logger = require("./../../infrastructure/logger");
 const config = require("./../../infrastructure/config");
-const { NotificationClient } = require("login.dfe.jobs-client");
+const {
+  NotificationClient,
+  ServiceNotificationsClient,
+} = require("login.dfe.jobs-client");
 const {
   deleteUserServiceAccess,
   searchUserByIdRaw,
@@ -57,6 +60,9 @@ const postDeleteOrganisation = async (req, res) => {
     }
     await deleteInvitationOrg(uid, req);
   } else {
+    const serviceNotificationsClient = new ServiceNotificationsClient(
+      config.notifications,
+    );
     for (let i = 0; i < servicesForUserInOrg.length; i++) {
       const service = servicesForUserInOrg[i];
       await deleteUserServiceAccess({
@@ -64,6 +70,23 @@ const postDeleteOrganisation = async (req, res) => {
         serviceId: service.id,
         organisationId,
       });
+
+      try {
+        await serviceNotificationsClient.notifyUserUpdated({
+          sub: uid,
+          removedServiceId: service.id,
+          removedOrgId: organisationId,
+        });
+      } catch (e) {
+        logger.error(
+          `Failed to notify legacy WS Sync on service removal for user ${uid}`,
+          e,
+        );
+        res.flash(
+          "warning",
+          "Sync notification to legacy WS service failed. You can retry from 'Sync user' page.",
+        );
+      }
     }
     await deleteUserOrg(uid, req);
     if (isEmailAllowed) {
