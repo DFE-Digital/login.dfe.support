@@ -1,6 +1,4 @@
-const {
-  getCollectOrgsWithoutActiveUsersRaw,
-} = require("login.dfe.api-client/organisations");
+const { getApiClient, ApiName } = require("login.dfe.api-client/api");
 const logger = require("../../infrastructure/logger");
 
 const get = async (req, res) => {
@@ -8,9 +6,11 @@ const get = async (req, res) => {
   let organisations = [];
 
   try {
-    const result = await getCollectOrgsWithoutActiveUsersRaw({
-      correlationId,
-    });
+    const organisationsClient = getApiClient(ApiName.Organisations);
+    const result = await organisationsClient.get(
+      "/organisations/collect-without-active-users",
+      { additionalHeaders: { "x-correlation-id": correlationId } },
+    );
     organisations = result ?? [];
   } catch (e) {
     logger.error(
