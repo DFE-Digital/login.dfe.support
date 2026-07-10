@@ -17,9 +17,11 @@ jest.mock("login.dfe.validation", () => ({
 const {
   getUserRaw,
   getPendingRequestsRaw,
+  getUserServiceRequestsRaw,
 } = require("login.dfe.api-client/users");
 const {
   getOrganisationRequestsRaw,
+  getOrganisationRaw,
 } = require("login.dfe.api-client/organisations");
 const { search } = require("./../../../src/app/accessRequests/utils");
 
@@ -39,6 +41,10 @@ describe("search - email filtering", () => {
   beforeEach(() => {
     getUserRaw.mockReset();
     getPendingRequestsRaw.mockReset().mockResolvedValue([]);
+    getUserServiceRequestsRaw.mockReset().mockResolvedValue([]);
+    getOrganisationRaw
+      .mockReset()
+      .mockResolvedValue({ name: "Test Organisation" });
     getOrganisationRequestsRaw.mockReset().mockResolvedValue(emptyOrgResult);
   });
 
@@ -216,5 +222,156 @@ describe("search - email filtering", () => {
 
     expect(result.accessRequests).toEqual([]);
     expect(result.totalNumberOfResults).toBe(0);
+  });
+
+  it("calls getUserServiceRequestsRaw with userId when user is found by email", async () => {
+    getUserRaw.mockResolvedValue({
+      sub: "user-abc-123",
+      email: "user@example.com",
+    });
+
+    await search(makeReq({ searchEmail: "user@example.com" }));
+
+    expect(getUserServiceRequestsRaw).toHaveBeenCalledWith({
+      userId: "user-abc-123",
+    });
+  });
+
+  it("returns service requests alongside org requests when searching by email", async () => {
+    getUserRaw.mockResolvedValue({
+      sub: "user-abc-123",
+      email: "user@example.com",
+    });
+    getPendingRequestsRaw.mockResolvedValue([
+      {
+        id: "org-req-1",
+        user_id: "user-abc-123",
+        org_id: "org-1",
+        org_name: "Test Org",
+        created_date: "2023-01-16T00:00:00.000Z",
+        status: { id: 2, name: "Overdue" },
+      },
+    ]);
+    getUserServiceRequestsRaw.mockResolvedValue([
+      {
+        id: "svc-req-1",
+        userId: "user-abc-123",
+        organisationId: "org-2",
+        createdAt: "2023-01-17T00:00:00.000Z",
+        status: 2,
+        requestType: "service",
+      },
+    ]);
+    getOrganisationRaw.mockResolvedValue({ name: "Service Org" });
+
+    const result = await search(makeReq({ searchEmail: "user@example.com" }));
+
+    expect(result.totalNumberOfResults).toBe(2);
+    expect(result.accessRequests).toHaveLength(2);
+    expect(result.accessRequests[0].id).toBe("org-req-1");
+    expect(result.accessRequests[1].id).toBe("svc-req-1");
+  });
+
+  it("normalizes service request shape to match controller expectations", async () => {
+    getUserRaw.mockResolvedValue({
+      sub: "user-abc-123",
+      email: "user@example.com",
+    });
+    getPendingRequestsRaw.mockResolvedValue([]);
+    getUserServiceRequestsRaw.mockResolvedValue([
+      {
+        id: "svc-req-1",
+        userId: "user-abc-123",
+        organisationId: "org-99",
+        createdAt: "2023-06-01T10:00:00.000Z",
+        status: 2,
+        requestType: "service",
+      },
+    ]);
+    getOrganisationRaw.mockResolvedValue({ name: "Example School" });
+
+    const result = await search(makeReq({ searchEmail: "user@example.com" }));
+
+    const req = result.accessRequests[0];
+    expect(req.user_id).toBe("user-abc-123");
+    expect(req.created_date).toBe("2023-06-01T10:00:00.000Z");
+    expect(req.org_name).toBe("Example School");
+    expect(req.status).toEqual({ id: 2, name: "Overdue" });
+    expect(req.request_type).toEqual({ id: "service", name: "Service access" });
+  });
+
+  it("fetches org name once per unique organisation when normalizing service requests", async () => {
+    getUserRaw.mockResolvedValue({
+      sub: "user-abc-123",
+      email: "user@example.com",
+    });
+    getPendingRequestsRaw.mockResolvedValue([]);
+    getUserServiceRequestsRaw.mockResolvedValue([
+      {
+        id: "svc-1",
+        userId: "user-abc-123",
+        organisationId: "org-99",
+        createdAt: "2023-01-01T00:00:00.000Z",
+        status: 2,
+        requestType: "service",
+      },
+      {
+        id: "svc-2",
+        userId: "user-abc-123",
+        organisationId: "org-99",
+        createdAt: "2023-02-01T00:00:00.000Z",
+        status: 2,
+        requestType: "subService",
+      },
+    ]);
+    getOrganisationRaw.mockResolvedValue({ name: "Shared Org" });
+
+    await search(makeReq({ searchEmail: "user@example.com" }));
+
+    expect(getOrganisationRaw).toHaveBeenCalledTimes(1);
+    expect(getOrganisationRaw).toHaveBeenCalledWith({
+      by: { organisationId: "org-99" },
+    });
+  });
+
+  it("handles null from getUserServiceRequestsRaw gracefully", async () => {
+    getUserRaw.mockResolvedValue({
+      sub: "user-abc-123",
+      email: "user@example.com",
+    });
+    getPendingRequestsRaw.mockResolvedValue([]);
+    getUserServiceRequestsRaw.mockResolvedValue(null);
+
+    const result = await search(makeReq({ searchEmail: "user@example.com" }));
+
+    expect(result.accessRequests).toEqual([]);
+    expect(result.totalNumberOfResults).toBe(0);
+  });
+
+  it("normalizes subService request type correctly", async () => {
+    getUserRaw.mockResolvedValue({
+      sub: "user-abc-123",
+      email: "user@example.com",
+    });
+    getPendingRequestsRaw.mockResolvedValue([]);
+    getUserServiceRequestsRaw.mockResolvedValue([
+      {
+        id: "svc-req-1",
+        userId: "user-abc-123",
+        organisationId: "org-99",
+        createdAt: "2023-06-01T10:00:00.000Z",
+        status: 0,
+        requestType: "subService",
+      },
+    ]);
+    getOrganisationRaw.mockResolvedValue({ name: "Example School" });
+
+    const result = await search(makeReq({ searchEmail: "user@example.com" }));
+
+    expect(result.accessRequests[0].request_type).toEqual({
+      id: "subService",
+      name: "Sub-service access",
+    });
+    expect(result.accessRequests[0].status).toEqual({ id: 0, name: "Pending" });
   });
 });

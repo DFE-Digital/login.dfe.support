@@ -8,6 +8,7 @@ const {
   addOrganisationToUser,
   getUserOrganisationRequestRaw,
   getPendingRequestsRaw,
+  getUserServiceRequestsRaw,
 } = require("login.dfe.api-client/users");
 const {
   getOrganisationRaw,
@@ -24,6 +25,48 @@ const unpackMultiSelect = (parameter) => {
     return [parameter];
   }
   return parameter;
+};
+
+const serviceRequestStatusNames = {
+  [-1]: "Rejected",
+  0: "Pending",
+  1: "Approved",
+  2: "Overdue",
+  3: "No Approvers",
+};
+
+const serviceRequestTypeNames = {
+  service: "Service access",
+  subService: "Sub-service access",
+};
+
+const normalizeServiceRequests = async (serviceRequests) => {
+  if (serviceRequests.length === 0) return [];
+  const uniqueOrgIds = [
+    ...new Set(serviceRequests.map((r) => r.organisationId)),
+  ];
+  const orgEntries = await Promise.all(
+    uniqueOrgIds.map(async (orgId) => {
+      const org = await getOrganisationRaw({ by: { organisationId: orgId } });
+      return [orgId, org ? org.name : ""];
+    }),
+  );
+  const orgNameMap = Object.fromEntries(orgEntries);
+  return serviceRequests.map((r) => ({
+    id: r.id,
+    user_id: r.userId,
+    org_id: r.organisationId,
+    org_name: orgNameMap[r.organisationId] || "",
+    created_date: r.createdAt,
+    status: {
+      id: r.status,
+      name: serviceRequestStatusNames[r.status] || "Unknown",
+    },
+    request_type: {
+      id: r.requestType,
+      name: serviceRequestTypeNames[r.requestType] || r.requestType,
+    },
+  }));
 };
 
 const resolveEmailToUserId = async (email) => {
@@ -65,12 +108,21 @@ const search = async (req) => {
       };
     }
 
-    const requests = ((await getPendingRequestsRaw({ userId })) || []).map(
-      (r) => ({
-        ...r,
-        request_type: { id: "organisation", name: "Organisation access" },
-      }),
+    const [rawOrgRequests, rawServiceRequests] = await Promise.all([
+      getPendingRequestsRaw({ userId }),
+      getUserServiceRequestsRaw({ userId }),
+    ]);
+
+    const orgRequests = (rawOrgRequests || []).map((r) => ({
+      ...r,
+      request_type: { id: "organisation", name: "Organisation access" },
+    }));
+
+    const serviceRequests = await normalizeServiceRequests(
+      rawServiceRequests || [],
     );
+
+    const requests = [...orgRequests, ...serviceRequests];
 
     return {
       page: 1,
