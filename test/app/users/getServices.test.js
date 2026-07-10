@@ -162,9 +162,7 @@ describe("when getting users service details", () => {
           name: "A good service",
           status: "active",
           isExternalService: true,
-          relyingParty: {
-            params: {},
-          },
+          isHiddenForSupport: false,
         },
         {
           id: "3ff78432-fb20-4ef7-83de-35b3fbb95159",
@@ -172,9 +170,7 @@ describe("when getting users service details", () => {
           name: "some other service",
           status: "active",
           isExternalService: true,
-          relyingParty: {
-            params: {},
-          },
+          isHiddenForSupport: false,
         },
         {
           id: "ae58ed71-4e0f-48d4-8577-4cf6f1b7d299",
@@ -182,9 +178,7 @@ describe("when getting users service details", () => {
           name: "yet another service",
           status: "active",
           isExternalService: true,
-          relyingParty: {
-            params: {},
-          },
+          isHiddenForSupport: false,
         },
         {
           id: "db7b12ab-fb0d-42b1-aaff-0e5f108162b9",
@@ -192,9 +186,7 @@ describe("when getting users service details", () => {
           name: "Zzz service",
           status: "active",
           isExternalService: true,
-          relyingParty: {
-            params: {},
-          },
+          isHiddenForSupport: false,
         },
       ],
     });
@@ -365,5 +357,102 @@ describe("when getting users service details", () => {
         expect.objectContaining({ subType: "user-view" }),
       );
     });
+  });
+
+  it("should exclude a service with isHiddenForSupport: true from the user's services", async () => {
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+          dateActivated: "10/10/2018",
+          name: "A good service",
+          status: "active",
+          isExternalService: true,
+          isHiddenForSupport: false,
+        },
+        {
+          id: "hidden-service-id",
+          dateActivated: "10/10/2018",
+          name: "Hidden service",
+          status: "active",
+          isExternalService: true,
+          isHiddenForSupport: true,
+        },
+      ],
+    });
+
+    getUserOrganisationsWithServicesRaw.mockReturnValue([
+      {
+        organisation: {
+          id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+          name: "Big School",
+          status: { id: 1, name: "open" },
+        },
+        role: { id: 0, name: "End user" },
+        approvers: [],
+        services: [
+          {
+            id: "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+            name: "A good service",
+            requestDate: "2018-01-18T10:46:59.385Z",
+            status: 1,
+          },
+          {
+            id: "hidden-service-id",
+            name: "Hidden service",
+            requestDate: "2018-01-18T10:46:59.385Z",
+            status: 1,
+          },
+        ],
+      },
+    ]);
+
+    await getServices(req, res);
+
+    const org = res.render.mock.calls[0][1].organisations[0];
+    expect(org.services.map((s) => s.id)).not.toContain("hidden-service-id");
+    expect(org.services.map((s) => s.id)).toContain(
+      "83f00ace-f1a0-4338-8784-fa14f5943e5a",
+    );
+  });
+
+  it("should include a service with isHiddenForSupport: false in the user's services", async () => {
+    getAllServices.mockReturnValue({
+      services: [
+        {
+          id: "visible-service-id",
+          dateActivated: "10/10/2018",
+          name: "Visible service",
+          status: "active",
+          isExternalService: true,
+          isHiddenForSupport: false,
+        },
+      ],
+    });
+
+    getUserOrganisationsWithServicesRaw.mockReturnValue([
+      {
+        organisation: {
+          id: "88a1ed39-5a98-43da-b66e-78e564ea72b0",
+          name: "Big School",
+          status: { id: 1, name: "open" },
+        },
+        role: { id: 0, name: "End user" },
+        approvers: [],
+        services: [
+          {
+            id: "visible-service-id",
+            name: "Visible service",
+            requestDate: "2018-01-18T10:46:59.385Z",
+            status: 1,
+          },
+        ],
+      },
+    ]);
+
+    await getServices(req, res);
+
+    const org = res.render.mock.calls[0][1].organisations[0];
+    expect(org.services.map((s) => s.id)).toContain("visible-service-id");
   });
 });

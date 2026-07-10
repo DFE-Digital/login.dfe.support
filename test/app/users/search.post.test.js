@@ -76,8 +76,8 @@ describe("When processing a post to search for users", () => {
 
     getAllServices.mockReset().mockReturnValue({
       services: [
-        { id: "svc1", name: "Service one" },
-        { id: "svc2", name: "Service two" },
+        { id: "svc1", name: "Service one", isHiddenForSupport: false },
+        { id: "svc2", name: "Service two", isHiddenForSupport: false },
       ],
     });
 
@@ -156,6 +156,22 @@ describe("When processing a post to search for users", () => {
         { id: "svc2", name: "Service two", isSelected: false },
       ],
     });
+  });
+
+  test("then it should exclude services with isHiddenForSupport: true from the services filter list", async () => {
+    req.body.showFilters = "true";
+    getAllServices.mockReturnValue({
+      services: [
+        { id: "svc1", name: "Service one", isHiddenForSupport: false },
+        { id: "svc-hidden", name: "Hidden service", isHiddenForSupport: true },
+      ],
+    });
+
+    await post(req, res);
+
+    const services = res.render.mock.calls[0][1].services;
+    expect(services.map((s) => s.id)).not.toContain("svc-hidden");
+    expect(services.map((s) => s.id)).toContain("svc1");
   });
 
   test("then it should persist selected filters", async () => {

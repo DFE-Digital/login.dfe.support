@@ -13,13 +13,7 @@ const policyEngine = new PolicyEngine(config);
 const getAllAvailableServices = async (req, organisationCategoryId) => {
   const allServices = await getAllServices();
   let externalServices = allServices.services.filter(
-    (x) =>
-      x.isExternalService === true &&
-      !(
-        x.relyingParty &&
-        x.relyingParty.params &&
-        x.relyingParty.params.hideSupport === "true"
-      ),
+    (x) => x.isExternalService === true && !x.isHiddenForSupport,
   );
   if (req.params.uid) {
     const allUserServicesInOrg = await getAllServicesForUserInOrg(

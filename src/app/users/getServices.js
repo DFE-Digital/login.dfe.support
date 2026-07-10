@@ -71,13 +71,7 @@ const action = async (req, res) => {
   const organisationDetails = await getOrganisations(user.id, req.id);
   const allServices = await getAllServices();
   const externalServices = allServices.services.filter(
-    (x) =>
-      x.isExternalService === true &&
-      !(
-        x.relyingParty &&
-        x.relyingParty.params &&
-        x.relyingParty.params.hideSupport === "true"
-      ),
+    (x) => x.isExternalService === true && !x.isHiddenForSupport,
   );
 
   const allOrganisationsForUser = [];
