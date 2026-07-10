@@ -9,6 +9,7 @@ jest.mock("../../../src/infrastructure/logger");
 
 const { get } = require("../../../src/app/reports/collectOrgsWithoutUsers");
 const { getResponseMock } = require("../../utils");
+const logger = require("../../../src/infrastructure/logger");
 
 describe("GET /reports/collect-orgs", () => {
   let req, res;
@@ -55,5 +56,6 @@ describe("GET /reports/collect-orgs", () => {
       "reports/views/collectOrgsWithoutUsers",
       expect.objectContaining({ organisations: [] }),
     );
+    expect(logger.error).toHaveBeenCalled();
   });
 });
