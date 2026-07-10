@@ -158,6 +158,8 @@ const updateUserRoles = async () => {
       );
       const ws = await serviceNotificationsClient.notifyUserUpdated({
         sub: currentPolicy.userId,
+        removedServiceId: currentPolicy.serviceId,
+        removedOrgId: currentPolicy.organisationId,
       });
       console.log("Queued user sync : ", ws);
     }
