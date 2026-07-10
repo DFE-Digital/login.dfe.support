@@ -1,11 +1,12 @@
-jest.mock("login.dfe.api-client/organisations", () => ({
-  getCollectOrgsWithoutActiveUsersRaw: jest.fn(),
+const mockGet = jest.fn();
+const mockGetApiClient = jest.fn(() => ({ get: mockGet }));
+
+jest.mock("login.dfe.api-client/api", () => ({
+  getApiClient: (...args) => mockGetApiClient(...args),
+  ApiName: { Organisations: "organisations" },
 }));
 jest.mock("../../../src/infrastructure/logger");
 
-const {
-  getCollectOrgsWithoutActiveUsersRaw,
-} = require("login.dfe.api-client/organisations");
 const { get } = require("../../../src/app/reports/collectOrgsWithoutUsers");
 const { getResponseMock } = require("../../utils");
 
@@ -15,15 +16,23 @@ describe("GET /reports/collect-orgs", () => {
   beforeEach(() => {
     req = { correlationId: "corr-1" };
     res = getResponseMock();
-    getCollectOrgsWithoutActiveUsersRaw.mockClear();
+    mockGet.mockClear();
+    mockGetApiClient.mockClear();
   });
 
   it("renders the view with the organisation list", async () => {
     const orgs = [{ org_id: "org-1", org_name: "Test School" }];
-    getCollectOrgsWithoutActiveUsersRaw.mockResolvedValue(orgs);
+    mockGet.mockResolvedValue(orgs);
 
     await get(req, res);
 
+    expect(mockGetApiClient).toHaveBeenCalledWith("organisations");
+    expect(mockGet).toHaveBeenCalledWith(
+      "/organisations/collect-without-active-users",
+      expect.objectContaining({
+        additionalHeaders: { "x-correlation-id": "corr-1" },
+      }),
+    );
     expect(res.render).toHaveBeenCalledWith(
       "reports/views/collectOrgsWithoutUsers",
       expect.objectContaining({ organisations: orgs }),
@@ -31,10 +40,8 @@ describe("GET /reports/collect-orgs", () => {
   });
 
   it("renders with an empty array when the API returns null", async () => {
-    getCollectOrgsWithoutActiveUsersRaw.mockResolvedValue(null);
-
+    mockGet.mockResolvedValue(null);
     await get(req, res);
-
     expect(res.render).toHaveBeenCalledWith(
       "reports/views/collectOrgsWithoutUsers",
       expect.objectContaining({ organisations: [] }),
@@ -42,12 +49,8 @@ describe("GET /reports/collect-orgs", () => {
   });
 
   it("renders with an empty array when the API throws", async () => {
-    getCollectOrgsWithoutActiveUsersRaw.mockRejectedValue(
-      new Error("API error"),
-    );
-
+    mockGet.mockRejectedValue(new Error("API error"));
     await get(req, res);
-
     expect(res.render).toHaveBeenCalledWith(
       "reports/views/collectOrgsWithoutUsers",
       expect.objectContaining({ organisations: [] }),
