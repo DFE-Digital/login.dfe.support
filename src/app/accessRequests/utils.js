@@ -2,10 +2,13 @@ const { NotificationClient } = require("login.dfe.jobs-client");
 const logger = require("../../infrastructure/logger");
 const config = require("../../infrastructure/config");
 const accessRequests = require("../../infrastructure/accessRequests");
+const { emailPolicy } = require("login.dfe.validation");
 const {
   getUserRaw,
   addOrganisationToUser,
   getUserOrganisationRequestRaw,
+  getPendingRequestsRaw,
+  getUserServiceRequestsRaw,
 } = require("login.dfe.api-client/users");
 const {
   getOrganisationRaw,
@@ -24,6 +27,60 @@ const unpackMultiSelect = (parameter) => {
   return parameter;
 };
 
+const serviceRequestStatusNames = {
+  [-1]: "Rejected",
+  0: "Pending",
+  1: "Approved",
+  2: "Overdue",
+  3: "No Approvers",
+};
+
+const serviceRequestTypeNames = {
+  service: "Service access",
+  subService: "Sub-service access",
+};
+
+const normalizeServiceRequests = async (serviceRequests) => {
+  if (serviceRequests.length === 0) return [];
+  const uniqueOrgIds = [
+    ...new Set(serviceRequests.map((r) => r.organisationId)),
+  ];
+  const orgEntries = await Promise.all(
+    uniqueOrgIds.map(async (orgId) => {
+      const org = await getOrganisationRaw({ by: { organisationId: orgId } });
+      return [orgId, org ? org.name : ""];
+    }),
+  );
+  const orgNameMap = Object.fromEntries(orgEntries);
+  return serviceRequests.map((r) => ({
+    id: r.id,
+    user_id: r.userId,
+    org_id: r.organisationId,
+    org_name: orgNameMap[r.organisationId] || "",
+    created_date: r.createdAt,
+    status: {
+      id: r.status,
+      name: serviceRequestStatusNames[r.status] || "Unknown",
+    },
+    request_type: {
+      id: r.requestType,
+      name: serviceRequestTypeNames[r.requestType] || r.requestType,
+    },
+  }));
+};
+
+const resolveEmailToUserId = async (email) => {
+  if (
+    !emailPolicy.doesEmailMeetPolicy(email) ||
+    email.includes("/") ||
+    email.includes("..")
+  ) {
+    return null;
+  }
+  const user = await getUserRaw({ by: { email } });
+  return user ? user.sub : null;
+};
+
 const search = async (req) => {
   const paramsSource = req.method === "POST" ? req.body : req.query;
 
@@ -31,8 +88,60 @@ const search = async (req) => {
   if (isNaN(page)) {
     page = 1;
   }
+
   const filterStatus = unpackMultiSelect(paramsSource.status);
   const filterType = unpackMultiSelect(paramsSource.requestType);
+  const searchEmail = paramsSource.searchEmail
+    ? paramsSource.searchEmail.trim()
+    : "";
+
+  if (searchEmail) {
+    const userId = await resolveEmailToUserId(searchEmail);
+    if (!userId) {
+      return {
+        page: 1,
+        numberOfPages: 0,
+        totalNumberOfResults: 0,
+        accessRequests: [],
+        noUserFound: true,
+        searchEmail,
+      };
+    }
+
+    const [rawOrgRequests, rawServiceRequests] = await Promise.all([
+      getPendingRequestsRaw({ userId }),
+      getUserServiceRequestsRaw({ userId }),
+    ]);
+
+    const orgRequests = (rawOrgRequests || []).map((r) => ({
+      ...r,
+      request_type: { id: "organisation", name: "Organisation access" },
+    }));
+
+    const serviceRequests = await normalizeServiceRequests(
+      rawServiceRequests || [],
+    );
+
+    let requests = [...orgRequests, ...serviceRequests];
+
+    if (filterType.length > 0) {
+      requests = requests.filter((r) => filterType.includes(r.request_type.id));
+    }
+    if (filterStatus.length > 0) {
+      requests = requests.filter((r) =>
+        filterStatus.includes(String(r.status.id)),
+      );
+    }
+
+    return {
+      page: 1,
+      numberOfPages: requests.length > 0 ? 1 : 0,
+      totalNumberOfResults: requests.length,
+      accessRequests: requests,
+      searchEmail,
+    };
+  }
+
   const results = await getOrganisationRequestsRaw({
     pageNumber: page,
     filterStatus,
@@ -44,6 +153,7 @@ const search = async (req) => {
     numberOfPages: results.totalNumberOfPages,
     totalNumberOfResults: results.totalNumberOfRecords,
     accessRequests: results.requests,
+    searchEmail,
   };
 };
 
@@ -190,7 +300,7 @@ const mapStatusForSupport = (status) => {
     case 3:
       return { id: 3, name: `${status.name} - Escalated to support` };
     default:
-      return status.name;
+      return { id: status.id, name: status.name };
   }
 };
 

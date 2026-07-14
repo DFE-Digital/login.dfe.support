@@ -45,24 +45,37 @@
                     }
                     return result;
                 }, [])},
+            { key: 'searchEmail', value: locals.searchEmail || '' },
         ]
     }
     %>
+
+    <a href="/users" class="govuk-back-link">Back</a>
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-heading-xl">
                 Requests
             </h1>
-            <form method="post">
+            <form class="govuk-form-group" method="post">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                 <input type="hidden" name="showFilters" value="<%= showFilters %>"/>
-
-                <% for (let i = 0; i < requestStatuses.length; i += 1) { %>
+                <% for (let i = 0; i < requestStatuses.length; i++) { %>
                     <% if (requestStatuses[i].isSelected) { %>
-                        <input name="requestStatus" value="<%= requestStatuses[i].id %>" type="hidden">
+                    <input type="hidden" name="status" value="<%= requestStatuses[i].id %>"/>
                     <% } %>
                 <% } %>
+                <% for (let i = 0; i < requestTypes.length; i++) { %>
+                    <% if (requestTypes[i].isSelected) { %>
+                    <input type="hidden" name="requestType" value="<%= requestTypes[i].id %>"/>
+                    <% } %>
+                <% } %>
+                <div class="govuk-form-group">
+                    <label for="searchEmail" class="vh">Search by email address</label>
+                    <input class="govuk-input govuk-!-width-two-thirds" type="text" id="searchEmail" name="searchEmail"
+                           value="<%= searchEmail || '' %>" placeholder="Search by email address">
+                    <button type="submit" class="govuk-button">Search</button>
+                </div>
             </form>
             <form method="post" class="show-filters">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
@@ -78,6 +91,7 @@
                     <input type="hidden" name="requestType" value="<%= requestTypes[i].id %>"/>
                     <% } %>
                 <% } %>
+                <input type="hidden" name="searchEmail" value="<%= searchEmail || '' %>"/>
                 <button type="submit" class="govuk-button govuk-button--secondary filter-link"><%= (showFilters ? 'Hide' : 'Show') %> filters</button>
             </form>
         </div>
@@ -129,6 +143,7 @@
                         </div>
                     </div>
 
+                    <input type="hidden" name="searchEmail" value="<%= searchEmail || '' %>"/>
                     <button type="submit" class="govuk-button govuk-button--secondary">Apply filter</button>
 
                 </form>
@@ -151,8 +166,8 @@
 
                 <tbody class="govuk-table__body">
                     <% if (locals.requests && locals.requests.length === 0) { %>
-                        <tr class="govuk-table__row govuk-body">
-                            <td class="govuk-!-padding-top-3" colspan="7"><span class="empty-state">There are no outstanding requests.</span></td>
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell govuk-body-s" colspan="7" style="border-bottom: none;"><span>No requests found</span></td>
                         </tr>
                     <% } else { %>
                     <% for (let i = 0; i < locals.requests.length; i++) { %>
@@ -177,3 +192,13 @@
         </div>
     </div>
 </div>
+<script>
+    document.querySelectorAll('form').forEach(function (form) {
+        var hidden = form.querySelector('input[type="hidden"][name="searchEmail"]');
+        if (hidden) {
+            form.addEventListener('submit', function () {
+                hidden.value = document.getElementById('searchEmail').value;
+            });
+        }
+    });
+</script>
