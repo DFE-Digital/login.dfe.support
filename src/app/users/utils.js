@@ -1,4 +1,6 @@
 const logger = require("./../../infrastructure/logger");
+const { ServiceNotificationsClient } = require("login.dfe.jobs-client");
+const asyncRetry = require("login.dfe.async-retry");
 const {
   getUserServicesRaw,
   deleteUserServiceAccess,
@@ -453,16 +455,74 @@ const removeAllServicesForUser = async (userId, req) => {
     `Removing ${userServices.length} service(s) from user ${userId}`,
     { correlationId },
   );
+  const serviceNotificationsClient = new ServiceNotificationsClient(
+    config.notifications,
+  );
   for (const service of userServices) {
     logger.info(
       `Removing service from user: ${service.userId} with serviceId: ${service.serviceId} and organisationId: ${service.organisationId}`,
       { correlationId },
     );
-    deleteUserServiceAccess({
+    await deleteUserServiceAccess({
       userId: service.userId,
       serviceId: service.serviceId,
       organisationId: service.organisationId,
     });
+
+    try {
+      await asyncRetry(
+        async () =>
+          await serviceNotificationsClient.notifyUserUpdated({
+            sub: service.userId,
+            removedServiceId: service.serviceId,
+            removedOrgId: service.organisationId,
+          }),
+        asyncRetry.strategies.apiStrategy,
+      );
+      logger.audit(
+        `WS Sync notification for user ${service.userId} after service access removal`,
+        {
+          type: "support",
+          subType: "user-sync-notify",
+          userId: req.user.sub,
+          userEmail: req.user.email,
+          editedUser: service.userId,
+          organisationId: service.organisationId,
+          editedFields: [
+            {
+              name: "remove_service",
+              oldValue: service.serviceId,
+              newValue: undefined,
+            },
+          ],
+          success: true,
+        },
+      );
+    } catch (e) {
+      logger.error(
+        `Failed to notify legacy WS Sync on service removal for user ${service.userId}`,
+        e,
+      );
+      logger.audit(
+        `WS Sync notification for user ${service.userId} after service access removal`,
+        {
+          type: "support",
+          subType: "user-sync-notify",
+          userId: req.user.sub,
+          userEmail: req.user.email,
+          editedUser: service.userId,
+          organisationId: service.organisationId,
+          editedFields: [
+            {
+              name: "remove_service",
+              oldValue: service.serviceId,
+              newValue: undefined,
+            },
+          ],
+          success: false,
+        },
+      );
+    }
   }
 };
 

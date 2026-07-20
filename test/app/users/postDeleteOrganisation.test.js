@@ -12,11 +12,17 @@ jest.mock("login.dfe.api-client/users");
 jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.api-client/services");
 jest.mock("login.dfe.jobs-client");
+jest.mock("login.dfe.async-retry");
 
-const { NotificationClient } = require("login.dfe.jobs-client");
+const {
+  NotificationClient,
+  ServiceNotificationsClient,
+} = require("login.dfe.jobs-client");
+const asyncRetry = require("login.dfe.async-retry");
 const { getRequestMock, getResponseMock } = require("../../utils");
 const { getAllServicesForUserInOrg } = require("../../../src/app/users/utils");
 const postDeleteOrganisation = require("../../../src/app/users/postDeleteOrganisation");
+const logger = require("../../../src/infrastructure/logger");
 
 const {
   getSearchDetailsForUserById,
@@ -40,6 +46,7 @@ describe("when removing a users access to an organisation", () => {
   const expectedLastName = "Howlett";
   const expectedOrgName = "X-Men";
   const sendUserRemovedFromOrganisationStub = jest.fn();
+  let notifyUserUpdatedStub;
 
   beforeEach(() => {
     req = getRequestMock({
@@ -108,6 +115,18 @@ describe("when removing a users access to an organisation", () => {
     NotificationClient.mockReset().mockImplementation(() => ({
       sendUserRemovedFromOrganisation: sendUserRemovedFromOrganisationStub,
     }));
+
+    notifyUserUpdatedStub = jest.fn().mockResolvedValue(undefined);
+    ServiceNotificationsClient.mockReset().mockImplementation(() => ({
+      notifyUserUpdated: notifyUserUpdatedStub,
+    }));
+
+    asyncRetry.mockReset().mockImplementation(async (fn) => {
+      return fn();
+    });
+    asyncRetry.strategies = {
+      apiStrategy: "api-strategy",
+    };
   });
 
   it("then it should delete org for invitation if request for invitation", async () => {
@@ -131,6 +150,76 @@ describe("when removing a users access to an organisation", () => {
       organisationId: "org1",
       userId: "user1",
     });
+  });
+
+  it("then it should send a WS sync notification for each service removed from the user's org", async () => {
+    await postDeleteOrganisation(req, res);
+
+    expect(asyncRetry.mock.calls).toHaveLength(1);
+    expect(asyncRetry).toHaveBeenCalledWith(
+      expect.any(Function),
+      asyncRetry.strategies.apiStrategy,
+    );
+    expect(notifyUserUpdatedStub.mock.calls).toHaveLength(1);
+    expect(notifyUserUpdatedStub).toHaveBeenCalledWith({
+      sub: "user1",
+      removedServiceId: "service2",
+      removedOrgId: "org1",
+    });
+    // The client is constructed once regardless of how many services are processed
+    expect(ServiceNotificationsClient).toHaveBeenCalledTimes(1);
+  });
+
+  it("then it should log an audit entry on successful WS sync notification", async () => {
+    await postDeleteOrganisation(req, res);
+
+    expect(logger.audit).toHaveBeenCalledWith(
+      expect.stringContaining("WS Sync notification"),
+      expect.objectContaining({
+        type: "support",
+        subType: "user-sync-notify",
+        userId: "suser1",
+        userEmail: "super.user@unit.test",
+        editedUser: "user1",
+        organisationId: "org1",
+        editedFields: [
+          { name: "remove_service", oldValue: "service2", newValue: undefined },
+        ],
+        success: true,
+      }),
+    );
+  });
+
+  it("then it should log, audit, flash a warning, and continue if the WS sync notification fails", async () => {
+    notifyUserUpdatedStub.mockRejectedValueOnce(new Error("sync failed"));
+
+    await expect(postDeleteOrganisation(req, res)).resolves.not.toThrow();
+
+    expect(deleteUserOrganisationAccess.mock.calls).toHaveLength(1);
+    expect(res.redirect.mock.calls).toHaveLength(1);
+    expect(res.flash).toHaveBeenCalledWith(
+      "warning",
+      "Sync notification to legacy WS service failed. You can retry from 'Sync user' page.",
+    );
+    expect(res.flash).toHaveBeenCalledWith(
+      "info",
+      `${expectedFirstName} ${expectedLastName} no longer has access to ${expectedOrgName}`,
+    );
+    expect(logger.audit).toHaveBeenCalledWith(
+      expect.stringContaining("WS Sync notification"),
+      expect.objectContaining({
+        type: "support",
+        subType: "user-sync-notify",
+        userId: "suser1",
+        userEmail: "super.user@unit.test",
+        editedUser: "user1",
+        organisationId: "org1",
+        editedFields: [
+          { name: "remove_service", oldValue: "service2", newValue: undefined },
+        ],
+        success: false,
+      }),
+    );
   });
 
   it("then it should redirect to organisations", async () => {
