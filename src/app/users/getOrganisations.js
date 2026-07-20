@@ -38,7 +38,7 @@ const getOrganisations = async (userId) => {
   const allApprovers = await getApproverDetails(orgMapping);
   // Filter out all deactivated accounts
   const activeAccountApprovers = allApprovers.filter(
-    (approver) => approver.status !== 0,
+    (approver) => approver.status === 1,
   );
 
   const organisations = await Promise.all(
