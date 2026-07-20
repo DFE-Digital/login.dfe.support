@@ -206,4 +206,15 @@ const organisationStatusesQuery = locals.organisationStatuses.filter(x => x.isSe
             </div>
         <% } %>
     </div>
-</div>    
+</div>
+<script>
+    document.querySelectorAll('form').forEach(function (form) {
+        var hidden = form.querySelector('input[type="hidden"][name="criteria"]');
+        if (hidden) {
+            form.addEventListener('submit', function () {
+                hidden.value = document.getElementById('criteria').value;
+            });
+        }
+    });
+</script>
+
