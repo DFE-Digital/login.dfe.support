@@ -2,7 +2,7 @@ const { getApiClient, ApiName } = require("login.dfe.api-client/api");
 const logger = require("../../infrastructure/logger");
 
 const get = async (req, res) => {
-  const { correlationId } = req;
+  const correlationId = req.id;
   let organisations = [];
 
   try {

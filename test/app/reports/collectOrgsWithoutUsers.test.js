@@ -15,7 +15,7 @@ describe("GET /reports/collect-orgs", () => {
   let req, res;
 
   beforeEach(() => {
-    req = { correlationId: "corr-1" };
+    req = { id: "corr-1" };
     res = getResponseMock();
     mockGet.mockClear();
     mockGetApiClient.mockClear();
