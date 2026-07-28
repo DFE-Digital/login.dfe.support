@@ -4,7 +4,6 @@ const services = require("./app/services");
 const errors = require("./app/errors");
 const signOut = require("./app/signOut");
 const accessRequests = require("./app/accessRequests");
-const reports = require("./app/reports");
 const healthCheck = require("login.dfe.healthcheck");
 const { getHealthCheckChecks } = require("./infrastructure/healthCheck");
 const config = require("./infrastructure/config");
@@ -18,7 +17,6 @@ const routes = (app, csrf) => {
   app.use("/services", services(csrf));
   app.use("/signout", signOut(csrf));
   app.use("/access-requests", accessRequests(csrf));
-  app.use("/reports", reports(csrf));
   app.use("/", errors(csrf));
 
   app.get("/", (req, res) => {
