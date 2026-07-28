@@ -7,6 +7,7 @@ const router = express.Router({ mergeParams: true });
 
 const reportRoutes = (csrf) => {
   router.use(isLoggedIn);
+  router.get("/", (req, res) => res.redirect("/reports/collect-orgs"));
   router.get("/collect-orgs", csrf, asyncWrapper(get));
   return router;
 };
