@@ -1,10 +1,6 @@
 const logger = require("./../../infrastructure/logger");
 const config = require("./../../infrastructure/config");
-const asyncRetry = require("login.dfe.async-retry");
-const {
-  NotificationClient,
-  ServiceNotificationsClient,
-} = require("login.dfe.jobs-client");
+const { NotificationClient } = require("login.dfe.jobs-client");
 const {
   deleteUserServiceAccess,
   searchUserByIdRaw,
@@ -61,75 +57,18 @@ const postDeleteOrganisation = async (req, res) => {
     }
     await deleteInvitationOrg(uid, req);
   } else {
-    const serviceNotificationsClient = new ServiceNotificationsClient(
-      config.notifications,
-    );
     for (let i = 0; i < servicesForUserInOrg.length; i++) {
       const service = servicesForUserInOrg[i];
+      // The Access API's removeServiceFromUser handler already fires the WS
+      // sync notification (with removedServiceId/removedOrgId) internally as
+      // part of this call - a second, separate call here would double-enqueue
+      // the deactivation sync for every service removed as part of removing
+      // the organisation.
       await deleteUserServiceAccess({
         userId: uid,
         serviceId: service.id,
         organisationId,
       });
-
-      try {
-        await asyncRetry(
-          async () =>
-            await serviceNotificationsClient.notifyUserUpdated({
-              sub: uid,
-              removedServiceId: service.id,
-              removedOrgId: organisationId,
-            }),
-          asyncRetry.strategies.apiStrategy,
-        );
-        logger.audit(
-          `WS Sync notification for user ${uid} after service access removal`,
-          {
-            type: "support",
-            subType: "user-sync-notify",
-            userId: req.user.sub,
-            userEmail: req.user.email,
-            editedUser: uid,
-            organisationId,
-            editedFields: [
-              {
-                name: "remove_service",
-                oldValue: service.id,
-                newValue: undefined,
-              },
-            ],
-            success: true,
-          },
-        );
-      } catch (e) {
-        logger.error(
-          `Failed to notify legacy WS Sync on service removal for user ${uid}`,
-          e,
-        );
-        logger.audit(
-          `WS Sync notification for user ${uid} after service access removal`,
-          {
-            type: "support",
-            subType: "user-sync-notify",
-            userId: req.user.sub,
-            userEmail: req.user.email,
-            editedUser: uid,
-            organisationId,
-            editedFields: [
-              {
-                name: "remove_service",
-                oldValue: service.id,
-                newValue: undefined,
-              },
-            ],
-            success: false,
-          },
-        );
-        res.flash(
-          "warning",
-          "Sync notification to legacy WS service failed. You can retry from 'Sync user' page.",
-        );
-      }
     }
     await deleteUserOrg(uid, req);
     if (isEmailAllowed) {

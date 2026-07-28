@@ -8,17 +8,12 @@ jest.mock("login.dfe.api-client/users");
 jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.api-client/services");
 jest.mock("login.dfe.jobs-client");
-jest.mock("login.dfe.async-retry");
 jest.mock("../../../src/app/services/utils", () => ({
   isSupportEmailNotificationAllowed: jest.fn(),
 }));
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
-const {
-  ServiceNotificationsClient,
-  NotificationClient,
-} = require("login.dfe.jobs-client");
-const asyncRetry = require("login.dfe.async-retry");
+const { NotificationClient } = require("login.dfe.jobs-client");
 const {
   deleteUserServiceAccess,
   getUserOrganisationsWithServicesRaw,
@@ -31,9 +26,6 @@ const {
 const { post } = require("./../../../src/app/users/removeServiceAccess");
 
 const res = getResponseMock();
-const serviceNotificationsClient = {
-  notifyUserUpdated: jest.fn(),
-};
 const notificationClient = {
   sendUserServiceRemoved: jest.fn(),
 };
@@ -77,20 +69,8 @@ describe("when removing service access from a user", () => {
 
     isSupportEmailNotificationAllowed.mockReset().mockResolvedValue(false);
 
-    serviceNotificationsClient.notifyUserUpdated.mockReset();
-    ServiceNotificationsClient.mockReset().mockImplementation(
-      () => serviceNotificationsClient,
-    );
-
     notificationClient.sendUserServiceRemoved.mockReset();
     NotificationClient.mockReset().mockImplementation(() => notificationClient);
-
-    asyncRetry.mockReset().mockImplementation(async (fn) => {
-      return fn();
-    });
-    asyncRetry.strategies = {
-      apiStrategy: "api-strategy",
-    };
   });
 
   it("deletes user service access", async () => {
@@ -100,16 +80,6 @@ describe("when removing service access from a user", () => {
       userId: "user-1",
       serviceId: "service-1",
       organisationId: "org-1",
-    });
-  });
-
-  it("passes removedServiceId and removedOrgId to notifyUserUpdated", async () => {
-    await post(req, res);
-
-    expect(serviceNotificationsClient.notifyUserUpdated).toHaveBeenCalledWith({
-      sub: "user-1",
-      removedServiceId: "service-1",
-      removedOrgId: "org-1",
     });
   });
 
@@ -161,8 +131,6 @@ describe("when removing service access from a user", () => {
       organisationId: "org-1",
     });
     expect(deleteUserServiceAccess).not.toHaveBeenCalled();
-    // For invitations, no sync notification is sent
-    expect(serviceNotificationsClient.notifyUserUpdated).not.toHaveBeenCalled();
   });
 
   it("sends email notification if allowed", async () => {
@@ -192,20 +160,8 @@ describe("when removing service access from a user", () => {
 
     await post(req, res);
 
-    expect(audit).toHaveBeenCalledTimes(2);
-    // First audit call is from the sync notification
-    expect(audit).toHaveBeenNthCalledWith(
-      1,
-      expect.stringContaining("WS Sync notification"),
-      expect.objectContaining({
-        type: "support",
-        subType: "user-sync-notify",
-        success: true,
-      }),
-    );
-    // Second audit call is from the main operation
-    expect(audit).toHaveBeenNthCalledWith(
-      2,
+    expect(audit).toHaveBeenCalledTimes(1);
+    expect(audit).toHaveBeenCalledWith(
       expect.stringContaining("removed service"),
       expect.objectContaining({
         type: "support",
