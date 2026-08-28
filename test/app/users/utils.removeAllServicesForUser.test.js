@@ -74,4 +74,27 @@ describe("When removing all services for a user", () => {
       organisationId: "organisation-1",
     });
   });
+
+  it("then it should wait for deleteUserServiceAccess to resolve before completing", async () => {
+    let resolveDelete;
+    deleteUserServiceAccess.mockReset().mockReturnValue(
+      new Promise((resolve) => {
+        resolveDelete = resolve;
+      }),
+    );
+
+    let settled = false;
+    const resultPromise = removeAllServicesForUser(userId, req).then(() => {
+      settled = true;
+    });
+
+    // Flush any pending microtasks without resolving the deferred promise.
+    await new Promise((resolve) => setImmediate(resolve));
+    expect(settled).toBe(false);
+
+    resolveDelete();
+    await resultPromise;
+
+    expect(settled).toBe(true);
+  });
 });

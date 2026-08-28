@@ -483,7 +483,7 @@ const removeAllServicesForInvitedUser = async (userId, req) => {
       `Deleting invitation service record for invitationId: ${serviceRecord.invitationId}, serviceId: ${serviceRecord.serviceId} and organisationId: ${serviceRecord.organisationIdId}`,
       { correlationId },
     );
-    deleteServiceAccessFromInvitation({
+    await deleteServiceAccessFromInvitation({
       invitationId: serviceRecord.invitationId,
       serviceId: serviceRecord.serviceId,
       organisationId: serviceRecord.organisationId,

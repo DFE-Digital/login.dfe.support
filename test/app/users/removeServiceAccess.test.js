@@ -13,7 +13,10 @@ jest.mock("../../../src/app/services/utils", () => ({
 }));
 
 const { getRequestMock, getResponseMock } = require("./../../utils");
-const { NotificationClient } = require("login.dfe.jobs-client");
+const {
+  NotificationClient,
+  ServiceNotificationsClient,
+} = require("login.dfe.jobs-client");
 const {
   deleteUserServiceAccess,
   getUserOrganisationsWithServicesRaw,
@@ -153,6 +156,12 @@ describe("when removing service access from a user", () => {
     await post(req, res);
 
     expect(notificationClient.sendUserServiceRemoved).not.toHaveBeenCalled();
+  });
+
+  it("does not emit a WS sync notification, since Access already does this internally", async () => {
+    await post(req, res);
+
+    expect(ServiceNotificationsClient).not.toHaveBeenCalled();
   });
 
   it("logs audit event on success", async () => {
