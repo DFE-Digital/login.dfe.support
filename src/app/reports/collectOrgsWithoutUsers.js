@@ -6,7 +6,8 @@ const pageSize = 25;
 const get = async (req, res) => {
   const correlationId = req.id;
 
-  let pageNumber = req.query && req.query.page ? parseInt(req.query.page) : 1;
+  let pageNumber =
+    req.query && req.query.page ? parseInt(req.query.page, 10) : 1;
   if (isNaN(pageNumber) || pageNumber < 1) {
     pageNumber = 1;
   }
