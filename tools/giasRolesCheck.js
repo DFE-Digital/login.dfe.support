@@ -142,7 +142,9 @@ const updateUserRoles = async () => {
     for (let i = 0; i < policy.noRolesAvailable.length; i++) {
       const currentPolicy = policy.noRolesAvailable[i];
 
-      // remove user with no roles from service
+      // remove user with no roles from service - the Access API's
+      // removeServiceFromUser handler already fires the WS sync notification
+      // internally, so no separate notify call is needed here.
       await deleteUserServiceAccess({
         userId: currentPolicy.userId,
         serviceId: currentPolicy.serviceId,
@@ -151,15 +153,6 @@ const updateUserRoles = async () => {
       console.log(
         `removed ${currentPolicy.userId} from ${currentPolicy.serviceId} for org ${currentPolicy.organisationId} as they had no available roles`,
       );
-
-      // send ws sync
-      const serviceNotificationsClient = new ServiceNotificationsClient(
-        config.notifications,
-      );
-      const ws = await serviceNotificationsClient.notifyUserUpdated({
-        sub: currentPolicy.userId,
-      });
-      console.log("Queued user sync : ", ws);
     }
   }
 
