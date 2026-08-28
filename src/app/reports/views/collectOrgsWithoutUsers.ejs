@@ -10,13 +10,32 @@
                 one.
             </p>
 
-            <% if (organisations.length === 0) { %>
+            <% if (locals.loadFailed) { %>
+                <div class="govuk-error-summary" data-module="govuk-error-summary">
+                    <div role="alert">
+                        <h2 class="govuk-error-summary__title">This report could not be loaded</h2>
+                        <div class="govuk-error-summary__body">
+                            <p class="govuk-body">
+                                The organisations service did not respond. This is not the same as
+                                there being no organisations to show - try again, and if it keeps
+                                failing raise it with the DfE Sign-In team.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            <% } else if (organisations.length === 0) { %>
                 <p class="govuk-body">No organisations found matching these criteria.</p>
             <% } else { %>
-                <p class="govuk-body">
-                    <strong><%= organisations.length.toLocaleString() %></strong>
-                    organisation<%= organisations.length === 1 ? '' : 's' %> found.
-                </p>
+                <%
+                const paginationModel = {
+                    currentPage: locals.page,
+                    numberOfPages: locals.numberOfPages,
+                    totalNumberOfResults: locals.totalNumberOfResults,
+                    numberOfResultsOnPage: locals.organisations.length,
+                    data: [],
+                };
+                %>
+                <%- include('../../sharedViews/paginationNew', paginationModel); %>
 
                 <table class="govuk-table">
                     <thead class="govuk-table__head">
@@ -26,8 +45,7 @@
                             <th scope="col" class="govuk-table__header">Establishment no.</th>
                             <th scope="col" class="govuk-table__header">LA code</th>
                             <th scope="col" class="govuk-table__header">Category</th>
-                            <th scope="col" class="govuk-table__header">Total records</th>
-                            <th scope="col" class="govuk-table__header">Active users</th>
+                            <th scope="col" class="govuk-table__header">Previous COLLECT records</th>
                         </tr>
                     </thead>
                     <tbody class="govuk-table__body">
@@ -39,11 +57,12 @@
                                 <td class="govuk-table__cell"><%= org.local_authority_code || '—' %></td>
                                 <td class="govuk-table__cell"><%= org.category || '—' %></td>
                                 <td class="govuk-table__cell"><%= org.total_user_service_records %></td>
-                                <td class="govuk-table__cell">0</td>
                             </tr>
                         <% }); %>
                     </tbody>
                 </table>
+
+                <%- include('../../sharedViews/paginationNew', paginationModel); %>
             <% } %>
 
         </div>
