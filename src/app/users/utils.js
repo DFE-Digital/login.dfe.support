@@ -458,7 +458,11 @@ const removeAllServicesForUser = async (userId, req) => {
       `Removing service from user: ${service.userId} with serviceId: ${service.serviceId} and organisationId: ${service.organisationId}`,
       { correlationId },
     );
-    deleteUserServiceAccess({
+    // The Access API's removeServiceFromUser handler already fires the WS
+    // sync notification (with removedServiceId/removedOrgId) internally as
+    // part of this call - a second, separate call here would double-enqueue
+    // the deactivation sync for every removal.
+    await deleteUserServiceAccess({
       userId: service.userId,
       serviceId: service.serviceId,
       organisationId: service.organisationId,
@@ -476,10 +480,10 @@ const removeAllServicesForInvitedUser = async (userId, req) => {
     [];
   for (const serviceRecord of invitationServiceRecords) {
     logger.info(
-      `Deleting invitation service record for invitationId: ${serviceRecord.invitationId}, serviceId: ${serviceRecord.serviceId} and organisationId: ${serviceRecord.organisationIdId}`,
+      `Deleting invitation service record for invitationId: ${serviceRecord.invitationId}, serviceId: ${serviceRecord.serviceId} and organisationId: ${serviceRecord.organisationId}`,
       { correlationId },
     );
-    deleteServiceAccessFromInvitation({
+    await deleteServiceAccessFromInvitation({
       invitationId: serviceRecord.invitationId,
       serviceId: serviceRecord.serviceId,
       organisationId: serviceRecord.organisationId,
