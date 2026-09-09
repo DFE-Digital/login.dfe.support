@@ -83,6 +83,12 @@
                 <dt class="govuk-summary-list__key govuk-!-padding-0">Account status:</dt>
                 <dd class="govuk-summary-list__value govuk-!-padding-0"><%= user.status.description %></dd>
             </div>
+            <% if (user.status.id === 0) { %>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-padding-0">Deactivated on:</dt>
+                <dd class="govuk-summary-list__value govuk-!-padding-0"><%= user.deactivatedAt ? user.deactivatedAt : 'Not known' %></dd>
+            </div>
+            <% } %>
             <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key govuk-!-padding-0">Number of logins in last 12 months:</dt>
                 <dd class="govuk-summary-list__value govuk-!-padding-0"><%= user.loginsInPast12Months.successful %></dd>

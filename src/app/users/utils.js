@@ -236,6 +236,7 @@ const mapUserToSupportModel = (user, userFromSearch) => {
     entraOid: user.entraOid,
     entraLinked: user.entraLinked,
     entraDeferUntil: user.entraDeferUntil,
+    deactivatedAt: user.deactivated_at ? new Date(user.deactivated_at) : null,
     organisation: userFromSearch.primaryOrganisation
       ? {
           name: userFromSearch.primaryOrganisation,
@@ -315,6 +316,9 @@ const getUserDetailsById = async (uid, req) => {
         : null,
       entraDeferUntil: user.entraDeferUntil
         ? dateFormat(user.entraDeferUntil, "longDateFormat")
+        : null,
+      deactivatedAt: user.deactivatedAt
+        ? dateFormat(user.deactivatedAt, "longDateFormat")
         : null,
       lastLogin: user.lastLogin,
       status: user.status,
