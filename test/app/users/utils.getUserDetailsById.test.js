@@ -302,10 +302,28 @@ describe("When using the getUserDetailsById function", () => {
       getRawUserDataCopy.status = 0;
       getRawUserDataCopy.deactivated_at = "2026-08-01T09:00:00.000";
       getUserRaw.mockReset().mockReturnValue(getRawUserDataCopy);
+      getSearchDetailsForUserById.mockReturnValue({
+        id: "user-1",
+        name: "Adam Mann",
+        firstName: "Adam",
+        lastName: "Mann",
+        email: "adam.mann+1@education.gov.uk",
+        organisation: null,
+        organisations: [],
+        lastLogin: "2025-10-02T15:01:04.793Z",
+        successfulLoginsInPast12Months: null,
+        status: {
+          id: 0,
+          description: "Deactivated",
+          changedOn: null,
+        },
+        pendingEmail: null,
+      });
 
       const result = await getUserDetailsById(req.params.uid, req);
 
       expect(result).toMatchObject({
+        status: { id: 0, description: "Deactivated", changedOn: null },
         deactivatedAt: "01 Aug 2026 09:00am",
       });
     });
