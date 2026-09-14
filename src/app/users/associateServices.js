@@ -1,4 +1,3 @@
-const config = require("./../../infrastructure/config");
 const {
   getUserOrganisationsWithServicesRaw,
 } = require("login.dfe.api-client/users");
@@ -7,8 +6,7 @@ const {
 } = require("login.dfe.api-client/invitations");
 const { getAllServicesForUserInOrg } = require("./utils");
 const { getAllServices } = require("../services/utils");
-const PolicyEngine = require("login.dfe.policy-engine");
-const policyEngine = new PolicyEngine(config);
+const policyEngine = require("../../infrastructure/policyEngine");
 
 const getAllAvailableServices = async (req, organisationCategoryId) => {
   const allServices = await getAllServices();
