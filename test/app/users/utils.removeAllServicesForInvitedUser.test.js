@@ -57,4 +57,29 @@ describe("When removing all services for an invited user", () => {
     });
     expect(deleteServiceAccessFromInvitation.mock.calls).toHaveLength(0);
   });
+
+  it("then it should wait for deleteServiceAccessFromInvitation to resolve before completing", async () => {
+    let resolveDelete;
+    deleteServiceAccessFromInvitation.mockReset().mockReturnValue(
+      new Promise((resolve) => {
+        resolveDelete = resolve;
+      }),
+    );
+
+    let settled = false;
+    const resultPromise = removeAllServicesForInvitedUser(userId, req).then(
+      () => {
+        settled = true;
+      },
+    );
+
+    // Flush any pending microtasks without resolving the deferred promise.
+    await new Promise((resolve) => setImmediate(resolve));
+    expect(settled).toBe(false);
+
+    resolveDelete();
+    await resultPromise;
+
+    expect(settled).toBe(true);
+  });
 });
