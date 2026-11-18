@@ -13,7 +13,10 @@ jest.mock("login.dfe.api-client/invitations");
 jest.mock("login.dfe.api-client/services");
 jest.mock("login.dfe.jobs-client");
 
-const { NotificationClient } = require("login.dfe.jobs-client");
+const {
+  NotificationClient,
+  ServiceNotificationsClient,
+} = require("login.dfe.jobs-client");
 const { getRequestMock, getResponseMock } = require("../../utils");
 const { getAllServicesForUserInOrg } = require("../../../src/app/users/utils");
 const postDeleteOrganisation = require("../../../src/app/users/postDeleteOrganisation");
@@ -29,6 +32,7 @@ const {
 const {
   getUserOrganisationsWithServicesRaw,
   deleteUserOrganisationAccess,
+  deleteUserServiceAccess,
 } = require("login.dfe.api-client/users");
 
 const res = getResponseMock();
@@ -133,6 +137,16 @@ describe("when removing a users access to an organisation", () => {
     });
   });
 
+  it("then it should delete service access for each service in the org", async () => {
+    await postDeleteOrganisation(req, res);
+
+    expect(deleteUserServiceAccess).toHaveBeenCalledWith({
+      userId: "user1",
+      serviceId: "service2",
+      organisationId: "org1",
+    });
+  });
+
   it("then it should redirect to organisations", async () => {
     await postDeleteOrganisation(req, res);
 
@@ -159,6 +173,12 @@ describe("when removing a users access to an organisation", () => {
     expect(sendUserRemovedFromOrganisationStub.mock.calls[0][3]).toBe(
       expectedOrgName,
     );
+  });
+
+  it("then it should not emit a WS sync notification, since Access already does this internally", async () => {
+    await postDeleteOrganisation(req, res);
+
+    expect(ServiceNotificationsClient).not.toHaveBeenCalled();
   });
 
   it("then it should not send an email notification to deactivated user", async () => {

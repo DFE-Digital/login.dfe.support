@@ -36,6 +36,10 @@ describe("When removing all services for a user", () => {
 
     req = {
       id: "correlation-id",
+      user: {
+        sub: "suser1",
+        email: "super.user@unit.test",
+      },
     };
   });
 
@@ -54,5 +58,43 @@ describe("When removing all services for a user", () => {
     expect(getUserServicesRaw.mock.calls).toHaveLength(1);
     expect(getUserServicesRaw).toHaveBeenCalledWith({ userId: "user-1" });
     expect(deleteUserServiceAccess.mock.calls).toHaveLength(0);
+  });
+
+  it("then it should delete service access for each service", async () => {
+    await removeAllServicesForUser(userId, req);
+
+    expect(deleteUserServiceAccess).toHaveBeenCalledWith({
+      userId: "user-1",
+      serviceId: "service1Id",
+      organisationId: "organisation-1",
+    });
+    expect(deleteUserServiceAccess).toHaveBeenCalledWith({
+      userId: "user-1",
+      serviceId: "service2Id",
+      organisationId: "organisation-1",
+    });
+  });
+
+  it("then it should wait for deleteUserServiceAccess to resolve before completing", async () => {
+    let resolveDelete;
+    deleteUserServiceAccess.mockReset().mockReturnValue(
+      new Promise((resolve) => {
+        resolveDelete = resolve;
+      }),
+    );
+
+    let settled = false;
+    const resultPromise = removeAllServicesForUser(userId, req).then(() => {
+      settled = true;
+    });
+
+    // Flush any pending microtasks without resolving the deferred promise.
+    await new Promise((resolve) => setImmediate(resolve));
+    expect(settled).toBe(false);
+
+    resolveDelete();
+    await resultPromise;
+
+    expect(settled).toBe(true);
   });
 });

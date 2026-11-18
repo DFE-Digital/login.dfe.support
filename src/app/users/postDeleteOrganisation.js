@@ -59,6 +59,11 @@ const postDeleteOrganisation = async (req, res) => {
   } else {
     for (let i = 0; i < servicesForUserInOrg.length; i++) {
       const service = servicesForUserInOrg[i];
+      // The Access API's removeServiceFromUser handler already fires the WS
+      // sync notification (with removedServiceId/removedOrgId) internally as
+      // part of this call - a second, separate call here would double-enqueue
+      // the deactivation sync for every service removed as part of removing
+      // the organisation.
       await deleteUserServiceAccess({
         userId: uid,
         serviceId: service.id,
